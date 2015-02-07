@@ -177,7 +177,17 @@ namespace SPLConqueror_Core
             {
                 switch (xmlInfo.Name)
                 {
-                    case "":
+                    case "minValue":
+                        this.min_value = Double.Parse(xmlInfo.InnerText);
+                        break;
+                    case "maxValue":
+                        this.max_value = Double.Parse(xmlInfo.InnerText);
+                        break;
+                    case "defaultValue":
+                        this.defaultValue = Double.Parse(xmlInfo.InnerText);
+                        break;
+                    case "stepFunction":
+                        this.stepFunction = InfluenceFunction.initWithString(xmlInfo.InnerText);
                         break;
                 }
             }

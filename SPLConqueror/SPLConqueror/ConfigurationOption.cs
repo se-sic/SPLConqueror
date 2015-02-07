@@ -213,6 +213,51 @@ namespace SPLConqueror_Core
             }
         }
 
-        
+        /// <summary>
+        /// Replaces the names for parent, children, etc. with their actual objects of the variability model
+        /// </summary>
+        internal void init()
+        {
+            this.parent = vm.getBinaryOption(parentName);
+            foreach (var name in this.children_names)
+            {
+                ConfigurationOption c = vm.getBinaryOption(name);
+                if(c == null)
+                    c = vm.getNumericOption(name);
+                if(c == null)
+                    continue;
+                this.children.Add(c);
+            }
+
+            foreach (var imply_names in this.implied_Options_names)
+            {
+                List<ConfigurationOption> optionImplies = new List<ConfigurationOption>();
+                foreach (var optName in imply_names)
+                {
+                    ConfigurationOption c = vm.getBinaryOption(optName);
+                    if (c == null)
+                        c = vm.getNumericOption(optName);
+                    if (c == null)
+                        continue;
+                    optionImplies.Add(c);
+                }
+                this.implied_Options.Add(optionImplies);
+            }
+
+            foreach (var exclud_names in this.excluded_Options_names)
+            {
+                List<ConfigurationOption> excImplies = new List<ConfigurationOption>();
+                foreach (var optName in exclud_names)
+                {
+                    ConfigurationOption c = vm.getBinaryOption(optName);
+                    if (c == null)
+                        c = vm.getNumericOption(optName);
+                    if (c == null)
+                        continue;
+                    excImplies.Add(c);
+                }
+                this.excluded_Options.Add(excImplies);
+            }
+        }
     }
 }
