@@ -26,160 +26,97 @@ namespace SPLConqueror_Core
 
         public int readConfigurations(XmlDocument dat, VariabilityModel model)
         {
-            ////Progress Information
-            //HelperClass.setStatus("Loading measurements...");
+            //Progress Information
+            ErrorLog.logError("Loading measurements...");
 
-            ////double sumPerformance = 0.0;
+            int i = 0;
+            int progress = 0;
 
-            //int i = 0;
-            //int progress = 0;
+            XmlElement currentElemt = dat.DocumentElement;
 
-            //XmlElement currentElemt = dat.DocumentElement;
+            int numberOfConfigs = currentElemt.ChildNodes.Count;
+            foreach (XmlNode node in currentElemt.ChildNodes)
+            {
+                i++;
+                Dictionary<NFProperty, double> propertiesForConfig = new Dictionary<NFProperty, double>(); ;
 
-            //List<List<Element>> minConfigs = new List<List<Element>>();
-
-
-
-            //int allConfigs = currentElemt.ChildNodes.Count;
-            //foreach (XmlNode node in currentElemt.ChildNodes)
-            //{
-            //    i++;
-            //    Dictionary<NFProperty, double> propertiesForConfig = new Dictionary<NFProperty, double>(); ;
-            //    string configuration = "";
-
-
-
-            //    string variableFeatureValues = "";
-            //    foreach (XmlNode childNode in node.ChildNodes)
-            //    {
-            //        switch (childNode.Attributes[0].Value)
-            //        {
-            //            case "Configuration":
-            //                configuration = childNode.InnerText.ToString();
-            //                break;
-            //            case "Variable Features":
-            //                variableFeatureValues = childNode.InnerText.ToString();
-            //                break;
-            //            default: // NFP Values
-            //                string value = childNode.Attributes[0].Value;
-            //                double measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace('.', ','));
-            //                if (nfpm.getProperty(value) != null)
-            //                {
-            //                    propertiesForConfig.Add(nfpm.getProperty(value), measuredValue);
-            //                }
-            //                // to support old measurements (before multiple nfps were supported (the nfp values are stored within the "Measured Value" Node))
-            //                if (value == "Measured Value")
-            //                {
-            //                    propertiesForConfig.Add(nfpm.Properties.ElementAt(0), measuredValue);
-            //                }
-            //                break;
+                string binaryString = "";
+                string numericString = "";
+                Dictionary<NFProperty, double> measuredProperty = new Dictionary<NFProperty, double>();
+                foreach (XmlNode childNode in node.ChildNodes)
+                {
+                    switch (childNode.Attributes[0].Value)
+                    {
+                        // TODO we use this to support result files having the old structure
+                        case "Configuration":
+                            binaryString = childNode.InnerText.ToString();
+                            break;
+                        case "Variable Features":
+                            numericString = childNode.InnerText.ToString();
+                            break;
 
 
+                        case "BinaryOptions":
+                            binaryString = childNode.InnerText.ToString();
+                            break;
+                        case "NumericOptions":
+                            numericString = childNode.InnerText.ToString();
+                            break;
+                        default: 
+                            NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
+                            double measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace('.', ','));
+                            measuredProperty.Add(property, measuredValue);
+                            break;
+                    }
+                }
 
-            //        }
-            //    }
-            //    List<Element> boolFeatures = new List<Element>();
+                Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
 
-            //    string[] elements = configuration.Split(',');
-            //    foreach (string element in elements)
-            //    {
-            //        string searchelement = element.Trim();
-            //        if (searchelement.Length > 0)
-            //        {
-            //            if (searchelement.StartsWith("dPair_") || searchelement.StartsWith("derivative_"))
-            //                continue;
-            //            Element tempEl = null;
-            //            if (fm.genSetting.type == "Custom")
-            //            {
-            //                tempEl = fm.getElementByConfigParameter(searchelement);
-            //                if (tempEl == null) //&& Char.IsDigit(element.Substring(element.Length-1)[0]))
-            //                    tempEl = fm.getElementByNameUnsafe(searchelement);
-            //            }
-            //            else
-            //                tempEl = fm.getElementByNameUnsafe(searchelement);
-            //            if (tempEl == null) //&& Char.IsDigit(element.Substring(element.Length-1)[0]))
-            //                tempEl = fm.getElementByConfigParameter(searchelement);//fm.getElementByNameUnsafe(searchelement.Replace(' ','_'));
-            //            if (boolFeatures.Contains(tempEl))
-            //            {
-            //                // System.Windows.Forms.MessageBox.Show("Error while reading configuration. Found two identical elements");
-            //                continue;
-            //            }
-            //            if (tempEl == null)
-            //            {
-            //                searchelement = "-" + searchelement;
-            //                tempEl = fm.getElementByConfigParameter(searchelement);
-            //                if (tempEl == null) //&& Char.IsDigit(element.Substring(element.Length-1)[0]))
-            //                    tempEl = fm.getElementByNameUnsafe(searchelement);
-            //            }
-            //            boolFeatures.Add(tempEl);
-            //        }
-            //    }
-            //    if (boolFeatures.Contains(null))
-            //        HelperClass.printContent("Error in loading element in configuration: " + configuration);
-            //    if (fm.genSetting.type == "Custom")
-            //    {
-            //        boolFeatures = vg.maximizeConfig(boolFeatures, fm, true, null)[0];
-            //    }
+                string[] binaryFeatures = binaryString.Split(',');
+                foreach (string element in binaryFeatures)
+                {
+                    string searchelement = element.Trim();
+                    if (searchelement.Length > 0)
+                    {
+                        BinaryOption bOpt = null;
 
-            //    Dictionary<NumericOption, double> variableFeatureValueList = new Dictionary<NumericOption, double>();
-            //    if (!string.IsNullOrEmpty(variableFeatureValues))
-            //    {
-            //        string[] varFeatureArray = variableFeatureValues.Split(',');
-            //        foreach (string varFeatur in varFeatureArray)
-            //        {
-            //            string[] varFeatureTuple;
-            //            if (varFeatur.Contains(";"))
-            //                varFeatureTuple = varFeatur.Split(';');
-            //            else
-            //                varFeatureTuple = varFeatur.Split(' ');// added for rc-lookahead 40
-            //            varFeatureTuple[0] = varFeatureTuple[0].Trim();
-            //            if (varFeatureTuple[0].Length == 0)
-            //                continue;
-            //            NumericOption varFeat = fm.getNumericOptionsByName(varFeatureTuple[0]);
-            //            if (varFeat == null)
-            //                throw new NullReferenceException();
-            //            double varFeatValue = Convert.ToDouble(varFeatureTuple[1]);
+                        bOpt = GlobalState.varModel.getBinaryOption(searchelement);
 
-            //            variableFeatureValueList.Add(varFeat, varFeatValue);
-            //        }
-            //        List<ResultsOneVariant.MeasurementKind> kind_copy = kind.Copy();
+                        if (bOpt == null)
+                            ErrorLog.logError("No Binary option found with name: "+searchelement);
+                        binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
+                    }
+                }
 
-            //    }
+                Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
+                if (!string.IsNullOrEmpty(numericString))
+                {
+                    string[] numOptionArray = numericString.Trim().Split(',');
+                    foreach (string numOption in numOptionArray)
+                    {
+                        string[] numOptionsKeyValue;
+                        if (numOption.Contains(";"))
+                            numOptionsKeyValue = numOption.Split(';');
+                        else
+                            numOptionsKeyValue = numOption.Split(' ');// added for rc-lookahead 40
+                        numOptionsKeyValue[0] = numOptionsKeyValue[0].Trim();
+                        if (numOptionsKeyValue[0].Length == 0)
+                            continue;
+                        NumericOption varFeat = GlobalState.varModel.getNumericOption(numOptionsKeyValue[0]);
+                        if (varFeat == null)
+                            ErrorLog.logError("No numeric option found with name: " + numOptionsKeyValue[0]);
+                        double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
 
-            //    //this.addConfigWithWorkload(config, rp, variableFeatureValueList, kind_copy, measuredValue);
-            //    minConfigs.Add(boolFeatures);
+                        numericOptions.Add(varFeat, varFeatValue);
+                    }
+                }
 
-            //    //new method of storing configurations
-            //    Configuration config = new Configuration(boolFeatures, variableFeatureValueList, true);
-            //    config.measuredValue = propertiesForConfig;
-            //    this.measurements.Add(config);
-            //    /*  foreach(NumericOption vf in variableFeatureValueList.Keys)
-            //      {
-            //          try
-            //          {
-            //              config.numericOptions.Add(vf, variableFeatureValueList[vf]);
-            //          }
-            //          catch (Exception e)
-            //          {
-            //              continue;
-            //          }
-            //      }*/
-            //    //measurements.Add(config);
+                Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
 
-            //    if (i % 200 == 0)
-            //    {
-            //        progress = 100 * i / allConfigs;
-            //        HelperClass.setProgress("Loaded " + i.ToString() + " of " + allConfigs + " measurements.", progress);
-            //    }
-            //    //this.min_configurations.Add(config);
-            //    //this.min_values.Add(measuredValue);
-            //}
-            ////HelperClass.printContent("Sum of loaded performanceTimes " + sumPerformance);
-            ////ResultDatabase.database.setStandardConfig(rp.getStandardConfig(minConfigs, fm));
-            ////ResultDatabase.database.setStandardValue(rp.Db.getStandardConfig(), rp);
-            //HelperClass.closeStatusForm();
-            //return minConfigs.Count;
-            return 0;
+                GlobalState.addConfiguration(config);
+
+            }
+            return numberOfConfigs;
         }
     }
 }

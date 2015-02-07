@@ -22,7 +22,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// All properties of the current case study. 
         /// </summary>
-        public static List<NFProperty> nfProperties = null;
+        public static Dictionary<string, NFProperty> nfProperties = null;
 
         private GlobalState(){ }
 
@@ -36,6 +36,32 @@ namespace SPLConqueror_Core
             nfProperties = null;
         }
 
+
+        public static NFProperty getOrCreateProperty(string name)
+        {
+            if(nfProperties[name] != null)
+                return nfProperties[name];
+            else{
+                NFProperty newProp = new NFProperty(name);
+                nfProperties.Add(name, newProp);
+                return newProp;
+            }
+        }
+
+        internal static void addConfiguration(Configuration config)
+        {
+            GlobalState.allMeasurements.add(config);
+        }
+
+
+        public static void setDefaultProperty(String propertyName)
+        {
+            GlobalState.currentNFP = GlobalState.nfProperties[propertyName];
+        }
+
         // TODO: switch from non-normalized configurations to normalized configurations
+
+
+
     }
 }

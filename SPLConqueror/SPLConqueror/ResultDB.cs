@@ -7,5 +7,14 @@ namespace SPLConqueror_Core
 {
     class ResultDB
     {
+
+        List<Configuration> configurations = new List<Configuration>();
+
+
+        public void add(Configuration configuration)
+        {
+            this.configurations.Add(configuration);
+        }
+
     }
 }
