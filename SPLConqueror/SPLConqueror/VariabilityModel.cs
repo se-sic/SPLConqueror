@@ -181,11 +181,27 @@ namespace SPLConqueror_Core
                         break;
                 }
             }
+
+            initOptions();
+        }
+
+        /// <summary>
+        /// After loading all options, we can replace the names for children, the parent, etc. with the actual objects
+        /// </summary>
+        private void initOptions()
+        {
+            foreach (var binOpt in binaryOptions)
+                binOpt.init();
+            foreach (var numOpt in binaryOptions)
+                numOpt.init();
         }
 
         private void loadBooleanConstraints(XmlElement xmlNode)
         {
-            throw new NotImplementedException();
+            foreach (XmlElement boolConstr in xmlNode.ChildNodes)
+            {
+                this.booleanConstraints.Add(boolConstr.InnerText);
+            }
         }
 
         private void loadNumericOptions(XmlElement xmlNode)
@@ -226,6 +242,10 @@ namespace SPLConqueror_Core
                 if (opt.Name.Equals(option.Name))
                     return false;
             }
+
+            //Every option must have a parent
+            if (option.Parent == null)
+                option.Parent = this.root;
             if (option is BinaryOption)
                 this.binaryOptions.Add((BinaryOption)option);
             else
@@ -262,26 +282,6 @@ namespace SPLConqueror_Core
             }
             return null;
         }
-        /*
-         * if (currentElemt.ChildNodes[i].Name == "furtherConstraints")
-					{
-						foreach(XmlNode constraint in currentElemt.ChildNodes[i].ChildNodes)
-						{
-							furtherConstraints.Add(constraint.InnerText);
-							if (constraint.InnerText.ToLower().Contains("derivative"))
-							{//-LoggingBase | -Evictor | -Statistics | -LoggingEvictor | Derivative_LoggingEvictor_Statistics_Evictor_LoggingBase
-								Element derivative;
-								List<Element> parents;
-								if (identifyImpliesPattern(constraint.InnerText, out derivative, out parents))
-								{
-									derivative.addDerivativeParents(parents);
-								}
-								else
-								{
-									this.errormsg += "Unresolved derivative constraint: " + constraint.InnerText + "\n";
-								}
-							}                            
-						}
-					}*/
+        
     }
 }
