@@ -10,20 +10,20 @@ namespace SPLConqueror_Core
     /// </summary>
     public class VariabilityModel
     {
-        List<NumericOption> numericOptions = new List<NumericOption>();
+        private List<NumericOption> numericOptions = new List<NumericOption>();
 
         internal List<NumericOption> NumericOptions
         {
             get { return numericOptions; }
-            set { numericOptions = value; }
+            //set { numericOptions = value; }
         }
 
-        List<BinaryOption> binaryOptions = new List<BinaryOption>();
+        private List<BinaryOption> binaryOptions = new List<BinaryOption>();
 
         internal List<BinaryOption> BinaryOptions
         {
             get { return binaryOptions; }
-            set { binaryOptions = value; }
+          //  set { binaryOptions = value; }
         }
 
         String name = "empty";
@@ -48,6 +48,11 @@ namespace SPLConqueror_Core
             set { path = value; }
         }
 
-
+        public VariabilityModel(String name)
+        {
+            this.name = name;
+            BinaryOption root = new BinaryOption(this, "root");
+            this.BinaryOptions.Add(root);
+        }
     }
 }

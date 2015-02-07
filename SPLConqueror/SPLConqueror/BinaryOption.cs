@@ -5,7 +5,11 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class BinaryOption : ConfigurationOption
+    public class BinaryOption : ConfigurationOption
     {
+        public BinaryOption(VariabilityModel vm, String name)  : base (vm, name)
+        {
+            
+        }
     }
 }
