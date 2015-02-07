@@ -40,8 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
+    <Compile Include="InfluenceFunction.cs" />
     <Compile Include="NFProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultDB.cs" />
     <Compile Include="VariabilityModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
