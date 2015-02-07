@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="BinaryOption.cs" />
     <Compile Include="ConfigurationOption.cs" />
+    <Compile Include="ConfigurationPrinter.cs" />
+    <Compile Include="ConfigurationReader.cs" />
     <Compile Include="GlobalState.cs" />
     <Compile Include="InfluenceModel.cs" />
     <Compile Include="NumericOption.cs" />

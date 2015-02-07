@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class ConfigurationOption
+    class ConfigurationOption : IComparable<ConfigurationOption>
     {
         private String name = "";
 
@@ -91,6 +91,11 @@ namespace SPLConqueror_Core
             this.name = name;
         }
 
-        
+        public int CompareTo(ConfigurationOption other)
+        {
+            return this.name.CompareTo(other.name);
+        }
+   
+
     }
 }
