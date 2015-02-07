@@ -43,6 +43,17 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// Constructor to create a new numeric option. All values are set to zero (calls basic constructor)
+        /// </summary>
+        /// <param name="vm">The variability model to which the option belongs to</param>
+        /// <param name="name">Name of that option</param>
+        public NumericOption(VariabilityModel vm, String name)
+            : base(vm, name)
+        {
+
+        }
+
+        /// <summary>
         /// Computes the next value of the numeric option using the step function
         /// </summary>
         /// <param name="value">Value from which the next value shall be computed</param>
@@ -146,5 +157,30 @@ namespace SPLConqueror_Core
         }
 
 
+        /// <summary>
+        /// Creates a numeric option based on the information of the given XML Node (calls base function)
+        /// </summary>
+        /// <param name="numOptNode">The XML Element containing the information</param>
+        /// <param name="variabilityModel">The variability model to which the option belongs to</param>
+        /// <returns>The newly created option</returns>
+        internal static ConfigurationOption loadFromXML(XmlElement numOptNode, VariabilityModel variabilityModel)
+        {
+            NumericOption numOpt = new NumericOption(variabilityModel, "temp");
+            numOpt.loadFromXML(numOptNode);
+            return numOpt;
+        }
+
+        internal void loadFromXML(XmlElement node)
+        {
+            base.loadFromXML(node);
+            foreach (XmlElement xmlInfo in node.ChildNodes)
+            {
+                switch (xmlInfo.Name)
+                {
+                    case "":
+                        break;
+                }
+            }
+        }
     }
 }

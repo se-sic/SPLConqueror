@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
-    class ConfigurationOption : IComparable<ConfigurationOption>
+    abstract class ConfigurationOption : IComparable<ConfigurationOption>
     {
         private String name = "";
 
@@ -39,6 +39,7 @@ namespace SPLConqueror_Core
         }
 
         private List<List<ConfigurationOption>> implied_Options = new List<List<ConfigurationOption>>();
+        private List<List<String>> implied_Options_names = new List<List<String>>();
 
         /// <summary>
         /// List, in which the current option implies one and/or a combination of other options
@@ -50,7 +51,8 @@ namespace SPLConqueror_Core
         }
 
         private List<List<ConfigurationOption>> excluded_Options = new List<List<ConfigurationOption>>();
-        
+        private List<List<String>> excluded_Options_names = new List<List<string>>();
+ 
         /// <summary>
         /// List, in which the current option excludes the selection of one and/or a combination of other options
         /// </summary>
@@ -63,6 +65,7 @@ namespace SPLConqueror_Core
         private VariabilityModel vm = null;
 
         private ConfigurationOption parent = null;
+        private String parentName = "";
 
         /// <summary>
         /// This options implies the selection of its parent (hence, it is also present in the implied_Options field
@@ -72,8 +75,10 @@ namespace SPLConqueror_Core
             get { return parent; }
             set { parent = value; }
         }
+        
 
         private List<ConfigurationOption> children = new List<ConfigurationOption>();
+        private List<String> children_names = new List<String>();
 
         /// <summary>
         /// This option's child options. These are not necessarily implied.
@@ -173,5 +178,41 @@ namespace SPLConqueror_Core
 
             return node;
         }
+
+        internal void loadFromXML(XmlElement node)
+        {
+            foreach (XmlElement xmlInfo in node.ChildNodes)
+            {
+                switch (xmlInfo.Name)
+                {
+                    case "name":
+                        this.name = xmlInfo.InnerText;
+                        break;
+                    case "prefix":
+                        this.prefix = xmlInfo.InnerText;
+                        break;
+                    case "postfix":
+                        this.postfix = xmlInfo.InnerText;
+                        break;
+                    case "parent":
+                        this.parentName = xmlInfo.InnerText;
+                        break;
+                    case "children":
+                        foreach (XmlElement elem in xmlInfo.ChildNodes)
+                            children_names.Add(elem.InnerText);
+                        break;
+                    case "impliedOptions":
+                        foreach (XmlElement elem in xmlInfo.ChildNodes)
+                            implied_Options_names.Add(elem.InnerText.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList());
+                        break;
+                    case "excludedOptions":
+                        foreach (XmlElement elem in xmlInfo.ChildNodes)
+                            excluded_Options_names.Add(elem.InnerText.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList());
+                        break;
+                }
+            }
+        }
+
+        
     }
 }

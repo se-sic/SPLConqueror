@@ -143,8 +143,125 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        /// <summary>
+        /// Static method that reads an xml file and constructs a variability model using the stored information
+        /// </summary>
+        /// <param name="path">Path to the XML File</param>
+        /// <returns>The intatiated variability model</returns>
+        public static VariabilityModel loadFromXML(String path)
+        {
+            VariabilityModel vm = new VariabilityModel("temp");
+            vm.loadXML(path);
+            return vm;
+        }
 
+        /// <summary>
+        /// Loads an XML file containing information about the variability model.
+        /// </summary>
+        /// <param name="path">Path to the XML file</param>
+        public void loadXML(String path)
+        {
+            XmlDocument dat = new System.Xml.XmlDocument();
+            dat.Load(path);
+            XmlElement currentElemt = dat.DocumentElement;
+            this.name = currentElemt.Attributes["name"].Value.ToString();
 
+            foreach (XmlElement xmlNode in currentElemt.ChildNodes)
+            {
+                switch (xmlNode.Name)
+                {
+                    case "binaryOptions":
+                        loadBinaryOptions(xmlNode);
+                        break;
+                    case "numericOptions":
+                        loadNumericOptions(xmlNode);
+                        break;
+                    case "booleanConstraints":
+                        loadBooleanConstraints(xmlNode);
+                        break;
+                }
+            }
+        }
+
+        private void loadBooleanConstraints(XmlElement xmlNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void loadNumericOptions(XmlElement xmlNode)
+        {
+            foreach (XmlElement numOptNode in xmlNode.ChildNodes)
+            {
+                if (addConfigurationOption(NumericOption.loadFromXML(numOptNode, this)) == false)
+                    ErrorLog.logError("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
+            }
+        }
+
+        private void loadBinaryOptions(XmlElement xmlNode)
+        {
+            foreach (XmlElement binOptNode in xmlNode.ChildNodes)
+            {
+                if (addConfigurationOption(BinaryOption.loadFromXML(binOptNode, this)) == false)
+                    ErrorLog.logError("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
+            }
+        }
+
+        /// <summary>
+        /// Adds a configuration option to the variability model.
+        /// The method checks whether an option with the same name already exists and whether invalid characters are within the name
+        /// </summary>
+        /// <param name="option">The option to be added to the variability model.</param>
+        /// <returns>True if the option was added to the model, false otherwise</returns>
+        public bool addConfigurationOption(ConfigurationOption option)
+        {
+            if (option.Name.Contains('-') || option.Name.Contains('+'))
+                return false;
+            foreach (var opt in binaryOptions)
+            {
+                if (opt.Name.Equals(option.Name))
+                    return false;
+            }
+            foreach (var opt in numericOptions)
+            {
+                if (opt.Name.Equals(option.Name))
+                    return false;
+            }
+            if (option is BinaryOption)
+                this.binaryOptions.Add((BinaryOption)option);
+            else
+                this.numericOptions.Add((NumericOption)option);
+            return true;
+        }
+
+        /// <summary>
+        /// Searches for a binary option with the given name
+        /// </summary>
+        /// <param name="name">Name of the option</param>
+        /// <returns>Either the binary option with the given name or NULL if not found</returns>
+        public BinaryOption getBinaryOption(String name)
+        {
+            foreach (var binO in binaryOptions)
+            {
+                if (binO.Name.Equals(name))
+                    return binO;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Searches for a numeric option with the given name
+        /// </summary>
+        /// <param name="name">Name of the option</param>
+        /// <returns>Either the numeric option with the given name or NULL if not found</returns>
+        public NumericOption getNumericOption(String name)
+        {
+            foreach (var numO in numericOptions)
+            {
+                if (numO.Name.Equals(name))
+                    return numO;
+            }
+            return null;
+        }
         /*
          * if (currentElemt.ChildNodes[i].Name == "furtherConstraints")
 					{

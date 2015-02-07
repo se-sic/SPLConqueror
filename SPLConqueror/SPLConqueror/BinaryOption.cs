@@ -63,5 +63,40 @@ namespace SPLConqueror_Core
 
             return node;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static BinaryOption loadFromXML(XmlElement node, VariabilityModel vm)
+        {
+            BinaryOption option = new BinaryOption(vm, "temp");
+            option.loadFromXML(node);
+            return option;
+        }
+
+        internal void loadFromXML(XmlElement node)
+        {
+            base.loadFromXML(node);
+            foreach (XmlElement xmlInfo in node.ChildNodes)
+            {
+                switch (xmlInfo.Name)
+                {
+                    case "defaultValue":
+                        if (xmlInfo.InnerText.Equals("Selected"))
+                            this.DefaultValue = BinaryValue.Selected;
+                        else
+                            this.DefaultValue = BinaryValue.Deselected;
+                        break;
+                    case "optional":
+                        if (xmlInfo.InnerText.Equals("True"))
+                            this.Optional = true;
+                        else
+                            this.Optional = false;
+                        break;
+                }
+            }
+        }
     }
 }
