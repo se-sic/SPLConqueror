@@ -9,6 +9,17 @@ namespace SPLConqueror_Core
     {
 
         private Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+
+        public Dictionary<BinaryOption, BinaryOption.BinaryValue> BinaryOptions
+        {
+            get { return binaryOptions; }
+        }
+
+        public Dictionary<NumericOption, double> NumericOptions
+        {
+            get { return numericOptions; }
+        }
+
         private Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
 
         private Dictionary<NFProperty, double> nfpValues = new Dictionary<NFProperty, double>();
@@ -53,7 +64,7 @@ namespace SPLConqueror_Core
 
             foreach (BinaryOption binary in binarySelection)
             {
-                if(binaryOptions[binary].Equals(BinaryOption.Value.Selected))
+                if(binaryOptions[binary].Equals(BinaryOption.BinaryValue.Selected))
                     sb.Append(binary.Name+ separator);
             }
 
