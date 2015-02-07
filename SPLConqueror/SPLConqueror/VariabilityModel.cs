@@ -56,6 +56,14 @@ namespace SPLConqueror_Core
             get { return root; }
         }
 
+        private List<String> booleanConstraints = new List<string>();
+
+        public List<String> BooleanConstraints
+        {
+            get { return booleanConstraints; }
+            set { booleanConstraints = value; }
+        }
+
         public VariabilityModel(String name)
         {
             this.name = name;
@@ -113,7 +121,15 @@ namespace SPLConqueror_Core
             xmlroot.AppendChild(xmlNum);
 
             //Add boolean constraints
+            XmlNode boolConstraints = doc.CreateNode(XmlNodeType.Element, "booleanConstraints", "");
+            foreach (var constraint in this.booleanConstraints)
+            {
+                XmlNode conNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
+                conNode.InnerText = constraint;
+                boolConstraints.AppendChild(conNode);
+            }
 
+            xmlroot.AppendChild(boolConstraints);
 
             try
             {
@@ -126,5 +142,29 @@ namespace SPLConqueror_Core
             }
             return true;
         }
+
+
+
+        /*
+         * if (currentElemt.ChildNodes[i].Name == "furtherConstraints")
+					{
+						foreach(XmlNode constraint in currentElemt.ChildNodes[i].ChildNodes)
+						{
+							furtherConstraints.Add(constraint.InnerText);
+							if (constraint.InnerText.ToLower().Contains("derivative"))
+							{//-LoggingBase | -Evictor | -Statistics | -LoggingEvictor | Derivative_LoggingEvictor_Statistics_Evictor_LoggingBase
+								Element derivative;
+								List<Element> parents;
+								if (identifyImpliesPattern(constraint.InnerText, out derivative, out parents))
+								{
+									derivative.addDerivativeParents(parents);
+								}
+								else
+								{
+									this.errormsg += "Unresolved derivative constraint: " + constraint.InnerText + "\n";
+								}
+							}                            
+						}
+					}*/
     }
 }
