@@ -5,7 +5,33 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class NFProperty
+    class NFProperty : IEquatable<NFProperty> 
     {
+        private String name;
+
+        public String Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+
+        public NFProperty(string NFPname)
+        {
+            this.name = NFPname;
+        }
+
+        public override string ToString()
+        {
+            return name;
+        }
+
+        public bool Equals(NFProperty other)
+        {
+            return this.name.Equals(other.name);
+        }
+
+
+
     }
 }

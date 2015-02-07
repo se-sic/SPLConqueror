@@ -84,7 +84,7 @@ namespace SPLConqueror_Core
                 }
                 else
                 {
-                    options.Add(bOption, bOption.defaultValue);
+                    options.Add(bOption, bOption.DefaultValue);
                 }
             }
             return options;
@@ -100,7 +100,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// This method returns the configuration specific value of the property. 
+        /// This method returns the configuration specific value of the given property. 
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
