@@ -47,5 +47,7 @@ namespace SPLConqueror_Core
             get { return path; }
             set { path = value; }
         }
+
+
     }
 }
