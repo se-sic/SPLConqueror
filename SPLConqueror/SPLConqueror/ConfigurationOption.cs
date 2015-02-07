@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace SPLConqueror_Core
 {
@@ -91,6 +92,81 @@ namespace SPLConqueror_Core
             this.name = name;
         }
 
-        
+        /// <summary>
+        /// Stores the configuration option as an XML Node
+        /// </summary>
+        /// <param name="doc">The XML document to which the node will be added</param>
+        /// <returns>XmlNode containing information about the option</returns>
+        internal XmlNode saveXML(XmlDocument doc)
+        {
+            XmlNode node = doc.CreateNode(XmlNodeType.Element, "configurationOption", "");
+            
+            //Name
+            XmlNode nameNode = doc.CreateNode(XmlNodeType.Element, "name", "");
+            nameNode.InnerText = this.name;
+            node.AppendChild(nameNode);
+
+            //prefix
+            XmlNode prefixNode = doc.CreateNode(XmlNodeType.Element, "prefix", "");
+            prefixNode.InnerText = this.prefix;
+            node.AppendChild(prefixNode);
+
+            //postfix
+            XmlNode postfixNode = doc.CreateNode(XmlNodeType.Element, "postfix", "");
+            postfixNode.InnerText = this.postfix;
+            node.AppendChild(postfixNode);
+
+            //parent
+            XmlNode parentNode = doc.CreateNode(XmlNodeType.Element, "parent", "");
+            if (this.parent != null)
+                parentNode.InnerText = this.parent.Name;
+            else
+                parentNode.InnerText = "";
+            node.AppendChild(parentNode);
+
+            //children
+            XmlNode childrenNode = doc.CreateNode(XmlNodeType.Element, "children", "");
+            foreach (ConfigurationOption co in this.children)
+            {
+                XmlNode childNode = doc.CreateNode(XmlNodeType.Element, "option", "");
+                childNode.InnerText = co.Name;
+                childrenNode.AppendChild(childNode);
+            }
+            node.AppendChild(childrenNode);
+
+            //implied_options
+            XmlNode implNode = doc.CreateNode(XmlNodeType.Element, "impliedOptions", "");
+            foreach (List<ConfigurationOption> impOptions in this.implied_Options)
+            {
+                XmlNode implies = doc.CreateNode(XmlNodeType.Element, "options", "");
+                StringBuilder sb = new StringBuilder();
+                foreach (var opt in impOptions)
+                {
+                    sb.Append(opt.Name + " | ");
+                }
+                sb.Remove(sb.Length - 3, 3);
+                implies.InnerText = sb.ToString();
+                implNode.AppendChild(implies);
+            }
+            node.AppendChild(implNode);
+
+            //excluded_options
+            XmlNode exclNode = doc.CreateNode(XmlNodeType.Element, "excludedOptions", "");
+            foreach (List<ConfigurationOption> exOptions in this.excluded_Options)
+            {
+                XmlNode excludes = doc.CreateNode(XmlNodeType.Element, "options", "");
+                StringBuilder sb = new StringBuilder();
+                foreach (var opt in exOptions)
+                {
+                    sb.Append(opt.Name + " | ");
+                }
+                sb.Remove(sb.Length - 3, 3);
+                excludes.InnerText = sb.ToString();
+                exclNode.AppendChild(excludes);
+            }
+            node.AppendChild(exclNode);
+
+            return node;
+        }
     }
 }

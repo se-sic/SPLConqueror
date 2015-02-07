@@ -8,7 +8,7 @@ namespace SPLConqueror_Core
     class Configuration
     {
 
-        private Dictionary<BinaryOption, BinaryOption.Value> binaryOptions = new Dictionary<BinaryOption, BinaryOption.Value>();
+        private Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
         private Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
 
         private Dictionary<NFProperty, double> nfpValues = new Dictionary<NFProperty, double>();
@@ -20,7 +20,7 @@ namespace SPLConqueror_Core
         /// <param name="binarySelection"></param>
         /// <param name="numericSelection"></param>
         /// <param name="measuremements"></param>
-        public Configuration(Dictionary<BinaryOption, BinaryOption.Value> binarySelection, Dictionary<NumericOption, double> numericSelection, Dictionary<NFProperty, double> measuremements)
+        public Configuration(Dictionary<BinaryOption, BinaryOption.BinaryValue> binarySelection, Dictionary<NumericOption, double> numericSelection, Dictionary<NFProperty, double> measuremements)
         {
             binaryOptions = enrichBinarySelection(binarySelection);
             numericOptions = numericSelection;
@@ -33,9 +33,9 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="binarySelection"></param>
         /// <returns></returns>
-        private Dictionary<BinaryOption, BinaryOption.Value> enrichBinarySelection(Dictionary<BinaryOption, BinaryOption.Value> binarySelection)
+        private Dictionary<BinaryOption, BinaryOption.BinaryValue> enrichBinarySelection(Dictionary<BinaryOption, BinaryOption.BinaryValue> binarySelection)
         {
-            Dictionary<BinaryOption, BinaryOption.Value> options = new Dictionary<BinaryOption,BinaryOption.Value>();
+            Dictionary<BinaryOption, BinaryOption.BinaryValue> options = new Dictionary<BinaryOption,BinaryOption.BinaryValue>();
 
             foreach(BinaryOption bOption in GlobalState.varModel.BinaryOptions){
                 if (binarySelection.ContainsKey(bOption))
