@@ -7,9 +7,21 @@ namespace SPLConqueror_Core
 {
     public class BinaryOption : ConfigurationOption
     {
-        public BinaryOption(VariabilityModel vm, String name)  : base (vm, name)
+        /// <summary>
+        /// A binary feature can either be selected or selected in a specific configuration of a programm.
+        /// </summary>
+        public enum Value { Selected, Deselected };
+
+        /// <summary>
+        /// The default value of a binary option.
+        /// </summary>
+        public Value defaultValue { get; set; }
+
+        public BinaryOption(VariabilityModel vm, String name)
+            : base(vm, name)
         {
-            
+
         }
+
     }
 }
