@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
-    class ConfigurationOption
+    class ConfigurationOption : IComparable<ConfigurationOption>
     {
         private String name = "";
 
@@ -90,6 +90,11 @@ namespace SPLConqueror_Core
         {
             this.vm = vm;
             this.name = name;
+        }
+
+        public int CompareTo(ConfigurationOption other)
+        {
+            return this.name.CompareTo(other.name);
         }
 
         /// <summary>
