@@ -8,7 +8,9 @@ namespace SPLConqueror_Core
     /// <summary>
     /// Central model to store all configuration options and their constraints
     /// </summary>
-    class VariabilityModel
+    public class VariabilityModel
     {
+        List<NumericOption> numericOptions = new List<NumericOption>();
+
     }
 }
