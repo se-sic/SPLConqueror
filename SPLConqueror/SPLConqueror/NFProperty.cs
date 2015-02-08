@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class NFProperty : IEquatable<NFProperty> 
+    public class NFProperty : IEquatable<NFProperty> 
     {
         private String name;
 

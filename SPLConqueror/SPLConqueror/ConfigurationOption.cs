@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
-    abstract class ConfigurationOption : IComparable<ConfigurationOption>
+    public abstract class ConfigurationOption : IComparable<ConfigurationOption>
     {
         private String name = "";
 

@@ -12,8 +12,8 @@ namespace SPLConqueror_Core
         /// A binary feature can either be selected or selected in a specific configuration of a programm.
         /// </summary>
         public enum BinaryValue {
-            Selected = "selected",
-            Deselected = "deselected"
+            Selected,
+            Deselected
         };
 
         /// <summary>
