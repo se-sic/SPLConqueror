@@ -5,10 +5,16 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class ResultDB
+    public class ResultDB
     {
 
-        List<Configuration> configurations = new List<Configuration>();
+        private List<Configuration> configurations = new List<Configuration>();
+
+        public List<Configuration> Configurations
+        {
+            get { return configurations; }
+            set { configurations = value; }
+        }
 
 
         public void add(Configuration configuration)

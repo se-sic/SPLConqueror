@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class Configuration : IEquatable<Configuration>
+    public class Configuration : IEquatable<Configuration>
     {
 
         private Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();

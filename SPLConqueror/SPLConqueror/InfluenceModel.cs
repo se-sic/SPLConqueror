@@ -9,6 +9,12 @@ namespace SPLConqueror_Core
     public class InfluenceModel
     {
         private VariabilityModel vm = null;
+
+        public VariabilityModel Vm
+        {
+            get { return vm; }
+            set { vm = value; }
+        }
         private NFProperty nfp = null;
 
         Dictionary<BinaryOption, InfluenceFunction> binaryOptionsInfluence = new Dictionary<BinaryOption, InfluenceFunction>();
@@ -27,9 +33,9 @@ namespace SPLConqueror_Core
             set { numericOptionsInfluence = value; }
         }
 
-        private Dictionary<List<ConfigurationOption>, InfluenceFunction> interactionInfluence = new Dictionary<List<ConfigurationOption>, InfluenceFunction>();
+        private Dictionary<Interaction, InfluenceFunction> interactionInfluence = new Dictionary<Interaction, InfluenceFunction>();
 
-        public Dictionary<List<ConfigurationOption>, InfluenceFunction> InteractionInfluence
+        public Dictionary<Interaction, InfluenceFunction> InteractionInfluence
         {
             get { return interactionInfluence; }
             set { interactionInfluence = value; }
@@ -85,5 +91,6 @@ namespace SPLConqueror_Core
             }
             sw.Close();
         }
+
     }
 }

@@ -1,7 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPLConqueror_Core", "SPLConqueror\SPLConqueror_Core.csproj", "{1F035958-15B1-450A-BFC5-BEBD95376C40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearning", "MachineLearning\MachineLearning.csproj", "{AEBDC4EA-60AD-4A95-8407-059B07150782}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolverFoundationWrapper", "SolverFoundationWrapper\SolverFoundationWrapper.csproj", "{C65EA17B-759F-4D70-A7A3-31D074CE1AA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,14 @@ Global
 		{1F035958-15B1-450A-BFC5-BEBD95376C40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F035958-15B1-450A-BFC5-BEBD95376C40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F035958-15B1-450A-BFC5-BEBD95376C40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEBDC4EA-60AD-4A95-8407-059B07150782}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEBDC4EA-60AD-4A95-8407-059B07150782}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEBDC4EA-60AD-4A95-8407-059B07150782}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEBDC4EA-60AD-4A95-8407-059B07150782}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C65EA17B-759F-4D70-A7A3-31D074CE1AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C65EA17B-759F-4D70-A7A3-31D074CE1AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C65EA17B-759F-4D70-A7A3-31D074CE1AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C65EA17B-759F-4D70-A7A3-31D074CE1AA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
-    class NumericOption : ConfigurationOption
+    public class NumericOption : ConfigurationOption
     {
         private double min_value = 0;
 

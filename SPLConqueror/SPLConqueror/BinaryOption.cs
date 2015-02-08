@@ -12,8 +12,8 @@ namespace SPLConqueror_Core
         /// A binary feature can either be selected or selected in a specific configuration of a programm.
         /// </summary>
         public enum BinaryValue {
-            Selected = "selected",
-            Deselected = "deselected"
+            Selected = 1,//"selected",
+            Deselected = 2//"deselected"
         };
 
         /// <summary>
@@ -97,6 +97,21 @@ namespace SPLConqueror_Core
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks whether the given list of options have the same parent to decide if they all form an alternative group
+        /// </summary>
+        /// <param name="excludedOption">A list of options that are excluded by this option.</param>
+        /// <returns>True if they are alternatives (same parent option), false otherwise</returns>
+        public bool isAlternativeGroup(List<ConfigurationOption> excludedOption)
+        {
+            foreach (ConfigurationOption opt in excludedOption)
+            {
+                if (opt.Parent != this.Parent)
+                    return false;
+            }
+            return true;
         }
     }
 }

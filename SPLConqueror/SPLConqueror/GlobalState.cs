@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    class GlobalState
+    public class GlobalState
     {
         /// <summary>
         /// The variability model of the case study. 
