@@ -9,6 +9,11 @@ namespace CommandLine
     class Commands
     {
 
+        /// <summary>
+        /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
         public string performOneCommand(string line)
         {
             line = line.Split(new Char[] { '%' }, 2)[0]; // remove comment part (the comment starts with an #)
@@ -123,7 +128,6 @@ namespace CommandLine
 
                 default:
                     return task;
-                    break;
             }
 
             return "";
