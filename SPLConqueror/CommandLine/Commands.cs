@@ -34,7 +34,7 @@ namespace CommandLine
                     SPLConqueror_Core.GlobalState.clear();
                     break;
                 case "all":
-                    SPLConqueror_Core.Util.loadConfigurations(task);
+                    GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
                     SPLConqueror_Core.ErrorLog.logError("Configurations loaded.");
 
                     break;
