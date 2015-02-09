@@ -21,7 +21,7 @@ namespace MicrosoftSolverFoundation
         /// <param name="config">The list of binary options that are SELECTED (only selected options must occur in the list).</param>
         /// <param name="vm">The variability model that represents the context of the configuration.</param>
         /// <returns>True if it is a valid selection w.r.t. the VM, false otherwise</returns>
-		public bool checkConfigurationSAT(List<ConfigurationOption> config, VariabilityModel vm)
+        public bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm)
 		{
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();

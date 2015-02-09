@@ -259,5 +259,22 @@ namespace SPLConqueror_Core
                 this.excluded_Options.Add(excImplies);
             }
         }
+
+        /// <summary>
+        /// Checks whether the given option is an ancestor of the current option (recursive method).
+        /// </summary>
+        /// <param name="optionToCompare">The configuration option that might be an ancestor.</param>
+        /// <returns>True if it is an ancestor, false otherwise</returns>
+        public bool isAncestor(ConfigurationOption optionToCompare)
+        {
+            if (this.Parent != null)
+            {
+                if (this.Parent == optionToCompare)
+                    return true;
+                else
+                    return this.Parent.isAncestor(optionToCompare);
+            }
+            return false;
+        }
     }
 }

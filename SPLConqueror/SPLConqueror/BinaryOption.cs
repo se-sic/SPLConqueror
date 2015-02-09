@@ -113,5 +113,20 @@ namespace SPLConqueror_Core
             }
             return true;
         }
+
+        /// <summary>
+        /// Checks whether this binary option has alternative options meaning that there are other binary options with the same parents, but cannot be present in the same configuration as this option.
+        /// </summary>
+        /// <returns>True if it has alternative options, false otherwise</returns>
+        public bool hasAlternatives()
+        {
+            foreach (var bins in this.Excluded_Options)
+            {
+                if (isAlternativeGroup(bins))
+                    return true;
+            }
+            return false;
+        }
+
     }
 }

@@ -14,7 +14,7 @@ namespace MachineLearning.Solver
         /// <param name="config">The list of binary options that are SELECTED (only selected options must occur in the list).</param>
         /// <param name="vm">The variability model that represents the context of the configuration.</param>
         /// <returns>True if it is a valid selection w.r.t. the VM, false otherwise</returns>
-        bool checkConfigurationSAT(List<ConfigurationOption> config, VariabilityModel vm);
+        bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm);
 
         /// <summary>
         /// Checks whether the boolean selection of a configuration is valid w.r.t. the variability model. Does not check for numeric options' correctness.
