@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SPLConqueror_Core;
+using MachineLearning.Sampling.ExperimentalDesigns;
+
 
 namespace CommandLine
 {
@@ -16,10 +18,13 @@ namespace CommandLine
         /// <returns></returns>
         public string performOneCommand(string line)
         {
-            line = line.Split(new Char[] { '%' }, 2)[0]; // remove comment part (the comment starts with an #)
+
+            // remove comment part of the line (the comment starts with an #)
+            line = line.Split(new Char[] { '%' }, 2)[0];
             if (line.Length == 0)
                 return "";
 
+            // split line in command and parameters of the command
             string[] components = line.Split(new Char[] { ' ' }, 2);
             string command = components[0];
             string task = "";
@@ -73,6 +78,10 @@ namespace CommandLine
                     // ramdom sampling
                     break;
 
+                case "start":
+                    // starts the machine learning 
+                    break;
+
                 case "trueModel":
                     // True model stored in GlobalState
                     break;
@@ -82,12 +91,11 @@ namespace CommandLine
                 default:
                     return command;
             }
-
-
             return "";
         }
         private string performOneCommand_ExpDesign(string task)
         {
+            // splits the task in design and parameters of the design
             string[] designAndParams = task.Split(new Char[] { ' ' }, 2);
             string design = designAndParams[0];
             string param = "";
@@ -101,6 +109,8 @@ namespace CommandLine
                     break;
 
                 case "centralComposite":
+                    CentralCompositeInscribedDesign cci = new CentralCompositeInscribedDesign(null);
+
                     break;
 
                 case "featureInteraction":

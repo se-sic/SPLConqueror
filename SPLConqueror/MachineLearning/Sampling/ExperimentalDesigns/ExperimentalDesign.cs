@@ -15,12 +15,12 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         protected List<NumericOption> options = null;
 
 
-        Dictionary<NumericOption, double> selectedConfigurations;
+        protected List<Dictionary<NumericOption, double>> selectedConfigurations;
         
         /// <summary>
         /// Configurations selected from the experimental design.
         /// </summary>
-        public Dictionary<NumericOption, double> SelectedConfigurations
+        public List<Dictionary<NumericOption, double>> SelectedConfigurations
         {
             get { return selectedConfigurations; }
         }
