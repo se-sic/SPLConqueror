@@ -19,20 +19,38 @@ namespace SPLConqueror_Core
         protected int numberOfParticipatingFeatures = 0;
         protected string[] expressionArray = null;
 
-        public NumericOption numOption = null;
+        protected NumericOption numOption = null;
 
+
+        /// <summary>
+        /// Creates an influence function based on the expression. The variability model is used to identify binary and numeric
+        /// configuration options. 
+        /// </summary>
+        /// <param name="expression">A function consisting of numbers, operators and configuration-option names.</param>
+        /// <param name="varModel">The variability model of the configuration options.</param>
         public InfluenceFunction(string expression, VariabilityModel varModel)
         {
-            this.varModel = varModel;
+            this.varModel = varModel; 
             parseExpressionToPolnishNotation(expression);
         }
 
+        /// <summary>
+        /// Creates an influence function based on the expression. All token wich are neither number nor operators are considered to be 
+        /// numeric configuration options. 
+        /// </summary>
+        /// <param name="expression">A function consisting of numbers, operators and configuration-option names.</param>
         public InfluenceFunction(String expression){
 
             this.varModel = extractFeatureModelFromExpression(createWellFormedExpression(expression));
             parseExpressionToPolnishNotation(expression);
         }
 
+        /// <summary>
+        /// Creates an influence function based on the expression. Only the name of the numeric option, numbers, operators, 
+        /// and " n " should exist in the expression. 
+        /// </summary>
+        /// <param name="expression">A function consisting of numbers, operators and the configuration-option name.</param></param>
+        /// <param name="option">A configuration option.</param>
         public InfluenceFunction(String expression, NumericOption option)
         {
             numOption = option;
@@ -77,7 +95,7 @@ namespace SPLConqueror_Core
          * 
          * 
          **/
-        public string createWellFormedExpression(string expression)
+        private string createWellFormedExpression(string expression)
         {
             while (expression.Contains(" "))
             {
@@ -118,7 +136,7 @@ namespace SPLConqueror_Core
         }
 
 
-        public static string replaceLogAndClosingBracket(string expression, string logStart, char newLeftBracket, char newRightBracket)
+        private static string replaceLogAndClosingBracket(string expression, string logStart, char newLeftBracket, char newRightBracket)
         {
 
             string[] parts = expression.Split(new string[] { logStart }, 2, StringSplitOptions.None);
@@ -134,6 +152,14 @@ namespace SPLConqueror_Core
             return parts[0] + newLeftBracket + secondPart.ToString();
         }
 
+
+        /// <summary>
+        /// This method creates an influence function that is the combination of the left and the right functions. Both funtions should
+        /// be defined over the same variability model. 
+        /// </summary>
+        /// <param name="left">The first summand of the new influence function.</param>
+        /// <param name="right">The second summand of the new influence function.</param>
+        /// <returns>The combination of the two influence functions.</returns>
         public static InfluenceFunction combineFunctions(InfluenceFunction left, InfluenceFunction right)
         {
             InfluenceFunction expTree = new InfluenceFunction();
@@ -545,6 +571,13 @@ namespace SPLConqueror_Core
             return this.varModel;
         }
 
+
+        /// <summary>
+        /// The method evaluates the influence function with the selection of numerical-feature values. This method 
+        /// should only been used if no binary configuration option is considered in the influence function. 
+        /// </summary>
+        /// <param name="values">A set of numerical options with values.</param>
+        /// <returns></returns>
         public double eval(Dictionary<NumericOption, double> values)
         {
             Random r = new Random();
@@ -554,6 +587,11 @@ namespace SPLConqueror_Core
         }
 
 
+        /// <summary>
+        /// The method evaluates the influence function with the configuration. 
+        /// </summary>
+        /// <param name="config">A configurtion.</param>
+        /// <returns>The value of the influence function for the configuration.</returns>
         public double eval(Configuration config)
         {
             Random r = new Random();
@@ -563,7 +601,12 @@ namespace SPLConqueror_Core
         }
 
 
-        public void addNoise(double noise)
+        /// <summary>
+        /// Adds a noise to the influence function. The strength of the noise is defined in percentage share of the value predicted
+        /// without noise. 
+        /// </summary>
+        /// <param name="noise">noise </param>
+        public void setNoise(double noise)
         {
             this.noise = noise;
         }
@@ -648,12 +691,17 @@ namespace SPLConqueror_Core
             return offset;
         }
 
-        public bool containsOption(ConfigurationOption element)
+        /// <summary>
+        /// Returns whether the influence function coints a specific configuration option. 
+        /// </summary>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public bool containsOption(ConfigurationOption option)
         {
-            if(this.participatingBoolFeatures.Contains(element))
+            if(this.participatingBoolFeatures.Contains(option))
                 return true;
 
-            if(this.participatingNumFeatures.Contains(element))
+            if(this.participatingNumFeatures.Contains(option))
                 return true;
             return false;
         }

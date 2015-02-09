@@ -187,7 +187,7 @@ namespace SPLConqueror_Core
                         this.defaultValue = Double.Parse(xmlInfo.InnerText);
                         break;
                     case "stepFunction":
-                        this.stepFunction = InfluenceFunction.initWithString(xmlInfo.InnerText);
+                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText,this);
                         break;
                 }
             }

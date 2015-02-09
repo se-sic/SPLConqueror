@@ -9,22 +9,50 @@ namespace SPLConqueror_Core
     class ConfigurationReader
     {
 
-
         /// <summary>
+        /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model.
         /// 
+        /// The file should be structured as follows:
+        /// 
+        /// <![CDATA[ <results> ]]>
+        /// <![CDATA[   <row> ]]>
+        /// <![CDATA[       <data column="Configuration"> ]]>
+        /// <![CDATA[           binaryOption1, binaryOption3,... ]]>
+        /// <![CDATA[       </data> ]]>
+        /// <![CDATA[       <data column="Variable Features"> ]]>
+        /// <![CDATA[           numOption1;64,numOption2;4 ]]>
+        /// <![CDATA[       </data> ]]>
+        /// <![CDATA[       <data column="Performance"> ]]>
+        /// <![CDATA[           21.178 ]]>
+        /// <![CDATA[       </data> ]]>
+        /// <![CDATA[       <data column="Footprint"> ]]>
+        /// <![CDATA[           1679 ]]>
+        /// <![CDATA[       </data> ]]>
+        /// <![CDATA[   </row> ]]>
+        /// <![CDATA[   <row> ]]>
+        /// <![CDATA[       <data column="Configuration"> ]]>
+        /// <![CDATA[   .... ]]>
+        /// <![CDATA[ <results> ]]>
+        /// 
+        ///
         /// </summary>
-        /// <param name="dat"></param>
-        /// <param name="model"></param>
+        /// <param name="dat">Object representing the configuration file.</param>
+        /// <param name="model">Variability model of the configurations.</param>
         /// <returns></returns>
-        /// 
-
-        /*Format:
-             * - <row>
-                    <data columnname="Configuration">VioletDef, base,</data> 
-                    <data columnname="NFProperty name">1516</data> 
-                </row>*/
-
-        public int readConfigurations(XmlDocument dat, VariabilityModel model)
+        public List<Configuration> readConfigurations(string file, VariabilityModel model)
+        {
+            XmlDocument dat = new System.Xml.XmlDocument();
+            dat.Load(file);
+            return readConfigurations(dat, model);
+        }
+        
+        /// <summary>
+        /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
+        /// </summary>
+        /// <param name="dat">Object representing the configuration file.</param>
+        /// <param name="model">Variability model of the configurations.</param>
+        /// <returns></returns>
+        public List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
             //Progress Information
             ErrorLog.logError("Loading measurements...");
@@ -33,6 +61,8 @@ namespace SPLConqueror_Core
             int progress = 0;
 
             XmlElement currentElemt = dat.DocumentElement;
+
+            List<Configuration> configurations = new List<Configuration>();
 
             int numberOfConfigs = currentElemt.ChildNodes.Count;
             foreach (XmlNode node in currentElemt.ChildNodes)
@@ -64,7 +94,7 @@ namespace SPLConqueror_Core
                             break;
                         default: 
                             NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
-                            double measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace('.', ','));
+                            double measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
                             measuredProperty.Add(property, measuredValue);
                             break;
                     }
@@ -112,11 +142,17 @@ namespace SPLConqueror_Core
                 }
 
                 Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
-
-                GlobalState.addConfiguration(config);
-
+                
+                if(configurations.Contains(config))
+                {
+                    ErrorLog.logError("Mutiple definition of one configuration in the configurations file:  "+config.ToString());
+                }else
+                {
+                    configurations.Add(config);
+                }
             }
-            return numberOfConfigs;
+            return configurations;
         }
+
     }
 }
