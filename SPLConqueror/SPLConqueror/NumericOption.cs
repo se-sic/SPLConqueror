@@ -192,5 +192,38 @@ namespace SPLConqueror_Core
                 }
             }
         }
+
+        /// <summary>
+        /// This mehtod returns nearest valid value of the numerical option to the given value.  
+        /// </summary>
+        /// <param name="inputValue">A value the nearest valid have to be computet for.</param>
+        /// <returns>A valid value.</returns>
+        public double nearestValidValue(double inputValue)
+        {
+            ////TODO improve performance with Dictionary as described in Wunderlist TODO
+            double lowerValue = 0;
+            double upperValue = 0;
+
+            double curr = Min_value;
+
+            while (curr < inputValue)
+            {
+                curr = getNextValue(curr);
+            }
+            lowerValue = curr;
+            upperValue = getNextValue(curr);
+
+            if (Math.Abs(lowerValue - curr) < Math.Abs(upperValue - curr))
+            {
+                return lowerValue;
+            }
+            return upperValue;
+        }
+
+
+        public double getCenterPoint()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
