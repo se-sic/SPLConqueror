@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLine", "CommandLine\
 		{1F035958-15B1-450A-BFC5-BEBD95376C40} = {1F035958-15B1-450A-BFC5-BEBD95376C40}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearning", "MachineLearning\MachineLearning.csproj", "{AEBDC4EA-60AD-4A95-8407-059B07150782}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolverFoundationWrapper", "SolverFoundationWrapper\SolverFoundationWrapper.csproj", "{C65EA17B-759F-4D70-A7A3-31D074CE1AA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

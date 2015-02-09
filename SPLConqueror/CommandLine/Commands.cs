@@ -26,7 +26,7 @@ namespace CommandLine
 
                 case "clean":
 
-                    GlobalState.clear();
+                    SPLConqueror_Core.GlobalState.clear();
                     break;
                 case "all":
                     SPLConqueror_Core.Util.loadConfigurations(task);

@@ -170,6 +170,17 @@ namespace SPLConqueror_Core
         {
             return this.identifier.Equals(other.identifier);
         }
-   
+
+
+        public List<BinaryOption> getBinaryOptions(BinaryOption.BinaryValue binaryValue)
+        {
+            List<BinaryOption> result = new List<BinaryOption>();
+
+            foreach(KeyValuePair<BinaryOption, BinaryOption.BinaryValue> bin in this.binaryOptions)
+                if(bin.Value.Equals(binaryValue))
+                    result.Add(bin.Key);
+
+            return result;
+        }
     }
 }

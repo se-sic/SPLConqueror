@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class stores all information that are needed to perform multiple experiments with one case study. 
+    /// </summary>
     public class GlobalState
     {
         /// <summary>

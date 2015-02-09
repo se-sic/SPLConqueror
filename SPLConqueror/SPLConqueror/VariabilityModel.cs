@@ -13,7 +13,7 @@ namespace SPLConqueror_Core
     {
         private List<NumericOption> numericOptions = new List<NumericOption>();
 
-        internal List<NumericOption> NumericOptions
+        public List<NumericOption> NumericOptions
         {
             get { return numericOptions; }
             //set { numericOptions = value; }
@@ -21,7 +21,7 @@ namespace SPLConqueror_Core
 
         private List<BinaryOption> binaryOptions = new List<BinaryOption>();
 
-        internal List<BinaryOption> BinaryOptions
+        public List<BinaryOption> BinaryOptions
         {
             get { return binaryOptions; }
           //  set { binaryOptions = value; }
