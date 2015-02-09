@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
-    class ConfigurationReader
+    public class ConfigurationReader
     {
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SPLConqueror_Core
         /// <param name="dat">Object representing the configuration file.</param>
         /// <param name="model">Variability model of the configurations.</param>
         /// <returns></returns>
-        public List<Configuration> readConfigurations(string file, VariabilityModel model)
+        public static List<Configuration> readConfigurations(string file, VariabilityModel model)
         {
             XmlDocument dat = new System.Xml.XmlDocument();
             dat.Load(file);
@@ -51,15 +51,11 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="dat">Object representing the configuration file.</param>
         /// <param name="model">Variability model of the configurations.</param>
-        /// <returns></returns>
-        public List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
+        /// <returns>Returns a list of configurations that were defined in the XML document. Can be an empty list.</returns>
+        public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
-            //Progress Information
-            ErrorLog.logError("Loading measurements...");
-
-            int i = 0;
-            int progress = 0;
-
+            
+            
             XmlElement currentElemt = dat.DocumentElement;
 
             List<Configuration> configurations = new List<Configuration>();
@@ -67,7 +63,6 @@ namespace SPLConqueror_Core
             int numberOfConfigs = currentElemt.ChildNodes.Count;
             foreach (XmlNode node in currentElemt.ChildNodes)
             {
-                i++;
                 Dictionary<NFProperty, double> propertiesForConfig = new Dictionary<NFProperty, double>(); ;
 
                 string binaryString = "";
