@@ -13,5 +13,13 @@ namespace MachineLearning.Learning.Regression
             Feature other = (Feature) obj;
             return base.Equals(obj);
         }
+
+        public Feature(Feature original, Feature toAdd, VariabilityModel vm)
+            : base(original.ToString() + " * " + toAdd.ToString(), vm)
+        {
+
+        }
+
+
     }
 }
