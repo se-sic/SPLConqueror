@@ -17,6 +17,7 @@ namespace MachineLearning.Learning.Regression
 
         private InfluenceModel infModel = null;
         private ILArray<double> Y_learning, Y_validation = ILMath.empty();
+        private Dictionary<Feature, ILArray<double>> DM_columns = new Dictionary<Feature, ILArray<double>>();
 
         public FeatureSubsetSelection(InfluenceModel infModel)
         {
@@ -31,7 +32,7 @@ namespace MachineLearning.Learning.Regression
         //f2 -> 0 1 0
         //f1 f2>1 1 1
         //Extension to numerical features: n1#n1 -> n1^2 
-        private ILArray<double> transformDataSetAccordingToFeatureSetI(List<List<Element>> featureSetI, List<Element> newFeature)
+        /*private ILArray<double> transformDataSetAccordingToFeatureSetI(List<List<Element>> featureSetI, List<Element> newFeature)
         {
             ILArray<double> DM;
             if (newFeature == null)
@@ -87,6 +88,6 @@ namespace MachineLearning.Learning.Regression
             }
 
             return DM;
-        }
+        }*/
     }
 }
