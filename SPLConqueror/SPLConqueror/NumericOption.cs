@@ -107,9 +107,10 @@ namespace SPLConqueror_Core
         /// <returns>A list containing all values of the numeric options</returns>
         public List<double> getAllValues()
         {
-            allValues = new List<double>();
             if (allValues == null)
             {
+                allValues = new List<double>();
+
                 // compute
                 double curr = this.min_value;
                 allValues.Add(curr); // add minimal Value
