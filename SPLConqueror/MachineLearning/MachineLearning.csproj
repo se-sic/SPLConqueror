@@ -43,8 +43,13 @@
   <ItemGroup>
     <Compile Include="Learning\ML_Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sampling\ExperimentalDesigns\BoxBehnkenDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\CentralCompositeInscribedDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\ExperimentalDesign.cs" />
+    <Compile Include="Sampling\ExperimentalDesigns\FullFactorialDesign.cs" />
+    <Compile Include="Sampling\ExperimentalDesigns\HyperSampling.cs" />
+    <Compile Include="Sampling\ExperimentalDesigns\PlackettBurmanDesign.cs" />
+    <Compile Include="Sampling\ExperimentalDesigns\RandomSampling.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />

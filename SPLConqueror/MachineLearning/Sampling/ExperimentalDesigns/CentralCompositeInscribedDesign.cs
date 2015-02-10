@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 {
 
     /// <summary>
-    /// The central composite inscribe design.
+    /// The central composite inscribe design. This design is defined for numeric options that have at least five different values. 
     /// </summary>
     public class CentralCompositeInscribedDesign : ExperimentalDesign
     {
@@ -29,7 +29,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "CentralCompositeInscribedDesign";
         }
 
-        public override bool computeDesign(Dictionary<Object, Object> options)
+        public override bool computeDesign(Dictionary<string, Object> options)
         {
             return computeDesign();
         }
@@ -74,7 +74,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             foreach (NumericOption vf in this.options)
             {
                 double b_i = vf.getCenterPoint() - vf.Min_value;
-
                 double a_i = b_i / rootN;
 
                 double lower = vf.getCenterPoint() - a_i;
@@ -87,7 +86,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             }
 
             // create the cube points 
-
             for (int i = 0; i < Math.Pow(this.options.Count, 2); i++)
             {
                 BitArray b = new BitArray(new int[] { i });
