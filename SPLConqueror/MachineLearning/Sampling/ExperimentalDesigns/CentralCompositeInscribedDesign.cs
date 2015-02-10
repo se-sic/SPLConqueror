@@ -29,41 +29,20 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "CentralCompositeInscribedDesign";
         }
 
-        public override bool computeDesign()
-        {
-            return true;
-        }
-
         public override bool computeDesign(Dictionary<Object, Object> options)
         {
             return computeDesign();
         }
 
-        public override bool nextGenTimeConfig()
+        public override bool computeDesign()
         {
-            // TODO
-            return false;
-        }
-
-        public override bool nextStartTimeConfig()
-        {
-            // TODO
-            return false;
-        }
-
-        public override List<Dictionary<NumericOption, double>> getConfigs()
-        {
-
-            // First add configurations of two level factorial design
-            List<Dictionary<NumericOption, double>> configs = new List<Dictionary<NumericOption, double>>();
-
             // center point 
             Dictionary<NumericOption, double> centerPoint = new Dictionary<NumericOption, double>();
             foreach (NumericOption vf in this.options)
             {
                 centerPoint.Add(vf, vf.getCenterPoint());
             }
-            configs.Add(centerPoint);
+            this.selectedConfigurations.Add(centerPoint);
 
             // axial points
             foreach (NumericOption vf in this.options)
@@ -79,18 +58,17 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                     minPoint.Add(other, other.getCenterPoint());
                     maxPoint.Add(other, other.getCenterPoint());
                 }
-                configs.Add(minPoint);
-                configs.Add(maxPoint);
+                this.selectedConfigurations.Add(minPoint);
+                this.selectedConfigurations.Add(maxPoint);
             }
 
             // cube points 
-            List<Dictionary<NumericOption, double>> fullFactorialPoints = getTwoLevelFactorial(this.fm.VariableFeatures);
+            List<Dictionary<NumericOption, double>> fullFactorialPoints = getTwoLevelFactorial(this.options);
 
             double rootN = Math.Sqrt(this.options.Count);
 
             //Two of these designs -- CCC and CCI -- have a special characteristic; they are rotatable. A design is said to be rotatable, if upon rotating the design points about the center point the moments of the distribution of the design remain unchanged. For rotatable Central Composite designs the factor  $\frac{b_i}{a_i}$ must be $\sqrt{n}$. (http://www.iue.tuwien.ac.at/phd/plasun/node32.html)
             // b_i == centerPoint_i - min_i 
-
             Dictionary<NumericOption, double> lowerCubeValue = new Dictionary<NumericOption, double>();
             Dictionary<NumericOption, double> upperCubeValue = new Dictionary<NumericOption, double>();
             foreach (NumericOption vf in this.options)
@@ -127,10 +105,10 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                     }
                     pos++;
                 }
-                configs.Add(curr);
+                this.selectedConfigurations.Add(curr);
 
             }
-            return configs;
+            return true;
         }
 
         private List<Dictionary<NumericOption, double>> getTwoLevelFactorial(List<NumericOption> keys)
@@ -183,5 +161,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
             return configs;
         }
+
     }
 }
