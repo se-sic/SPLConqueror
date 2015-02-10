@@ -31,6 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord">
+      <HintPath>..\packages\Accord.2.12.0.0\lib\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math">
+      <HintPath>..\packages\Accord.Math.2.12.0.0\lib\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="ILNumerics">
+      <HintPath>..\packages\ILNumerics.3.3.3.0\lib\ILNumerics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -42,17 +51,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Learning\ML_Settings.cs" />
+    <Compile Include="Learning\Regression\FeatureSubsetSelection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\BoxBehnkenDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\CentralCompositeInscribedDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\ExperimentalDesign.cs" />
-    <Compile Include="Sampling\Heuristics\FeatureWise.cs" />
-    <Compile Include="Sampling\Heuristics\NegFeatureWise.cs" />
-    <Compile Include="Sampling\Heuristics\PairWise.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\FullFactorialDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\HyperSampling.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\PlackettBurmanDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\RandomSampling.cs" />
+    <Compile Include="Sampling\Heuristics\FeatureWise.cs" />
+    <Compile Include="Sampling\Heuristics\NegFeatureWise.cs" />
+    <Compile Include="Sampling\Heuristics\PairWise.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />

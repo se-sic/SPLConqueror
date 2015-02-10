@@ -103,7 +103,7 @@ namespace MachineLearning.Learning.Regression
             int nbM = Convert.ToInt32(nbMeasurements);
             double[] temparryLearn;//measured value
 
-            if (MLsettings.crossValidation == false)
+            if (ML_Settings.crossValidation == false)
             {
               //  this.learningSet = measurements;
                // this.evaluationSet = measurements;
