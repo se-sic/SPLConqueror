@@ -14,8 +14,12 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     {
         protected List<NumericOption> options = null;
 
+        /// <summary>
+        /// Defines the minimal number of different values of one numeric option that are considered during sampling. 
+        /// </summary>
+        public int minNumberOfSamplingsPerNumericOption = 2;
 
-        protected List<Dictionary<NumericOption, double>> selectedConfigurations;
+        protected List<Dictionary<NumericOption, double>> selectedConfigurations = new List<Dictionary<NumericOption,double>>();
         
         /// <summary>
         /// Configurations selected from the experimental design.
@@ -49,8 +53,75 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <summary>
         /// Computes the design using the experimental design specific parameters provided as parameter. 
         /// </summary>
-        /// <param name="designOptions">Expeimental specific parameters.</param>
+        /// <param name="designOptions">Expeimental specific parameters. Keys of the dictionary are the names of the parameters and the values of the dictionary are the values of the parameters.</param>
         /// <returns>True of the computation was successful</returns>
-        public abstract bool computeDesing(Dictionary<Object, Object> designOptions);
+        public abstract bool computeDesign(Dictionary<string, Object> designOptions);
+
+
+        /// <summary>
+        /// Samples the value space of one numeric option. The values are equal distributed. The number of values is defined by the <see cref="minNumberOfSamplingsPerNumericOption"/> field. The minimal and 
+        /// maximal value of the numeric option are not considered during the sampling.
+        /// </summary>
+        /// <param name="option">The numeric option to sample.</param>
+        /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
+        public List<double> sampleFeature(NumericOption option)
+        {
+            if (this.minNumberOfSamplingsPerNumericOption > option.getAllValues().Count)
+                return sampleFeature(option, option.getAllValues().Count, false);
+            return sampleFeature(option, this.minNumberOfSamplingsPerNumericOption, false);
+        }
+
+        /// <summary>
+        /// Samples the value space of one numeric option. The values are equal distributed. If the numeric option has less values than the desired number of samplings, all values of the numeric option are 
+        /// returned. 
+        /// </summary>
+        /// <param name="option">The numeric option to sample.</param>
+        /// <param name="numberOfSamples">The number of different values of the numeric option.</param>
+        /// <param name="useMinMaxValues">States whether the minimal and maximal value of the numeric option have to be considered during sampling.</param>
+        /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
+        public static List<double> sampleFeature(NumericOption option, int numberOfSamples, bool useMinMaxValues)
+        {
+            List<double> resultList = new List<double>();
+
+            int numberOfValues = option.getAllValues().Count;
+            if (numberOfValues <= numberOfSamples)
+            {
+                double val = option.Min_value;
+                for (int k = 0; k < numberOfValues; k++)
+                {
+                    resultList.Add(val);
+                    val = option.getNextValue(val);
+                }
+                return resultList;
+            }
+
+            if (useMinMaxValues)
+            {
+                resultList.Add(option.Min_value);
+                resultList.Add(option.Max_value);
+
+                numberOfSamples -= 2;
+            }
+
+
+            int offsetForOddNumberOfValues = 1;
+            int offSetBetweenValues = (int)Math.Round((double)(numberOfValues - 2 + offsetForOddNumberOfValues) / (double)(numberOfSamples + 1));
+
+            double value = option.Min_value;
+            for (int i = 0; i < numberOfSamples; i++)
+            {
+                int currNumSteps = 0;
+
+                while (currNumSteps < offSetBetweenValues)
+                {
+                    value = option.getNextValue(value);
+                    currNumSteps++;
+                }
+                resultList.Add(value);
+
+            }
+            resultList.Sort();
+            return resultList;
+        }
     }
 }

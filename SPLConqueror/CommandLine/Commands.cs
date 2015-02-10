@@ -11,6 +11,8 @@ namespace CommandLine
     class Commands
     {
 
+        ExperimentState exp = new ExperimentState();
+
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
         /// </summary>
@@ -34,9 +36,14 @@ namespace CommandLine
             switch (command)
             {
 
-                case "clean":
-
+                case "clean-global":
                     SPLConqueror_Core.GlobalState.clear();
+                    break;
+                case "clean-sampling":
+                    exp.clearSampling();
+                    break;
+                case "clean-learning":
+                    exp.clear();
                     break;
                 case "all":
                     GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
@@ -46,15 +53,10 @@ namespace CommandLine
                 case "allBoolean": // all binary configurations 
                     break;
                 case "expDesign":
-
                     performOneCommand_ExpDesign(task);
-                    // TODO start measurement here or insert new command
-
                     break;
 
                 case "vm":
-                // TODO remove fm 
-                case "fm":
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     break;
                 case "featureWise":
@@ -83,16 +85,24 @@ namespace CommandLine
                     break;
 
                 case "trueModel":
-                    // True model stored in GlobalState
+                    // True model stored in GlobalState?
                     break;
                 case "negFW":
-                    // TODO negFW sampling
+                    // TODO negFW samplings
                     break;
                 default:
                     return command;
             }
             return "";
         }
+
+        /// <summary>
+        /// 
+        /// Note: An experimental design might have parameters and might consider only a specific set of numeric options. 
+        ///         [option1,option3,...,optionN] param1:value param2:value
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
         private string performOneCommand_ExpDesign(string task)
         {
             // splits the task in design and parameters of the design
@@ -106,13 +116,41 @@ namespace CommandLine
             switch (design)
             {
                 case "boxBehnken":
+                    if (parameters.Length == 0)
+                    {
+                        BoxBehnkenDesign bbd = new BoxBehnkenDesign(GlobalState.varModel.NumericOptions);
+                        bbd.computeDesign();
+                        exp.addNumericalSelection(bbd.SelectedConfigurations);
+                    }
+                    else
+                    {
+                        new NotImplementedException();
+                    }
                     break;
-
                 case "centralComposite":
-                    CentralCompositeInscribedDesign cci = new CentralCompositeInscribedDesign(null);
-
+                    if (parameters.Length == 0)
+                    {
+                        CentralCompositeInscribedDesign cci = new CentralCompositeInscribedDesign(GlobalState.varModel.NumericOptions);
+                        cci.computeDesign();
+                        exp.addNumericalSelection(cci.SelectedConfigurations);
+                    }
+                    else
+                    {
+                        new NotImplementedException();
+                    }
                     break;
-
+                case "fullFactorial":
+                    if (parameters.Length == 0)
+                    {
+                        FullFactorialDesign ffd = new FullFactorialDesign(GlobalState.varModel.NumericOptions);
+                        ffd.computeDesign();
+                        exp.addNumericalSelection(ffd.SelectedConfigurations);
+                    }
+                    else
+                    {
+                        new NotImplementedException();
+                    }
+                    break;
                 case "featureInteraction":
 
                     break;
@@ -121,6 +159,44 @@ namespace CommandLine
                     break;
 
                 case "hyperSampling":
+                    if (parameters.Length == 0)
+                    {
+                        HyperSampling hyp = new HyperSampling(GlobalState.varModel.NumericOptions);
+                        hyp.computeDesign();
+                        exp.addNumericalSelection(hyp.SelectedConfigurations);
+                    }
+                    else
+                    {
+                        List<NumericOption> optionsToConsider = new List<NumericOption>();
+                        Dictionary<string, Object> parameter = new Dictionary<string,object>();
+
+
+                        foreach (string par in parameters)
+                        {
+                            if(par.Contains("["))
+                            {
+                                string[] options = par.Substring(1, par.Length - 2).Split(',');
+                                foreach (string option in options)
+                                {
+                                    optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
+                                }
+
+                            }
+                            else
+                            {
+                                string[] nameAndValue = par.Split(':');
+                                double value = Convert.ToDouble(nameAndValue[1]);
+
+                            }
+                        }
+
+                        if (optionsToConsider.Count == 0)
+                            optionsToConsider = GlobalState.varModel.NumericOptions;
+
+                        HyperSampling hyp = new HyperSampling(GlobalState.varModel.NumericOptions);
+                        hyp.computeDesign(parameter);
+                        exp.addNumericalSelection(hyp.SelectedConfigurations);
+                    }
                     break;
 
                 case "independentLinear":

@@ -27,6 +27,7 @@ namespace CommandLine
 
         public void start()
         {
+            
             Commands co = new Commands();
 
             while (!reader.EndOfStream)
