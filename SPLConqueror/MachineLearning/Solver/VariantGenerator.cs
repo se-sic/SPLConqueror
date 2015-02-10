@@ -170,7 +170,29 @@ namespace MachineLearning.Solver
             return null;
         }
 
+        /// <summary>
+        /// This method searches for a corresponding methods in the dynamically loadeda assemblies and calls it if found. It prefers due to performance reasons the Microsoft Solver Foundation implementation.
+        /// </summary>
+        /// <param name="optionToBeRemoved">The binary configuration option that must not be part of the new configuration.</param>
+        /// <param name="originalConfig">The configuration for which we want to find a similar one.</param>
+        /// <param name="removedElements">If further options need to be removed from the given configuration to build a valid configuration, they are outputed in this list.</param>
+        /// <param name="vm">The variability model containing all options and their constraints.</param>
+        /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved.</returns>
+        public List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
+        {
+            foreach (Lazy<IVariantGenerator, ISolverType> solver in solvers)
+            {
+                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return solver.Value.generateConfigWithoutOption(optionToBeRemoved, originalConfig, out removedElements, vm);
+            }
 
+            //If not MS Solver, take any solver. Should be changed when supporting more than 2 solvers here
+            foreach (Lazy<IVariantGenerator, ISolverType> solver in solvers)
+            {
+                return solver.Value.generateConfigWithoutOption(optionToBeRemoved, originalConfig, out removedElements, vm);
+            }
+            removedElements = null;
+            return null;
+        }
         #endregion
 
     }

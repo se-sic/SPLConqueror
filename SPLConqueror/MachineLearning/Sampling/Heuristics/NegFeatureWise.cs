@@ -38,7 +38,7 @@ namespace MachineLearning.Sampling.Heuristics
                         continue;
                     List<BinaryOption> removedElements = null;
                     //Get a configuration without the feature based on the maximum configuration: config
-                    List<BinaryOption> configToMeasure = generateConfigWithoutOption(binOpt, config, out removedElements, vm);
+                    List<BinaryOption> configToMeasure = generator.generateConfigWithoutOption(binOpt, config, out removedElements, vm);
 
                     if (configToMeasure == null)
                     {//This didn't work, let us try to use another maximum configuration
@@ -88,7 +88,7 @@ namespace MachineLearning.Sampling.Heuristics
                         currentElementUnderConsdiration = e;
                         //Constructing new Configuration without the current element
                         List<BinaryOption> configToMeasure = new List<BinaryOption>();
-                        configToMeasure = generateConfigWithoutOption(e, currentConfig, out removedElements, vm);
+                        configToMeasure = generator.generateConfigWithoutOption(e, currentConfig, out removedElements, vm);
 
                         if (configToMeasure == null)
                         {
@@ -246,103 +246,5 @@ namespace MachineLearning.Sampling.Heuristics
             return configurations;
         }
 
-        /// <summary>
-        /// Generates a configuration based on a given configuration, but tries to exclude the specified configuration option. It might exclude also options that require the presence of the option to be excluded.
-        /// </summary>
-        /// <param name="binOpt">Option that needs to be excluded from the configuration</param>
-        /// <param name="currentConfig">The configuration in which we want to exclude "binOpt"</param>
-        /// <param name="removedElements">A list of binary configuration options that have been removed from the configuration (currentConfig)</param>
-        /// <param name="vm">The variability model that contains all constraints and options</param>
-        /// <returns>A list of SELECTED binary options</returns>
-        private static List<BinaryOption> generateConfigWithoutOption(BinaryOption binOpt, List<BinaryOption> currentConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
-        {
-            //encode this as CSP Problem
-            //Ziel: maximieren Config: optionen der gegebenen config bekommen sehr hohe werte. alle anderen optionen negative werte. binOpt muss per constraint ausgeschlossen werden.
-            //erfordert erweiterung der IVariantGenerator Klasse, VariantGenerator in Solver und VariantGenerator in Wrapper Project
-
-            removedElements = new List<BinaryOption>();
-            bool action = true;
-            BinaryOption currentElement = binOpt;
-            while (action)
-            {
-                action = false;
-                foreach (BinaryOption elem in currentElement.chil)
-                {
-                    if (removedElements.Contains(elem) == false)
-                        removedElements.Add(elem);
-                }
-
-                if (currentElement.Optional = false || currentElement.hasAlternatives())
-                {
-                    action = true;
-                    removedElements.Add(currentElement);
-                    BinaryOption parent = (BinaryOption)currentElement.Parent;
-                    if (parent == null)
-                        return null; // you try to delete an element which is always required wrt. to the current alternative selections
-                    currentElement = parent;
-                }
-                else
-                {
-                    removedElements.Add(currentElement);
-                }
-            }
-            foreach (BinaryOption current in currentConfig)
-            {
-                action = true;
-                while (action)
-                {
-                    action = false;
-                    foreach (BinaryOption removed in removedElements)
-                    {
-                        if (removedElements.Contains(current) == false && removed.isAncestor(current))
-                        {
-                            action = true;
-                            removedElements.Add(current);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            List<BinaryOption> resultlist = new List<BinaryOption>();
-            foreach (BinaryOption el in currentConfig)
-            {
-                if (!removedElements.Contains(el))
-                    resultlist.Add(el);
-            }
-            List<BinaryOption> newResultList = resultlist;
-            action = true;
-            while (action)
-            {
-                action = false;
-                foreach (BinaryOption el in resultlist)
-                {
-                    if (el.Implied_Options.Count > 0)
-                    {
-                        foreach (var implOptionGroup in el.Implied_Options)
-                        {
-
-                        }
-                        foreach (int id in el.getRequires())
-                        {
-                            if (removedElements.Contains(vm.getElementById(id)))
-                            {
-                                List<BinaryOption> removedEle = new List<BinaryOption>();
-                                newResultList = generateConfigWithoutOption(el, resultlist, out removedEle, vm);
-                                removedElements.AddRange(removedEle);
-                                if (newResultList == null)
-                                    return null;
-                                action = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (action)
-                        break;
-                }
-                resultlist = newResultList;
-            }
-            return newResultList;
-        }
     }
 }
