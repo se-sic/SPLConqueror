@@ -8,7 +8,7 @@ using SPLConqueror_Core;
 namespace MachineLearning.Sampling.ExperimentalDesigns
 {
     /// <summary>
-    /// This design selects a speficied number of value combiantions for a set of numberic options. 
+    /// This design selects a speficied number of value combiantions for a set of numberic options. The value combinations are created using a random selection of values of the numeric options.
     /// </summary>
     public class RandomSampling : ExperimentalDesign
     {
@@ -54,11 +54,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         
 
 
-        /*
-         * in int numberOfSamplings: means the maximum number of metric configurations
-         * Idea: make a complete sampling using hyper sampling
-         * after that choose randomly the configuration out of this space
-         * ********************************************************************/
         private bool compute()
         {
             Random rand = new Random(seed);
