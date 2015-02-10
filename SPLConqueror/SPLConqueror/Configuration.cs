@@ -47,10 +47,26 @@ namespace SPLConqueror_Core
             binaryOptions = enrichBinarySelection(binarySelection);
             numericOptions = numericSelection;
             nfpValues = measuremements;
-
-
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="binaryConfig"></param>
+        public Configuration(List<BinaryOption> binaryConfig, VariabilityModel vm)
+        {
+            if (vm == null)
+            {
+                foreach (BinaryOption opt in binaryConfig)
+                {
+                    binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
+                }
+            }
+            else
+            {
+
+            }
         }
 
 

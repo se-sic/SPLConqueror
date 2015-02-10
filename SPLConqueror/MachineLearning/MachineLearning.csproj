@@ -46,6 +46,9 @@
     <Compile Include="Sampling\ExperimentalDesigns\BoxBehnkenDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\CentralCompositeInscribedDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\ExperimentalDesign.cs" />
+    <Compile Include="Sampling\Heuristics\FeatureWise.cs" />
+    <Compile Include="Sampling\Heuristics\NegFeatureWise.cs" />
+    <Compile Include="Sampling\Heuristics\PairWise.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\FullFactorialDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\HyperSampling.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\PlackettBurmanDesign.cs" />
@@ -56,6 +59,7 @@
     <Compile Include="Learning\LinearProgramming\ISolverType.cs" />
     <Compile Include="Solver\IVariantGenerator.cs" />
     <Compile Include="Learning\LinearProgramming\SolverLP.cs" />
+    <Compile Include="Solver\VariantGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
@@ -63,9 +67,7 @@
       <Name>SPLConqueror_Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sampling\Heuristics\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

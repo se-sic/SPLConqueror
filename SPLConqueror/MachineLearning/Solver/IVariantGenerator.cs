@@ -48,7 +48,18 @@ namespace MachineLearning.Solver
         /// <param name="unwantedOptions">Binary options that we do not want to become part of the configuration. Might be part if there is no other valid configuration without them</param>
         /// <returns>A list of configurations that satisfies the VM and the goal (or null if there is none).</returns>
         List<List<BinaryOption>> maximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedOptions);
-        
+
+        /// <summary>
+        /// The method aims at finding a configuration which is similar to the given configuration, but does not contain the optionToBeRemoved. If further options need to be removed from the given configuration, they are outputed in removedElements.
+        /// </summary>
+        /// <param name="optionToBeRemoved">The binary configuration option that must not be part of the new configuration.</param>
+        /// <param name="originalConfig">The configuration for which we want to find a similar one.</param>
+        /// <param name="removedElements">If further options need to be removed from the given configuration to build a valid configuration, they are outputed in this list.</param>
+        /// <param name="vm">The variability model containing all options and their constraints.</param>
+        /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved.</returns>
+        List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm);
+
+
         //Old: Refactoring of VM
         //Determine the boundaries in terms of cardinality of a product at which (a) valid products can be generated (maxBoundary) and (b) the first invalid products can be generated (minBoundary)
         //int determineBoundary(VariabilityModel vm, RuntimeProperty rp, NFPConstraint constraint, bool min, bool withInteractions, bool invalidBoundary);//searching for invalid or valid products?

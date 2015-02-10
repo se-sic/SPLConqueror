@@ -90,6 +90,64 @@ namespace MicrosoftSolverFoundation
             return erglist;
         }
 
+        /// <summary>
+        /// The method aims at finding a configuration which is similar to the given configuration, but does not contain the optionToBeRemoved. If further options need to be removed from the given configuration, they are outputed in removedElements.
+        /// Idea: Encode this as a CSP problem. We aim at finding a configuration that maximizes a goal. Each option of the given configuration gets a large value assigned. All other options of the variability model gets a negative value assigned.
+        /// We will further create a boolean constraint that forbids selecting the optionToBeRemoved. Now, we find an optimal valid configuration.
+        /// </summary>
+        /// <param name="optionToBeRemoved">The binary configuration option that must not be part of the new configuration.</param>
+        /// <param name="originalConfig">The configuration for which we want to find a similar one.</param>
+        /// <param name="removedElements">If further options need to be removed from the given configuration to build a valid configuration, they are outputed in this list.</param>
+        /// <param name="vm">The variability model containing all options and their constraints.</param>
+        /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved. Null if not configuration could be found.</returns>
+        List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
+        {
+            List<CspTerm> variables = new List<CspTerm>();
+            Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
+            Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
+            ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+            
+            removedElements = new List<BinaryOption>();
+
+            //Forbid the selection of this configuration option
+            CspTerm optionToRemove = elemToTerm[optionToBeRemoved];
+            S.AddConstraints(S.Implies(S.True, S.Not(optionToRemove)));
+
+            //Defining Goals
+            CspTerm[] finalGoals = new CspTerm[variables.Count];
+            int r = 0;
+            foreach (var term in variables)
+            {
+                if (originalConfig.Contains(termToElem[term]))
+                    finalGoals[r] = term * 1000 * -1; //Since we minimize, we put a large negative value of an option that is within the original configuration to increase chances that the option gets selected again
+                else
+                    finalGoals[r] = variables[r] * 1000;//Positive number will lead to a small chance that an option gets selected when it is not in the original configuration
+                r++;
+            }
+
+            S.TryAddMinimizationGoals(S.Sum(finalGoals));
+            
+            ConstraintSolverSolution soln = S.Solve();
+            List<BinaryOption> tempConfig = new List<BinaryOption>();
+            if (soln.HasFoundSolution && soln.Quality == ConstraintSolverSolution.SolutionQuality.Optimal)
+            {
+                tempConfig.Clear();
+                foreach (CspTerm cT in variables)
+                {
+                    if (soln.GetIntegerValue(cT) == 1)
+                        tempConfig.Add(termToElem[cT]);
+                }
+                //Adding the options that have been removed from the original configuration
+                foreach (var opt in originalConfig)
+                {
+                    if (!tempConfig.Contains(opt))
+                        removedElements.Add(opt);
+                }
+                return tempConfig;
+            }
+
+            return null;
+        }
 
         #region change Configuration size
 
@@ -160,7 +218,7 @@ namespace MicrosoftSolverFoundation
         /// <param name="minimize">If true, we search for the smallest (in terms of selected options) valid configuration. If false, we search for the largest one.</param>
         /// <param name="unwantedOptions">Binary options that we do not want to become part of the configuration. Might be part if there is no other valid configuration without them</param>
         /// <returns>A list of configurations that satisfies the VM and the goal (or null if there is none).</returns>
-        public List<List<BinaryOption>> maximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedFeatures)
+        public List<List<BinaryOption>> maximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedOptions)
         {
 
             List<CspTerm> variables = new List<CspTerm>();
@@ -183,7 +241,7 @@ namespace MicrosoftSolverFoundation
                 if (minimize == true)
                 {
                     BinaryOption binOpt = termToElem[variables[r]];
-                    if (unwantedFeatures != null && (unwantedFeatures.Contains(binOpt) && !config.Contains(binOpt)))
+                    if (unwantedOptions != null && (unwantedOptions.Contains(binOpt) && !config.Contains(binOpt)))
                     {
                         finalGoals[r] = variables[r] * 10000;
                     }
