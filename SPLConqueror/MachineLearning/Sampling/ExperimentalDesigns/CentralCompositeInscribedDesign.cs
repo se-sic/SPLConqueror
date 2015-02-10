@@ -31,10 +31,10 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override bool computeDesign(Dictionary<string, Object> options)
         {
-            return computeDesign();
+            return compute();
         }
 
-        public override bool computeDesign()
+        public override bool compute()
         {
             // center point 
             Dictionary<NumericOption, double> centerPoint = new Dictionary<NumericOption, double>();

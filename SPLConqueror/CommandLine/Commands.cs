@@ -119,7 +119,7 @@ namespace CommandLine
                     if (parameters.Length == 0)
                     {
                         BoxBehnkenDesign bbd = new BoxBehnkenDesign(GlobalState.varModel.NumericOptions);
-                        bbd.computeDesign();
+                        bbd.compute();
                         exp.addNumericalSelection(bbd.SelectedConfigurations);
                     }
                     else
@@ -131,7 +131,7 @@ namespace CommandLine
                     if (parameters.Length == 0)
                     {
                         CentralCompositeInscribedDesign cci = new CentralCompositeInscribedDesign(GlobalState.varModel.NumericOptions);
-                        cci.computeDesign();
+                        cci.compute();
                         exp.addNumericalSelection(cci.SelectedConfigurations);
                     }
                     else
@@ -143,7 +143,7 @@ namespace CommandLine
                     if (parameters.Length == 0)
                     {
                         FullFactorialDesign ffd = new FullFactorialDesign(GlobalState.varModel.NumericOptions);
-                        ffd.computeDesign();
+                        ffd.compute();
                         exp.addNumericalSelection(ffd.SelectedConfigurations);
                     }
                     else
@@ -162,7 +162,7 @@ namespace CommandLine
                     if (parameters.Length == 0)
                     {
                         HyperSampling hyp = new HyperSampling(GlobalState.varModel.NumericOptions);
-                        hyp.computeDesign();
+                        hyp.compute();
                         exp.addNumericalSelection(hyp.SelectedConfigurations);
                     }
                     else
@@ -203,6 +203,37 @@ namespace CommandLine
                     break;
 
                 case "kExchange":
+                    {
+                        List<NumericOption> optionsToConsider = new List<NumericOption>();
+                        Dictionary<string, Object> parameter = new Dictionary<string, object>();
+
+
+                        foreach (string par in parameters)
+                        {
+                            if (par.Contains("["))
+                            {
+                                string[] options = par.Substring(1, par.Length - 2).Split(',');
+                                foreach (string option in options)
+                                {
+                                    optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
+                                }
+
+                            }
+                            else
+                            {
+                                string[] nameAndValue = par.Split(':');
+                                double value = Convert.ToDouble(nameAndValue[1]);
+
+                            }
+                        }
+
+                        if (optionsToConsider.Count == 0)
+                            optionsToConsider = GlobalState.varModel.NumericOptions;
+
+                        //hyp = new HyperSampling(GlobalState.varModel.NumericOptions);
+                        //hyp.computeDesign(parameter);
+                        //exp.addNumericalSelection(hyp.SelectedConfigurations);
+                    }
                     break;
 
                 case "plackettBurman":

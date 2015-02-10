@@ -31,22 +31,28 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "RandomSampling";
         }
 
-
-        public override bool computeDesign()
+        /// <summary>
+        /// Computes the design using the default parameters. 
+        /// </summary>
+        /// <returns>True if the design could be computed using the desired parameters.</returns>
+        public override bool compute()
         {
             return compute();
         }
 
+        /// <summary>
+        /// Computes random samplings of the numeric option value space. The parameters for this design are a "seed", defining the random seed and the "samplingSize" defining the number of generated samples. 
+        /// </summary>
+        /// <param name="designOptions">Parameters used during the generation of this design.</param>
+        /// <returns>True if the design could be computed using the desired parameters.</returns>
         public override bool computeDesign(Dictionary<string, object> designOptions)
         {
-
             foreach (KeyValuePair<string, object> param in designOptions)
             {
                 if (param.Key == "seed")
                     seed = (int)param.Value;
                 if (param.Key == "sampleSize")
                     sampleSize = (int)param.Value;
-
             }
 
             return compute();

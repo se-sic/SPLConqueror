@@ -69,7 +69,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// Computes the sampling points using the default parameters of this design. 
         /// </summary>
         /// <returns></returns>
-        public override bool computeDesign()
+        public override bool compute()
         {
             return computeDesign(defaultPrecision);
         }

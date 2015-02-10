@@ -48,7 +48,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// Computes the design using the default parameters. 
         /// </summary>
         /// <returns>True if the computation was successful.</returns>
-        public abstract bool computeDesign();
+        public abstract bool compute();
 
         /// <summary>
         /// Computes the design using the experimental design specific parameters provided as parameter. 
