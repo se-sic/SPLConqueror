@@ -20,7 +20,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         }
 
 
-        public override bool computeDesign()
+        public override bool compute()
         {
 
             
@@ -38,7 +38,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override bool computeDesign(Dictionary<string, Object> options)
         {
-            return computeDesign();
+            return compute();
         }
 
         private List<Dictionary<NumericOption, double>> getAllPossibleCombinations(Dictionary<NumericOption, List<double>> elementValuePairs)

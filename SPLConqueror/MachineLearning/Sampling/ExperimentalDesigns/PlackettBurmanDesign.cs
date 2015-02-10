@@ -135,7 +135,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             seeds.Add(Seed.seed49_7, new int[] { 0, 1, 2, 6, 2, 2, 1, 6, 0, 5, 3, 2, 3, 3, 5, 2, 0, 4, 1, 3, 1, 1, 4, 3, 0, 6, 5, 1, 5, 5, 6, 1, 0, 2, 4, 5, 4, 4, 2, 5, 0, 3, 6, 4, 6, 6, 3, 4 });
         }
 
-        public override bool computeDesign()
+        public override bool compute()
         {
             int numFeatures = options.Count;
 

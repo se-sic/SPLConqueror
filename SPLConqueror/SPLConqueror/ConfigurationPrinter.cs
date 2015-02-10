@@ -7,5 +7,8 @@ namespace SPLConqueror_Core
 {
     class ConfigurationPrinter
     {
+
+        // TODO add print method using a predefined order
+
     }
 }

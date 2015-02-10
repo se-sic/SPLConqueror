@@ -23,7 +23,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "BoxBehnkenDesign";
         }
 
-        public override bool computeDesign()
+        public override bool compute()
         {
             int k = this.options.Count;
 
@@ -79,7 +79,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override bool computeDesign(Dictionary<string, Object> options)
         {
-            return computeDesign();
+            return compute();
         }
 
         // Find all possible combinations - TODO > improve?
