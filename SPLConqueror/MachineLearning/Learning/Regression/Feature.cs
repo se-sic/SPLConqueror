@@ -8,6 +8,12 @@ namespace MachineLearning.Learning.Regression
 {
     public class Feature : InfluenceFunction
     {
+
+        /// <summary>
+        ///  consider x * x * y != y * y * x 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             Feature other = (Feature) obj;
