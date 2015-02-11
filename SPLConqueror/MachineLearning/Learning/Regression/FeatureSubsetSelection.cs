@@ -18,7 +18,6 @@ namespace MachineLearning.Learning.Regression
         //Information about the state of learning
         protected InfluenceModel infModel = null;
         protected List<LearningRound> learningHistory = new List<LearningRound>();
-        //protected Dictionary<Feature, InfluenceFunction> currentModel = new Dictionary<Feature, InfluenceFunction>();
         protected List<Feature> initialFeatures = new List<Feature>();
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
         protected ML_Settings MLsettings = null;
@@ -81,7 +80,7 @@ namespace MachineLearning.Learning.Regression
                 current = performForwardStep(current);
                 learningHistory.Add(current);
 
-                if (this.MLsettings.backward)
+                if (this.MLsettings.useBackward)
                 {
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
@@ -180,6 +179,8 @@ namespace MachineLearning.Learning.Regression
 
             foreach (var feature in currentModel)
             {
+                if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                    continue;
                 Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
                     listOfCandidates.Add(newCandidate);
@@ -194,6 +195,8 @@ namespace MachineLearning.Learning.Regression
                 
                 foreach (var feature in currentModel)
                 {
+                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                        continue;
                     newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
@@ -209,7 +212,8 @@ namespace MachineLearning.Learning.Regression
 
                 foreach (var feature in currentModel)
                 {
-                    if(this.MLsettings.)
+                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                        continue;
                     newCandidate = new Feature(feature.ToString() + " * log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
