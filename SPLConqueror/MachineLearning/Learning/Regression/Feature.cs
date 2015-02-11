@@ -6,9 +6,11 @@ using SPLConqueror_Core;
 
 namespace MachineLearning.Learning.Regression
 {
-    public class Feature : InfluenceFunction
+    internal class Feature : InfluenceFunction
     {
-        public override bool Equals(object obj)
+        internal double constant = 1.0;
+
+        internal override bool Equals(object obj)
         {
             Feature other = (Feature) obj;
 
@@ -36,12 +38,13 @@ namespace MachineLearning.Learning.Regression
             return false;
         }
 
-        public Feature(Feature original, Feature toAdd, VariabilityModel vm)
+        internal Feature(Feature original, Feature toAdd, VariabilityModel vm)
             : base(original.ToString() + " * " + toAdd.ToString(), vm)
         {
 
         }
 
-
+        internal Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
     }
 }
+ 
