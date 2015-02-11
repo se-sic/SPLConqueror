@@ -49,6 +49,7 @@
     <Compile Include="ErrorLog.cs" />
     <Compile Include="GlobalState.cs" />
     <Compile Include="InfluenceModel.cs" />
+    <Compile Include="InfoLog.cs" />
     <Compile Include="Interaction.cs" />
     <Compile Include="NumericOption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

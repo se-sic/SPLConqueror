@@ -8,7 +8,7 @@ using ILNumerics;
 
 namespace MachineLearning.Sampling.ExperimentalDesigns
 {
-    class KExchangeAlgorithm : ExperimentalDesign
+    public class KExchangeAlgorithm : ExperimentalDesign
     {
 
         double[,] matrix;
@@ -29,26 +29,26 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         }
 
 
-        public override bool computeDesign(Dictionary<string, object> designOptions)
+        public override bool computeDesign(Dictionary<string, string> designOptions)
         {
-            foreach (KeyValuePair<string, object> param in designOptions)
+            foreach (KeyValuePair<string, string> param in designOptions)
             {
                 if (param.Key == "k")
-                    k = (int)param.Value;
+                    k = Convert.ToInt32(param.Value);
                 if (param.Key == "sampleSize")
-                    sampleSize = (int)param.Value;
+                    sampleSize = Convert.ToInt32(param.Value);
             }
 
-            return compute();
-        }
-
-        public override bool computeDesign() {
             return compute(sampleSize, k);
         }
 
+        public override bool computeDesign() {
+            return compute(this.sampleSize, this.k);
+        }
 
 
-        public override bool compute(int _sampleSize, int _k)
+
+        public bool compute(int _sampleSize, int _k)
         {
             if (options.Count == 0)
                 return false;

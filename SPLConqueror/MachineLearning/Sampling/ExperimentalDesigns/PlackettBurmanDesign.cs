@@ -135,7 +135,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             seeds.Add(Seed.seed49_7, new int[] { 0, 1, 2, 6, 2, 2, 1, 6, 0, 5, 3, 2, 3, 3, 5, 2, 0, 4, 1, 3, 1, 1, 4, 3, 0, 6, 5, 1, 5, 5, 6, 1, 0, 2, 4, 5, 4, 4, 2, 5, 0, 3, 6, 4, 6, 6, 3, 4 });
         }
 
-        public override bool compute()
+        public override bool computeDesign()
         {
             int numFeatures = options.Count;
 
@@ -185,17 +185,17 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="designOptions">The parameters used during computation of samplings.</param>
         /// <returns>True if the samplings could be computed.</returns>
-        public override bool computeDesign(Dictionary<string, object> designOptions)
+        public override bool computeDesign(Dictionary<string, string> designOptions)
         {
             int level = 3;
             int measurements = 9;
 
-            foreach (KeyValuePair<string, object> param in designOptions)
+            foreach (KeyValuePair<string, string> param in designOptions)
             {
                 if (param.Key == "level")
-                    level = (int)param.Value;
+                    level = Convert.ToInt32(param.Value);
                 if (param.Key == "measurements")
-                    measurements = (int)param.Value;
+                    measurements = Convert.ToInt32(param.Value);
 
             }
 
@@ -203,7 +203,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
 
 
-            return compute();
+            return computeDesign();
 
         }
 

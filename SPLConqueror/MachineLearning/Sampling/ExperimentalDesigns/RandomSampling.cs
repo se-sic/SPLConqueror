@@ -35,7 +35,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// Computes the design using the default parameters. 
         /// </summary>
         /// <returns>True if the design could be computed using the desired parameters.</returns>
-        public override bool compute()
+        public override bool computeDesign()
         {
             return compute();
         }
@@ -45,14 +45,14 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="designOptions">Parameters used during the generation of this design.</param>
         /// <returns>True if the design could be computed using the desired parameters.</returns>
-        public override bool computeDesign(Dictionary<string, object> designOptions)
+        public override bool computeDesign(Dictionary<string, string> designOptions)
         {
-            foreach (KeyValuePair<string, object> param in designOptions)
+            foreach (KeyValuePair<string, string> param in designOptions)
             {
                 if (param.Key == "seed")
-                    seed = (int)param.Value;
+                    seed = Convert.ToInt32(param.Value);
                 if (param.Key == "sampleSize")
-                    sampleSize = (int)param.Value;
+                    sampleSize = Convert.ToInt32(param.Value);
             }
 
             return compute();
