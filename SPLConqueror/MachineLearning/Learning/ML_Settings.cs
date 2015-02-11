@@ -11,6 +11,15 @@ namespace MachineLearning.Learning
     public class ML_Settings
     {
 
+        public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
+
+        public LossFunction lossFunction = LossFunction.RELATIVE;
+
+
+        public bool useBackward = false;
+
+        public bool noComplexitiyTreshold = false;
+
         /// <summary>
         /// The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true.
         /// </summary>
@@ -31,7 +40,6 @@ namespace MachineLearning.Learning
         /// Defines the number of rounds the learning process have to be performed. 
         /// </summary>
         public int numberOfRounds = 30;
-
 
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
@@ -90,6 +98,7 @@ namespace MachineLearning.Learning
                 fi.SetValue(this, Convert.ToInt64(value));
                 return true;
             }
+
             return false;
         }
 

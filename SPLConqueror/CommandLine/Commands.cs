@@ -7,6 +7,7 @@ using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Heuristics;
 
 using MachineLearning.Learning;
+using MachineLearning.Solver;
 
 
 namespace CommandLine
@@ -77,16 +78,13 @@ namespace CommandLine
                     // TODO add more log file functionality
                     break;
                 case "MLsettings":
-                    
-                
-                    // TODO add MLsettings and dependency to ML/Sampling
-                    break;
-
+                    {
+                        string[] para = task.Split(new char[] { ' ' });
+                        exp.mlSettings.setSetting(para[0], para[1]);
+                        break;
+                    }
                 case "load_MLsettings":
-
-                    exp.settings = ML_Settings.readSettings(task);
-
-
+                    exp.mlSettings = ML_Settings.readSettings(task);
                     break;
 
                 case "pairWise":
@@ -96,13 +94,20 @@ namespace CommandLine
                     break;
 
                 case "printSettings":
-                    InfoLog.logInfo(exp.settings.ToString());
+                    InfoLog.logInfo(exp.mlSettings.ToString());
                     break;
 
                 case "random":
-                    // ramdom sampling
-                    break;
+                    {
+                        string[] para = task.Split(new char[] { ' ' });
+                        int treshold = Convert.ToInt32(para[0]);
+                        int modulu = Convert.ToInt32(para[1]);
 
+                        VariantGenerator vg = new VariantGenerator();
+                        exp.addBinarySelection(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
+                        exp.addBinarySampling("random " + task);
+                        break;
+                    }
                 case "start":
                     // starts the machine learning 
                     break;
