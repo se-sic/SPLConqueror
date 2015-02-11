@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SPLConqueror_Core;
 using MachineLearning.Sampling.ExperimentalDesigns;
+using MachineLearning.Sampling.Heuristics;
 
 
 namespace CommandLine
@@ -60,7 +61,10 @@ namespace CommandLine
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     break;
                 case "featureWise":
-                    // Sampling FW
+                    FeatureWise fw = new FeatureWise();
+                    exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                    exp.addBinarySampling("FW");
+
                     break;
 
                 case "log":
@@ -73,7 +77,9 @@ namespace CommandLine
                     break;
 
                 case "pairWise":
-                    // TODO add PW sampling
+                    PairWise pw = new PairWise();
+                    exp.addBinarySelection(pw.generatePairWiseVariants(GlobalState.varModel));
+                    exp.addBinarySampling("PW");                    
                     break;
 
                 case "random":
@@ -88,7 +94,10 @@ namespace CommandLine
                     // True model stored in GlobalState?
                     break;
                 case "negFW":
-                    // TODO negFW samplings
+                    // TODO there are two different variants in generating NegFW configurations. 
+                    NegFeatureWise neg = new NegFeatureWise();
+                    exp.addBinarySelection(neg.generateNegativeFW(GlobalState.varModel));
+                    exp.addBinarySampling("newFW");
                     break;
                 default:
                     return command;
@@ -107,49 +116,54 @@ namespace CommandLine
         {
             // splits the task in design and parameters of the design
             string[] designAndParams = task.Split(new Char[] { ' ' }, 2);
-            string design = designAndParams[0];
+            string designName = designAndParams[0];
             string param = "";
             if (designAndParams.Length > 1)
                 param = designAndParams[1];
             string[] parameters = param.Split(' ');
 
-            switch (design)
+
+
+            // parsing of the parameters
+            List<NumericOption> optionsToConsider = new List<NumericOption>();
+            Dictionary<string, string> parameter = new Dictionary<string, string>();
+
+
+            foreach (string par in parameters)
+            {
+                if (par.Contains("["))
+                {
+                    string[] options = par.Substring(1, par.Length - 2).Split(',');
+                    foreach (string option in options)
+                    {
+                        optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
+                    }
+                }
+                else
+                {
+                    string[] nameAndValue = par.Split(':');
+                    parameter.Add(nameAndValue[0], nameAndValue[1]);
+                }
+            }
+
+            if (optionsToConsider.Count == 0)
+                optionsToConsider = GlobalState.varModel.NumericOptions;
+
+            ExperimentalDesign design = null;
+
+            switch (designName)
             {
                 case "boxBehnken":
-                    if (parameters.Length == 0)
-                    {
-                        BoxBehnkenDesign bbd = new BoxBehnkenDesign(GlobalState.varModel.NumericOptions);
-                        bbd.computeDesign();
-                        exp.addNumericalSelection(bbd.SelectedConfigurations);
-                    }
-                    else
-                    {
-                        new NotImplementedException();
-                    }
+                    design = new BoxBehnkenDesign(optionsToConsider);
+                    exp.addNumericSampling("boxBehnken");
                     break;
                 case "centralComposite":
-                    if (parameters.Length == 0)
-                    {
-                        CentralCompositeInscribedDesign cci = new CentralCompositeInscribedDesign(GlobalState.varModel.NumericOptions);
-                        cci.computeDesign();
-                        exp.addNumericalSelection(cci.SelectedConfigurations);
-                    }
-                    else
-                    {
-                        new NotImplementedException();
-                    }
+                    design = new CentralCompositeInscribedDesign(optionsToConsider);
+                    exp.addNumericSampling("centralComposite");
                     break;
                 case "fullFactorial":
-                    if (parameters.Length == 0)
-                    {
-                        FullFactorialDesign ffd = new FullFactorialDesign(GlobalState.varModel.NumericOptions);
-                        ffd.computeDesign();
-                        exp.addNumericalSelection(ffd.SelectedConfigurations);
-                    }
-                    else
-                    {
-                        new NotImplementedException();
-                    }
+                    design = new FullFactorialDesign(optionsToConsider);
+                    exp.addNumericSampling("fullFactorial");
                     break;
                 case "featureInteraction":
 
@@ -159,62 +173,35 @@ namespace CommandLine
                     break;
 
                 case "hyperSampling":
-                    if (parameters.Length == 0)
-                    {
-                        HyperSampling hyp = new HyperSampling(GlobalState.varModel.NumericOptions);
-                        hyp.computeDesign();
-                        exp.addNumericalSelection(hyp.SelectedConfigurations);
-                    }
-                    else
-                    {
-                        List<NumericOption> optionsToConsider = new List<NumericOption>();
-                        Dictionary<string, Object> parameter = new Dictionary<string,object>();
-
-
-                        foreach (string par in parameters)
-                        {
-                            if(par.Contains("["))
-                            {
-                                string[] options = par.Substring(1, par.Length - 2).Split(',');
-                                foreach (string option in options)
-                                {
-                                    optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
-                                }
-
-                            }
-                            else
-                            {
-                                string[] nameAndValue = par.Split(':');
-                                double value = Convert.ToDouble(nameAndValue[1]);
-
-                            }
-                        }
-
-                        if (optionsToConsider.Count == 0)
-                            optionsToConsider = GlobalState.varModel.NumericOptions;
-
-                        HyperSampling hyp = new HyperSampling(GlobalState.varModel.NumericOptions);
-                        hyp.computeDesign(parameter);
-                        exp.addNumericalSelection(hyp.SelectedConfigurations);
-                    }
+                    design = new HyperSampling(optionsToConsider);
+                    exp.addNumericSampling("hyperSampling");
                     break;
 
                 case "independentLinear":
                     break;
 
                 case "kExchange":
+                    design = new KExchangeAlgorithm(optionsToConsider);
+                    exp.addNumericSampling("kExchange");
                     break;
 
                 case "plackettBurman":
-
+                    design = new PlackettBurmanDesign(optionsToConsider);
+                    exp.addNumericSampling("plackettBurman");
                     break;
 
                 case "random":
+                    design = new RandomSampling(optionsToConsider);
+                    exp.addNumericSampling("random");
                     break;
 
                 default:
                     return task;
             }
+
+            design.computeDesign(parameter);
+            exp.addNumericalSelection(design.SelectedConfigurations);
+
 
             return "";
         }

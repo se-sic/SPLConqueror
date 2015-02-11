@@ -29,7 +29,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "CentralCompositeInscribedDesign";
         }
 
-        public override bool computeDesign(Dictionary<string, Object> options)
+        public override bool computeDesign(Dictionary<string, string> options)
         {
             return computeDesign();
         }

@@ -185,17 +185,17 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="designOptions">The parameters used during computation of samplings.</param>
         /// <returns>True if the samplings could be computed.</returns>
-        public override bool computeDesign(Dictionary<string, object> designOptions)
+        public override bool computeDesign(Dictionary<string, string> designOptions)
         {
             int level = 3;
             int measurements = 9;
 
-            foreach (KeyValuePair<string, object> param in designOptions)
+            foreach (KeyValuePair<string, string> param in designOptions)
             {
                 if (param.Key == "level")
-                    level = (int)param.Value;
+                    level = Convert.ToInt32(param.Value);
                 if (param.Key == "measurements")
-                    measurements = (int)param.Value;
+                    measurements = Convert.ToInt32(param.Value);
 
             }
 
@@ -203,7 +203,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
 
 
-            return compute();
+            return computeDesign();
 
         }
 

@@ -8,7 +8,7 @@ using SPLConqueror_Core;
 namespace MachineLearning.Sampling.ExperimentalDesigns
 {
     /// <summary>
-    /// This design selects a speficied number of value combiantions for a set of numberic options. 
+    /// This design selects a speficied number of value combiantions for a set of numberic options. The value combinations are created using a random selection of values of the numeric options.
     /// </summary>
     public class RandomSampling : ExperimentalDesign
     {
@@ -31,22 +31,28 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "RandomSampling";
         }
 
-
+        /// <summary>
+        /// Computes the design using the default parameters. 
+        /// </summary>
+        /// <returns>True if the design could be computed using the desired parameters.</returns>
         public override bool computeDesign()
         {
             return compute();
         }
 
-        public override bool computeDesign(Dictionary<string, object> designOptions)
+        /// <summary>
+        /// Computes random samplings of the numeric option value space. The parameters for this design are a "seed", defining the random seed and the "samplingSize" defining the number of generated samples. 
+        /// </summary>
+        /// <param name="designOptions">Parameters used during the generation of this design.</param>
+        /// <returns>True if the design could be computed using the desired parameters.</returns>
+        public override bool computeDesign(Dictionary<string, string> designOptions)
         {
-
-            foreach (KeyValuePair<string, object> param in designOptions)
+            foreach (KeyValuePair<string, string> param in designOptions)
             {
                 if (param.Key == "seed")
-                    seed = (int)param.Value;
+                    seed = Convert.ToInt32(param.Value);
                 if (param.Key == "sampleSize")
-                    sampleSize = (int)param.Value;
-
+                    sampleSize = Convert.ToInt32(param.Value);
             }
 
             return compute();
@@ -54,11 +60,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         
 
 
-        /*
-         * in int numberOfSamplings: means the maximum number of metric configurations
-         * Idea: make a complete sampling using hyper sampling
-         * after that choose randomly the configuration out of this space
-         * ********************************************************************/
         private bool compute()
         {
             Random rand = new Random(seed);
