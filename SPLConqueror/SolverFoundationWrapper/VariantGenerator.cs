@@ -51,11 +51,11 @@ namespace MicrosoftSolverFoundation
 
         /// <summary>
         /// Simulates a simple method to get valid configurations of binary options of a variability model. The randomness is simulated by the modulu value.
-        /// We take only the modulu'th configuration into the result set based on the CSP solvers output.
+        /// We take only the modulu'th configuration into the result set based on the CSP solvers output. If modulu is larger than the number of valid variants, the result set is empty. 
         /// </summary>
         /// <param name="vm">The variability model containing the binary options and their constraints.</param>
         /// <param name="treshold">Maximum number of configurations</param>
-        /// <param name="modulu">Each configuration that is % modulu == 0 is taken to the result set</param>
+        /// <param name="modulu">Each configuration that is % modulu == 0 is taken to the result set. Can be less than the maximal (i.e. threshold) specified number of configurations.</param>
         /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present</returns>
         public List<List<BinaryOption>> generateRandomVariants(VariabilityModel vm, int treshold, int modulu)
         {
