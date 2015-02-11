@@ -18,9 +18,13 @@ namespace CommandLine
 
             FileInfo fi = new FileInfo(file);
             if (!fi.Exists)
-                throw new FileNotFoundException(@"Automation script not found.", file);
+                throw new FileNotFoundException(@"Automation script not found. ", file);
 
             reader = fi.OpenText();
+
+            this.start();
+
+
             
         }
 
