@@ -7,7 +7,7 @@ using System.Xml;
 namespace SPLConqueror_Core
 {
     /// <summary>
-    /// Central model to store all configuration options and their constraints
+    /// Central model to store all configuration options and their constraints.
     /// </summary>
     public class VariabilityModel
     {
