@@ -11,6 +11,12 @@ namespace MachineLearning.Learning
     public class ML_Settings
     {
 
+        public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
+
+        public LossFunction lossFunction = LossFunction.RELATIVE;
+
+        public bool noComplexitiyTreshold = false;
+
         /// <summary>
         /// The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true.
         /// </summary>
