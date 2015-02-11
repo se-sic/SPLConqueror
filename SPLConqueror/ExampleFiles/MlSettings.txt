@@ -1,3 +1,5 @@
+abbortError 1.07
+lossFunction LEASTSQUARES
 crossValidation FALSE
 numberOfRounds 19
 quadraticFunctionSupport TRUE
