@@ -13,24 +13,64 @@ namespace CommandLine
     {
 
         ML_Settings settings = null;
+
+        string binarySamplings = "";
         List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections = null;
+
+        string numericSamplings = "";
         List<Dictionary<NumericOption, double>> numericSelection = null;
 
 
+        public void addBinarySampling(string name)
+        {
+            binarySamplings += name + " ";
+        }
 
+        public void addNumericSampling(string name)
+        {
+            numericSamplings += name + " ";
+        }
 
         public void clearSampling()
         {
+            binarySamplings = "";
             binarySelections = null;
+
+            binarySamplings = "";
             numericSelection = null;
         }
 
         public void clear()
         {
             settings = ML_Settings.getDefaultSettings();
-            binarySelections = null;
-            numericSelection = null;
+            clearSampling();
         }
+
+        /// <summary>
+        /// Add a set of binary-configuration option selections to the ExperimentalState. All binary configuration options are assumed to be selected. Multiple entries of the same binary selections are removed. 
+        /// </summary>
+        /// <param name="newSelection">A set of binary configuration-option selections. All options of are assumed to be selected.</param>
+        public void addBinarySelection(List<List<BinaryOption>> newSelections)
+        {
+            if (binarySelections == null)
+                binarySelections = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
+
+            foreach (List<BinaryOption> selection in newSelections)
+            {
+                Dictionary<BinaryOption, BinaryOption.BinaryValue> newSelection = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+
+                foreach (BinaryOption bin in selection)
+                {
+                    newSelection.Add(bin, BinaryOption.BinaryValue.Selected);
+                }
+
+                if (binarySelections.Contains(newSelection))
+                    continue;
+                binarySelections.Add(newSelection);
+            }
+        
+        }
+
 
         /// <summary>
         /// Add a selection of binary-configuration options. Multiple entries of the same binary selections are removed. 

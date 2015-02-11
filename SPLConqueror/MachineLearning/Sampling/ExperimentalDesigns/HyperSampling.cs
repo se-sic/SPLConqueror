@@ -69,7 +69,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// Computes the sampling points using the default parameters of this design. 
         /// </summary>
         /// <returns></returns>
-        public override bool compute()
+        public override bool computeDesign()
         {
             return computeDesign(defaultPrecision);
         }
@@ -80,14 +80,14 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="designOptions">Paremeter of the design. </param>
         /// <returns>True if the design could be computed.</returns>
-        public override bool computeDesign(Dictionary<string, object> designOptions)
+        public override bool computeDesign(Dictionary<string, string> designOptions)
         {
             double precision = 50;
 
-            foreach (KeyValuePair<string, object> param in designOptions)
+            foreach (KeyValuePair<string, string> param in designOptions)
             {
                 if (param.Key == "precision")
-                    precision = (double)param.Value;
+                    precision = Convert.ToInt32(param.Value);
             }
             return computeDesign(precision);
         }

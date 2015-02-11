@@ -48,14 +48,14 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// Computes the design using the default parameters. 
         /// </summary>
         /// <returns>True if the computation was successful.</returns>
-        public abstract bool compute();
+        public abstract bool computeDesign();
 
         /// <summary>
         /// Computes the design using the experimental design specific parameters provided as parameter. 
         /// </summary>
         /// <param name="designOptions">Expeimental specific parameters. Keys of the dictionary are the names of the parameters and the values of the dictionary are the values of the parameters.</param>
         /// <returns>True of the computation was successful</returns>
-        public abstract bool computeDesign(Dictionary<string, Object> designOptions);
+        public abstract bool computeDesign(Dictionary<string, string> designOptions);
 
 
         /// <summary>
