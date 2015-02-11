@@ -1,0 +1,3 @@
+crossValidation FALSE
+numberOfRounds 19
+quadraticFunctionSupport TRUE

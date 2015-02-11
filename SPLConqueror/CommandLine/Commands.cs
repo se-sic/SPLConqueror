@@ -6,6 +6,8 @@ using SPLConqueror_Core;
 using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Heuristics;
 
+using MachineLearning.Learning;
+
 
 namespace CommandLine
 {
@@ -21,6 +23,8 @@ namespace CommandLine
         /// <returns></returns>
         public string performOneCommand(string line)
         {
+            InfoLog.logInfo("Command "+line);
+
 
             // remove comment part of the line (the comment starts with an #)
             line = line.Split(new Char[] { '%' }, 2)[0];
@@ -73,13 +77,26 @@ namespace CommandLine
                     // TODO add more log file functionality
                     break;
                 case "MLsettings":
+                    
+                
                     // TODO add MLsettings and dependency to ML/Sampling
+                    break;
+
+                case "load_MLsettings":
+
+                    exp.settings = ML_Settings.readSettings(task);
+
+
                     break;
 
                 case "pairWise":
                     PairWise pw = new PairWise();
                     exp.addBinarySelection(pw.generatePairWiseVariants(GlobalState.varModel));
                     exp.addBinarySampling("PW");                    
+                    break;
+
+                case "printSettings":
+                    InfoLog.logInfo(exp.settings.ToString());
                     break;
 
                 case "random":
@@ -104,6 +121,40 @@ namespace CommandLine
             }
             return "";
         }
+
+
+        private string performOneCommand_MlSetting(string command)
+        {
+            // splits the task in design and parameters of the design
+            string[] commandAndParameter = command.Split(new Char[] { ' ' }, 2);
+            string task = commandAndParameter[0];
+            string param = "";
+            if (commandAndParameter.Length > 1)
+                param = commandAndParameter[1];
+            string[] parameters = param.Split(' ');
+
+            // parsing of the parameters
+            List<NumericOption> optionsToConsider = new List<NumericOption>();
+            Dictionary<string, string> parameter = new Dictionary<string, string>();
+
+
+            foreach (string par in parameters)
+            {
+                string[] nameAndValue = par.Split(':');
+                if (nameAndValue.Length > 1)
+                    parameter.Add(nameAndValue[0], nameAndValue[1]);
+                else
+                    parameter.Add(nameAndValue[0], "");
+            }
+
+
+
+
+            return "";
+
+        }
+
+
 
         /// <summary>
         /// 
