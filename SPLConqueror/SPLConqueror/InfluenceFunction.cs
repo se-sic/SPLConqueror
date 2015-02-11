@@ -566,7 +566,7 @@ namespace SPLConqueror_Core
             return false;
         }
 
-        internal VariabilityModel getVariabilityModel()
+        public VariabilityModel getVariabilityModel()
         {
             return this.varModel;
         }

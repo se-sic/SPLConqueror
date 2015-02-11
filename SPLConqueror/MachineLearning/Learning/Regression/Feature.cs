@@ -8,6 +8,7 @@ namespace MachineLearning.Learning.Regression
 {
     public class Feature : InfluenceFunction
     {
+        internal double constant = 1.0;
 
         /// <summary>
         ///  consider x * x * y != y * y * x 
