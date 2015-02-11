@@ -14,80 +14,188 @@ namespace MachineLearning.Learning.Regression
 {
     public class FeatureSubsetSelection
     {
+        //Information about the state of learning
+        protected InfluenceModel infModel = null;
+        protected List<LearningRound> learningHistory = new List<LearningRound>();
+        protected Dictionary<Feature, InfluenceFunction> currentModel = new Dictionary<Feature, InfluenceFunction>();
+        protected List<Feature> initialFeatures = new List<Feature>();
 
-        private InfluenceModel infModel = null;
-        private ILArray<double> Y_learning, Y_validation = ILMath.empty();
-        private Dictionary<Feature, ILArray<double>> DM_columns = new Dictionary<Feature, ILArray<double>>();
-
+        //Learning and validation data sets
+        protected List<Configuration> learningSet = new List<Configuration>();
+        protected List<Configuration> validationSet = new List<Configuration>();
+        protected ILArray<double> Y_learning, Y_validation = ILMath.empty();
+        protected Dictionary<Feature, ILArray<double>> DM_columns = new Dictionary<Feature, ILArray<double>>();
+        
+        
         public FeatureSubsetSelection(InfluenceModel infModel)
         {
             this.infModel = infModel;
+            foreach (var opt in infModel.BinaryOptionsInfluence)
+                initialFeatures.Add(new Feature());
+        }
+
+        #region learning algorithm
+        
+        /// <summary>
+        /// Performs learning using an adapted feature-selection algorithm.
+        /// Learning is done in rounds, in which each round adds an additional feature (i.e., configuration option or interaction) to the current model containing all influences.
+        /// Abort criteria is derived from ML_Settings class, such as number of rounds, minimum error, etc.
+        /// </summary>
+        public void learn()
+        {
+            if (!allInformationAvailable())
+                return;
+
+            LearningRound current = new LearningRound();
+
+            while (!abortLearning(current))
+            {
+                current = performForwardStep(current);
+                learningHistory.Add(current);
+
+                if (ML_Settings.backward)
+                {
+                    current = performBackwardStep(current);
+                    learningHistory.Add(current);
+                }
+            }
+        }
+
+        
+        protected LearningRound performForwardStep(LearningRound current)
+        {
+            //Error in this round (depends on crossvalidation)
+            double minimalRoundError = Double.MaxValue;
+
+        }
+        
+
+
+        protected LearningRound performBackwardStep(LearningRound current)
+        {
+            throw new NotImplementedException();
         }
 
 
 
-        //The method builds the matrix X according to the current feature set I
-        //Example: I= f1 f2 f1#f2 -> X must be length 3 and for the following configurations the following values
-        //f1 -> 1 0 0
-        //f2 -> 0 1 0
-        //f1 f2>1 1 1
-        //Extension to numerical features: n1#n1 -> n1^2 
-        /*private ILArray<double> transformDataSetAccordingToFeatureSetI(List<List<Element>> featureSetI, List<Element> newFeature)
+        #endregion
+
+        #region Check for learning abort
+
+        protected bool abortLearning(LearningRound current)
         {
-            ILArray<double> DM;
-            if (newFeature == null)
-                DM = ILMath.zeros(featureSetI.Count, this.measurements.Keys.Count);
-            else
-                DM = ILMath.zeros(featureSetI.Count + 1, this.measurements.Keys.Count);
-            int m = 0;
-            foreach (List<Element> config in this.measurements.Keys)
-            {//Row in DM
+            if (current.round >= ML_Settings.maxRounds)
+                return true;
+            if (abortDueError(current))
+                return true;
+            return false;
+        }
 
-                for (int i = 0; i < featureSetI.Count; i++) //List<Element> currentFeatureInI in featureSetI)
-                {
-                    bool allFeaturesInConfig = true;
-                    foreach (Element feature in featureSetI[i])
-                    {
-                        if (!config.Contains(feature))
-                        {
-                            allFeaturesInConfig = false;
-                            break;
-                        }
-                    }
-                    if (allFeaturesInConfig)
-                    {
-                        DM[i, m] = 1;
-                    }
-                    // else
-                    // {
-                    //     DM[i,m] = 0;
-                    // }
-                }
+        protected bool abortDueError(LearningRound current)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
 
-                if (newFeature != null)
+        protected bool allInformationAvailable()
+        {
+            if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null)
+            {
+                ErrorLog.logError("Error: you need to specify a learning and validation set.");
+                return false;
+            }
+            return true;
+        }
+
+        #region set data set
+        /// <summary>
+        /// Converts a List of configurations with its measured value (we take the non-functional property of the global state) into a a learning matrix.
+        /// </summary>
+        /// <param name="measurements">The configurations containing the measured values.</param>
+        public void setLearningSet(List<Configuration> measurements)
+        {
+            double[] temparryLearn = new double[measurements.Count]; ;//measured values
+            for (int i = 0; i < measurements.Count; i++)
+            {
+                this.learningSet.Add(measurements[i]);
+                double val = 0;
+                try
                 {
-                    bool allFeaturesInConfig2 = true;
-                    foreach (Element feature in newFeature)
-                    {
-                        if (!config.Contains(feature))
-                        {
-                            allFeaturesInConfig2 = false;
-                            break;
-                        }
-                    }
-                    if (allFeaturesInConfig2)
-                    {
-                        DM[featureSetI.Count, m] = 1;
-                    }
-                    //   else
-                    //   {
-                    //       DM[featureSetI.Count, m] = 0;
-                    //   }
+                    val = measurements[i].GetNFPValue(GlobalState.currentNFP);
+                } catch(ArgumentException argEx) {
+                    ErrorLog.logError(argEx.Message);
+                    val = measurements[i].GetNFPValue();
                 }
-                m++;
+                temparryLearn[i] = val;
+            }
+            Y_learning = temparryLearn;
+            Y_learning = Y_learning.T;
+        }
+
+
+        /// <summary>
+        /// Converts the given configurations into a validation matrix used to compute the error for a learned model.
+        /// </summary>
+        /// <param name="measurements">The configurations containing the measured values.</param>
+        public void setValidationSet(List<Configuration> measurements)
+        {
+            double[] tempArrayValid = new double[measurements.Count];
+            for (int i = 0; i < measurements.Count; i++)
+            {
+                this.learningSet.Add(measurements[i]);
+                double val = 0;
+                try
+                {
+                    val = measurements[i].GetNFPValue(GlobalState.currentNFP);
+                }
+                catch (ArgumentException argEx)
+                {
+                    ErrorLog.logError(argEx.Message);
+                    val = measurements[i].GetNFPValue();
+                }
+                tempArrayValid[i] = val;
+            }
+            Y_validation = tempArrayValid;
+            Y_validation = Y_validation.T;
+        }
+
+        //TODO: K-fold crossvalidation
+        #endregion
+
+
+        #region Constructing data matrix for regression
+        protected ILArray<double> createDataMatrix(List<Feature> featureSet)
+        {
+            ILArray<double> DM = ILMath.zeros(featureSet.Count, this.learningSet.Count);
+            for (int i = 0; i < featureSet.Count; i++)
+            {
+                if (DM_columns.Keys.Contains(featureSet[i]))
+                    DM[ILMath.full, i] = DM_columns[featureSet[i]];
+                else
+                {
+                    generateDM_column(featureSet[i]);
+                    DM[":", i] = DM_columns[featureSet[i]];
+                }
             }
 
             return DM;
-        }*/
+        }
+
+        protected void generateDM_column(Feature feature)
+        {
+            ILArray<double> column = ILMath.zeros(this.learningSet.Count);
+            int i = 0;
+            foreach (Configuration config in this.learningSet)
+            {
+                if (feature.validConfig(config))
+                {
+                    column[i] = feature.eval(config);
+                }
+                i++;
+            }
+            this.DM_columns.Add(feature, column);
+        }
+        #endregion
+
     }
 }
