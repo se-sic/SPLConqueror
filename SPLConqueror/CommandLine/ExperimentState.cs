@@ -12,7 +12,7 @@ namespace CommandLine
     class ExperimentState
     {
 
-        ML_Settings settings = null;
+        public ML_Settings settings = null;
 
         string binarySamplings = "";
         List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections = null;
@@ -42,7 +42,7 @@ namespace CommandLine
 
         public void clear()
         {
-            settings = ML_Settings.getDefaultSettings();
+            settings = new ML_Settings();
             clearSampling();
         }
 

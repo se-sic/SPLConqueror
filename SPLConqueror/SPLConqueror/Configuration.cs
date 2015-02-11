@@ -145,6 +145,9 @@ namespace SPLConqueror_Core
         /// <returns></returns>
         public double GetNFPValue()
         {
+            if (!nfpValues.ContainsKey(GlobalState.currentNFP))
+                throw new ArgumentException("NFP not defined for configuration.");
+
             return nfpValues[GlobalState.currentNFP];
         }
 
