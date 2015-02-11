@@ -15,10 +15,20 @@ namespace MachineLearning.Learning
 
         public LossFunction lossFunction = LossFunction.RELATIVE;
 
-
+        /// <summary>
+        /// Features existing in the model can be removed during the learning procedure if removal leads to a better model.  
+        /// </summary>
         public bool useBackward = false;
 
-        public bool noComplexitiyTreshold = false;
+
+        public double abbortError = 1;
+
+        /// <summary>
+        /// Functions created during the learning procedure can not become arbitrary complex. 
+        /// </summary>
+        public bool limitFeatureSize = false;
+
+        public int featureSizeTrehold = 4;
 
         /// <summary>
         /// The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true.
@@ -83,12 +93,14 @@ namespace MachineLearning.Learning
             if (fi == null)
                 return false;
 
+            string asa = fi.FieldType.FullName;
+
             if (fi.FieldType.FullName.Equals("System.Boolean"))
             {
                 fi.SetValue(this, Convert.ToBoolean(value));
                 return true;
             }
-            if(fi.FieldType.FullName.Equals("System.Int32"))
+            if (fi.FieldType.FullName.Equals("System.Int32"))
             {
                 fi.SetValue(this, Convert.ToInt32(value));
                 return true;
@@ -98,6 +110,30 @@ namespace MachineLearning.Learning
                 fi.SetValue(this, Convert.ToInt64(value));
                 return true;
             }
+            if (fi.FieldType.FullName.Equals("MachineLearning.Learning.ML_Settings+LossFunction"))
+            {
+                if(value.Equals("RELATIVE"))
+                {
+                    fi.SetValue(this, LossFunction.RELATIVE);
+                    return true;
+                }
+                if (value.Equals("LEASTSQUARES"))
+                {
+                    fi.SetValue(this, LossFunction.LEASTSQUARES);
+                    return true;
+                }
+                if (value.Equals("ABSOLUTE"))
+                {
+                    fi.SetValue(this, LossFunction.ABSOLUTE);
+                    return true;
+                }
+            }
+            if (fi.FieldType.FullName.Equals("System.Double"))
+            {
+                fi.SetValue(this, Convert.ToDouble(value));
+                return true;
+            }
+
 
             return false;
         }
