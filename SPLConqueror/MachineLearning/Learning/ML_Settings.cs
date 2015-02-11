@@ -15,6 +15,9 @@ namespace MachineLearning.Learning
 
         public LossFunction lossFunction = LossFunction.RELATIVE;
 
+
+        public bool useBackward = false;
+
         public bool noComplexitiyTreshold = false;
 
         /// <summary>
@@ -37,7 +40,6 @@ namespace MachineLearning.Learning
         /// Defines the number of rounds the learning process have to be performed. 
         /// </summary>
         public int numberOfRounds = 30;
-
 
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
@@ -96,6 +98,7 @@ namespace MachineLearning.Learning
                 fi.SetValue(this, Convert.ToInt64(value));
                 return true;
             }
+
             return false;
         }
 
