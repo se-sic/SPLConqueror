@@ -24,7 +24,7 @@ namespace CommandLine
         /// <returns></returns>
         public string performOneCommand(string line)
         {
-            InfoLog.logInfo("Command "+line);
+            InfoLog.logInfo("Command: "+line);
 
 
             // remove comment part of the line (the comment starts with an #)
@@ -53,7 +53,7 @@ namespace CommandLine
                     break;
                 case "all":
                     GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
-                    SPLConqueror_Core.ErrorLog.logError("Configurations loaded.");
+                    InfoLog.logInfo("Configurations loaded.");
 
                     break;
                 case "allBoolean": // all binary configurations 
@@ -109,6 +109,11 @@ namespace CommandLine
                         break;
                     }
                 case "start":
+
+
+
+
+
                     // starts the machine learning 
                     break;
 
