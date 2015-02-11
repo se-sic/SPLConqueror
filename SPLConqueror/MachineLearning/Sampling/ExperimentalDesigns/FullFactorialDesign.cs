@@ -36,7 +36,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return true;
         }
 
-        public override bool computeDesign(Dictionary<string, Object> options)
+        public override bool computeDesign(Dictionary<string, string> options)
         {
             return computeDesign();
         }
