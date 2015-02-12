@@ -1,0 +1,10 @@
+PREFIX numOpt18%;%numOpt20.4%;% POSTFIX 
+PREFIX numOpt18%;%numOpt20.8%;% POSTFIX 
+PREFIX numOpt18%;%numOpt21.6%;% POSTFIX 
+PREFIX numOpt16%;%numOpt20.8%;% POSTFIX 
+PREFIX numOpt12%;%numOpt26.4%;% POSTFIX 
+PREFIX numOpt16%;%numOpt20.1%;% POSTFIX 
+PREFIX numOpt110%;%numOpt26.4%;% POSTFIX 
+PREFIX numOpt14%;%numOpt26.4%;% POSTFIX 
+PREFIX numOpt110%;%numOpt21.6%;% POSTFIX 
+PREFIX numOpt12%;%numOpt20.4%;% POSTFIX 

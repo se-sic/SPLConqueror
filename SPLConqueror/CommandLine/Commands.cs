@@ -9,6 +9,7 @@ using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Learning;
 using MachineLearning.Solver;
 
+using MachineLearning.Learning.Regression;
 
 namespace CommandLine
 {
@@ -67,8 +68,8 @@ namespace CommandLine
                     break;
                 case "featureWise":
                     FeatureWise fw = new FeatureWise();
-                    exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                    //exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                    //exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                    exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
                     exp.addBinarySampling("FW");
 
                     break;
@@ -98,9 +99,32 @@ namespace CommandLine
                     InfoLog.logInfo(exp.mlSettings.ToString());
                     break;
 
-                case "printConfigs": 
-                    // TODO
+                case "printConfigs":
+                    {
+                        List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection;
+                        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySampling = exp.BinarySelections;
 
+                        List<Configuration> configurations = new List<Configuration>();
+
+                        foreach (Dictionary<NumericOption, double> numeric in numericSampling)
+                        {
+                            //foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySampling)
+                            //{
+                                Configuration config = Configuration.getConfiguration(new List<BinaryOption>(), numeric);
+                                if (!configurations.Contains(config))
+                                {
+                                    configurations.Add(config);
+                                }
+                            //}
+                        }
+
+                        string[] para = task.Split(new char[] { ' ' });
+
+                        ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2]);
+                        printer.print(configurations);
+
+                        break;
+                    }
                 case "random":
                     {
                         string[] para = task.Split(new char[] { ' ' });
@@ -113,12 +137,30 @@ namespace CommandLine
                         break;
                     }
                 case "start":
+                    {
+                        List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection;
+                        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySampling = exp.BinarySelections;
+
+                        List<Configuration> configurations = new List<Configuration>();
+
+                        foreach(Dictionary<NumericOption, double> numeric in numericSampling)
+                        {
+                            foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySampling)
+                            {
+                                Configuration config = Configuration.getConfiguration(binary, numeric);
+                                if (!configurations.Contains(config))
+                                {
+                                    configurations.Add(config);
+                                }
+                            }
+                        }
+                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                    
+                        // starts the machine learning 
+                        FeatureSubsetSelection fss = new FeatureSubsetSelection(infMod,exp.mlSettings);
 
 
-
-
-
-                    // starts the machine learning 
+                    }
                     break;
 
                 case "trueModel":

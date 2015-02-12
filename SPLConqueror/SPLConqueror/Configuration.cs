@@ -51,6 +51,25 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// Creates a configuration with the given set an binary and numeric features selected. Binary features existing in the variablity model and not in the given set of binary options are assumed to have
+        /// their default value.
+        /// </summary>
+        /// <param name="binarySelection">A valid set of binary options.</param>
+        /// <param name="numericSelection">A valid selection of values of numeric options.</param>
+        public Configuration(Dictionary<BinaryOption, BinaryOption.BinaryValue> binarySelection, Dictionary<NumericOption, double> numericSelection)
+        {
+            binaryOptions = enrichBinarySelection(binarySelection);
+            numericOptions = numericSelection;
+            identifier = generateIdentifier(DEFAULT_SEPARATOR);
+        }
+
+
+        public void update()
+        {
+            identifier = generateIdentifier(DEFAULT_SEPARATOR);
+        }
+
+        /// <summary>
         /// Constructor to create a new configuration based on selected binary options.
         /// </summary>
         /// <param name="binaryConfig">A list of SELECTED binary configuration options</param>
@@ -74,6 +93,7 @@ namespace SPLConqueror_Core
                         this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Deselected);
                 }
             }
+            identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
 
 
@@ -225,7 +245,33 @@ namespace SPLConqueror_Core
         {
             Configuration result = new Configuration(selectedBinaryOptions, null);
             result.numericOptions = numericOptions;
+            result.update();
             return result;
         }
+
+
+        /// <summary>
+        /// Generates a new Configuration based on the given selected binary Options and the set values of the numeric options.
+        /// However, it has not yet any measured values.
+        /// </summary>
+        /// <param name="selectedBinaryOptions">A dictionary of binary options with the information whether option is selected or deselected.</param>
+        /// <param name="numericOptions">A map of numeric option and their corresponding value.</param>
+        /// <returns>A new configuration objects with the given selections</returns>
+        public static Configuration getConfiguration(Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions, Dictionary<NumericOption, double> numericOptions)
+        {
+            List<BinaryOption> selectedBinaryOptions = new List<BinaryOption>();
+            foreach (KeyValuePair<BinaryOption, BinaryOption.BinaryValue> binary in binaryOptions)
+            {
+                if (binary.Value == BinaryOption.BinaryValue.Selected)
+                    selectedBinaryOptions.Add(binary.Key);
+            }
+
+
+            Configuration result = new Configuration(selectedBinaryOptions, null);
+            result.numericOptions = numericOptions;
+            result.update();
+            return result;
+        }
+
     }
 }

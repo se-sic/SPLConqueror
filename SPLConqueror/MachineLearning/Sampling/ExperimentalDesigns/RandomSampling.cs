@@ -14,7 +14,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     {
         private int seed = 0;
 
-        private int sampleSize = 100;
+        private int sampleSize = 10;
 
         public RandomSampling(List<NumericOption> options)
             : base(options)
