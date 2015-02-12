@@ -48,6 +48,8 @@ namespace MachineLearning.Sampling.Heuristics
             Solver.CheckConfigSAT checkSAT = new Solver.CheckConfigSAT(null);
             Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
             //Generating new configurations: one per option
+            if (checkSAT.checkConfigurationSAT(firstLevelMandatoryFeatures, vm))
+                this.configurations.Add(firstLevelMandatoryFeatures);
             foreach (BinaryOption e in binOptions)
             {
                 BinaryOption[] temp = new BinaryOption[firstLevelMandatoryFeatures.Count];

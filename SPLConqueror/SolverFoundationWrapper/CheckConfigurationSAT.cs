@@ -13,7 +13,7 @@ namespace MicrosoftSolverFoundation
 {
     [Export(typeof(MachineLearning.Solver.ICheckConfigSAT))]
     [ExportMetadata("SolverType", "MSSolverFoundation")]
-	class CheckConfigurationSAT : ICheckConfigSAT
+    class CheckConfigurationSAT : ICheckConfigSAT
 	{
         /// <summary>
         /// Checks whether the boolean selection is valid w.r.t. the variability model. Does not check for numeric options' correctness.
@@ -51,8 +51,8 @@ namespace MicrosoftSolverFoundation
                     if (sol.GetIntegerValue(cT) == 1)
                         count++;
                 }
-                //-1??? Needs testing TODO
-				if (count-1 != config.Count)
+                //Needs testing TODO
+				if (count != config.Count)
 				{
 					return false;
 				}
