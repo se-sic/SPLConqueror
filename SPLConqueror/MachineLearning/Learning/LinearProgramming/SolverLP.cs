@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using SPLConqueror_Core;
+using System.IO;
 
 namespace MachineLearning.Learning.LinearProgramming
 {
@@ -15,13 +16,36 @@ namespace MachineLearning.Learning.LinearProgramming
         [ImportMany]
         IEnumerable<Lazy<ISolverLP,ISolverType>> solvers;
         
-        public SolverLP()
+        public SolverLP(String pathToDll)
         {
             //An aggregate catalog that combines multiple catalogs
             var catalog = new AggregateCatalog();
             //Adds all the parts found in the same assembly as the Program class
             catalog.Catalogs.Add(new AssemblyCatalog(typeof(SolverLP).Assembly));
-            catalog.Catalogs.Add(new DirectoryCatalog(@"C:\Workspace\splconqueror\PLM\bin\Debug"));
+            String location = AppDomain.CurrentDomain.BaseDirectory;
+#if release
+                if(pathToDLL != null && pathToDll.Length > 0)
+                    location = pathToDll;
+                else
+                    location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release").Length)));
+
+#else
+            if (pathToDll != null && pathToDll.Length > 0)
+                location = pathToDll;
+            else
+                location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug").Length)));
+#endif
+
+            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing tailing dir sep
+            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing project path
+
+#if release
+            catalog.Catalogs.Add(new DirectoryCatalog(location);
+            location = location + Path.DirectorySeparatorChar + "SolverFoundationWrapper" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release";
+#else
+            location = location + Path.DirectorySeparatorChar + "SolverFoundationWrapper" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug";
+#endif
+            catalog.Catalogs.Add(new DirectoryCatalog(location));
 
             //Create the CompositionContainer with the parts in the catalog
             _container = new CompositionContainer(catalog);
