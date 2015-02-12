@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CommandLine
+namespace Test
 {
-    abstract class Script
+    class Program
     {
-        public Script(string file)
+        static void Main(string[] args)
         {
 
+
+
         }
-
-
     }
 }
