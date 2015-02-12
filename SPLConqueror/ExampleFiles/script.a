@@ -3,3 +3,4 @@ vm D:\SPLConquerorGitHub\SPLConqueror\ExampleFiles\foo.xml
 printSettings 
 featureWise
 expDesign random
+printConfigs D:\SPLConquerorGitHub\SPLConqueror\ExampleFiles\ConfigurationsByPrinter.txt PREFIX POSTFIX

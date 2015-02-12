@@ -20,6 +20,23 @@ namespace CommandLine
         string numericSamplings = "";
         List<Dictionary<NumericOption, double>> numericSelection = null;
 
+        public List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> BinarySelections
+        {
+            get
+            {
+                return this.binarySelections;
+            }
+            
+        }
+
+        public List<Dictionary<NumericOption, double>> NumericSelection
+        {
+            get
+            {
+                return this.numericSelection;
+            }
+
+        }
 
         /// <summary>
         /// Adds the identifier of a binary sampling method to a logging sting. 
