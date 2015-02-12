@@ -70,7 +70,7 @@ namespace MachineLearning.Learning.Regression
         {
 
         }
-
+        internal Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
 
     }
 }
