@@ -29,7 +29,7 @@ namespace CommandLine
 
 
             // remove comment part of the line (the comment starts with an #)
-            line = line.Split(new Char[] { '%' }, 2)[0];
+            line = line.Split(new Char[] { '#' }, 2)[0];
             if (line.Length == 0)
                 return "";
 
@@ -81,7 +81,7 @@ namespace CommandLine
 
                 case "log":
                     // Define log file. 
-
+                    
                     // TODO add more log file functionality
                     break;
                 case "MLsettings":
@@ -168,9 +168,6 @@ namespace CommandLine
                     }
                     break;
 
-                case "trueModel":
-                    // True model stored in GlobalState?
-                    break;
                 case "negFW":
                     // TODO there are two different variants in generating NegFW configurations. 
                     NegFeatureWise neg = new NegFeatureWise();
@@ -219,7 +216,7 @@ namespace CommandLine
 
         /// <summary>
         /// 
-        /// Note: An experimental design might have parameters and might consider only a specific set of numeric options. 
+        /// Note: An experimental design might have parameters and also consider only a specific set of numeric options. 
         ///         [option1,option3,...,optionN] param1:value param2:value
         /// </summary>
         /// <param name="task"></param>
