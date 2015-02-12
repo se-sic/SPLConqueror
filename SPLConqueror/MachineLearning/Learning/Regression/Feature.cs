@@ -11,7 +11,7 @@ namespace MachineLearning.Learning.Regression
         internal double constant = 1.0;
 
         /// <summary>
-        ///  consider x * x * y != y * y * x 
+        /// Compares two features based on the components of the functions. 
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -25,22 +25,44 @@ namespace MachineLearning.Learning.Regression
             if (thisFuntion.Length != otherFunction.Length)
                 return false;
 
-            for (int i = 0; i < otherFunction.Length; i++)
+            Dictionary<string, int> thisParts = new Dictionary<string, int>();
+            foreach (string part in thisFuntion)
             {
-                otherFunction[i] = otherFunction[i].Trim(); 
+                if (thisParts.ContainsKey(part))
+                {
+                    int value = thisParts[part] + 1;
+                    thisParts.Remove(part);
+                    thisParts.Add(part, value);
+                }
+                else
+                {
+                    thisParts.Add(part, 1);
+                }
             }
 
-            foreach (string thisPart in thisFuntion)
+
+            foreach (string part in otherFunction)
             {
-                string x = thisPart.Trim();
-                if (!otherFunction.Contains(x))
+                if (thisParts.ContainsKey(part))
+                {
+                    int remainingNumber = thisParts[part] - 1;
+                    thisParts.Remove(part);
+                    if (remainingNumber > 0)
+                    {
+                        thisParts.Add(part, remainingNumber);
+                    }
+
+                }
+                else
                 {
                     return false;
                 }
             }
 
+            if (thisParts.Count > 0)
+                return false;
 
-            return false;
+            return true;
         }
 
         public Feature(Feature original, Feature toAdd, VariabilityModel vm)
