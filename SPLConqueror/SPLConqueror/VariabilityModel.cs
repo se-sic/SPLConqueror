@@ -131,6 +131,8 @@ namespace SPLConqueror_Core
 
             xmlroot.AppendChild(boolConstraints);
 
+            doc.AppendChild(xmlroot);
+
             try
             {
                 doc.Save(path);
@@ -232,6 +234,11 @@ namespace SPLConqueror_Core
         {
             if (option.Name.Contains('-') || option.Name.Contains('+'))
                 return false;
+
+            // the vitrual root configuration option does not have to be added to the variability model. 
+            if (option.Name.Equals("root"))
+                return true;
+
             foreach (var opt in binaryOptions)
             {
                 if (opt.Name.Equals(option.Name))

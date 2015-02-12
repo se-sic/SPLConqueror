@@ -67,7 +67,8 @@ namespace CommandLine
                     break;
                 case "featureWise":
                     FeatureWise fw = new FeatureWise();
-                    exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                    exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                    //exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
                     exp.addBinarySampling("FW");
 
                     break;
@@ -96,6 +97,9 @@ namespace CommandLine
                 case "printSettings":
                     InfoLog.logInfo(exp.mlSettings.ToString());
                     break;
+
+                case "printConfigs": 
+                    // TODO
 
                 case "random":
                     {
@@ -189,24 +193,26 @@ namespace CommandLine
             List<NumericOption> optionsToConsider = new List<NumericOption>();
             Dictionary<string, string> parameter = new Dictionary<string, string>();
 
-
-            foreach (string par in parameters)
+            if (param.Length > 0)
             {
-                if (par.Contains("["))
+                foreach (string par in parameters)
                 {
-                    string[] options = par.Substring(1, par.Length - 2).Split(',');
-                    foreach (string option in options)
+                    if (par.Contains("["))
                     {
-                        optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
+                        string[] options = par.Substring(1, par.Length - 2).Split(',');
+                        foreach (string option in options)
+                        {
+                            optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
+                        }
+                    }
+                    else
+                    {
+                        string[] nameAndValue = par.Split(':');
+                        parameter.Add(nameAndValue[0], nameAndValue[1]);
                     }
                 }
-                else
-                {
-                    string[] nameAndValue = par.Split(':');
-                    parameter.Add(nameAndValue[0], nameAndValue[1]);
-                }
-            }
 
+            }
             if (optionsToConsider.Count == 0)
                 optionsToConsider = GlobalState.varModel.NumericOptions;
 

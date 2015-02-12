@@ -36,7 +36,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// A function that computes each value within the value range of that option
         /// </summary>
-        internal InfluenceFunction StepFunction
+        public InfluenceFunction StepFunction
         {
             get { return stepFunction; }
             set { stepFunction = value; }
