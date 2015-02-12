@@ -131,5 +131,46 @@ namespace SPLConqueror_Core
             return false;
         }
 
+        /// <summary>
+        /// Collects all options that are excluded by this option and that have the same parent
+        /// </summary>
+        /// <returns>The list of alternative options</returns>
+        public List<ConfigurationOption> collectAlternativeOptions()
+        {
+            List<ConfigurationOption> result = new List<ConfigurationOption>();
+            foreach (var exclOptions in Excluded_Options)
+            {
+                if (exclOptions.Count != 1)
+                    continue;
+                if (exclOptions[0].Parent == this.Parent)
+                    result.Add(exclOptions[0]);
+            }
+            return result;
+        }
+
+
+        /// <summary>
+        /// Collects all options that are excluded by this option, but do not have the same parent
+        /// </summary>
+        /// <returns>The list of cross-tree excluded options.</returns>
+        public List<List<ConfigurationOption>> getNonAlternativeExlcudedOptions()
+        {
+            List<List<ConfigurationOption>> result = new List<List<ConfigurationOption>>();
+            foreach (var exclOptions in Excluded_Options)
+            {
+                List<ConfigurationOption> temp = new List<ConfigurationOption>();
+                if (exclOptions.Count != 1)
+                {
+                    result.Add(temp);
+                    continue;
+                }
+                if (exclOptions[0].Parent != this.Parent)
+                {
+                    result.Add(exclOptions);
+                }
+            }
+
+            return result;
+        }
     }
 }

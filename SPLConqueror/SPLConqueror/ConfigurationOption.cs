@@ -316,5 +316,10 @@ namespace SPLConqueror_Core
             }
             return sb.ToString();
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
