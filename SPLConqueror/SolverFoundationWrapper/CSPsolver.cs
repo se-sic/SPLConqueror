@@ -64,7 +64,9 @@ namespace MicrosoftSolverFoundation
                 if (current.Parent == null || current.Parent == vm.Root)
                 {
                     if (current.Optional == false && current.Excluded_Options.Count == 0)
-                            S.AddConstraints(S.Implies(S.True, cT));
+                        S.AddConstraints(S.Implies(S.True, cT));
+                    else
+                        S.AddConstraints(S.Implies(cT, optionToTerm[vm.Root]));
                 }
 
                 if (current.Parent != null && current.Parent != vm.Root)

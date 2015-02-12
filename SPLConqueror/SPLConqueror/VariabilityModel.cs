@@ -194,7 +194,7 @@ namespace SPLConqueror_Core
         {
             foreach (var binOpt in binaryOptions)
                 binOpt.init();
-            foreach (var numOpt in binaryOptions)
+            foreach (var numOpt in numericOptions)
                 numOpt.init();
         }
 
