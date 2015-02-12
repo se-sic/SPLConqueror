@@ -33,7 +33,7 @@ namespace MicrosoftSolverFoundation
             ConstraintSolverSolution soln = S.Solve();
 
             
-            while (soln.HasFoundSolution && soln.Quality == ConstraintSolverSolution.SolutionQuality.Optimal)
+            while (soln.HasFoundSolution)
             {
                 List<BinaryOption> config = new List<BinaryOption>();
                 foreach (CspTerm cT in variables)
