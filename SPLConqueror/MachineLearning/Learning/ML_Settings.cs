@@ -21,7 +21,7 @@ namespace MachineLearning.Learning
         public bool useBackward = false;
 
 
-        public double abbortError = 1;
+        public double abortError = 1;
 
         /// <summary>
         /// Functions created during the learning procedure can not become arbitrary complex. 

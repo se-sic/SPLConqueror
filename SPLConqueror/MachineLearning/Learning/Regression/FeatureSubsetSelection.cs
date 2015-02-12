@@ -18,9 +18,9 @@ namespace MachineLearning.Learning.Regression
         //Information about the state of learning
         protected InfluenceModel infModel = null;
         protected List<LearningRound> learningHistory = new List<LearningRound>();
-        //protected Dictionary<Feature, InfluenceFunction> currentModel = new Dictionary<Feature, InfluenceFunction>();
         protected List<Feature> initialFeatures = new List<Feature>();
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
+        protected ML_Settings MLsettings = null;
 
         //Learning and validation data sets
         protected List<Configuration> learningSet = new List<Configuration>();
@@ -32,9 +32,10 @@ namespace MachineLearning.Learning.Regression
         /// Constructor of the learning class. It reads all configuration options and generates candidates for possible influences (i.e., features).
         /// </summary>
         /// <param name="infModel">The influence model which will later hold all determined influences and contains the variability model from which we derive all configuration options.</param>
-        public FeatureSubsetSelection(InfluenceModel infModel)
+        public FeatureSubsetSelection(InfluenceModel infModel, ML_Settings settings)
         {
             this.infModel = infModel;
+            this.MLsettings = settings;
             foreach (var opt in infModel.Vm.BinaryOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
@@ -51,7 +52,7 @@ namespace MachineLearning.Learning.Regression
             foreach (var influence in knownInfluences)
             {
                 if(!strict)
-                    initialFeatures.Add(new Feature(influence.ToString(), this.infModel.Vm);
+                    initialFeatures.Add(new Feature(influence.ToString(), this.infModel.Vm));
                 else
                     strictlyMandatoryFeatures.Add(new Feature(infModel.ToString(),this.infModel.Vm));
             }
@@ -73,17 +74,19 @@ namespace MachineLearning.Learning.Regression
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.featureSet.AddRange(this.strictlyMandatoryFeatures);
 
-            while (!abortLearning(current))
+
+            do 
             {
                 current = performForwardStep(current);
                 learningHistory.Add(current);
 
-                if (ML_Settings.backward)
+                if (this.MLsettings.useBackward)
                 {
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
                 }
-            }
+            } while (!abortLearning(current));
+            
         }
 
         
@@ -108,7 +111,7 @@ namespace MachineLearning.Learning.Regression
             {
                 List<Feature> newModel = copyCombination(currentModel.featureSet);
                 newModel.Add(candidate);
-                if (!learnModel(newModel))
+                if (!fitModel(newModel))
                     continue;
 
                 double errorOfModel = computeModelError(newModel);
@@ -123,7 +126,7 @@ namespace MachineLearning.Learning.Regression
 
 
 
-        private bool learnModel(List<Feature> newModel)
+        private bool fitModel(List<Feature> newModel)
         {
             ILArray<double> DM = createDataMatrix(newModel);
             if (DM.Size.NumberOfElements == 0)
@@ -164,16 +167,60 @@ namespace MachineLearning.Learning.Regression
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="currentModel"></param>
         /// <param name="basicFeature"></param>
-        /// <returns></returns>
-        protected List<Feature> generateCandidates(List<Feature> list, Feature basicFeature)
+        /// <returns>Returns a list of candidates that can be added to the current model.</returns>
+        protected List<Feature> generateCandidates(List<Feature> currentModel, Feature basicFeature)
         {
+            List<Feature> listOfCandidates = new List<Feature>();
+            //add the feature to the list of candidates if it is not already in the model
+            if (!currentModel.Contains(basicFeature))
+                listOfCandidates.Add(basicFeature);
 
-
-            if (ML_Settings.quadraticFunctionSupport && basicFeature.participatingNumFeatures.Count > 0)
-            { 
+            foreach (var feature in currentModel)
+            {
+                if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                    continue;
+                Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                if (!currentModel.Contains(newCandidate))
+                    listOfCandidates.Add(newCandidate);
             }
+
+            //if basic feature represents a numeric option and quadratic function support is activated, then we add a feature representing a quadratic functions of this feature
+            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumFeatures.Count > 0)
+            {
+                Feature newCandidate = new Feature(basicFeature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                if (!currentModel.Contains(newCandidate))
+                    listOfCandidates.Add(newCandidate);
+                
+                foreach (var feature in currentModel)
+                {
+                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                        continue;
+                    newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                    if (!currentModel.Contains(newCandidate))
+                        listOfCandidates.Add(newCandidate);
+                }
+            }
+
+            //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
+            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumFeatures.Count > 0)
+            {
+                Feature newCandidate = new Feature("log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
+                if (!currentModel.Contains(newCandidate))
+                    listOfCandidates.Add(newCandidate);
+
+                foreach (var feature in currentModel)
+                {
+                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                        continue;
+                    newCandidate = new Feature(feature.ToString() + " * log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
+                    if (!currentModel.Contains(newCandidate))
+                        listOfCandidates.Add(newCandidate);
+                }
+            }
+
+            return listOfCandidates;
         }
         
 
@@ -190,8 +237,27 @@ namespace MachineLearning.Learning.Regression
         #region error computation
         private double computeValidationError(List<Feature> currentModel)
         {
+            return computeError(currentModel, this.validationSet);
+        }
+
+        private double estimate(List<Feature> currentModel, Configuration c)
+        {
+            double prediction = 0;
+            for (int i = 0; i < currentModel.Count; i++)
+            {
+                ////First check whether the configuration options of the current feature are present in the configuration
+                if (currentModel[i].validConfig(c))
+                {
+                    prediction += currentModel[i].eval(c) * currentModel[i].constant;
+                }
+            }
+            return prediction;
+        }
+
+        private double computeError(List<Feature> currentModel, List<Configuration> configs)
+        {
             double error_sum = 0;
-            foreach (Configuration c in this.validationSet)
+            foreach (Configuration c in configs)
             {
                 double estimatedValue = estimate(currentModel, c);
                 double realValue = 0;
@@ -206,7 +272,7 @@ namespace MachineLearning.Learning.Regression
                 }
 
                 double error = 0;
-                switch (ML_Settings.lossFunction)
+                switch (this.MLsettings.lossFunction)
                 {
                     case ML_Settings.LossFunction.RELATIVE:
                         error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
@@ -215,35 +281,28 @@ namespace MachineLearning.Learning.Regression
                         error = Math.Pow(realValue - estimatedValue, 2);
                         break;
                     case ML_Settings.LossFunction.ABSOLUTE:
+
                         break;
                 }
                 error_sum += error;
             }
-            return error_sum / this.validationSet.Count;
-        }
-
-        private double estimate(List<Feature> currentModel, Configuration c)
-        {
-            double prediction = 0;
-            for (int i = 0; i < currentModel.Count; i++)
-            {
-                ////First check whether the current feature or combination of feature is present in the current configuration
-                if (currentModel[i].validConfig(c))
-                {
-                    prediction += currentModel[i].eval(c) * currentModel[i].constant;
-                }
-            }
-            return prediction;
+            return error_sum / configs.Count;
         }
 
         private double computeLearningError(List<Feature> currentModel)
         {
-            throw new NotImplementedException();
+            return computeError(currentModel, this.learningSet);
         }
 
         private double computeModelError(List<Feature> currentModel)
         {
-            throw new NotImplementedException();
+            if (!this.MLsettings.crossValidation)
+                return computeValidationError(currentModel);
+            else
+            {
+                return (computeLearningError(currentModel) + computeValidationError(currentModel) / 2);
+            }
+            //todo k-fold
         }
         #endregion
 
@@ -251,7 +310,7 @@ namespace MachineLearning.Learning.Regression
 
         protected bool abortLearning(LearningRound current)
         {
-            if (current.round >= ML_Settings.maxRounds)
+            if (current.round >= this.MLsettings.numberOfRounds)
                 return true;
             if (abortDueError(current))
                 return true;
@@ -260,13 +319,26 @@ namespace MachineLearning.Learning.Regression
 
         protected bool abortDueError(LearningRound current)
         {
-            throw new NotImplementedException();
+            if (current.validationError == 0)
+                return true;
+
+            double error = 0;
+            if (this.MLsettings.crossValidation)
+                error = (current.learningError + current.validationError) / 2;
+            else
+                error = current.validationError;
+
+
+            if (error < this.MLsettings.abortError)
+                return true;
+            else
+                return false;
         }
         #endregion
 
         protected bool allInformationAvailable()
         {
-            if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null)
+            if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null || this.MLsettings == null)
             {
                 ErrorLog.logError("Error: you need to specify a learning and validation set.");
                 return false;
