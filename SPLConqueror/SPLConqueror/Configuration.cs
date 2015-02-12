@@ -51,9 +51,10 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// 
+        /// Constructor to create a new configuration based on selected binary options.
         /// </summary>
-        /// <param name="binaryConfig"></param>
+        /// <param name="binaryConfig">A list of SELECTED binary configuration options</param>
+        /// <param name="vm">The variability model containing the remaining binary options. Can be null.</param>
         public Configuration(List<BinaryOption> binaryConfig, VariabilityModel vm)
         {
             if (vm == null)
@@ -65,7 +66,13 @@ namespace SPLConqueror_Core
             }
             else
             {
-
+                foreach (var opt in vm.BinaryOptions)
+                {
+                    if (binaryConfig.Contains(opt))
+                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
+                    else
+                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Deselected);
+                }
             }
         }
 
@@ -74,7 +81,7 @@ namespace SPLConqueror_Core
         /// Returns an identifier describing the choice of binary configuration options and numeric configuration-option values of the configuration. 
         /// The default separator is used in the identifier. 
         /// </summary>
-        /// <returns>the identifier</returns>
+        /// <returns>The identifier for that configuration.</returns>
         public string getIdentifier()
         {
             return identifier;
@@ -191,6 +198,11 @@ namespace SPLConqueror_Core
         }
 
 
+        /// <summary>
+        /// This method returns a list of binary options that comply to the given configuration value.
+        /// </summary>
+        /// <param name="binaryValue">The configuration value ((DE-)Selected).</param>
+        /// <returns>The list of binary options according to the given value.</returns>
         public List<BinaryOption> getBinaryOptions(BinaryOption.BinaryValue binaryValue)
         {
             List<BinaryOption> result = new List<BinaryOption>();
@@ -199,6 +211,20 @@ namespace SPLConqueror_Core
                 if(bin.Value.Equals(binaryValue))
                     result.Add(bin.Key);
 
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a new Configuration based on the given selected binary Options and the set values of the numeric options.
+        /// However, it has not yet any measured values.
+        /// </summary>
+        /// <param name="selectedBinaryOptions">A list of SELECTED binary options.</param>
+        /// <param name="numericOptions">A map of numeric option and their corresponding value.</param>
+        /// <returns>A new configuration objects with the given selections</returns>
+        public static Configuration getConfiguration(List<BinaryOption> selectedBinaryOptions, Dictionary<NumericOption, double> numericOptions)
+        {
+            Configuration result = new Configuration(selectedBinaryOptions, null);
+            result.numericOptions = numericOptions;
             return result;
         }
     }
