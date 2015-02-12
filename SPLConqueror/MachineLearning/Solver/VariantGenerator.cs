@@ -18,51 +18,39 @@ namespace MachineLearning.Solver
         [ImportMany]
         IEnumerable<Lazy<IVariantGenerator, ISolverType>> solvers;
 
-        public VariantGenerator()
+        public VariantGenerator(String pathToDll)
         {
-            ccs = new CheckConfigSAT();
+            ccs = new CheckConfigSAT(null);
             //An aggregate catalog that combines multiple catalogs
             var catalog = new AggregateCatalog();
             //Adds all the parts found in the same assembly as the Program class
             catalog.Catalogs.Add(new AssemblyCatalog(typeof(VariantGenerator).Assembly));
             String location = AppDomain.CurrentDomain.BaseDirectory;
 
-            String commandLineOrSingleSPLConfig = "";
-            if (location.Contains("CommandLine"))
-                commandLineOrSingleSPLConfig = "CommandLine";
-            if (location.Contains("SingleSPLConfig"))
-                commandLineOrSingleSPLConfig = "SingleSPLConfig";
-
-
-            if (location.Contains("CommandLine") || location.Contains("SingleSPLConfig"))
-            {
+           
 #if release
-                location = location.Substring(0, (location.Length - ((commandLineOrSingleSPLConfig + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release").Length)));
-#else
-                location = location.Substring(0, (location.Length - ((commandLineOrSingleSPLConfig + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug").Length)));
-#endif
-            }
-            else
-#if release
-                location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release").Length)));
-
+                if(pathToDLL != null && pathToDll.Length > 0)
+                    location = pathToDll;
+                else
+                    location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release").Length)));
 
 #else
-                location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug").Length)));
+                if (pathToDll != null && pathToDll.Length > 0)
+                    location = pathToDll;
+                else
+                    location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug").Length)));
 #endif
 
-            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));
+            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing tailing dir sep
+            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing project path
+            
 #if release
-            catalog.Catalogs.Add(new DirectoryCatalog(location + Path.DirectorySeparatorChar + "PLM" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release"));
+            catalog.Catalogs.Add(new DirectoryCatalog(location);
+            location = location + Path.DirectorySeparatorChar + "SolverFoundationWrapper" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release";
 #else
-            String dir = location + Path.DirectorySeparatorChar + "PLM" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug";
-            DirectoryInfo dinfo = new DirectoryInfo(dir);
-            if (dinfo.Exists)
-                catalog.Catalogs.Add(new DirectoryCatalog(dir));
-            else
-                catalog.Catalogs.Add(new DirectoryCatalog(location));
-            //catalog.Catalogs.Add(new DirectoryCatalog(location + Path.DirectorySeparatorChar + "PLM" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug"));
+            location = location + Path.DirectorySeparatorChar + "SolverFoundationWrapper" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug";
 #endif
+            catalog.Catalogs.Add(new DirectoryCatalog(location));
             //Create the CompositionContainer with the parts in the catalog
             _container = new CompositionContainer(catalog);
 

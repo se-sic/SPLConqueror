@@ -131,7 +131,7 @@ namespace CommandLine
                         int treshold = Convert.ToInt32(para[0]);
                         int modulu = Convert.ToInt32(para[1]);
 
-                        VariantGenerator vg = new VariantGenerator();
+                        VariantGenerator vg = new VariantGenerator(null);
                         exp.addBinarySelection(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
                         exp.addBinarySampling("random " + task);
                         break;
