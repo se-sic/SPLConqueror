@@ -13,14 +13,14 @@ namespace MachineLearning.Solver
     public class VariantGenerator : IVariantGenerator
     {
         private CompositionContainer _container;
-        CheckConfigSAT ccs = null;
+       // CheckConfigSAT ccs = null;
 
         [ImportMany]
         IEnumerable<Lazy<IVariantGenerator, ISolverType>> solvers;
 
         public VariantGenerator(String pathToDll)
         {
-            ccs = new CheckConfigSAT(null);
+        //    ccs = new CheckConfigSAT(null);
             //An aggregate catalog that combines multiple catalogs
             var catalog = new AggregateCatalog();
             //Adds all the parts found in the same assembly as the Program class
