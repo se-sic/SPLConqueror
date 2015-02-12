@@ -78,45 +78,49 @@ namespace MicrosoftSolverFoundation
                 //Alternative or other exclusion constraints                
                 if (current.Excluded_Options.Count > 0)
                 {
-                    foreach (List<ConfigurationOption> excludedOption in current.Excluded_Options)
+                    List<ConfigurationOption> alternativeOptions = current.collectAlternativeOptions();
+                    if (alternativeOptions.Count > 0)
                     {
-                        //Do these options have the same parent? If so, then these are alternative options
-                        if (current.isAlternativeGroup(excludedOption))
-                        {
-                            //Check whether we handled this group of alternatives already
-                            foreach (var alternativeGroup in alreadyHandledAlternativeOptions)
-                                foreach (var alternative in alternativeGroup)
-                                    if (current == alternative)
-                                        goto handledAlternative;
-                            //It is not allowed that an alternative group has no parent element
-                            CspTerm parent = null;
-                            if (current.Parent == null)
-                                parent = S.True;
-                            else
-                                parent = optionToTerm[(BinaryOption)current.Parent];
-                            if (excludedOption.Count > 0)
-                            {//Excluded alternative
-                                CspTerm[] terms = new CspTerm[excludedOption.Count +1];
-                                terms[0] = cT;
-                                int i = 1;
-                                foreach (BinaryOption altEle in excludedOption)
-                                {
-                                    CspTerm temp = optionToTerm[altEle];
-                                    terms[i] = temp;
-                                    i++;
-                                }
-                                S.AddConstraints(S.Implies(parent, S.ExactlyMofN(1, terms)));
-                                alreadyHandledAlternativeOptions.Add(excludedOption);
-                            }
-                        handledAlternative: {}
-                        }
+                        //Check whether we handled this group of alternatives already
+                        foreach (var alternativeGroup in alreadyHandledAlternativeOptions)
+                            foreach (var alternative in alternativeGroup)
+                                if (current == alternative)
+                                    goto handledAlternative;
+                        
+                        //It is not allowed that an alternative group has no parent element
+                        CspTerm parent = null;
+                        if (current.Parent == null)
+                            parent = S.True;
                         else
-                        {//Excluded option(s) as cross-tree constraint(s)
+                            parent = optionToTerm[(BinaryOption)current.Parent];
+
+                        CspTerm[] terms = new CspTerm[alternativeOptions.Count + 1];
+                        terms[0] = cT;
+                        int i = 1;
+                        foreach (BinaryOption altEle in alternativeOptions)
+                        {
+                            CspTerm temp = optionToTerm[altEle];
+                            terms[i] = temp;
+                            i++;
+                        }
+                        S.AddConstraints(S.Implies(parent, S.ExactlyMofN(1, terms)));
+                        alreadyHandledAlternativeOptions.Add(alternativeOptions);
+                        handledAlternative: { }
+                    }
+                
+                    //Excluded option(s) as cross-tree constraint(s)
+                    List<List<ConfigurationOption>> nonAlternative = current.getNonAlternativeExlcudedOptions();
+                    if(nonAlternative.Count > 0) {
+                        foreach(var excludedOption in nonAlternative){
+                            CspTerm[] orTerm = new CspTerm[excludedOption.Count];
+                            int i = 0;
                             foreach (var opt in excludedOption)
                             {
                                 CspTerm target = optionToTerm[(BinaryOption)opt];
-                                S.AddConstraints(S.Implies(cT, S.Not(target)));
+                                orTerm[i] = target;
+                                i++;
                             }
+                            S.AddConstraints(S.Implies(cT, S.Not(S.Or(orTerm))));
                         }
                     }
                 }
