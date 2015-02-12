@@ -1,0 +1,100 @@
+<vm name="testModel">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt1</name>
+      <prefix>--</prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt2</name>
+      <prefix>-?</prefix>
+      <postfix>kg</postfix>
+      <parent>binOpt1</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt3</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>binOpt1</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>binOpt2</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt4</name>
+      <prefix>4_</prefix>
+      <postfix>_4</postfix>
+      <parent>binOpt1</parent>
+      <children />
+      <impliedOptions>
+        <options>binOpt2</options>
+      </impliedOptions>
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <name>numOpt1</name>
+      <prefix>num1-</prefix>
+      <postfix>--</postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>0</minValue>
+      <maxValue>10</maxValue>
+      <stepFunction>n + 2</stepFunction>
+      <defaultValue>0</defaultValue>
+    </configurationOption>
+    <configurationOption>
+      <name>numOpt2</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>0.1</minValue>
+      <maxValue>5</maxValue>
+      <stepFunction>n * 2</stepFunction>
+      <defaultValue>0.8</defaultValue>
+    </configurationOption>
+  </numericOptions>
+  <booleanConstraints />
+</vm>

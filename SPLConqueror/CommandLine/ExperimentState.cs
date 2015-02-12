@@ -21,11 +21,32 @@ namespace CommandLine
         List<Dictionary<NumericOption, double>> numericSelection = null;
 
 
+        /// <summary>
+        /// Adds the identifier of a binary sampling method to a logging sting. 
+        /// </summary>
+        /// <param name="name">Name of the sampling method.</param>
         public void addBinarySampling(string name)
         {
             binarySamplings += name + " ";
         }
 
+
+        /// <summary>
+        /// Returns a textual representation of this object consisting of the names of numerical and binary sampling methods performed for this experimental state and a representation of the mlsettings. 
+        /// </summary>
+        /// <returns>The textual reprentation.</returns>
+        public override string ToString()    
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(binarySamplings + "  " + numericSamplings);
+            sb.Append(mlSettings.ToString());
+ 	        return sb.ToString();
+        }
+
+        /// <summary>
+        /// Adds the identifier of a numeric sampling method to a logging sting. 
+        /// </summary>
+        /// <param name="name">Name of the sampling method.</param>
         public void addNumericSampling(string name)
         {
             numericSamplings += name + " ";
