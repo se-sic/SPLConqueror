@@ -21,6 +21,17 @@ namespace SPLConqueror_Core
                 }
         }
 
+        private String outputString = "";
+
+        /// <summary>
+        /// Textual representation of the configuration to use it as an parameter/configuration option of a customizable system. 
+        /// </summary>
+        public String OutputString
+        {
+            get { return outputString; }
+            set { outputString = value; }
+        }
+
         private String prefix = "";
 
         /// <summary>
@@ -124,6 +135,11 @@ namespace SPLConqueror_Core
             nameNode.InnerText = this.name;
             node.AppendChild(nameNode);
 
+            //outputString
+            XmlNode outputStringNode = doc.CreateNode(XmlNodeType.Element, "outputString", "");
+            outputStringNode.InnerText = this.outputString;
+            node.AppendChild(outputStringNode);
+
             //prefix
             XmlNode prefixNode = doc.CreateNode(XmlNodeType.Element, "prefix", "");
             prefixNode.InnerText = this.prefix;
@@ -195,6 +211,9 @@ namespace SPLConqueror_Core
                 {
                     case "name":
                         this.name = xmlInfo.InnerText;
+                        break;
+                    case "outputString":
+                        this.outputString = xmlInfo.InnerText;
                         break;
                     case "prefix":
                         this.prefix = xmlInfo.InnerText;

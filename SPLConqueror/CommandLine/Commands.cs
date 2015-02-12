@@ -57,8 +57,14 @@ namespace CommandLine
                     InfoLog.logInfo("Configurations loaded.");
 
                     break;
-                case "allBoolean": // all binary configurations 
-                    break;
+                case "allBinary":
+                    {
+                        VariantGenerator vg = new VariantGenerator(null);
+                        Console.Write(vg.generateAllVariantsFast(GlobalState.varModel));
+                        exp.addBinarySelection(vg.generateAllVariantsFast(GlobalState.varModel));
+                        exp.addBinarySampling("all-Binary");
+                        break;
+                    }
                 case "expDesign":
                     performOneCommand_ExpDesign(task);
                     break;
@@ -68,8 +74,8 @@ namespace CommandLine
                     break;
                 case "featureWise":
                     FeatureWise fw = new FeatureWise();
-                    //exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                    exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                    exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                    //exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
                     exp.addBinarySampling("FW");
 
                     break;
@@ -108,14 +114,14 @@ namespace CommandLine
 
                         foreach (Dictionary<NumericOption, double> numeric in numericSampling)
                         {
-                            //foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySampling)
-                            //{
-                                Configuration config = Configuration.getConfiguration(new List<BinaryOption>(), numeric);
+                            foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySampling)
+                            {
+                                Configuration config = Configuration.getConfiguration(binary, numeric);
                                 if (!configurations.Contains(config))
                                 {
                                     configurations.Add(config);
                                 }
-                            //}
+                            }
                         }
 
                         string[] para = task.Split(new char[] { ' ' });

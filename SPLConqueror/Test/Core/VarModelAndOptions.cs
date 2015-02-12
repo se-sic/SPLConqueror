@@ -26,6 +26,7 @@ namespace Test.Core
             binOp2.Prefix = "-?";
             binOp2.Postfix = "kg";
             binOp2.Parent = binOp1;
+            binOp2.OutputString = "binOpt2";
             varMod.addConfigurationOption(binOp2);
 
             BinaryOption binOp3 = new BinaryOption(varMod, "binOpt3");
