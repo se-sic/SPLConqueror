@@ -13,7 +13,12 @@ namespace SPLConqueror_Core
         public String Name
         {
             get { return name; }
-            set { name = value; }
+            set {
+                if (!value.All(Char.IsLetter))
+                    this.name = removeInvalidChars(value);
+                else
+                    this.name = value;
+                }
         }
 
         private String prefix = "";
@@ -94,7 +99,10 @@ namespace SPLConqueror_Core
         public ConfigurationOption(VariabilityModel vm, String name)
         {
             this.vm = vm;
-            this.name = name;
+            if (!name.All(Char.IsLetter))
+                this.name = removeInvalidChars(name);
+            else
+                this.name = name;
         }
 
         public int CompareTo(ConfigurationOption other)
@@ -275,6 +283,19 @@ namespace SPLConqueror_Core
                     return this.Parent.isAncestor(optionToCompare);
             }
             return false;
+        }
+
+        private String removeInvalidChars(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in s)
+            {
+                if (!Char.IsLetter(c))
+                    continue;
+                else
+                    sb.Append(c);
+            }
+            return sb.ToString();
         }
     }
 }
