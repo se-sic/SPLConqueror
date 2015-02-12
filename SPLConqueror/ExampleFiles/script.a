@@ -1,5 +1,5 @@
-load_MLsettings D:\SPLConquerorGitHub\SPLConqueror\ExampleFiles\MlSettings.txt
-vm D:\SPLConquerorGitHub\SPLConqueror\ExampleFiles\foo.xml
+load_MLsettings C:\Workspace\SPLConqueror_public\SPLConqueror\ExampleFiles\MlSettings.txt
+vm C:\Workspace\SPLConqueror_public\SPLConqueror\ExampleFiles\foo.xml
 printSettings 
 featureWise
 expDesign random

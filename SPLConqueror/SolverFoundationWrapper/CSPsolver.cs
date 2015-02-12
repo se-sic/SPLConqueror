@@ -27,6 +27,9 @@ namespace MicrosoftSolverFoundation
         /// <returns>The generated constraint system consisting of logical terms representing configuration options as well as their boolean constraints.</returns>
         internal static ConstraintSystem getConstraintSystem(out List<CspTerm> variables, out Dictionary<BinaryOption, CspTerm> optionToTerm, out Dictionary<CspTerm, BinaryOption> termToOption, VariabilityModel vm)
         {
+            //Reusing seems to not work correctely. The problem: configurations are realized as additional constraints for the system. 
+            //however, when checking for the next config, the old config's constraints remain in the solver such that we have a wrong result.
+            /*
             if (csystem != null && variables_global != null && optionToTerm_global != null && termToOption_global != null && vm != null)
             {//For optimization purpose
                 if (vm.BinaryOptions.Count == vm_global.BinaryOptions.Count && vm.Name.Equals(vm_global.Name))
@@ -36,7 +39,7 @@ namespace MicrosoftSolverFoundation
                     termToOption = termToOption_global;
                     return csystem;
                 }
-            }
+            }*/
 
             ConstraintSystem S = ConstraintSystem.CreateSolver();
             
