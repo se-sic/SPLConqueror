@@ -6,7 +6,7 @@ using SPLConqueror_Core;
 
 namespace MachineLearning.Learning.Regression
 {
-    class LearningRound
+    public class LearningRound
     {
         internal double learningError = Double.MaxValue;
         internal double validationError = Double.MaxValue;

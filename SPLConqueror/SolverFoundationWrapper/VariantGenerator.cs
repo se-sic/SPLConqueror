@@ -100,7 +100,7 @@ namespace MicrosoftSolverFoundation
         /// <param name="removedElements">If further options need to be removed from the given configuration to build a valid configuration, they are outputed in this list.</param>
         /// <param name="vm">The variability model containing all options and their constraints.</param>
         /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved. Null if not configuration could be found.</returns>
-        List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
+        public List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
@@ -159,7 +159,7 @@ namespace MicrosoftSolverFoundation
         /// <param name="minimize">If true, we search for the smallest (in terms of selected options) valid configuration. If false, we search for the largest one.</param>
         /// <param name="unWantedOptions">Binary options that we do not want to become part of the configuration. Might be part if there is no other valid configuration without them.</param>
         /// <returns>The valid configuration (or null if there is none) that satisfies the VM and the goal.</returns>
-        public List<BinaryOption> minimizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unWantedFeatures, bool withInteractions)
+        public List<BinaryOption> minimizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unWantedFeatures)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
