@@ -22,7 +22,7 @@ namespace MachineLearning.Solver
             //An aggregate catalog that combines multiple catalogs
             var catalog = new AggregateCatalog();
             //Adds all the parts found in the same assembly as the Program class
-            catalog.Catalogs.Add(new AssemblyCatalog(typeof(CheckConfigSAT).Assembly));
+            //catalog.Catalogs.Add(new AssemblyCatalog(typeof(CheckConfigSAT).Assembly));
             String location = AppDomain.CurrentDomain.BaseDirectory;
 
 #if release
@@ -59,7 +59,8 @@ namespace MachineLearning.Solver
             }
             catch (CompositionException compositionException)
             {
-                Console.WriteLine(compositionException.ToString());
+                ErrorLog.logError(compositionException.ToString());
+                //Console.WriteLine(compositionException.ToString());
             }
         }
 
@@ -73,13 +74,13 @@ namespace MachineLearning.Solver
         {
             foreach (Lazy<ICheckConfigSAT, ISolverType> solver in solvers)
             {
-                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return checkConfigurationSAT(config, vm);
+                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return solver.Value.checkConfigurationSAT(config, vm);
             }
 
             //If not MS Solver, take any solver. Should be changed when supporting more than 2 solvers here
             foreach (Lazy<ICheckConfigSAT, ISolverType> solver in solvers)
             {
-                return checkConfigurationSAT(config, vm);
+                return solver.Value.checkConfigurationSAT(config, vm);
             }
 
             return false;
@@ -95,13 +96,13 @@ namespace MachineLearning.Solver
         {
             foreach (Lazy<ICheckConfigSAT, ISolverType> solver in solvers)
             {
-                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return checkConfigurationSAT(c, vm);
+                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return solver.Value.checkConfigurationSAT(c, vm);
             }
 
             //If not MS Solver, take any solver. Should be changed when supporting more than 2 solvers here
             foreach (Lazy<ICheckConfigSAT, ISolverType> solver in solvers)
             {
-                return checkConfigurationSAT(c, vm);
+                return solver.Value.checkConfigurationSAT(c, vm);
             }
 
             return false;

@@ -106,6 +106,9 @@ namespace SPLConqueror_Core
         /// <returns>True if they are alternatives (same parent option), false otherwise</returns>
         public bool isAlternativeGroup(List<ConfigurationOption> excludedOption)
         {
+            //if it is an alternative, they can't be optional
+            if (this.Optional == true)
+                return false;
             foreach (ConfigurationOption opt in excludedOption)
             {
                 if (opt.Parent != this.Parent)
