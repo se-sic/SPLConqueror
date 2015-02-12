@@ -12,7 +12,7 @@ using System.ComponentModel.Composition;
 using MicrosoftSolverFoundation;
 using SPLConqueror_Core;
 
-namespace PLM.src
+namespace MicrosoftSolverFoundation
 {
     [Export(typeof(MachineLearning.Learning.LinearProgramming.ISolverLP))]
     [ExportMetadata ("SolverType", "MSSolverFoundation")]

@@ -67,8 +67,8 @@ namespace CommandLine
                     break;
                 case "featureWise":
                     FeatureWise fw = new FeatureWise();
-                    exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                    //exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                    //exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                    exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
                     exp.addBinarySampling("FW");
 
                     break;
@@ -107,7 +107,7 @@ namespace CommandLine
                         int treshold = Convert.ToInt32(para[0]);
                         int modulu = Convert.ToInt32(para[1]);
 
-                        VariantGenerator vg = new VariantGenerator();
+                        VariantGenerator vg = new VariantGenerator(null);
                         exp.addBinarySelection(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
                         exp.addBinarySampling("random " + task);
                         break;

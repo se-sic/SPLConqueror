@@ -59,7 +59,11 @@ namespace MachineLearning.Learning
         public static ML_Settings readSettings(string settingLocation)
         {
             ML_Settings mls = new ML_Settings();
-
+            if (System.IO.File.Exists(settingLocation) == false)
+            {
+                ErrorLog.logError("Could not load ML settings file! File ("+settingLocation +") does not exit.");
+                return mls;
+            }
             System.IO.StreamReader file = new System.IO.StreamReader(settingLocation);
             string line;
             while ((line = file.ReadLine()) != null)
