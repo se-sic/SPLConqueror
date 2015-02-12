@@ -53,6 +53,7 @@
     <Compile Include="Learning\ML_Settings.cs" />
     <Compile Include="Learning\Regression\Feature.cs" />
     <Compile Include="Learning\Regression\FeatureSubsetSelection.cs" />
+    <Compile Include="Learning\Regression\LearningRound.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\BoxBehnkenDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\CentralCompositeInscribedDesign.cs" />

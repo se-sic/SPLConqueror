@@ -165,10 +165,13 @@ namespace MachineLearning.Learning.Regression
 
 
         /// <summary>
-        /// 
+        /// The method generates a list of candidates to be added to the current model. These candidates are later fitted using regression and rated for their accuracy in estimating the values of the validation set.
+        /// The basicFeatures comes from the pool of initial features (e.g., all configuration options of the variability model or predefined combinations of options).
+        /// Further candidates are combinations of the basic feature with features already present in the model. That is, we generate candidates as representatives of interactions or higher polynomial functions.
+        /// Which candidates and polynomial degrees are generated depends on the parameters given in ML_settings.
         /// </summary>
-        /// <param name="currentModel"></param>
-        /// <param name="basicFeature"></param>
+        /// <param name="currentModel">The model containing the features found so far. These features are combined with the basic feature.</param>
+        /// <param name="basicFeature">The feature for which we generate new candidates.</param>
         /// <returns>Returns a list of candidates that can be added to the current model.</returns>
         protected List<Feature> generateCandidates(List<Feature> currentModel, Feature basicFeature)
         {
@@ -224,7 +227,12 @@ namespace MachineLearning.Learning.Regression
         }
         
 
-
+        /// <summary>
+        /// The backward steps aims at removing already learned features from the model if they have only a small impact on the prediction accuracy. 
+        /// This should help keeping the model simple, reducing the danger of overfitting, and leaving local optima.
+        /// </summary>
+        /// <param name="current">The model learned so far containing the features that might be removed. Strictly mandatory features will not be removed.</param>
+        /// <returns>A new model that might be smaller than the original one and might have a slightly worse prediction accuracy.</returns>
         protected LearningRound performBackwardStep(LearningRound current)
         {
             throw new NotImplementedException();
@@ -235,11 +243,22 @@ namespace MachineLearning.Learning.Regression
         #endregion
 
         #region error computation
+        /// <summary>
+        /// Computes the error of the current model for all configurations in the validation set.
+        /// </summary>
+        /// <param name="currentModel">The features that have been fitted so far.</param>
+        /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
         private double computeValidationError(List<Feature> currentModel)
         {
             return computeError(currentModel, this.validationSet);
         }
 
+        /// <summary>
+        /// This mestode produces an estimated for the given configuration based on the given model.
+        /// </summary>
+        /// <param name="currentModel">The model containing all fitted features.</param>
+        /// <param name="c">The configuration for which the estimation should be performed.</param>
+        /// <returns>The estimated value.</returns>
         private double estimate(List<Feature> currentModel, Configuration c)
         {
             double prediction = 0;
@@ -254,6 +273,13 @@ namespace MachineLearning.Learning.Regression
             return prediction;
         }
 
+        /// <summary>
+        /// This methods computes the error for the given configuration based on the given model. It queries the ML settings to used the configured loss function.
+        /// As the actual value, it uses the non-functional property stored in the global model. If this is not available in the configuration, it uses the default NFP of the configuration.
+        /// </summary>
+        /// <param name="currentModel">The model containing all fitted features.</param>
+        /// <param name="configs">The configuration for which the error should be computed. It contains also the actually measured value.</param>
+        /// <returns>The error depending on the configured loss function (e.g., relative, least squares, absolute).</returns>
         private double computeError(List<Feature> currentModel, List<Configuration> configs)
         {
             double error_sum = 0;
@@ -281,7 +307,7 @@ namespace MachineLearning.Learning.Regression
                         error = Math.Pow(realValue - estimatedValue, 2);
                         break;
                     case ML_Settings.LossFunction.ABSOLUTE:
-
+                        error = Math.Abs(realValue - estimatedValue);
                         break;
                 }
                 error_sum += error;
@@ -289,11 +315,21 @@ namespace MachineLearning.Learning.Regression
             return error_sum / configs.Count;
         }
 
+        /// <summary>
+        /// Computes the error of the current model for all configurations in the learning set.
+        /// </summary>
+        /// <param name="currentModel">The features that have been fitted so far.</param>
+        /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
         private double computeLearningError(List<Feature> currentModel)
         {
             return computeError(currentModel, this.learningSet);
         }
 
+        /// <summary>
+        /// This method computes the general error for the current model. It depends on the parameters of ML settings which loss function and whether cross validation is used.
+        /// </summary>
+        /// <param name="currentModel">The model for which the error should be computed.</param>
+        /// <returns>The prediction error of the model.</returns>
         private double computeModelError(List<Feature> currentModel)
         {
             if (!this.MLsettings.crossValidation)
@@ -307,7 +343,11 @@ namespace MachineLearning.Learning.Regression
         #endregion
 
         #region Check for learning abort
-
+        /// <summary>
+        /// This methods checks whether the learning procedure should be aborted. For this decision, it uses parameters of ML settings, such as the number of rounds.
+        /// </summary>
+        /// <param name="current">The current state of learning (i.e., the current model).</param>
+        /// <returns>True if we abort learning, false otherwise</returns>
         protected bool abortLearning(LearningRound current)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
@@ -317,6 +357,11 @@ namespace MachineLearning.Learning.Regression
             return false;
         }
 
+        /// <summary>
+        /// This method checks whether we should abort learning due to perfect prediction or worsening prediction.
+        /// </summary>
+        /// <param name="current">The current model containing the fitted features.</param>
+        /// <returns>True if we should abort learning, false otherwise.</returns>
         protected bool abortDueError(LearningRound current)
         {
             if (current.validationError == 0)
@@ -336,6 +381,10 @@ namespace MachineLearning.Learning.Regression
         }
         #endregion
 
+        /// <summary>
+        /// This method checks whether all information is available to start learning.
+        /// </summary>
+        /// <returns>True if all is set, false otherwise.</returns>
         protected bool allInformationAvailable()
         {
             if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null || this.MLsettings == null)
@@ -403,6 +452,14 @@ namespace MachineLearning.Learning.Regression
 
 
         #region Constructing data matrix for regression
+        /// <summary>
+        /// This is an essential method for fitting the constants of features. It constructs the data matrix. 
+        /// The matrix has as rows the configurations of the training set and the columns represent the features (i.e., configuration options and interactions) of the model.
+        /// A cell contains a value signaling the configured value of the option (or interaction) for the respective configuration. A column representing a binary option can, thus, have only 0 (not in configuration) or 1 (selected).
+        /// For numeric options, the cell contains the value parameter of that option. If the feature represents a higher polynomial function, the value paramter is transformed according to the function (e.g., x = 10, we want to fit x^2 -> cell contains 10 * 10).
+        /// </summary>
+        /// <param name="featureSet">The list of features for which we want to determine the coefficients.</param>
+        /// <returns>Returns an array representing the values of each feature for the configurations of the learning set.</returns>
         protected ILArray<double> createDataMatrix(List<Feature> featureSet)
         {
             ILArray<double> DM = ILMath.zeros(featureSet.Count, this.learningSet.Count);
@@ -420,6 +477,11 @@ namespace MachineLearning.Learning.Regression
             return DM;
         }
 
+        /// <summary>
+        /// For optimization, we generate a column for the data matrix only once. The rows of the columns represent the configurations of the learning set.
+        /// The cells contain the value of the feature in the respective configuration. (see comment on createDataMatrix(..) function for more detail).
+        /// </summary>
+        /// <param name="feature">The feature for which we compute the data column.</param>
         protected void generateDM_column(Feature feature)
         {
             ILArray<double> column = ILMath.zeros(this.learningSet.Count);
@@ -437,6 +499,11 @@ namespace MachineLearning.Learning.Regression
         #endregion
 
         #region utility functions
+        /// <summary>
+        /// This method creates new list of newly created feature objects and, this, allows for safely changing the features without affecting the original list.
+        /// </summary>
+        /// <param name="oldList">The list of features that needs to be copied.</param>
+        /// <returns>A new list of newly created feature objects.</returns>
         private List<Feature> copyCombination(List<Feature> oldList)
         {
             List<Feature> resultList = new List<Feature>();
@@ -449,6 +516,12 @@ namespace MachineLearning.Learning.Regression
             return resultList;
         }
 
+        /// <summary>
+        /// This methids creates a system array based on an ILNumerics array.
+        /// </summary>
+        /// <typeparam name="T">The type of the objects stored in the array.</typeparam>
+        /// <param name="A">The ILNumerics array.</param>
+        /// <returns>Returns the newly created system array contain the values of the ILNumerics array.</returns>
         private static System.Array toSystemMatrix<T>(ILInArray<T> A)
         {
             using (ILScope.Enter(A))
