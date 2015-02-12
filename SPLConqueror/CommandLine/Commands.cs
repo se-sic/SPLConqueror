@@ -60,7 +60,6 @@ namespace CommandLine
                 case "allBinary":
                     {
                         VariantGenerator vg = new VariantGenerator(null);
-                        Console.Write(vg.generateAllVariantsFast(GlobalState.varModel));
                         exp.addBinarySelection(vg.generateAllVariantsFast(GlobalState.varModel));
                         exp.addBinarySampling("all-Binary");
                         break;
