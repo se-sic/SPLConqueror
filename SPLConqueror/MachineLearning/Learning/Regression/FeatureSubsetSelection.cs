@@ -18,6 +18,12 @@ namespace MachineLearning.Learning.Regression
         //Information about the state of learning
         protected InfluenceModel infModel = null;
         protected List<LearningRound> learningHistory = new List<LearningRound>();
+
+        public List<LearningRound> LearningHistory
+        {
+            get { return learningHistory; }
+        }
+
         protected List<Feature> initialFeatures = new List<Feature>();
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
         protected ML_Settings MLsettings = null;
