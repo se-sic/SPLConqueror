@@ -1,6 +1,6 @@
 load_MLsettings C:\Workspace\SPLConqueror_public\SPLConqueror\ExampleFiles\MlSettings.txt
 vm C:\Workspace\testProjects\BerkeleyDbC_new.xml
 printSettings 
-allBinary
+pairWise
 expDesign random
 #printConfigs D:\SPLConquerorGitHub\SPLConqueror\ExampleFiles\ConfigurationsByPrinter.txt PREFIX POSTFIX

@@ -119,9 +119,9 @@ namespace MicrosoftSolverFoundation
             foreach (var term in variables)
             {
                 if (originalConfig.Contains(termToElem[term]))
-                    finalGoals[r] = term * 1000 * -1; //Since we minimize, we put a large negative value of an option that is within the original configuration to increase chances that the option gets selected again
+                    finalGoals[r] = term * -1000; //Since we minimize, we put a large negative value of an option that is within the original configuration to increase chances that the option gets selected again
                 else
-                    finalGoals[r] = variables[r] * 1000;//Positive number will lead to a small chance that an option gets selected when it is not in the original configuration
+                    finalGoals[r] = variables[r] * 10000;//Positive number will lead to a small chance that an option gets selected when it is not in the original configuration
                 r++;
             }
 

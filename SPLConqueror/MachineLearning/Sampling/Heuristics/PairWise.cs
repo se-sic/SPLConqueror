@@ -26,7 +26,7 @@ namespace MachineLearning.Sampling.Heuristics
                 foreach (BinaryOption pair in vm.BinaryOptions)
                 {
                     //Check parent-child relationship
-                    if (pair.isAncestor(current) || current.isAncestor(pair))
+                    if (pair.isAncestor(current) || current.isAncestor(pair) || pair == current)
                         continue;
                     
                     //Check if one option implies the presence of the other option
@@ -61,7 +61,7 @@ namespace MachineLearning.Sampling.Heuristics
                         tempConfig.Add(pair);
                         tempConfig = generator.minimizeConfig(tempConfig, vm, true, null);
 
-                        if (!configurations.Contains(tempConfig))
+                        if (tempConfig.Count > 0 && !configurations.Contains(tempConfig))
                             configurations.Add(tempConfig);
                     }
                 }

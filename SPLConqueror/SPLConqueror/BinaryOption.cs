@@ -138,11 +138,13 @@ namespace SPLConqueror_Core
         public List<ConfigurationOption> collectAlternativeOptions()
         {
             List<ConfigurationOption> result = new List<ConfigurationOption>();
+            if (this.Optional == true)
+                return result;
             foreach (var exclOptions in Excluded_Options)
             {
                 if (exclOptions.Count != 1)
                     continue;
-                if (exclOptions[0].Parent == this.Parent)
+                if (exclOptions[0].Parent == this.Parent && ((BinaryOption)exclOptions[0]).Optional == false)
                     result.Add(exclOptions[0]);
             }
             return result;
@@ -165,6 +167,10 @@ namespace SPLConqueror_Core
                     continue;
                 }
                 if (exclOptions[0].Parent != this.Parent)
+                {
+                    result.Add(exclOptions);
+                }
+                if (this.Optional && exclOptions[0].Parent == this.Parent && ((BinaryOption)exclOptions[0]).Optional)
                 {
                     result.Add(exclOptions);
                 }
