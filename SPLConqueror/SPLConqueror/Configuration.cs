@@ -212,11 +212,23 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="other">Configuration to compare</param>
         /// <returns>States whether the two configurations desribes the same configuration option selection.</returns>
+        public override bool Equals(Object other)
+        {
+            if (other == null)
+                return false;
+
+            return this.Equals((Configuration)other);
+        }
+
+        /// <summary>
+        /// Compares one configuration with an other configuration. The identifiers of the configurations are used in the comparison. 
+        /// </summary>
+        /// <param name="other">Configuration to compare</param>
+        /// <returns>States whether the two configurations desribes the same configuration option selection.</returns>
         public bool Equals(Configuration other)
         {
             return this.identifier.Equals(other.identifier);
         }
-
 
         /// <summary>
         /// This method returns a list of binary options that comply to the given configuration value.
@@ -273,5 +285,45 @@ namespace SPLConqueror_Core
             return result;
         }
 
+        /// <summary>
+        /// This method evaluates whether the list of binary selections contains a list of binary configuration options.
+        /// </summary>
+        /// <param name="setOfBinaryConfigurations">A list of binary selections. Each sublist represents a selection of binary configuration options.</param>
+        /// <param name="binaryConfig">A list of binary configuration options.</param>
+        /// <returns>True if the list of binary selections contains the list of binary configuration options, false otherwise. If one parameter is null this mehtod retuns false.</returns>
+        public static bool containBinaryConfiguration(List<List<BinaryOption>> setOfBinaryConfigurations, List<BinaryOption> binaryConfig)
+        {
+            if (setOfBinaryConfigurations == null || binaryConfig == null)
+                return false;
+
+            foreach (List<BinaryOption> oneBinary in setOfBinaryConfigurations)
+            {
+                if (Configuration.equalBinaryConfiguration(oneBinary, binaryConfig))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Compare two lists of binary configuration options. If both lists contains the same binary options, the mehthod retuns true and otherwise false. 
+        /// </summary>
+        /// <param name="oneConfiguration">A list of binary configuration options.</param>
+        /// <param name="otherBinaryConfiguration">A list of binary configuration options.</param>
+        /// <returns>True if both configurations contains the same configuration options, false otherwise.</returns>
+        public static bool equalBinaryConfiguration(List<BinaryOption> oneConfiguration, List<BinaryOption> otherBinaryConfiguration)
+        {
+            if (oneConfiguration == null || otherBinaryConfiguration == null)
+                return false;
+            if (oneConfiguration.Count != otherBinaryConfiguration.Count)
+                return false;
+
+            foreach (BinaryOption opt in oneConfiguration)
+            {
+                if (!otherBinaryConfiguration.Contains(opt))
+                    return false;
+            }
+            return true;
+        }
+        
     }
 }

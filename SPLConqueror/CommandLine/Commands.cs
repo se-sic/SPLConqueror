@@ -164,6 +164,14 @@ namespace CommandLine
                         // starts the machine learning 
                         FeatureSubsetSelection fss = new FeatureSubsetSelection(infMod,exp.mlSettings);
 
+                        // todo set learning and validation set. 
+
+                        fss.learn();
+
+
+                        // todo analyze the learned model and rounds leading to the model. 
+                        
+
 
                     }
                     break;

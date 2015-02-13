@@ -12,7 +12,7 @@ namespace CommandLine
     class ExperimentState
     {
 
-        public ML_Settings mlSettings = null;
+        public ML_Settings mlSettings = new ML_Settings();
 
         string binarySamplings = "";
         List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections = null;
