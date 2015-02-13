@@ -66,7 +66,7 @@ namespace MachineLearning.Sampling.Heuristics
                     else
                     {
                         tme = generator.minimizeConfig(tme, vm, true, null);
-                        if (tme != null && this.configurations.Contains(tme) == false)
+                        if (tme != null && Configuration.containsBinaryConfiguration(this.configurations, tme) == false)
                             this.configurations.Add(tme);
                     }
                 }
@@ -104,7 +104,7 @@ namespace MachineLearning.Sampling.Heuristics
                 List<BinaryOption> excluded = new List<BinaryOption>();
                 excluded.Add(opt);
                 withoutOpt = generator.minimizeConfig(withoutOpt, vm, true, excluded);
-                if (withoutOpt != null && this.configurations.Contains(withoutOpt) == false)
+                if (withoutOpt != null && Configuration.containsBinaryConfiguration(this.configurations, withoutOpt) == false)
                     this.configurations.Add(withoutOpt);
             }
 

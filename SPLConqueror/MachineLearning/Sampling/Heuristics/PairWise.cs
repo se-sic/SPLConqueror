@@ -61,7 +61,7 @@ namespace MachineLearning.Sampling.Heuristics
                         tempConfig.Add(pair);
                         tempConfig = generator.minimizeConfig(tempConfig, vm, true, null);
 
-                        if (tempConfig.Count > 0 && !configurations.Contains(tempConfig))
+                        if (tempConfig.Count > 0 && !Configuration.containsBinaryConfiguration(configurations,tempConfig))
                             configurations.Add(tempConfig);
                     }
                 }
