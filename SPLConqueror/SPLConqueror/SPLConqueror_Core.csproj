@@ -51,6 +51,7 @@
     <Compile Include="InfluenceModel.cs" />
     <Compile Include="InfoLog.cs" />
     <Compile Include="Interaction.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="NumericOption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VariabilityModel.cs" />

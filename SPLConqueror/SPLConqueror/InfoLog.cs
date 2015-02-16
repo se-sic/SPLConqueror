@@ -5,15 +5,26 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    public class InfoLog
+    public class InfoLog : Logger
     {
+
+        public InfoLog(String location)
+            : base(location)
+        {
+            Console.SetOut(writer);
+        }
+
         /// <summary>
-        /// Logs general information depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at console
+        /// Logs general information depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at file
         /// </summary>
         /// <param name="msg">The message to be printed or logged</param>
-        public static void logInfo(String msg)
+        public override void log(String msg)
         {
-            Console.WriteLine(msg);
+            if (writer != null)
+                writer.Write(msg);
+            else
+                Console.Write(msg);
         }
+
     }
 }

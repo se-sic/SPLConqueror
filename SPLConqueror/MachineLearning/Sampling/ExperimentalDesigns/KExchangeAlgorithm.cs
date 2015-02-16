@@ -18,6 +18,18 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         bool rescale = false;
         double epsilon = 1E-5;
 
+        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
+        static KExchangeAlgorithm()
+        {
+            parameter.Add("sampleSize", "int");
+            parameter.Add("k", "int");
+        }
+       
+        public override Dictionary<string, string> getParameterTypes()
+        {
+            return KExchangeAlgorithm.parameter;
+        }
+
 
         public override string getName()
         {

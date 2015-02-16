@@ -299,7 +299,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    ErrorLog.logError(argEx.Message);
+                    GlobalState.logError.log(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
 
@@ -395,7 +395,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null || this.MLsettings == null)
             {
-                ErrorLog.logError("Error: you need to specify a learning and validation set.");
+                GlobalState.logError.log("Error: you need to specify a learning and validation set.");
                 return false;
             }
             return true;
@@ -417,7 +417,7 @@ namespace MachineLearning.Learning.Regression
                 {
                     val = measurements[i].GetNFPValue(GlobalState.currentNFP);
                 } catch(ArgumentException argEx) {
-                    ErrorLog.logError(argEx.Message);
+                    GlobalState.logError.log(argEx.Message);
                     val = measurements[i].GetNFPValue();
                 }
                 temparryLearn[i] = val;
@@ -444,7 +444,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    ErrorLog.logError(argEx.Message);
+                    GlobalState.logError.log(argEx.Message);
                     val = measurements[i].GetNFPValue();
                 }
                 tempArrayValid[i] = val;

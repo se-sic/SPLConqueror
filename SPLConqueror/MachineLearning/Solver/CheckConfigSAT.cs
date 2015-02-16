@@ -59,7 +59,7 @@ namespace MachineLearning.Solver
             }
             catch (CompositionException compositionException)
             {
-                ErrorLog.logError(compositionException.ToString());
+                GlobalState.logError.log(compositionException.ToString());
                 //Console.WriteLine(compositionException.ToString());
             }
         }

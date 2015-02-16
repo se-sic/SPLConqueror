@@ -9,11 +9,21 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 {
     public class HyperSampling : ExperimentalDesign
     {
+
+        private static Dictionary<string, string> parameter = new Dictionary<string, string>(); 
+        static HyperSampling(){
+            parameter.Add("precision", "double");
+        }
+       
+        public override Dictionary<string, string> getParameterTypes()
+        {
+            return HyperSampling.parameter;
+        }
+
         public override string getName()
         {
             return "HyperSampling";
         }
-
 
         public HyperSampling(List<NumericOption> options)
             : base(options)

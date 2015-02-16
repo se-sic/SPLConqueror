@@ -12,7 +12,7 @@ namespace Test.Core
 
         public VariabilityModel createVarModel()
         {
-            VariabilityModel varMod = new VariabilityModel("testModel");
+            VariabilityModel varMod = new VariabilityModel("testModel_1");
 
             // -------------------- BINARY OPTIONS ----------------
             BinaryOption binOp1 = new BinaryOption(varMod, "binOpt1");

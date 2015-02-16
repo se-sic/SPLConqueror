@@ -5,16 +5,26 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    public class ErrorLog
+    public class ErrorLog : Logger
     {
 
+        public ErrorLog(String location) :base(location)
+        {
+            Console.SetError(writer);
+        }
+       
         /// <summary>
-        /// Logs the error depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at console
+        /// Logs the error depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at file
         /// </summary>
         /// <param name="msg">The error message to be printed or logged</param>
-        public static void logError(String msg)
+        public override void log(String msg)
         {
-            Console.WriteLine(msg);
+            GlobalState.logInfo.log("Error: "+msg);
+
+            if (writer != null)
+                writer.Write(msg);
+            else
+                Console.Write(msg);
         }
     }
 }

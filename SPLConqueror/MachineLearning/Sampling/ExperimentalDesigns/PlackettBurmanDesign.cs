@@ -12,6 +12,20 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     /// </summary>
     public class PlackettBurmanDesign : ExperimentalDesign
     {
+
+        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
+        static PlackettBurmanDesign()
+        {
+            parameter.Add("measurements", "int");
+            parameter.Add("level", "int");
+        }
+       
+        public override Dictionary<string, string> getParameterTypes()
+        {
+            return PlackettBurmanDesign.parameter;
+        }
+
+
         /// <summary>
         /// Constants for the different seeds of this design. A seed states how many different values of one option
         /// and how many combinations are considered.
