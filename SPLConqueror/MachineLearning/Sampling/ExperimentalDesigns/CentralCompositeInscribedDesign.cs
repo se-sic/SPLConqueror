@@ -22,6 +22,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             : base(options)
         {
         }
+
+        public override Dictionary<string, string> getParameterTypes()
+        {
+            return new Dictionary<string, string>();
+        }
         
 
         public override string getName()

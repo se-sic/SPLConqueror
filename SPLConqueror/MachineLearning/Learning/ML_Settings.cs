@@ -61,7 +61,7 @@ namespace MachineLearning.Learning
             ML_Settings mls = new ML_Settings();
             if (System.IO.File.Exists(settingLocation) == false)
             {
-                ErrorLog.logError("Could not load ML settings file! File ("+settingLocation +") does not exit.");
+                GlobalState.logError.log("Could not load ML settings file! File ("+settingLocation +") does not exit.");
                 return mls;
             }
             System.IO.StreamReader file = new System.IO.StreamReader(settingLocation);
@@ -71,7 +71,7 @@ namespace MachineLearning.Learning
                 string[] nameAndValue = line.Split(new char[]{' '},2);
                 if (!mls.setSetting(nameAndValue[0], nameAndValue[1]))
                 {
-                    ErrorLog.logError("MlSetting " + nameAndValue[0] + " not found!");
+                    GlobalState.logError.log("MlSetting " + nameAndValue[0] + " not found!");
                 }
             }
             file.Close();
@@ -155,8 +155,9 @@ namespace MachineLearning.Learning
             foreach (FieldInfo field in fields)
             {
                 if(!field.IsStatic)
-                    sb.Append(field.Name+" : "+field.GetValue(this)+System.Environment.NewLine);
+                    sb.Append(field.Name+":"+field.GetValue(this)+" ");
             }
+            sb.Append(System.Environment.NewLine);
  	        return sb.ToString();
         }
 

@@ -17,6 +17,10 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
         }
 
+        public override Dictionary<string, string> getParameterTypes()
+        {
+            return new Dictionary<string, string>();
+        }
 
         public override string getName()
         {

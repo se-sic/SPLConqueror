@@ -108,7 +108,7 @@ namespace SPLConqueror_Core
                         bOpt = GlobalState.varModel.getBinaryOption(searchelement);
 
                         if (bOpt == null)
-                            ErrorLog.logError("No Binary option found with name: "+searchelement);
+                            GlobalState.logError.log("No Binary option found with name: " + searchelement);
                         binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
                     }
                 }
@@ -129,7 +129,7 @@ namespace SPLConqueror_Core
                             continue;
                         NumericOption varFeat = GlobalState.varModel.getNumericOption(numOptionsKeyValue[0]);
                         if (varFeat == null)
-                            ErrorLog.logError("No numeric option found with name: " + numOptionsKeyValue[0]);
+                            GlobalState.logError.log("No numeric option found with name: " + numOptionsKeyValue[0]);
                         double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
 
                         numericOptions.Add(varFeat, varFeatValue);
@@ -140,7 +140,7 @@ namespace SPLConqueror_Core
                 
                 if(configurations.Contains(config))
                 {
-                    ErrorLog.logError("Mutiple definition of one configuration in the configurations file:  "+config.ToString());
+                    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
                 }else
                 {
                     configurations.Add(config);
@@ -149,5 +149,44 @@ namespace SPLConqueror_Core
             return configurations;
         }
 
+
+        /// <summary>
+        /// Returns the of list of non function properties (nfps) measured for the configurations of the given file. To tune up performance, 
+        /// we consider only the first configurtion of the file and assume that all configurations have the same nfps. 
+        /// </summary>
+        /// <param name="file">The xml file consisting of configurations.</param>
+        /// <returns>The list of nfps the configurations have measurements.</returns>
+        public static List<NFProperty> propertiesOfConfigurations(string file)
+        {
+            List<NFProperty> properties = new List<NFProperty>();
+
+            XmlDocument dat = new System.Xml.XmlDocument();
+            dat.Load(file);
+            XmlElement currentElemt = dat.DocumentElement;
+            XmlNode node = currentElemt.ChildNodes[0];
+
+            foreach (XmlNode childNode in node.ChildNodes)
+            {
+                switch (childNode.Attributes[0].Value)
+                {
+                    // TODO we use this to support result files of the old structure
+                    case "Configuration":
+                        break;
+                    case "Variable Features":
+                        break;
+
+
+                    case "BinaryOptions":
+                        break;
+                    case "NumericOptions":
+                        break;
+                    default: 
+                        NFProperty property = new NFProperty(childNode.Attributes[0].Value);
+                        properties.Add(property);                
+                        break;
+                }
+            }
+            return properties;
+        }
     }
 }

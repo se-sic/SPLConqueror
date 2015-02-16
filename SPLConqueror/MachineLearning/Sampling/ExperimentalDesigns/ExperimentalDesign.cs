@@ -12,6 +12,14 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     /// </summary>
     public abstract class ExperimentalDesign
     {
+
+        /// <summary>
+        /// This method returns a dictionary holding a key value pair for each parameter of the 
+        /// experimental design. The name of the parameter is stored as key and the type of the parameter as value. 
+        /// </summary>
+        /// <returns>Dirctionary consisting of an key value pair for each parameter of the design.</returns>
+        public abstract Dictionary<string, string> getParameterTypes();
+        
         protected List<NumericOption> options = null;
 
         /// <summary>

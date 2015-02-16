@@ -304,6 +304,7 @@ namespace SPLConqueror_Core
             return false;
         }
 
+       
         /// <summary>
         /// Compare two lists of binary configuration options. If both lists contains the same binary options, the mehthod retuns true and otherwise false. 
         /// </summary>
@@ -324,6 +325,26 @@ namespace SPLConqueror_Core
             }
             return true;
         }
-        
+
+
+        // TODO oe of these list might be emply, for example it there are no numeric options in the variability model.
+        public static List<Configuration> getConfigurations(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
+        {
+            List<Configuration> configurations = new List<Configuration>();
+
+            foreach (Dictionary<NumericOption, double> numeric in numericSelections)
+            {
+                foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySelections)
+                {
+                    Configuration config = Configuration.getConfiguration(binary, numeric);
+                    if (!configurations.Contains(config))
+                    {
+                        configurations.Add(config);
+                    }
+                }
+            }
+
+            return configurations;
+        }
     }
 }

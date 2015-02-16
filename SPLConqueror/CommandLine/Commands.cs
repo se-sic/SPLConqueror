@@ -25,7 +25,7 @@ namespace CommandLine
         /// <returns></returns>
         public string performOneCommand(string line)
         {
-            InfoLog.logInfo("Command: "+line);
+            GlobalState.logInfo.log("Command: " + line);
 
 
             // remove comment part of the line (the comment starts with an #)
@@ -39,6 +39,8 @@ namespace CommandLine
             string task = "";
             if (components.Length > 1)
                 task = components[1];
+
+            string[] taskAsParameter = task.Split(new Char[] { ' ' });
 
             switch (command)
             {
@@ -54,14 +56,25 @@ namespace CommandLine
                     break;
                 case "all":
                     GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
-                    InfoLog.logInfo("Configurations loaded.");
+                    GlobalState.logInfo.log("Configurations loaded.");
 
                     break;
                 case "allBinary":
                     {
                         VariantGenerator vg = new VariantGenerator(null);
-                        exp.addBinarySelection(vg.generateAllVariantsFast(GlobalState.varModel));
-                        exp.addBinarySampling("all-Binary");
+                        if(taskAsParameter.Contains("validation")){
+                            exp.addBinarySelection_Validation(vg.generateAllVariantsFast(GlobalState.varModel));
+                            exp.addBinarySampling_Validation("all-Binary");
+                        }else{
+                            exp.addBinarySelection_Learning(vg.generateAllVariantsFast(GlobalState.varModel));
+                            exp.addBinarySampling_Learning("all-Binary");
+                        }
+                        
+                        break;
+                    }
+                case "analyze-learning":
+                    {
+                        // TODO
                         break;
                     }
                 case "expDesign":
@@ -71,12 +84,21 @@ namespace CommandLine
                 case "vm":
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     break;
+                case "nfp":
+                    GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
+                    break;
                 case "featureWise":
                     FeatureWise fw = new FeatureWise();
-                    exp.addBinarySelection(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                    //exp.addBinarySelection(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
-                    exp.addBinarySampling("FW");
-
+                    if (taskAsParameter.Contains("validation"))
+                    {
+                        exp.addBinarySelection_Validation(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                        exp.addBinarySampling_Validation("FW");
+                    }
+                    else
+                    {
+                        exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                        exp.addBinarySampling_Learning("FW");
+                    }
                     break;
 
                 case "log":
@@ -96,18 +118,26 @@ namespace CommandLine
 
                 case "pairWise":
                     PairWise pw = new PairWise();
-                    exp.addBinarySelection(pw.generatePairWiseVariants(GlobalState.varModel));
-                    exp.addBinarySampling("PW");                    
+                    if (taskAsParameter.Contains("validation"))
+                    {
+                        exp.addBinarySelection_Validation(pw.generatePairWiseVariants(GlobalState.varModel));
+                        exp.addBinarySampling_Validation("PW");
+                    }
+                    else
+                    {
+                        exp.addBinarySelection_Learning(pw.generatePairWiseVariants(GlobalState.varModel));
+                        exp.addBinarySampling_Learning("PW");
+                    }
                     break;
 
                 case "printSettings":
-                    InfoLog.logInfo(exp.mlSettings.ToString());
+                    GlobalState.logInfo.log(exp.mlSettings.ToString());
                     break;
 
                 case "printConfigs":
                     {
-                        List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection;
-                        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySampling = exp.BinarySelections;
+                        List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
+                        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySampling = exp.BinarySelections_Learning;
 
                         List<Configuration> configurations = new List<Configuration>();
 
@@ -137,36 +167,43 @@ namespace CommandLine
                         int modulu = Convert.ToInt32(para[1]);
 
                         VariantGenerator vg = new VariantGenerator(null);
-                        exp.addBinarySelection(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
-                        exp.addBinarySampling("random " + task);
+                        if (taskAsParameter.Contains("validation"))
+                        {
+                            exp.addBinarySelection_Validation(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
+                            exp.addBinarySampling_Validation("random " + task);
+                        }
+                        else
+                        {
+                            exp.addBinarySelection_Learning(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
+                            exp.addBinarySampling_Learning("random " + task);
+                        }
                         break;
                     }
                 case "start":
                     {
-                        List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection;
-                        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySampling = exp.BinarySelections;
-
-                        List<Configuration> configurations = new List<Configuration>();
-
-                        foreach(Dictionary<NumericOption, double> numeric in numericSampling)
-                        {
-                            foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySampling)
-                            {
-                                Configuration config = Configuration.getConfiguration(binary, numeric);
-                                if (!configurations.Contains(config))
-                                {
-                                    configurations.Add(config);
-                                }
-                            }
-                        }
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                    
-                        // starts the machine learning 
-                        FeatureSubsetSelection fss = new FeatureSubsetSelection(infMod,exp.mlSettings);
 
-                        // todo set learning and validation set. 
+                        List<Configuration> configurations_Learning = Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning);
+                        List<Configuration> configurations_Validation = Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation);
 
-                        fss.learn();
+                        if (configurations_Learning.Count == 0)
+                            break;
+
+                        if (configurations_Learning.Count == 0)
+                        {
+                            configurations_Learning = configurations_Validation;                            
+                        }
+
+                        if (configurations_Validation.Count == 0)
+                        {
+                            configurations_Validation = configurations_Learning;
+                        }
+                        // prepare the machine learning 
+                        exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
+                        exp.learning.setLearningSet(configurations_Learning);
+                        exp.learning.setValidationSet(configurations_Validation);
+
+                        exp.learning.learn();
 
 
                         // todo analyze the learned model and rounds leading to the model. 
@@ -179,8 +216,17 @@ namespace CommandLine
                 case "negFW":
                     // TODO there are two different variants in generating NegFW configurations. 
                     NegFeatureWise neg = new NegFeatureWise();
-                    exp.addBinarySelection(neg.generateNegativeFW(GlobalState.varModel));
-                    exp.addBinarySampling("newFW");
+
+                    if (taskAsParameter.Contains("validation"))
+                    {
+                        exp.addBinarySelection_Validation(neg.generateNegativeFW(GlobalState.varModel));
+                        exp.addBinarySampling_Validation("newFW");
+                    }
+                    else
+                    {
+                        exp.addBinarySelection_Learning(neg.generateNegativeFW(GlobalState.varModel));
+                        exp.addBinarySampling_Learning("newFW");
+                    }
                     break;
                 default:
                     return command;
@@ -259,8 +305,16 @@ namespace CommandLine
                     }
                     else
                     {
-                        string[] nameAndValue = par.Split(':');
-                        parameter.Add(nameAndValue[0], nameAndValue[1]);
+                        if (par.Contains(':'))
+                        {
+                            string[] nameAndValue = par.Split(':');
+                            parameter.Add(nameAndValue[0], nameAndValue[1]);
+                        }
+                        else
+                        {
+                            parameter.Add(par, "");
+                        }
+
                     }
                 }
 
@@ -274,15 +328,12 @@ namespace CommandLine
             {
                 case "boxBehnken":
                     design = new BoxBehnkenDesign(optionsToConsider);
-                    exp.addNumericSampling("boxBehnken");
                     break;
                 case "centralComposite":
                     design = new CentralCompositeInscribedDesign(optionsToConsider);
-                    exp.addNumericSampling("centralComposite");
                     break;
                 case "fullFactorial":
                     design = new FullFactorialDesign(optionsToConsider);
-                    exp.addNumericSampling("fullFactorial");
                     break;
                 case "featureInteraction":
 
@@ -293,7 +344,6 @@ namespace CommandLine
 
                 case "hyperSampling":
                     design = new HyperSampling(optionsToConsider);
-                    exp.addNumericSampling("hyperSampling");
                     break;
 
                 case "independentLinear":
@@ -301,17 +351,14 @@ namespace CommandLine
 
                 case "kExchange":
                     design = new KExchangeAlgorithm(optionsToConsider);
-                    exp.addNumericSampling("kExchange");
                     break;
 
                 case "plackettBurman":
                     design = new PlackettBurmanDesign(optionsToConsider);
-                    exp.addNumericSampling("plackettBurman");
                     break;
 
                 case "random":
                     design = new RandomSampling(optionsToConsider);
-                    exp.addNumericSampling("random");
                     break;
 
                 default:
@@ -319,8 +366,16 @@ namespace CommandLine
             }
 
             design.computeDesign(parameter);
-            exp.addNumericalSelection(design.SelectedConfigurations);
-
+            if (parameter.ContainsKey("validation"))
+            {
+                exp.addNumericSampling_Validation(design.getName());
+                exp.addNumericalSelection_Validation(design.SelectedConfigurations);
+            }
+            else
+            {
+                exp.addNumericSampling_Learning(design.getName());
+                exp.addNumericalSelection_Learning(design.SelectedConfigurations);
+            }
 
             return "";
         }

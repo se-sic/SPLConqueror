@@ -16,6 +16,18 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         private int sampleSize = 10;
 
+        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
+        static RandomSampling()
+        {
+            parameter.Add("seed", "int");
+            parameter.Add("sampleSize", "int");
+        }
+       
+        public override Dictionary<string, string> getParameterTypes()
+        {
+            return RandomSampling.parameter;
+        }
+
         public RandomSampling(List<NumericOption> options)
             : base(options)
         {
