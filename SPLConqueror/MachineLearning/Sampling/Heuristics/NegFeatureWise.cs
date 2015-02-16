@@ -46,7 +46,7 @@ namespace MachineLearning.Sampling.Heuristics
                     }
                     else
                     {
-                        if (!configurations.Contains(configToMeasure))
+                        if (!Configuration.containsBinaryConfiguration(configurations,configToMeasure))
                             configurations.Add(configToMeasure);
                         break;
                     }
@@ -95,7 +95,7 @@ namespace MachineLearning.Sampling.Heuristics
                             abort = true;
                             continue;
                         }
-                        else if(!configurations.Contains(configToMeasure))
+                        else if(!Configuration.containsBinaryConfiguration(configurations,configToMeasure))
                             configurations.Add(configToMeasure);
 
                     }
@@ -162,7 +162,7 @@ namespace MachineLearning.Sampling.Heuristics
                         List<List<BinaryOption>> foundConfigs = generateConfig(alter, alternatives, alreadyComputedConfigs, vm);
                         foreach (var conf in foundConfigs)
                         {
-                            if (!maxConfigurations.Contains(conf))
+                            if (!Configuration.containsBinaryConfiguration(maxConfigurations, conf))
                                 maxConfigurations.Add(conf);
                         }
                     }

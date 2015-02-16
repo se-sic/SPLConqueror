@@ -8,7 +8,13 @@ namespace MachineLearning.Learning.Regression
 {
     public class Feature : InfluenceFunction
     {
-        internal double constant = 1.0;
+        private double constant = 1.0;
+
+        public double Constant
+        {
+            get { return constant; }
+            set { constant = value; }
+        }
 
         /// <summary>
         /// Compares two features based on the components of the functions. 

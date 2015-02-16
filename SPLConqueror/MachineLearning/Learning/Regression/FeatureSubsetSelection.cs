@@ -162,7 +162,7 @@ namespace MachineLearning.Learning.Regression
             double[] fittedConstant = constants.ToArray<double>();
             for(int i = 0; i < constants.Length; i++)
             {
-                newModel[i].constant = fittedConstant[i];
+                newModel[i].Constant = fittedConstant[i];
                 //constants.GetValue(i);
             }
 
@@ -273,7 +273,7 @@ namespace MachineLearning.Learning.Regression
                 ////First check whether the configuration options of the current feature are present in the configuration
                 if (currentModel[i].validConfig(c))
                 {
-                    prediction += currentModel[i].eval(c) * currentModel[i].constant;
+                    prediction += currentModel[i].eval(c) * currentModel[i].Constant;
                 }
             }
             return prediction;

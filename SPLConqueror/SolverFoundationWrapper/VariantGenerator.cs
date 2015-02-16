@@ -41,7 +41,7 @@ namespace MicrosoftSolverFoundation
                     if (soln.GetIntegerValue(cT) == 1)
                         config.Add(termToElem[cT]);
                 }
-                if(!configurations.Contains(config))
+                if(!Configuration.containsBinaryConfiguration(configurations, config))
                     configurations.Add(config);
 
                 soln.GetNext();
@@ -284,7 +284,7 @@ namespace MicrosoftSolverFoundation
                     resultConfigs.Add(tempConfig);
                     break;
                 }
-                if(!resultConfigs.Contains(tempConfig))
+                if(!Configuration.containsBinaryConfiguration(resultConfigs, tempConfig))
                     resultConfigs.Add(tempConfig);
                 soln.GetNext();
             }

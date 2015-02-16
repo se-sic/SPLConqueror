@@ -291,7 +291,7 @@ namespace SPLConqueror_Core
         /// <param name="setOfBinaryConfigurations">A list of binary selections. Each sublist represents a selection of binary configuration options.</param>
         /// <param name="binaryConfig">A list of binary configuration options.</param>
         /// <returns>True if the list of binary selections contains the list of binary configuration options, false otherwise. If one parameter is null this mehtod retuns false.</returns>
-        public static bool containBinaryConfiguration(List<List<BinaryOption>> setOfBinaryConfigurations, List<BinaryOption> binaryConfig)
+        public static bool containsBinaryConfiguration(List<List<BinaryOption>> setOfBinaryConfigurations, List<BinaryOption> binaryConfig)
         {
             if (setOfBinaryConfigurations == null || binaryConfig == null)
                 return false;
