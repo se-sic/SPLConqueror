@@ -10,6 +10,7 @@ using MachineLearning.Learning;
 using MachineLearning.Solver;
 
 using MachineLearning.Learning.Regression;
+using System.IO;
 
 namespace CommandLine
 {
@@ -17,6 +18,7 @@ namespace CommandLine
     {
 
         ExperimentState exp = new ExperimentState();
+        InfluenceFunction trueModel = null;
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -44,7 +46,13 @@ namespace CommandLine
 
             switch (command)
             {
-
+                case "trueModel":
+                    StreamReader readModel = new StreamReader(task);
+                    String model = readModel.ReadLine().Trim();
+                    readModel.Close();
+                    trueModel = new InfluenceFunction(model, GlobalState.varModel);
+                    //computeEvaluationDataSetBasedOnTrueModel();
+                    break;
                 case "clean-global":
                     SPLConqueror_Core.GlobalState.clear();
                     break;
