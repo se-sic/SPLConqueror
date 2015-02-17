@@ -54,6 +54,13 @@ namespace CommandLine
             get { return this.numericSelection_Validation; }
         }
 
+        InfluenceFunction trueModel = null;
+
+        public InfluenceFunction TrueModel
+        {
+            get { return trueModel; }
+            set { trueModel = value; }
+        }
 
 
         /// <summary>

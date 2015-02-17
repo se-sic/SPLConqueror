@@ -19,6 +19,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <returns>Dirctionary consisting of an key value pair for each parameter of the design.</returns>
         public abstract Dictionary<string, string> getParameterTypes();
+
+        protected Dictionary<string, string> designParameter = new Dictionary<string, string>();
         
         protected List<NumericOption> options = null;
 
@@ -44,6 +46,42 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         public ExperimentalDesign(List<NumericOption> samplingDomain)
         {
             options = samplingDomain;
+        }
+
+        /// <summary>
+        /// Instatiates a new experimental design based on a given string. the format is: "[NumericOption1,Num2,...] Parameter1:VALUE Parameter2:VALUE"
+        /// </summary>
+        /// <param name="param">The string containing the parameters and numeric options used by an experimental design</param>
+        public ExperimentalDesign(String param)
+        {
+            String[] parameters = param.Split(' ');
+            if (param.Length > 0)
+            {
+                foreach (string par in parameters)
+                {
+                    if (par.Contains("["))
+                    {
+                        string[] localOptions = par.Substring(1, par.Length - 2).Split(',');
+                        foreach (string option in localOptions)
+                        {
+                            this.options.Add(GlobalState.varModel.getNumericOption(option));
+                        }
+                    }
+                    else
+                    {
+                        if (par.Contains(':'))
+                        {
+                            string[] nameAndValue = par.Split(':');
+                            designParameter.Add(nameAndValue[0], nameAndValue[1]);
+                        }
+                        else
+                        {
+                            designParameter.Add(par, "");
+                        }
+
+                    }
+                }
+            }
         }
 
         /// <summary>
