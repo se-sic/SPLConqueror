@@ -19,20 +19,20 @@ namespace ScriptGenerator
 
     public partial class Form1 : Form
     {
-        public const string PARAMETER_NOT_SPECIFIED = "Parameter not specified!"; 
+        public const string PARAMETER_NOT_SPECIFIED = "Parameter not specified!";
 
         public Form1()
         {
             InitializeComponent();
             addMlSettingsBoxContent();
-            
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
         }
 
-        #region MLSettings components 
+        #region MLSettings components
         private const int ML_FIELDS_OFFSET = 18;
         private void addMlSettingsBoxContent()
         {
@@ -43,13 +43,13 @@ namespace ScriptGenerator
             for (int i = 0; i < fields.Length; i++)
             {
                 Label l = new Label();
-                mlSettingsPanel.Controls.Add(l);               
+                mlSettingsPanel.Controls.Add(l);
 
                 l.AutoSize = true;
                 l.Location = new System.Drawing.Point(5, 5 + ML_FIELDS_OFFSET * i);
-                l.Name = fields[i].Name+"_label";
+                l.Name = fields[i].Name + "_label";
                 l.Size = new System.Drawing.Size(35, 15);
-                l.TabIndex = i*2;
+                l.TabIndex = i * 2;
                 l.Text = fields[i].Name;
 
                 TextBox t = new TextBox();
@@ -58,7 +58,7 @@ namespace ScriptGenerator
                 t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i);
                 t.Name = fields[i].Name + "_textBox";
                 t.Size = new System.Drawing.Size(150, 20);
-                t.TabIndex = i*2+1;
+                t.TabIndex = i * 2 + 1;
                 t.Text = fields[i].GetValue(settingsObject).ToString();
             }
         }
@@ -75,9 +75,9 @@ namespace ScriptGenerator
                     setting.setSetting(fieldName, ((TextBox)c).Text);
                 }
             }
-            addedElementsList.Items.Add(new Container("mlSettings",setting));
+            addedElementsList.Items.Add(new Container("mlSettings", setting));
         }
-        #endregion 
+        #endregion
 
         private void removeElement_Click(object sender, EventArgs e)
         {
@@ -111,7 +111,7 @@ namespace ScriptGenerator
             {
                 resultFile = new System.IO.FileInfo(pfd.FileName);
 
-                
+
                 // define the corresponding variability model
                 foreach (Container c in addedElementsList.Items)
                 {
@@ -123,7 +123,7 @@ namespace ScriptGenerator
                 }
                 // select nfps to consider
                 // TODO replace "\\" with the path separator
-                List<NFProperty> properties = ConfigurationReader.propertiesOfConfigurations(resultFile.Directory+"\\"+resultFile.Name);
+                List<NFProperty> properties = ConfigurationReader.propertiesOfConfigurations(resultFile.Directory + "\\" + resultFile.Name);
                 nfpSelection_resultFile = new Dictionary<CheckBox, NFProperty>();
 
                 for (int i = 0; i < properties.Count; i++)
@@ -261,14 +261,8 @@ namespace ScriptGenerator
             }
             if (num_FullFactorial_check.Checked)
             {
-                if (num_fullFac_percentText.Text.Trim() == "")
-                {
-                    informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
-                    return;
-                }
-                samplingNames.Add("expDesign FullFactorial " + num_fullFac_percentText.Text + " " + validation);
-                keyInfo += "FullFactorial " + num_fullFac_percentText.Text + " ";
-
+                samplingNames.Add("expDesign FullFactorial " + validation);
+                keyInfo += "FullFactorial ";
             }
             if (num_hyperSampling_check.Checked)
             {
@@ -288,7 +282,7 @@ namespace ScriptGenerator
                     return;
                 }
                 string str = "expDesign kExchange sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
-                samplingNames.Add(str+" "+validation );
+                samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
             if (num_randomSampling_num.Checked)
@@ -298,16 +292,38 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = "expDesign random sampleSize:" + num_random_n_Text.Text.Trim() + " seed:"+num_rand_seed_Text.Text.Trim();
-                samplingNames.Add(str+" "+validation );
+                string str = "expDesign random sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
+                samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
 
-            // TODO add PlackettBurman
+            if (num_oneFactorAtATime_Box.Checked)
+            {
+                if (num_oneFactorAtATime_num_Text.Text.Trim() == "")
+                {
+                    informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
+                    return;
+                }
+                string str = "expDesign oneFactorAtATime distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
+                samplingNames.Add(str + " " + validation);
+                keyInfo += str + " ";
+
+            }
+            if (num_PlackettBurman_check.Checked)
+            {
+                if (num_Plackett_Level_Box.Text.Trim() == "" || num_Plackett_n_Box.Text.Trim() == "")
+                {
+                    informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
+                    return;
+                }
+                string str = "expDesign plackettBurman measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
+                samplingNames.Add(str + " " + validation);
+                keyInfo += str + " ";
+            }
 
             Container cont = new Container(containerKey, samplingNames);
             cont.AdditionalKeyInformation = keyInfo;
-           
+
             addedElementsList.Items.Add(cont);
 
         }
@@ -326,7 +342,7 @@ namespace ScriptGenerator
             {
 
                 switch (c.Type.Trim())
-                {       
+                {
                     case "mlSettings":
                         mlSettings.Add((MachineLearning.Learning.ML_Settings)c.Content);
                         break;
@@ -342,11 +358,11 @@ namespace ScriptGenerator
                             runs.Add(c.Type.Trim(), newKind);
                         }
                         break;
-                }                    
+                }
             }
 
             generateScript(mlSettings, runs);
-            
+
 
         }
 
@@ -357,13 +373,25 @@ namespace ScriptGenerator
         /// <param name="e"></param>
         private void generateScript(List<MachineLearning.Learning.ML_Settings> mlSettings, Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
-            if(mlSettings.Count == 0)
+            if (mlSettings.Count == 0)
             {
                 informatioLabel.Text = "No mlSettings specified!";
                 return;
             }
 
             StringBuilder scriptContent = new StringBuilder();
+
+            foreach (Container c in addedElementsList.Items)
+            {
+
+                switch (c.Type.Trim())
+                {
+                    case "logFile":
+                        scriptContent.Append("log " + (c.Content) + "\n");
+                        break;
+                }
+            }
+
 
 
             foreach (ML_Settings setting in mlSettings)
@@ -378,7 +406,7 @@ namespace ScriptGenerator
 
                         foreach (Container nfp in nfpContainer)
                         {
-                            List<NFProperty> prop = (List < NFProperty >) nfp.Content;
+                            List<NFProperty> prop = (List<NFProperty>)nfp.Content;
 
                             foreach (NFProperty pro in prop)
                             {
@@ -388,7 +416,7 @@ namespace ScriptGenerator
                                 NFProperty nfpName = (NFProperty)pro;
 
 
-                                scriptContent.Append("vm "+varModel + System.Environment.NewLine);
+                                scriptContent.Append("vm " + varModel + System.Environment.NewLine);
                                 scriptContent.Append("all " + measurement + System.Environment.NewLine);
                                 scriptContent.Append("nfp " + pro.Name + System.Environment.NewLine);
                                 scriptContent.Append(samplingsToConsider(runs));
@@ -407,7 +435,7 @@ namespace ScriptGenerator
             {
                 System.IO.FileStream fs =
                    (System.IO.FileStream)saveFileDialog1.OpenFile();
-                
+
                 StreamWriter s = new StreamWriter(fs);
                 s.WriteLine(scriptContent.ToString());
                 s.Flush();
@@ -487,6 +515,20 @@ namespace ScriptGenerator
         private string mlSettingsContent(ML_Settings settings)
         {
             return "mlSettings " + settings.ToString();
+        }
+
+        private void logFile_Button_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Title = "Define log file";
+            saveFileDialog1.ShowDialog();
+
+            if (saveFileDialog1.FileName != "")
+            {                
+                // TODO what happen if there are multiple logFiles defined?
+                addedElementsList.Items.Add(new Container("logFile", saveFileDialog1.FileName));
+
+            }
         }
 
 

@@ -46,10 +46,10 @@
     <Compile Include="ConfigurationOption.cs" />
     <Compile Include="ConfigurationPrinter.cs" />
     <Compile Include="ConfigurationReader.cs" />
-    <Compile Include="ErrorLog.cs" />
+    <Compile Include="ErrorLogger.cs" />
     <Compile Include="GlobalState.cs" />
     <Compile Include="InfluenceModel.cs" />
-    <Compile Include="InfoLog.cs" />
+    <Compile Include="InfoLogger.cs" />
     <Compile Include="Interaction.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="NumericOption.cs" />

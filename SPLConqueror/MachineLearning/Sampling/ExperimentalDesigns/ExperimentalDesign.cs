@@ -110,11 +110,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="option">The numeric option to sample.</param>
         /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
-        public List<double> sampleFeature(NumericOption option)
+        public List<double> sampleOption(NumericOption option)
         {
             if (this.minNumberOfSamplingsPerNumericOption > option.getAllValues().Count)
-                return sampleFeature(option, option.getAllValues().Count, false);
-            return sampleFeature(option, this.minNumberOfSamplingsPerNumericOption, false);
+                return sampleOption(option, option.getAllValues().Count, false);
+            return sampleOption(option, this.minNumberOfSamplingsPerNumericOption, false);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <param name="numberOfSamples">The number of different values of the numeric option.</param>
         /// <param name="useMinMaxValues">States whether the minimal and maximal value of the numeric option have to be considered during sampling.</param>
         /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
-        public static List<double> sampleFeature(NumericOption option, int numberOfSamples, bool useMinMaxValues)
+        public static List<double> sampleOption(NumericOption option, int numberOfSamples, bool useMinMaxValues)
         {
             List<double> resultList = new List<double>();
 
