@@ -520,15 +520,11 @@ namespace ScriptGenerator
         private void logFile_Button_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Title = "Desfine log file";
+            saveFileDialog1.Title = "Define log file";
             saveFileDialog1.ShowDialog();
 
             if (saveFileDialog1.FileName != "")
-            {
-                System.IO.FileStream fs =
-                   (System.IO.FileStream)saveFileDialog1.OpenFile();
-                StreamWriter s = new StreamWriter(fs);
-                
+            {                
                 // TODO what happen if there are multiple logFiles defined?
                 addedElementsList.Items.Add(new Container("logFile", saveFileDialog1.FileName));
 
