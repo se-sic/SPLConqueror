@@ -93,5 +93,22 @@ namespace SPLConqueror_Core
 
 
 
+        /// <summary>
+        /// This function gets a list of configurations and checks in the global state whether this configuration has a measured value and returns it if so.
+        /// </summary>
+        /// <param name="list">The list of configurations for which we want a measured value.</param>
+        /// <returns>A list of configurations containinga measured value. Might be empty.</returns>
+        public static List<Configuration> getMeasuredConfigs(List<Configuration> list)
+        {
+            List<Configuration> configsWithValues = new List<Configuration>();
+            foreach(var config in list) {
+                foreach (var configInGS in GlobalState.allMeasurements.Configurations)
+                {
+                    if (config.Equals(configInGS))
+                        configsWithValues.Add(configInGS);
+                }
+            }
+            return configsWithValues;
+        }
     }
 }

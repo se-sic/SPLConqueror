@@ -18,7 +18,6 @@ namespace CommandLine
     {
 
         ExperimentState exp = new ExperimentState();
-        InfluenceFunction trueModel = null;
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -50,8 +49,8 @@ namespace CommandLine
                     StreamReader readModel = new StreamReader(task);
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
-                    trueModel = new InfluenceFunction(model, GlobalState.varModel);
-                    //computeEvaluationDataSetBasedOnTrueModel();
+                    exp.TrueModel = new InfluenceFunction(model, GlobalState.varModel);
+                    computeEvaluationDataSetBasedOnTrueModel();
                     break;
                 case "clean-global":
                     SPLConqueror_Core.GlobalState.clear();
@@ -191,21 +190,48 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
 
-                        List<Configuration> configurations_Learning = Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning);
-                        List<Configuration> configurations_Validation = Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation);
+                        List<Configuration> configurations_Learning = null;
+                        
+                        List<Configuration> configurations_Validation = null;
 
-                        if (configurations_Learning.Count == 0)
-                            break;
-
-                        if (configurations_Learning.Count == 0)
+                        if (exp.TrueModel == null)
                         {
-                            configurations_Learning = configurations_Validation;                            
+
+                            configurations_Learning = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning));
+                            
+
+                            configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
+
+
+                            if (configurations_Learning.Count == 0)
+                            {
+                                configurations_Learning = configurations_Validation;
+                            }
+
+                            if (configurations_Learning.Count == 0)
+                                break;
+
+                            if (configurations_Validation.Count == 0)
+                            {
+                                configurations_Validation = configurations_Learning;
+                            }
                         }
 
-                        if (configurations_Validation.Count == 0)
+                        else
                         {
-                            configurations_Validation = configurations_Learning;
+                            foreach (Dictionary<BinaryOption,BinaryOption.BinaryValue> binConfig in exp.BinarySelections_Learning)
+                            {
+                                foreach (Dictionary<NumericOption, double> numConf in exp.NumericSelection_Learning)
+                                {
+                                    
+                                    Configuration c = new Configuration(binConfig, numConf);
+                                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                                    if (!configurations_Learning.Contains(c))
+                                        configurations_Learning.Add(c);
+                                }
+                            }
                         }
+
                         // prepare the machine learning 
                         exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
@@ -240,6 +266,38 @@ namespace CommandLine
                     return command;
             }
             return "";
+        }
+
+        /// <summary>
+        /// The methods generates based on all binary sampling and 50% hyper sampling configurations for the validation set.
+        /// If we have the true model, we can just compute the true value of the nonfunctional property for a given configuration. 
+        /// </summary>
+        private void computeEvaluationDataSetBasedOnTrueModel()
+        {
+            VariantGenerator vg = new VariantGenerator(null);
+            List<List<BinaryOption>> binaryConfigs = vg.generateAllVariantsFast(GlobalState.varModel);
+            exp.addBinarySelection_Validation(binaryConfigs);
+            var expDesign = new HyperSampling(GlobalState.varModel.NumericOptions);
+            expDesign.Precision = 50;
+            expDesign.computeDesign();
+            exp.addNumericalSelection_Validation(expDesign.SelectedConfigurations);
+            var numericConfigs = expDesign.SelectedConfigurations;
+            foreach (List<BinaryOption> binConfig in binaryConfigs)
+            {
+                if (numericConfigs.Count == 0)
+                {
+                    Configuration c = new Configuration(binConfig, GlobalState.varModel);
+                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                    GlobalState.addConfiguration(c);
+                }
+                foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
+                {
+                    
+                    Configuration c = new Configuration(binConfig, numConf, GlobalState.varModel);
+                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                    GlobalState.addConfiguration(c);
+                }
+            }
         }
 
 
@@ -352,6 +410,7 @@ namespace CommandLine
 
                 case "hyperSampling":
                     design = new HyperSampling(optionsToConsider);
+                    ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
                     break;
 
                 case "independentLinear":

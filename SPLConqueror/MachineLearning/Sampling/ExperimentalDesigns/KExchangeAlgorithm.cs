@@ -11,12 +11,24 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     public class KExchangeAlgorithm : ExperimentalDesign
     {
 
-        double[,] matrix;
-        int sampleSize = 100;
-        Dictionary<NumericOption, int> numberOfLevels;
-        int k = 5;
-        bool rescale = false;
-        double epsilon = 1E-5;
+        private double[,] matrix;
+        private int sampleSize = 100;
+
+        public int SampleSize
+        {
+            get { return sampleSize; }
+            set { sampleSize = value; }
+        }
+        private Dictionary<NumericOption, int> numberOfLevels;
+        private int k = 5;
+
+        public int K
+        {
+            get { return k; }
+            set { k = value; }
+        }
+        private bool rescale = false;
+        private double epsilon = 1E-5;
 
         private static Dictionary<string, string> parameter = new Dictionary<string, string>();
         static KExchangeAlgorithm()

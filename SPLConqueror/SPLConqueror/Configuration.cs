@@ -96,6 +96,29 @@ namespace SPLConqueror_Core
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
 
+        public Configuration(List<BinaryOption> binConfig, Dictionary<NumericOption, double> numConf, VariabilityModel vm)
+        {
+            if (vm == null)
+            {
+                foreach (BinaryOption opt in binConfig)
+                {
+                    binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
+                }
+            }
+            else
+            {
+                foreach (var opt in vm.BinaryOptions)
+                {
+                    if (binConfig.Contains(opt))
+                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
+                    else
+                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Deselected);
+                }
+            }
+            numericOptions = numConf;
+            identifier = generateIdentifier(DEFAULT_SEPARATOR);
+        }
+
 
         /// <summary>
         /// Returns an identifier describing the choice of binary configuration options and numeric configuration-option values of the configuration. 
@@ -327,7 +350,7 @@ namespace SPLConqueror_Core
         }
 
 
-        // TODO oe of these list might be emply, for example it there are no numeric options in the variability model.
+        // TODO one of these lists might be empty, for example if there are no numeric options in the variability model.
         public static List<Configuration> getConfigurations(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
         {
             List<Configuration> configurations = new List<Configuration>();
@@ -345,6 +368,14 @@ namespace SPLConqueror_Core
             }
 
             return configurations;
+        }
+
+        public void setMeasuredValue(NFProperty prop, double val)
+        {
+            if (this.nfpValues.Keys.Contains(prop))
+                this.nfpValues[prop] = val;
+            else
+                this.nfpValues.Add(prop, val);
         }
     }
 }

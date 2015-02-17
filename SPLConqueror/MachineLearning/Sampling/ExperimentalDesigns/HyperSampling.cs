@@ -30,8 +30,19 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
         }
 
+        public HyperSampling(String s) : base (s)
+        {
+            if (this.designParameter.ContainsKey("precision"))
+                this.precision = Int32.Parse(this.designParameter["precision"]);
+        }
 
-        private const int defaultPrecision = 50;
+        private int precision = 50;
+
+        public int Precision
+        {
+            get { return precision; }
+            set { precision = value; }
+        }
         
         
         /*
@@ -81,7 +92,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <returns></returns>
         public override bool computeDesign()
         {
-            return computeDesign(defaultPrecision);
+            return computeDesign(precision);
         }
 
         /// <summary>
