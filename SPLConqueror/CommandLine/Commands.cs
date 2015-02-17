@@ -16,6 +16,32 @@ namespace CommandLine
 {
     class Commands
     {
+        public const string COMMAND = "Command: ";
+        public const string COMMAND_TRUEMODEL = "trueModel";
+        
+        public const string COMMAND_CLEAR_GLOBAL = "clean-global";
+        public const string COMMAND_CLEAR_SAMPLING = "clean-sampling";
+        public const string COMMAND_CLEAR_LEARNING = "clean-learning";
+        
+        public const string COMMAND_LOAD_CONFIGURATIONS = "all";
+        public const string COMMAND_LOAD_MLSETTINGS = "load_MLsettings";
+
+        public const string COMMAND_SAMPLE_ALLBINARY = "allBinary";
+        public const string COMMAND_SAMPLE_FEATUREWISE = "featureWise";
+        public const string COMMAND_SAMPLE_PAIRWISE = "pairWise";
+        public const string COMMAND_SAMPLE_NEGATIVE_FEATUREWISE = "negFW";
+        public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
+
+        public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
+        public const string COMMAND_PRINT_MLSETTINGS = "printSettings";
+
+        public const string COMMAND_EXERIMENTALDESIGN = "expDesign";
+
+        public const string COMMAND_VARIABILITYMODEL = "vm";
+        public const string COMMAND_SET_NFP = "nfp";
+        public const string COMMAND_SET_MLSETTING = "MLsettings";
+
+        public const string COMMAND_START_LEARNING = "start";
 
         ExperimentState exp = new ExperimentState();
 
@@ -26,7 +52,7 @@ namespace CommandLine
         /// <returns></returns>
         public string performOneCommand(string line)
         {
-            GlobalState.logInfo.log("Command: " + line);
+            GlobalState.logInfo.log(COMMAND + line);
 
 
             // remove comment part of the line (the comment starts with an #)
@@ -45,28 +71,28 @@ namespace CommandLine
 
             switch (command)
             {
-                case "trueModel":
+                case COMMAND_TRUEMODEL:
                     StreamReader readModel = new StreamReader(task);
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
                     exp.TrueModel = new InfluenceFunction(model, GlobalState.varModel);
                     computeEvaluationDataSetBasedOnTrueModel();
                     break;
-                case "clean-global":
+                case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
                     break;
-                case "clean-sampling":
+                case COMMAND_CLEAR_SAMPLING:
                     exp.clearSampling();
                     break;
-                case "clean-learning":
+                case COMMAND_CLEAR_LEARNING:
                     exp.clear();
                     break;
-                case "all":
+                case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
                     GlobalState.logInfo.log("Configurations loaded.");
 
                     break;
-                case "allBinary":
+                case COMMAND_SAMPLE_ALLBINARY:
                     {
                         VariantGenerator vg = new VariantGenerator(null);
                         if(taskAsParameter.Contains("validation")){
@@ -79,22 +105,22 @@ namespace CommandLine
                         
                         break;
                     }
-                case "analyze-learning":
+                case COMMAND_ANALYZE_LEARNING:
                     {
                         // TODO
                         break;
                     }
-                case "expDesign":
+                case COMMAND_EXERIMENTALDESIGN:
                     performOneCommand_ExpDesign(task);
                     break;
 
-                case "vm":
+                case COMMAND_VARIABILITYMODEL:
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     break;
-                case "nfp":
+                case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
                     break;
-                case "featureWise":
+                case COMMAND_SAMPLE_FEATUREWISE:
                     FeatureWise fw = new FeatureWise();
                     if (taskAsParameter.Contains("validation"))
                     {
@@ -117,17 +143,17 @@ namespace CommandLine
                     GlobalState.logError.close();
                     GlobalState.logError = new ErrorLogger(location+"_error");
                     break;
-                case "MLsettings":
+                case COMMAND_SET_MLSETTING:
                     {
                         string[] para = task.Split(new char[] { ' ' });
                         exp.mlSettings.setSetting(para[0], para[1]);
                         break;
                     }
-                case "load_MLsettings":
+                case COMMAND_LOAD_MLSETTINGS:
                     exp.mlSettings = ML_Settings.readSettings(task);
                     break;
 
-                case "pairWise":
+                case COMMAND_SAMPLE_PAIRWISE:
                     PairWise pw = new PairWise();
                     if (taskAsParameter.Contains("validation"))
                     {
@@ -141,7 +167,7 @@ namespace CommandLine
                     }
                     break;
 
-                case "printSettings":
+                case COMMAND_PRINT_MLSETTINGS:
                     GlobalState.logInfo.log(exp.mlSettings.ToString());
                     break;
 
@@ -165,13 +191,13 @@ namespace CommandLine
                         }
 
                         string[] para = task.Split(new char[] { ' ' });
-
+                        // TODO very error prune..
                         ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2]);
                         printer.print(configurations);
 
                         break;
                     }
-                case "random":
+                case COMMAND_SAMPLE_BINARY_RANDOM:
                     {
                         string[] para = task.Split(new char[] { ' ' });
                         int treshold = Convert.ToInt32(para[0]);
@@ -190,7 +216,7 @@ namespace CommandLine
                         }
                         break;
                     }
-                case "start":
+                case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
 
@@ -251,7 +277,7 @@ namespace CommandLine
                     }
                     break;
 
-                case "negFW":
+                case COMMAND_SAMPLE_NEGATIVE_FEATUREWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
                     NegFeatureWise neg = new NegFeatureWise();
 
