@@ -238,7 +238,11 @@ namespace CommandLine
                         exp.learning.setValidationSet(configurations_Validation);
 
                         exp.learning.learn();
-
+                        if (this.exp.TrueModel != null)
+                        {
+                            double error = exp.learning.evaluateError(GlobalState.allMeasurements.Configurations);
+                               
+                        }
 
                         // todo analyze the learned model and rounds leading to the model. 
                         

@@ -24,6 +24,13 @@ namespace MachineLearning.Learning.Regression
             get { return learningHistory; }
         }
 
+        private LearningRound currentRound = null;
+
+        protected LearningRound CurrentRound
+        {
+            get { if (learningHistory.Count == 0) return null; else return learningHistory[learningHistory.Count - 1]; }
+        }
+
         protected List<Feature> initialFeatures = new List<Feature>();
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
         protected ML_Settings MLsettings = null;
@@ -92,7 +99,37 @@ namespace MachineLearning.Learning.Regression
                     learningHistory.Add(current);
                 }
             } while (!abortLearning(current));
-            
+            updateInfluenceModel(current);
+        }
+
+        /// <summary>
+        /// Based on the given learning round, the method intantiates the influence model.
+        /// </summary>
+        /// <param name="current">The current learning round containing all determined features with their influences.</param>
+        private void updateInfluenceModel(LearningRound current)
+        {
+            this.infModel.BinaryOptionsInfluence.Clear();
+            this.infModel.NumericOptionsInfluence.Clear();
+            this.infModel.InteractionInfluence.Clear();
+
+            foreach (Feature f in current.featureSet)
+            {
+                //single binary option influence
+                if (f.participatingBoolFeatures.Count == 1 && f.participatingNumFeatures.Count == 0)
+                {
+                    this.infModel.BinaryOptionsInfluence.Add(f.participatingBoolFeatures.ElementAt(0), f);
+                    continue;
+                }
+                //single numeric option influence
+                if (f.participatingBoolFeatures.Count == 0 && f.participatingNumFeatures.Count == 1)
+                {
+                    this.infModel.NumericOptionsInfluence.Add(f.participatingNumFeatures.ElementAt(0), f);
+                    continue;
+                }
+                //interaction influence
+                Interaction i = new Interaction(f);
+                this.infModel.InteractionInfluence.Add(i, f);
+            }
         }
 
         
@@ -346,6 +383,18 @@ namespace MachineLearning.Learning.Regression
             }
             //todo k-fold
         }
+
+        /// <summary>
+        /// Computes the prediction error for the given set of configurations based on the current influence model. The kind of error function depends on parameters in the ML settings.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns>The error rate.</returns>
+        public double evaluateError(List<Configuration> list)
+        {
+            if (this.CurrentRound == null)
+                return -1;
+            return computeError(this.CurrentRound.featureSet, list);
+        }
         #endregion
 
         #region Check for learning abort
@@ -385,7 +434,6 @@ namespace MachineLearning.Learning.Regression
             else
                 return false;
         }
-        #endregion
 
         /// <summary>
         /// This method checks whether all information is available to start learning.
@@ -400,6 +448,10 @@ namespace MachineLearning.Learning.Regression
             }
             return true;
         }
+
+        #endregion
+
+        
 
         #region set data set
         /// <summary>
@@ -546,5 +598,6 @@ namespace MachineLearning.Learning.Regression
             }
         }
         #endregion
+
     }
 }
