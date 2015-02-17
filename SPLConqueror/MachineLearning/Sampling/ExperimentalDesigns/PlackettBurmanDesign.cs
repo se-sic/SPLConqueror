@@ -92,6 +92,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "PlackettBurmanDesign";
         }
 
+
         public PlackettBurmanDesign(List<NumericOption> options)
             : base(options)
         {
@@ -229,7 +230,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             int maxVal = this.getLevel(chosenSeed) - 1;
             foreach (NumericOption vf in options)
             {
-                List<double> valuesOfAFeature = sampleFeature(vf, this.getLevel(chosenSeed), true);
+                List<double> valuesOfAFeature = sampleOption(vf, this.getLevel(chosenSeed), true);
 
                 for (int i = 0; i < valuesOfAFeature.Count; i++)
                 {
@@ -302,6 +303,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             if (measurements == 49 && level == 7)
                 return Seed.seed49_7;
             return Seed.seed9_3;
+        }
+
+        public void setSeed(int measurements, int level)
+        {
+            chosenSeed = getSeed(measurements, level);
         }
     }
 }

@@ -74,7 +74,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 ////set number of sampling values according to the percentage
 
 
-                List<double> values = sampleFeature(vf, setSamplingValue(vf, percentage), true);
+                List<double> values = sampleOption(vf, setSamplingValue(vf, percentage), true);
 
                 valuesOfMetricOption.Add(vf, values);
                 allMetricValues.Add(values);

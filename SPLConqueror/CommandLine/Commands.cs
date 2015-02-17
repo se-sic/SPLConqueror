@@ -109,9 +109,13 @@ namespace CommandLine
                     break;
 
                 case "log":
-                    // Define log file. 
-                    
-                    // TODO add more log file functionality
+
+                    string location = task.Trim();
+                    GlobalState.logInfo.close();
+                    GlobalState.logInfo = new InfoLogger(location);
+
+                    GlobalState.logError.close();
+                    GlobalState.logError = new ErrorLogger(location+"_error");
                     break;
                 case "MLsettings":
                     {
@@ -402,10 +406,6 @@ namespace CommandLine
                     design = new FullFactorialDesign(optionsToConsider);
                     break;
                 case "featureInteraction":
-
-                    break;
-
-                case "fedorov":
                     break;
 
                 case "hyperSampling":
@@ -413,7 +413,9 @@ namespace CommandLine
                     ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
                     break;
 
-                case "independentLinear":
+                case "oneFactorAtATime":
+                    design = new OneFactorAtATime(optionsToConsider);
+                    ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
                     break;
 
                 case "kExchange":
@@ -422,6 +424,7 @@ namespace CommandLine
 
                 case "plackettBurman":
                     design = new PlackettBurmanDesign(optionsToConsider);
+                    ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]),Int32.Parse(parameter["level"]));
                     break;
 
                 case "random":

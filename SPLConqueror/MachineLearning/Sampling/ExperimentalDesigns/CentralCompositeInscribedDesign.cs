@@ -45,7 +45,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             Dictionary<NumericOption, double> centerPoint = new Dictionary<NumericOption, double>();
             foreach (NumericOption vf in this.options)
             {
-                centerPoint.Add(vf, vf.getCenterPoint());
+                centerPoint.Add(vf, vf.getCenterValue());
             }
             this.selectedConfigurations.Add(centerPoint);
 
@@ -60,8 +60,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 {
                     if (other.Equals(vf))
                         continue;
-                    minPoint.Add(other, other.getCenterPoint());
-                    maxPoint.Add(other, other.getCenterPoint());
+                    minPoint.Add(other, other.getCenterValue());
+                    maxPoint.Add(other, other.getCenterValue());
                 }
                 this.selectedConfigurations.Add(minPoint);
                 this.selectedConfigurations.Add(maxPoint);
@@ -78,11 +78,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             Dictionary<NumericOption, double> upperCubeValue = new Dictionary<NumericOption, double>();
             foreach (NumericOption vf in this.options)
             {
-                double b_i = vf.getCenterPoint() - vf.Min_value;
+                double b_i = vf.getCenterValue() - vf.Min_value;
                 double a_i = b_i / rootN;
 
-                double lower = vf.getCenterPoint() - a_i;
-                double upper = vf.getCenterPoint() + a_i;
+                double lower = vf.getCenterValue() - a_i;
+                double upper = vf.getCenterValue() + a_i;
 
                 lowerCubeValue.Add(vf, vf.nearestValidValue(lower));
                 upperCubeValue.Add(vf, vf.nearestValidValue(upper));
