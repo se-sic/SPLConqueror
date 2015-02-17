@@ -5,10 +5,10 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    public class ErrorLog : Logger
+    public class ErrorLogger : Logger
     {
 
-        public ErrorLog(String location) :base(location)
+        public ErrorLogger(String location) :base(location)
         {
             Console.SetError(writer);
         }

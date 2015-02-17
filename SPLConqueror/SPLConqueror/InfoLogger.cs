@@ -5,10 +5,10 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    public class InfoLog : Logger
+    public class InfoLogger : Logger
     {
 
-        public InfoLog(String location)
+        public InfoLogger(String location)
             : base(location)
         {
             Console.SetOut(writer);

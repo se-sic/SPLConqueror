@@ -222,9 +222,10 @@ namespace SPLConqueror_Core
         }
 
 
-        public double getCenterPoint()
+        public double getCenterValue()
         {
-            throw new NotImplementedException();
+            return getAllValues()[(int)getAllValues().Count / 2];
         }
+
     }
 }

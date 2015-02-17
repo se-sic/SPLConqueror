@@ -65,6 +65,7 @@
     <Compile Include="Sampling\ExperimentalDesigns\CentralCompositeInscribedDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\ExperimentalDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\KExchangeAlgorithm.cs" />
+    <Compile Include="Sampling\ExperimentalDesigns\OneFactorAtATime.cs" />
     <Compile Include="Sampling\Heuristics\FeatureWise.cs" />
     <Compile Include="Sampling\Heuristics\NegFeatureWise.cs" />
     <Compile Include="Sampling\Heuristics\PairWise.cs" />
