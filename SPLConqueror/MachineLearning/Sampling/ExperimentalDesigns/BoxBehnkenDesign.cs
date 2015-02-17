@@ -63,7 +63,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                     double delta = vf.Max_value - vf.Min_value;
                     if (matrix[i, j] == 0)
                     {
-                        run.Add(vf, vf.getCenterPoint());
+                        run.Add(vf, vf.getCenterValue());
                     }
                     else if (matrix[i, j] < 0)
                     {

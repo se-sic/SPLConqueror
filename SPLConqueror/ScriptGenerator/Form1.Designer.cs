@@ -43,6 +43,7 @@
             this.locateResultFile_button = new System.Windows.Forms.Button();
             this.informatioLabel = new System.Windows.Forms.Label();
             this.bsamp_group = new System.Windows.Forms.GroupBox();
+            this.bsamp_random__modulo_textBox = new System.Windows.Forms.TextBox();
             this.bsamp_random_textBox = new System.Windows.Forms.TextBox();
             this.bsamp_random_box = new System.Windows.Forms.CheckBox();
             this.bsamp_all_box = new System.Windows.Forms.CheckBox();
@@ -66,8 +67,6 @@
             this.num_kEx_k_Label = new System.Windows.Forms.Label();
             this.num_kEx_n_Box = new System.Windows.Forms.TextBox();
             this.num_kEx_n_Label = new System.Windows.Forms.Label();
-            this.num_fullFac_percentText = new System.Windows.Forms.TextBox();
-            this.num_fullFac_percentLabel = new System.Windows.Forms.Label();
             this.num_hyperSampling_check = new System.Windows.Forms.CheckBox();
             this.num_randomSampling_num = new System.Windows.Forms.CheckBox();
             this.num_PlackettBurman_check = new System.Windows.Forms.CheckBox();
@@ -77,7 +76,10 @@
             this.num_BoxBehnken_check = new System.Windows.Forms.CheckBox();
             this.num_forValidationCheckBox = new System.Windows.Forms.CheckBox();
             this.expDesign_addButton = new System.Windows.Forms.Button();
-            this.bsamp_random__modulo_textBox = new System.Windows.Forms.TextBox();
+            this.num_oneFactorAtATime_Box = new System.Windows.Forms.CheckBox();
+            this.num_oneFactorAtATime_num_Label = new System.Windows.Forms.Label();
+            this.num_oneFactorAtATime_num_Text = new System.Windows.Forms.TextBox();
+            this.logFile_Button = new System.Windows.Forms.Button();
             this.MlSettings_Box.SuspendLayout();
             this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
@@ -127,9 +129,9 @@
             // 
             // vScrollBar1
             // 
-            this.vScrollBar1.Location = new System.Drawing.Point(262, 0);
+            this.vScrollBar1.Location = new System.Drawing.Point(262, 1);
             this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(17, 166);
+            this.vScrollBar1.Size = new System.Drawing.Size(17, 165);
             this.vScrollBar1.TabIndex = 0;
             // 
             // addedElementsBox
@@ -165,7 +167,7 @@
             // 
             this.varModel_button.Location = new System.Drawing.Point(13, 13);
             this.varModel_button.Name = "varModel_button";
-            this.varModel_button.Size = new System.Drawing.Size(120, 23);
+            this.varModel_button.Size = new System.Drawing.Size(106, 23);
             this.varModel_button.TabIndex = 3;
             this.varModel_button.Text = "addVariablityModel";
             this.varModel_button.UseVisualStyleBackColor = true;
@@ -237,6 +239,15 @@
             this.bsamp_group.TabIndex = 6;
             this.bsamp_group.TabStop = false;
             this.bsamp_group.Text = "binary sampling heuristics";
+            // 
+            // bsamp_random__modulo_textBox
+            // 
+            this.bsamp_random__modulo_textBox.Location = new System.Drawing.Point(138, 73);
+            this.bsamp_random__modulo_textBox.Name = "bsamp_random__modulo_textBox";
+            this.bsamp_random__modulo_textBox.ShortcutsEnabled = false;
+            this.bsamp_random__modulo_textBox.Size = new System.Drawing.Size(32, 20);
+            this.bsamp_random__modulo_textBox.TabIndex = 8;
+            this.bsamp_random__modulo_textBox.Text = "5";
             // 
             // bsamp_random_textBox
             // 
@@ -318,6 +329,9 @@
             // 
             // expDasign_group
             // 
+            this.expDasign_group.Controls.Add(this.num_oneFactorAtATime_num_Text);
+            this.expDasign_group.Controls.Add(this.num_oneFactorAtATime_num_Label);
+            this.expDasign_group.Controls.Add(this.num_oneFactorAtATime_Box);
             this.expDasign_group.Controls.Add(this.num_rand_seed_Text);
             this.expDasign_group.Controls.Add(this.num_rand_seed_Label);
             this.expDasign_group.Controls.Add(this.num_Plackett_n_Box);
@@ -332,8 +346,6 @@
             this.expDasign_group.Controls.Add(this.num_kEx_k_Label);
             this.expDasign_group.Controls.Add(this.num_kEx_n_Box);
             this.expDasign_group.Controls.Add(this.num_kEx_n_Label);
-            this.expDasign_group.Controls.Add(this.num_fullFac_percentText);
-            this.expDasign_group.Controls.Add(this.num_fullFac_percentLabel);
             this.expDasign_group.Controls.Add(this.num_hyperSampling_check);
             this.expDasign_group.Controls.Add(this.num_randomSampling_num);
             this.expDasign_group.Controls.Add(this.num_PlackettBurman_check);
@@ -345,7 +357,7 @@
             this.expDasign_group.Controls.Add(this.expDesign_addButton);
             this.expDasign_group.Location = new System.Drawing.Point(219, 13);
             this.expDasign_group.Name = "expDasign_group";
-            this.expDasign_group.Size = new System.Drawing.Size(278, 221);
+            this.expDasign_group.Size = new System.Drawing.Size(278, 251);
             this.expDasign_group.TabIndex = 7;
             this.expDasign_group.TabStop = false;
             this.expDasign_group.Text = "Experimental design";
@@ -476,24 +488,6 @@
             this.num_kEx_n_Label.TabIndex = 18;
             this.num_kEx_n_Label.Text = "n:";
             // 
-            // num_fullFac_percentText
-            // 
-            this.num_fullFac_percentText.Location = new System.Drawing.Point(202, 63);
-            this.num_fullFac_percentText.Name = "num_fullFac_percentText";
-            this.num_fullFac_percentText.Size = new System.Drawing.Size(36, 20);
-            this.num_fullFac_percentText.TabIndex = 17;
-            this.num_fullFac_percentText.Text = "50";
-            this.num_fullFac_percentText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // num_fullFac_percentLabel
-            // 
-            this.num_fullFac_percentLabel.AutoSize = true;
-            this.num_fullFac_percentLabel.Location = new System.Drawing.Point(149, 67);
-            this.num_fullFac_percentLabel.Name = "num_fullFac_percentLabel";
-            this.num_fullFac_percentLabel.Size = new System.Drawing.Size(46, 13);
-            this.num_fullFac_percentLabel.TabIndex = 16;
-            this.num_fullFac_percentLabel.Text = "percent:";
-            // 
             // num_hyperSampling_check
             // 
             this.num_hyperSampling_check.AutoSize = true;
@@ -567,7 +561,7 @@
             // num_forValidationCheckBox
             // 
             this.num_forValidationCheckBox.AutoSize = true;
-            this.num_forValidationCheckBox.Location = new System.Drawing.Point(152, 196);
+            this.num_forValidationCheckBox.Location = new System.Drawing.Point(151, 224);
             this.num_forValidationCheckBox.Name = "num_forValidationCheckBox";
             this.num_forValidationCheckBox.Size = new System.Drawing.Size(86, 17);
             this.num_forValidationCheckBox.TabIndex = 1;
@@ -576,7 +570,7 @@
             // 
             // expDesign_addButton
             // 
-            this.expDesign_addButton.Location = new System.Drawing.Point(7, 192);
+            this.expDesign_addButton.Location = new System.Drawing.Point(7, 220);
             this.expDesign_addButton.Name = "expDesign_addButton";
             this.expDesign_addButton.Size = new System.Drawing.Size(75, 23);
             this.expDesign_addButton.TabIndex = 0;
@@ -584,20 +578,50 @@
             this.expDesign_addButton.UseVisualStyleBackColor = true;
             this.expDesign_addButton.Click += new System.EventHandler(this.expDesign_addButton_Click);
             // 
-            // bsamp_random__modulo_textBox
+            // num_oneFactorAtATime_Box
             // 
-            this.bsamp_random__modulo_textBox.Location = new System.Drawing.Point(138, 73);
-            this.bsamp_random__modulo_textBox.Name = "bsamp_random__modulo_textBox";
-            this.bsamp_random__modulo_textBox.ShortcutsEnabled = false;
-            this.bsamp_random__modulo_textBox.Size = new System.Drawing.Size(32, 20);
-            this.bsamp_random__modulo_textBox.TabIndex = 8;
-            this.bsamp_random__modulo_textBox.Text = "5";
+            this.num_oneFactorAtATime_Box.AutoSize = true;
+            this.num_oneFactorAtATime_Box.Location = new System.Drawing.Point(7, 181);
+            this.num_oneFactorAtATime_Box.Name = "num_oneFactorAtATime_Box";
+            this.num_oneFactorAtATime_Box.Size = new System.Drawing.Size(126, 17);
+            this.num_oneFactorAtATime_Box.TabIndex = 32;
+            this.num_oneFactorAtATime_Box.Text = "One Factor at a Time";
+            this.num_oneFactorAtATime_Box.UseVisualStyleBackColor = true;
+            // 
+            // num_oneFactorAtATime_num_Label
+            // 
+            this.num_oneFactorAtATime_num_Label.AutoSize = true;
+            this.num_oneFactorAtATime_num_Label.Location = new System.Drawing.Point(152, 181);
+            this.num_oneFactorAtATime_num_Label.Name = "num_oneFactorAtATime_num_Label";
+            this.num_oneFactorAtATime_num_Label.Size = new System.Drawing.Size(41, 13);
+            this.num_oneFactorAtATime_num_Label.TabIndex = 33;
+            this.num_oneFactorAtATime_num_Label.Text = "values:";
+            // 
+            // num_oneFactorAtATime_num_Text
+            // 
+            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(199, 179);
+            this.num_oneFactorAtATime_num_Text.Name = "num_oneFactorAtATime_num_Text";
+            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(38, 20);
+            this.num_oneFactorAtATime_num_Text.TabIndex = 34;
+            this.num_oneFactorAtATime_num_Text.Text = "5";
+            this.num_oneFactorAtATime_num_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // logFile_Button
+            // 
+            this.logFile_Button.Location = new System.Drawing.Point(125, 14);
+            this.logFile_Button.Name = "logFile_Button";
+            this.logFile_Button.Size = new System.Drawing.Size(88, 23);
+            this.logFile_Button.TabIndex = 8;
+            this.logFile_Button.Text = "log-File";
+            this.logFile_Button.UseVisualStyleBackColor = true;
+            this.logFile_Button.Click += new System.EventHandler(this.logFile_Button_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 415);
+            this.Controls.Add(this.logFile_Button);
             this.Controls.Add(this.expDasign_group);
             this.Controls.Add(this.bsamp_group);
             this.Controls.Add(this.informatioLabel);
@@ -657,8 +681,6 @@
         private System.Windows.Forms.CheckBox num_FullFactorial_check;
         private System.Windows.Forms.CheckBox num_CentralComposite_check;
         private System.Windows.Forms.CheckBox num_BoxBehnken_check;
-        private System.Windows.Forms.Label num_fullFac_percentLabel;
-        private System.Windows.Forms.TextBox num_fullFac_percentText;
         private System.Windows.Forms.Label num_kEx_n_Label;
         private System.Windows.Forms.TextBox num_kEx_n_Box;
         private System.Windows.Forms.Label num_kEx_k_Label;
@@ -674,6 +696,10 @@
         private System.Windows.Forms.Label num_rand_seed_Label;
         private System.Windows.Forms.TextBox num_rand_seed_Text;
         private System.Windows.Forms.TextBox bsamp_random__modulo_textBox;
+        private System.Windows.Forms.CheckBox num_oneFactorAtATime_Box;
+        private System.Windows.Forms.Label num_oneFactorAtATime_num_Label;
+        private System.Windows.Forms.TextBox num_oneFactorAtATime_num_Text;
+        private System.Windows.Forms.Button logFile_Button;
     }
 }
 
