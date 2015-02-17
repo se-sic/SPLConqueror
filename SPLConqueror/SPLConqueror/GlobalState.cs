@@ -23,13 +23,13 @@ namespace SPLConqueror_Core
         /// The property being considered. 
         /// </summary>
         public static NFProperty currentNFP = null;
-        public static ResultDB allMeasurements = null;
+        public static ResultDB allMeasurements = new ResultDB();
         public static InfluenceModel infModel = null;
 
         /// <summary>
         /// All properties of the current case study. 
         /// </summary>
-        public static Dictionary<string, NFProperty> nfProperties = null;
+        public static Dictionary<string, NFProperty> nfProperties = new Dictionary<string,NFProperty>();
 
         private GlobalState(){ }
 
@@ -53,7 +53,7 @@ namespace SPLConqueror_Core
         /// <returns>A non functional property with the specified name.</returns>
         public static NFProperty getOrCreateProperty(string name)
         {
-            if(nfProperties[name] != null)
+            if(nfProperties.Keys.Contains(name))
                 return nfProperties[name];
             else{
                 NFProperty newProp = new NFProperty(name);

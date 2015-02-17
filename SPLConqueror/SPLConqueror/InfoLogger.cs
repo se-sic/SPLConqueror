@@ -11,6 +11,7 @@ namespace SPLConqueror_Core
         public InfoLogger(String location)
             : base(location)
         {
+            if(writer!=null)
             Console.SetOut(writer);
         }
 
