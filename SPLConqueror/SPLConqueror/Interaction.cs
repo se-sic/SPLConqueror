@@ -60,6 +60,21 @@ namespace SPLConqueror_Core
             this.name = name;
         }
 
+        public Interaction(InfluenceFunction f)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (BinaryOption opt in f.participatingBoolFeatures)
+            {
+                sb.Append(opt.Name + "#");
+                binaryOptions.Add(opt);
+            }
+            foreach (NumericOption opt in f.participatingNumFeatures)
+            {
+                sb.Append(opt.Name + "#");
+                this.numericOptions.Add(opt);
+            }
+        }
+
         /// <summary>
         /// Generates a descriptive name for the interaction containing the involved options
         /// </summary>
