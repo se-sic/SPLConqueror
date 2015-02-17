@@ -10,6 +10,7 @@ namespace SPLConqueror_Core
 
         public ErrorLogger(String location) :base(location)
         {
+            if(writer!=null)
             Console.SetError(writer);
         }
        

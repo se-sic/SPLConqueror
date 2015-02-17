@@ -44,8 +44,9 @@ namespace SPLConqueror_Core
         /// <param name="measuremements">Measured values of non functional properties, such as performance or footprint.</param>
         public Configuration(Dictionary<BinaryOption, BinaryOption.BinaryValue> binarySelection, Dictionary<NumericOption, double> numericSelection, Dictionary<NFProperty, double> measuremements)
         {
-            binaryOptions = enrichBinarySelection(binarySelection);
-            numericOptions = numericSelection;
+            binaryOptions = binarySelection;
+            if (numericSelection != null)
+                numericOptions = numericSelection;
             nfpValues = measuremements;
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
@@ -58,8 +59,9 @@ namespace SPLConqueror_Core
         /// <param name="numericSelection">A valid selection of values of numeric options.</param>
         public Configuration(Dictionary<BinaryOption, BinaryOption.BinaryValue> binarySelection, Dictionary<NumericOption, double> numericSelection)
         {
-            binaryOptions = enrichBinarySelection(binarySelection);
-            numericOptions = numericSelection;
+            binaryOptions = binarySelection;
+            if (numericSelection != null)
+                numericOptions = numericSelection;
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
 
@@ -115,7 +117,8 @@ namespace SPLConqueror_Core
                         this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Deselected);
                 }
             }
-            numericOptions = numConf;
+            if(numConf!=null)
+                numericOptions = numConf;
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
 
@@ -165,28 +168,6 @@ namespace SPLConqueror_Core
 
             return sb.ToString();
 
-        }
-
-        /// <summary>
-        /// The list of binary features is enriched with all features existing in the variability model. The value of the features being enriched is the default value of the specific features. 
-        /// </summary>
-        /// <param name="binarySelection"></param>
-        /// <returns></returns>
-        private Dictionary<BinaryOption, BinaryOption.BinaryValue> enrichBinarySelection(Dictionary<BinaryOption, BinaryOption.BinaryValue> binarySelection)
-        {
-            Dictionary<BinaryOption, BinaryOption.BinaryValue> options = new Dictionary<BinaryOption,BinaryOption.BinaryValue>();
-
-            foreach(BinaryOption bOption in GlobalState.varModel.BinaryOptions){
-                if (binarySelection.ContainsKey(bOption))
-                {
-                    options.Add(bOption, binarySelection[bOption]);
-                }
-                else
-                {
-                    options.Add(bOption, bOption.DefaultValue);
-                }
-            }
-            return options;
         }
 
         /// <summary>
@@ -303,7 +284,8 @@ namespace SPLConqueror_Core
 
 
             Configuration result = new Configuration(selectedBinaryOptions, null);
-            result.numericOptions = numericOptions;
+            if (numericOptions != null)
+                result.numericOptions = numericOptions;
             result.update();
             return result;
         }
@@ -336,7 +318,8 @@ namespace SPLConqueror_Core
         /// <returns>True if both configurations contains the same configuration options, false otherwise.</returns>
         public static bool equalBinaryConfiguration(List<BinaryOption> oneConfiguration, List<BinaryOption> otherBinaryConfiguration)
         {
-            if (oneConfiguration == null || otherBinaryConfiguration == null)
+            return (oneConfiguration.Count == otherBinaryConfiguration.Count) && !oneConfiguration.Except(otherBinaryConfiguration).Any();
+            /*if (oneConfiguration == null || otherBinaryConfiguration == null)
                 return false;
             if (oneConfiguration.Count != otherBinaryConfiguration.Count)
                 return false;
@@ -346,7 +329,7 @@ namespace SPLConqueror_Core
                 if (!otherBinaryConfiguration.Contains(opt))
                     return false;
             }
-            return true;
+            return true;*/
         }
 
 
@@ -354,19 +337,44 @@ namespace SPLConqueror_Core
         public static List<Configuration> getConfigurations(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
         {
             List<Configuration> configurations = new List<Configuration>();
-
-            foreach (Dictionary<NumericOption, double> numeric in numericSelections)
+            if (binarySelections == null && numericSelections == null)
+                return configurations;
+            if (numericSelections != null && numericSelections.Count > 0)
             {
+                foreach (Dictionary<NumericOption, double> numeric in numericSelections)
+                {
+                    if (binarySelections != null && binarySelections.Count > 0)
+                    {
+                        foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySelections)
+                        {
+                            Configuration config = Configuration.getConfiguration(binary, numeric);
+                            if (!configurations.Contains(config))
+                            {
+                                configurations.Add(config);
+                            }
+                        }
+                    }
+                    else//We have numeric options, but no binary options
+                    {
+                        Configuration config = Configuration.getConfiguration(new List<BinaryOption>(), numeric);
+                        if (!configurations.Contains(config))
+                        {
+                            configurations.Add(config);
+                        }
+                    }
+                }
+            }
+            else
+            {//Only binary options are available
                 foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySelections)
                 {
-                    Configuration config = Configuration.getConfiguration(binary, numeric);
+                    Configuration config = Configuration.getConfiguration(binary, null);
                     if (!configurations.Contains(config))
                     {
                         configurations.Add(config);
                     }
                 }
             }
-
             return configurations;
         }
 

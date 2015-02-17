@@ -21,21 +21,23 @@ namespace SPLConqueror_Core
 
             FileStream ostrm;
             TextWriter oldOut = Console.Out;
-            try
+            if (outputLocation != null)
             {
-                ostrm = new FileStream(outputLocation.Trim(), FileMode.OpenOrCreate, FileAccess.Write);
-                ostrm.SetLength(0); // clear the file
-                ostrm.Flush();
-                writer = new StreamWriter(ostrm);
-                writer.AutoFlush = true;
+                try
+                {
+                    ostrm = new FileStream(outputLocation.Trim(), FileMode.OpenOrCreate, FileAccess.Write);
+                    ostrm.SetLength(0); // clear the file
+                    ostrm.Flush();
+                    writer = new StreamWriter(ostrm);
+                    writer.AutoFlush = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Cannot open " + outputLocation.Trim() + " for writing");
+                    Console.WriteLine(e.Message);
+                    return;
+                }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Cannot open " + outputLocation.Trim() + " for writing");
-                Console.WriteLine(e.Message);
-                return;
-            }
-            
         }
 
 
