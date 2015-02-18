@@ -87,7 +87,6 @@ namespace MachineLearning.Learning.Regression
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.featureSet.AddRange(this.strictlyMandatoryFeatures);
 
-
             do 
             {
                 current = performForwardStep(current);
@@ -99,20 +98,30 @@ namespace MachineLearning.Learning.Regression
                     learningHistory.Add(current);
                 }
             } while (!abortLearning(current));
-            updateInfluenceModel(current);
+            updateInfluenceModel();
         }
 
         /// <summary>
         /// Based on the given learning round, the method intantiates the influence model.
         /// </summary>
         /// <param name="current">The current learning round containing all determined features with their influences.</param>
-        private void updateInfluenceModel(LearningRound current)
+        private void updateInfluenceModel()
         {
             this.infModel.BinaryOptionsInfluence.Clear();
             this.infModel.NumericOptionsInfluence.Clear();
             this.infModel.InteractionInfluence.Clear();
+            LearningRound best = null;
+            double lowestError = Double.MaxValue;
+            foreach (LearningRound r in this.learningHistory)
+            {
+                if (r.validationError < lowestError)
+                {
+                    lowestError = r.validationError;
+                    best = r;
+                }
+            }
 
-            foreach (Feature f in current.featureSet)
+            foreach (Feature f in best.featureSet)
             {
                 //single binary option influence
                 if (f.participatingBoolFeatures.Count == 1 && f.participatingNumFeatures.Count == 0)
@@ -164,7 +173,7 @@ namespace MachineLearning.Learning.Regression
                     minimalErrorModel = newModel;
                 }
             }
-            return new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel), computeValidationError(minimalErrorModel), currentModel.round++);
+            return new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel), computeValidationError(minimalErrorModel), currentModel.round + 1);
         }
 
 
@@ -227,6 +236,10 @@ namespace MachineLearning.Learning.Regression
             {
                 if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
                     continue;
+                //We do not want to generate interactions with the root option
+             //   if ((feature.participatingNumFeatures.Count == 0 && feature.participatingBoolFeatures.Count == 1 && feature.participatingBoolFeatures.ElementAt(0) == infModel.Vm.Root)
+              //      || basicFeature.participatingNumFeatures.Count == 0 && basicFeature.participatingBoolFeatures.Count == 1 && basicFeature.participatingBoolFeatures.ElementAt(0) == infModel.Vm.Root)
+               //     continue;
                 Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
                     listOfCandidates.Add(newCandidate);
