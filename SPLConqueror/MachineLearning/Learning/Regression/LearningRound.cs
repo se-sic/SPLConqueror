@@ -19,7 +19,17 @@ namespace MachineLearning.Learning.Regression
         /// <returns></returns>
         public override string ToString()
         {
-            return base.ToString();
+            StringBuilder sb = new StringBuilder();
+            sb.Append(round + ";");
+            foreach (Feature f in featureSet)
+            {
+                sb.Append(f.ToString() + " + ");
+            }
+            sb.Append(";");
+            sb.Append(learningError + ";");
+            sb.Append(validationError + ";");
+
+            return sb.ToString();
         }
 
         internal LearningRound(List<Feature> featureSet, double learningError, double validationError, int round)
@@ -31,5 +41,6 @@ namespace MachineLearning.Learning.Regression
         }
 
         internal LearningRound() {}
+
     }
 }

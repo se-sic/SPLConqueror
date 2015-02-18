@@ -12,7 +12,7 @@ namespace SPLConqueror_Core
             : base(location)
         {
             if(writer!=null)
-            Console.SetOut(writer);
+                Console.SetOut(writer);
         }
 
         /// <summary>
@@ -21,6 +21,9 @@ namespace SPLConqueror_Core
         /// <param name="msg">The message to be printed or logged</param>
         public override void log(String msg)
         {
+            if (!msg.EndsWith(System.Environment.NewLine))
+                msg += System.Environment.NewLine;
+
             if (writer != null)
                 writer.Write(msg);
             else

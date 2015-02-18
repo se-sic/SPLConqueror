@@ -78,5 +78,10 @@ namespace MachineLearning.Learning.Regression
         }
         internal Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
 
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
     }
 }

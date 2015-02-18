@@ -14,17 +14,21 @@ using System.IO;
 
 namespace CommandLine
 {
-    class Commands
+    public class Commands
     {
         public const string COMMAND = "Command: ";
         public const string COMMAND_TRUEMODEL = "trueModel";
-        
+
+        public const string COMMAND_LOG = "log";
+
         public const string COMMAND_CLEAR_GLOBAL = "clean-global";
         public const string COMMAND_CLEAR_SAMPLING = "clean-sampling";
         public const string COMMAND_CLEAR_LEARNING = "clean-learning";
         
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
         public const string COMMAND_LOAD_MLSETTINGS = "load_MLsettings";
+
+        public const string COMMAND_VALIDATION = "validation";
 
         public const string COMMAND_SAMPLE_ALLBINARY = "allBinary";
         public const string COMMAND_SAMPLE_FEATUREWISE = "featureWise";
@@ -35,13 +39,23 @@ namespace CommandLine
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printSettings";
 
-        public const string COMMAND_EXERIMENTALDESIGN = "expDesign";
-
         public const string COMMAND_VARIABILITYMODEL = "vm";
         public const string COMMAND_SET_NFP = "nfp";
         public const string COMMAND_SET_MLSETTING = "MLsettings";
 
         public const string COMMAND_START_LEARNING = "start";
+
+        public const string COMMAND_EXERIMENTALDESIGN = "expDesign";
+        public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxBehnken";
+        public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralComposite";
+        public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullFactorial";
+        public const string COMMAND_EXPDESIGN_HYPERSAMPLING = "hyperSampling";
+        public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "oneFactorAtATime";
+        public const string COMMAND_EXPDESIGN_KEXCHANGE = "kExchange";
+        public const string COMMAND_EXPDESIGN_PLACKETTBURMAN = "plackettBurman";
+        public const string COMMAND_EXPDESIGN_RANDOM = "random";
+        
+        
 
         ExperimentState exp = new ExperimentState();
 
@@ -95,7 +109,8 @@ namespace CommandLine
                 case COMMAND_SAMPLE_ALLBINARY:
                     {
                         VariantGenerator vg = new VariantGenerator(null);
-                        if(taskAsParameter.Contains("validation")){
+                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        {
                             exp.addBinarySelection_Validation(vg.generateAllVariantsFast(GlobalState.varModel));
                             exp.addBinarySampling_Validation("all-Binary");
                         }else{
@@ -107,7 +122,12 @@ namespace CommandLine
                     }
                 case COMMAND_ANALYZE_LEARNING:
                     {
-                        // TODO
+                        GlobalState.logInfo.log("Models:");
+                        FeatureSubsetSelection learning = exp.learning;
+                        foreach (LearningRound lr in learning.LearningHistory)
+                        {
+                            GlobalState.logInfo.log(lr.ToString());
+                        }
                         break;
                     }
                 case COMMAND_EXERIMENTALDESIGN:
@@ -122,7 +142,7 @@ namespace CommandLine
                     break;
                 case COMMAND_SAMPLE_FEATUREWISE:
                     FeatureWise fw = new FeatureWise();
-                    if (taskAsParameter.Contains("validation"))
+                    if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
                         exp.addBinarySelection_Validation(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
                         exp.addBinarySampling_Validation("FW");
@@ -134,7 +154,7 @@ namespace CommandLine
                     }
                     break;
 
-                case "log":
+                case COMMAND_LOG:
 
                     string location = task.Trim();
                     GlobalState.logInfo.close();
@@ -155,7 +175,7 @@ namespace CommandLine
 
                 case COMMAND_SAMPLE_PAIRWISE:
                     PairWise pw = new PairWise();
-                    if (taskAsParameter.Contains("validation"))
+                    if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
                         exp.addBinarySelection_Validation(pw.generatePairWiseVariants(GlobalState.varModel));
                         exp.addBinarySampling_Validation("PW");
@@ -204,7 +224,7 @@ namespace CommandLine
                         int modulu = Convert.ToInt32(para[1]);
 
                         VariantGenerator vg = new VariantGenerator(null);
-                        if (taskAsParameter.Contains("validation"))
+                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             exp.addBinarySelection_Validation(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
                             exp.addBinarySampling_Validation("random " + task);
@@ -285,7 +305,7 @@ namespace CommandLine
                     // TODO there are two different variants in generating NegFW configurations. 
                     NegFeatureWise neg = new NegFeatureWise();
 
-                    if (taskAsParameter.Contains("validation"))
+                    if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
                         exp.addBinarySelection_Validation(neg.generateNegativeFW(GlobalState.varModel));
                         exp.addBinarySampling_Validation("newFW");
@@ -426,38 +446,38 @@ namespace CommandLine
 
             switch (designName)
             {
-                case "boxBehnken":
+                case COMMAND_EXPDESIGN_BOXBEHNKEN:
                     design = new BoxBehnkenDesign(optionsToConsider);
                     break;
-                case "centralComposite":
+                case COMMAND_EXPDESIGN_CENTRALCOMPOSITE:
                     design = new CentralCompositeInscribedDesign(optionsToConsider);
                     break;
-                case "fullFactorial":
+                case COMMAND_EXPDESIGN_FULLFACTORIAL:
                     design = new FullFactorialDesign(optionsToConsider);
                     break;
                 case "featureInteraction":
                     break;
 
-                case "hyperSampling":
+                case COMMAND_EXPDESIGN_HYPERSAMPLING:
                     design = new HyperSampling(optionsToConsider);
                     ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
                     break;
-
-                case "oneFactorAtATime":
+                    
+                case COMMAND_EXPDESIGN_ONEFACTORATATIME:
                     design = new OneFactorAtATime(optionsToConsider);
                     ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
                     break;
 
-                case "kExchange":
+                case COMMAND_EXPDESIGN_KEXCHANGE:
                     design = new KExchangeAlgorithm(optionsToConsider);
                     break;
 
-                case "plackettBurman":
+                case COMMAND_EXPDESIGN_PLACKETTBURMAN:
                     design = new PlackettBurmanDesign(optionsToConsider);
                     ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]),Int32.Parse(parameter["level"]));
                     break;
 
-                case "random":
+                case COMMAND_EXPDESIGN_RANDOM:
                     design = new RandomSampling(optionsToConsider);
                     break;
 
