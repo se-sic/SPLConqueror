@@ -126,8 +126,9 @@ namespace CommandLine
                         FeatureSubsetSelection learning = exp.learning;
                         foreach (LearningRound lr in learning.LearningHistory)
                         {
-                            GlobalState.logInfo.log(lr.ToString());
+                            GlobalState.logInfo.log(lr.ToString() + exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations));
                         }
+                        
                         break;
                     }
                 case COMMAND_EXERIMENTALDESIGN:
@@ -150,6 +151,7 @@ namespace CommandLine
                     else
                     {
                         exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                        //exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
                         exp.addBinarySampling_Learning("FW");
                     }
                     break;

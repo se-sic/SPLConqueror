@@ -6,14 +6,20 @@ using SPLConqueror_Core;
 
 namespace MachineLearning.Learning.Regression
 {
-    public class Feature : InfluenceFunction
+    public class Feature : InfluenceFunction , IEquatable<Feature>
     {
         private double constant = 1.0;
+        private String name = "";
 
         public double Constant
         {
             get { return constant; }
             set { constant = value; }
+        }
+
+        public bool Equals(Feature f)
+        {
+            return this.Equals((Object)f);
         }
 
         /// <summary>
@@ -83,5 +89,13 @@ namespace MachineLearning.Learning.Regression
             return base.ToString();
         }
 
+        /// <summary>
+        /// Returns a generated name for this feature based on the names of the participating configuration options
+        /// </summary>
+        /// <returns>The String containing the generated name</returns>
+        public String getName()
+        {
+            HashSet<ConfigurationOption> set = participatingBoolFeatures.Union(participatingNumFeatures);
+        }
     }
 }

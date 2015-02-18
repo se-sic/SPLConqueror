@@ -50,7 +50,12 @@ namespace MachineLearning.Learning.Regression
             this.infModel = infModel;
             this.MLsettings = settings;
             foreach (var opt in infModel.Vm.BinaryOptions)
+            {
+                if (opt == infModel.Vm.Root)
+                    continue;
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+            }
+            this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name,infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
         }
@@ -85,8 +90,7 @@ namespace MachineLearning.Learning.Regression
 
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
-                current.featureSet.AddRange(this.strictlyMandatoryFeatures);
-
+                current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
 
             do 
             {
@@ -99,20 +103,30 @@ namespace MachineLearning.Learning.Regression
                     learningHistory.Add(current);
                 }
             } while (!abortLearning(current));
-            updateInfluenceModel(current);
+            updateInfluenceModel();
         }
 
         /// <summary>
         /// Based on the given learning round, the method intantiates the influence model.
         /// </summary>
         /// <param name="current">The current learning round containing all determined features with their influences.</param>
-        private void updateInfluenceModel(LearningRound current)
+        private void updateInfluenceModel()
         {
             this.infModel.BinaryOptionsInfluence.Clear();
             this.infModel.NumericOptionsInfluence.Clear();
             this.infModel.InteractionInfluence.Clear();
+            LearningRound best = null;
+            double lowestError = Double.MaxValue;
+            foreach (LearningRound r in this.learningHistory)
+            {
+                if (r.validationError < lowestError)
+                {
+                    lowestError = r.validationError;
+                    best = r;
+                }
+            }
 
-            foreach (Feature f in current.featureSet)
+            foreach (Feature f in best.FeatureSet)
             {
                 //single binary option influence
                 if (f.participatingBoolFeatures.Count == 1 && f.participatingNumFeatures.Count == 0)
@@ -147,12 +161,12 @@ namespace MachineLearning.Learning.Regression
             //Go through each feature of the initial set and combine them with the already present features to build new candidates
             List<Feature> candidates = new List<Feature>();
             foreach (Feature basicFeature in this.initialFeatures)
-                candidates.AddRange(generateCandidates(currentModel.featureSet, basicFeature));
+                candidates.AddRange(generateCandidates(currentModel.FeatureSet, basicFeature));
 
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
             {
-                List<Feature> newModel = copyCombination(currentModel.featureSet);
+                List<Feature> newModel = copyCombination(currentModel.FeatureSet);
                 newModel.Add(candidate);
                 if (!fitModel(newModel))
                     continue;
@@ -164,7 +178,7 @@ namespace MachineLearning.Learning.Regression
                     minimalErrorModel = newModel;
                 }
             }
-            return new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel), computeValidationError(minimalErrorModel), currentModel.round++);
+            return new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel), computeValidationError(minimalErrorModel), currentModel.round + 1);
         }
 
 
@@ -202,7 +216,9 @@ namespace MachineLearning.Learning.Regression
                 newModel[i].Constant = fittedConstant[i];
                 //constants.GetValue(i);
             }
-
+            //the fitting found no further influence
+            if (newModel[constants.Length - 1].Constant == 0)
+                return false;
             return true;
         }
 
@@ -226,6 +242,10 @@ namespace MachineLearning.Learning.Regression
             foreach (var feature in currentModel)
             {
                 if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                    continue;
+                //We do not want to generate interactions with the root option
+                if ((feature.participatingNumFeatures.Count == 0 && feature.participatingBoolFeatures.Count == 1 && feature.participatingBoolFeatures.ElementAt(0) == infModel.Vm.Root)
+                    || basicFeature.participatingNumFeatures.Count == 0 && basicFeature.participatingBoolFeatures.Count == 1 && basicFeature.participatingBoolFeatures.ElementAt(0) == infModel.Vm.Root)
                     continue;
                 Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
@@ -323,7 +343,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="configs">The configuration for which the error should be computed. It contains also the actually measured value.</param>
         /// <returns>The error depending on the configured loss function (e.g., relative, least squares, absolute).</returns>
-        private double computeError(List<Feature> currentModel, List<Configuration> configs)
+        public double computeError(List<Feature> currentModel, List<Configuration> configs)
         {
             double error_sum = 0;
             foreach (Configuration c in configs)
@@ -393,7 +413,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (this.CurrentRound == null)
                 return -1;
-            return computeError(this.CurrentRound.featureSet, list);
+            return computeError(this.CurrentRound.FeatureSet, list);
         }
         #endregion
 
@@ -476,6 +496,34 @@ namespace MachineLearning.Learning.Regression
             }
             Y_learning = temparryLearn;
             Y_learning = Y_learning.T;
+
+            //Now, we genrate for each inidividual option the data column. We also remove options from the initial feature set that occur in all or no variants of the learning set
+            List<Feature> featuresToRemove = new List<Feature>();
+            foreach (Feature f in this.initialFeatures)
+            {
+                if (f.participatingNumFeatures.Count > 0)
+                    continue;
+                List<Feature> temp = new List<Feature>();
+                temp.Add(f);
+                ILArray<double> column = createDataMatrix(temp);
+                int nbSelections = 0;
+                int nbDeselections = 0;
+                for (int i = 0; i < column.Length; i++)
+                {
+                    if (column[i] == 1)
+                        nbSelections++;
+                    if (column[i] == 0)
+                        nbDeselections++;
+                    if (nbSelections > 0 && nbDeselections > 0)
+                        break;
+                }
+                if (nbSelections == this.learningSet.Count)
+                    featuresToRemove.Add(f);
+                if (nbDeselections == this.learningSet.Count)
+                    featuresToRemove.Add(f);
+            }
+            foreach (var f in featuresToRemove)
+                this.initialFeatures.Remove(f);
         }
 
 
@@ -524,7 +572,7 @@ namespace MachineLearning.Learning.Regression
             for (int i = 0; i < featureSet.Count; i++)
             {
                 if (DM_columns.Keys.Contains(featureSet[i]))
-                    DM[ILMath.full, i] = DM_columns[featureSet[i]];
+                    DM[i, ILMath.full] = DM_columns[featureSet[i]];
                 else
                 {
                     generateDM_column(featureSet[i]);

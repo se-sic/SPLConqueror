@@ -102,11 +102,18 @@ namespace SPLConqueror_Core
         {
             List<Configuration> configsWithValues = new List<Configuration>();
             foreach(var config in list) {
+                bool found = false;
                 foreach (var configInGS in GlobalState.allMeasurements.Configurations)
                 {
                     if (config.Equals(configInGS))
+                    {
                         configsWithValues.Add(configInGS);
+                        found = true;
+                        break;
+                    }
                 }
+                if (!found)
+                    logError.log("Did not find a measured value for the configuration: " + config.ToString());
             }
             return configsWithValues;
         }

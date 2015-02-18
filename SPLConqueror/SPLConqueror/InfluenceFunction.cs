@@ -729,6 +729,11 @@ namespace SPLConqueror_Core
         //        this.fm.removeNumericOption(f);
         //}
 
+        /// <summary>
+        /// Checks using the ToString method whether this InfluenceFunction is equal to another one
+        /// </summary>
+        /// <param name="other">The other influence function to be compared with</param>
+        /// <returns>True if the same, false otherwise</returns>
         public bool Equals(InfluenceFunction other)
         {
             if (other.ToString() == this.ToString())
@@ -754,5 +759,6 @@ namespace SPLConqueror_Core
 
             return false;
         }
+
     }
 }
