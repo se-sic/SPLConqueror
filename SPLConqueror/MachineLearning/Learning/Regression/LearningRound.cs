@@ -10,7 +10,13 @@ namespace MachineLearning.Learning.Regression
     {
         internal double learningError = Double.MaxValue;
         internal double validationError = Double.MaxValue;
-        internal List<Feature> featureSet = new List<Feature>();
+        private List<Feature> featureSet = new List<Feature>();
+
+        public List<Feature> FeatureSet
+        {
+            get { return featureSet; }
+            set { featureSet = value; }
+        }
         internal int round = 0;
 
         /// <summary>
