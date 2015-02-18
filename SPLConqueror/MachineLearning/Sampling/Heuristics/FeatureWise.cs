@@ -93,7 +93,7 @@ namespace MachineLearning.Sampling.Heuristics
                 List<BinaryOption> temp = new List<BinaryOption>();
                 temp.Add(opt);
                 temp = generator.minimizeConfig(temp, vm, true, null);
-                if (temp != null && this.configurations.Contains(temp) == false)
+                if (temp != null && Configuration.containsBinaryConfiguration(this.configurations, temp) == false)
                     this.configurations.Add(temp);
 
                 //Now finding a configuration without the current option, but with all other options to be able to compute a delta
