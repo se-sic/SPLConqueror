@@ -528,7 +528,7 @@ namespace MachineLearning.Learning.Regression
                 else
                 {
                     generateDM_column(featureSet[i]);
-                    DM[":", i] = DM_columns[featureSet[i]];
+                    DM[i,":"] = DM_columns[featureSet[i]];
                 }
             }
 
