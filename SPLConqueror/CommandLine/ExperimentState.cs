@@ -21,10 +21,10 @@ namespace CommandLine
         public ML_Settings mlSettings = new ML_Settings();
 
         string binarySamplings_Learning = "";
-        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections_Learning = null;
+        List<List<BinaryOption>> binarySelections_Learning = null;
 
         string binarySamplings_Validation = "";
-        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections_Validation = null;
+        List<List<BinaryOption>> binarySelections_Validation = null;
 
 
         string numericSamplings_Learning = "";
@@ -34,7 +34,7 @@ namespace CommandLine
         List<Dictionary<NumericOption, double>> numericSelection_Validation = null;
 
 
-        public List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> BinarySelections_Learning
+        public List<List<BinaryOption>> BinarySelections_Learning
         {
             get { return this.binarySelections_Learning; }
         }
@@ -44,7 +44,7 @@ namespace CommandLine
             get { return this.numericSelection_Learning; }
         }
 
-        public List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> BinarySelections_Validation
+        public List<List<BinaryOption>> BinarySelections_Validation
         {
             get { return this.binarySelections_Validation; }
         }
@@ -133,11 +133,36 @@ namespace CommandLine
             numericSelection_Validation = null;
         }
 
+        /// <summary>
+        /// Clears the binary and numeric selections and the machine learning settings stored in this object. 
+        /// </summary>
         public void clear()
         {
             mlSettings = new ML_Settings();
             clearSampling();
         }
+
+        private void addBinarySelection(List<List<BinaryOption>> selections, List<BinaryOption> newSelection)
+        {
+            if (selections == null)
+                selections = new List<List<BinaryOption>>();
+
+            if (Configuration.containsBinaryConfiguration(selections,newSelection))
+                return;
+            selections.Add(newSelection);
+        }
+
+
+        private void addNumericSelection(List<Dictionary<NumericOption, double>> selections, Dictionary<NumericOption, double> newSelection)
+        {
+            if (selections == null)
+                selections = new List<Dictionary<NumericOption, double>>();
+
+            if (Configuration.containsNumericConfiguration(selections, newSelection))
+                return;
+            selections.Add(newSelection);
+        }
+
 
         /// <summary>
         /// Add a set of binary-configuration option selections to the ExperimentalState. All binary configuration options are assumed to be selected. Multiple entries of the same binary selections are removed. 
@@ -145,56 +170,19 @@ namespace CommandLine
         /// <param name="newSelection">A set of binary configuration-option selections. All options of are assumed to be selected.</param>
         public void addBinarySelection_Learning(List<List<BinaryOption>> newSelections)
         {
-            if (binarySelections_Learning == null)
-                binarySelections_Learning = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
-
             foreach (List<BinaryOption> selection in newSelections)
-            {
-                Dictionary<BinaryOption, BinaryOption.BinaryValue> newSelection = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
-
-                foreach (BinaryOption bin in selection)
-                {
-                    newSelection.Add(bin, BinaryOption.BinaryValue.Selected);
-                }
-
-                if (binarySelections_Learning.Contains(newSelection))
-                    continue;
-                binarySelections_Learning.Add(newSelection);
-            }
-        
-        }
-
-
-        /// <summary>
-        /// Add a selection of binary-configuration options. Multiple entries of the same binary selections are removed. 
-        /// </summary>
-        /// <param name="newSelection">A selection of binary configuration options.</param>
-        public void addBinarySelection_Learning(Dictionary<BinaryOption, BinaryOption.BinaryValue> newSelection)
-        {
-            if (binarySelections_Learning == null)
-                binarySelections_Learning = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
-
-            if(binarySelections_Learning.Contains(newSelection))
-                return; 
-            binarySelections_Learning.Add(newSelection);
+                addBinarySelection_Learning(selection);
         }
 
         /// <summary>
-        /// Add a set of binary-configuration option selections to the ExperimentalState.  Multiple entries of the same binary selections are removed. 
+        /// Add a set of binary-configuration option selections to the ExperimentalState. All binary configuration options are assumed to be selected. Multiple entries of the same binary selections are removed. 
         /// </summary>
-        /// <param name="newSelections">A set of binary configuration-option selections.</param>
-        public void addBinarySelection_Learning(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> newSelections)
+        /// <param name="newSelection">A set of binary configuration-option selections. All options of are assumed to be selected.</param>
+        public void addBinarySelection_Learning(List<BinaryOption> newSelection)
         {
-            if (binarySelections_Learning == null)
-                binarySelections_Learning = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
-
-            foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> selection in newSelections)
-            {
-                if (binarySelections_Learning.Contains(selection))
-                    return;
-                binarySelections_Learning.Add(selection);
-            }
+            addBinarySelection(binarySelections_Learning, newSelection);
         }
+
 
         /// <summary>
         /// Add a selection of numeric-configuration options. Multiple entries of the same numerical selections are removed. 
@@ -202,12 +190,7 @@ namespace CommandLine
         /// <param name="newSelection">A selection of binary configuration options.</param>
         public void addNumericalSelection_Learning(Dictionary<NumericOption, double> newSelection)
         {
-            if (numericSelection_Learning == null)
-                numericSelection_Learning = new List<Dictionary<NumericOption, double>>();
-
-            if (numericSelection_Learning.Contains(newSelection))
-                return;
-            numericSelection_Learning.Add(newSelection);
+            addNumericSelection(this.numericSelection_Learning, newSelection);
         }
 
         /// <summary>
@@ -216,15 +199,8 @@ namespace CommandLine
         /// <param name="newSelections">A set of binary configuration-option selections.</param>
         public void addNumericalSelection_Learning(List<Dictionary<NumericOption, double>> newSelections)
         {
-            if (numericSelection_Learning == null)
-                numericSelection_Learning = new List<Dictionary<NumericOption, double>>();
-
-            foreach (Dictionary<NumericOption, double> selection in newSelections)
-            {
-                if (numericSelection_Learning.Contains(selection))
-                    return;
-                numericSelection_Learning.Add(selection);
-            }
+            foreach (Dictionary<NumericOption, double> oneSelection in newSelections)
+                addNumericalSelection_Learning(oneSelection);
         }
 
 
@@ -234,55 +210,17 @@ namespace CommandLine
         /// <param name="newSelection">A set of binary configuration-option selections. All options of are assumed to be selected.</param>
         public void addBinarySelection_Validation(List<List<BinaryOption>> newSelections)
         {
-            if (binarySelections_Validation == null)
-                binarySelections_Validation = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
-
             foreach (List<BinaryOption> selection in newSelections)
-            {
-                Dictionary<BinaryOption, BinaryOption.BinaryValue> newSelection = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
-
-                foreach (BinaryOption bin in selection)
-                {
-                    newSelection.Add(bin, BinaryOption.BinaryValue.Selected);
-                }
-
-                if (binarySelections_Validation.Contains(newSelection))
-                    continue;
-                binarySelections_Validation.Add(newSelection);
-            }
-
+                addBinarySelection_Validation(selection);
         }
-
 
         /// <summary>
         /// Add a selection of binary-configuration options. Multiple entries of the same binary selections are removed. 
         /// </summary>
         /// <param name="newSelection">A selection of binary configuration options.</param>
-        public void addBinarySelection_Validation(Dictionary<BinaryOption, BinaryOption.BinaryValue> newSelection)
+        public void addBinarySelection_Validation(List<BinaryOption> newSelection)
         {
-            if (binarySelections_Validation == null)
-                binarySelections_Validation = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
-
-            if (binarySelections_Validation.Contains(newSelection))
-                return;
-            binarySelections_Validation.Add(newSelection);
-        }
-
-        /// <summary>
-        /// Add a set of binary-configuration option selections to the ExperimentalState.  Multiple entries of the same binary selections are removed. 
-        /// </summary>
-        /// <param name="newSelections">A set of binary configuration-option selections.</param>
-        public void addBinarySelection_Validation(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> newSelections)
-        {
-            if (binarySelections_Validation == null)
-                binarySelections_Validation = new List<Dictionary<BinaryOption, BinaryOption.BinaryValue>>();
-
-            foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> selection in newSelections)
-            {
-                if (binarySelections_Validation.Contains(selection))
-                    return;
-                binarySelections_Validation.Add(selection);
-            }
+            addBinarySelection(binarySelections_Validation, newSelection);
         }
 
         /// <summary>
@@ -291,12 +229,7 @@ namespace CommandLine
         /// <param name="newSelection">A selection of binary configuration options.</param>
         public void addNumericalSelection_Validation(Dictionary<NumericOption, double> newSelection)
         {
-            if (numericSelection_Validation == null)
-                numericSelection_Validation = new List<Dictionary<NumericOption, double>>();
-
-            if (numericSelection_Validation.Contains(newSelection))
-                return;
-            numericSelection_Validation.Add(newSelection);
+            addNumericSelection(this.numericSelection_Validation, newSelection);
         }
 
         /// <summary>
@@ -305,15 +238,8 @@ namespace CommandLine
         /// <param name="newSelections">A set of binary configuration-option selections.</param>
         public void addNumericalSelection_Validation(List<Dictionary<NumericOption, double>> newSelections)
         {
-            if (numericSelection_Validation == null)
-                numericSelection_Validation = new List<Dictionary<NumericOption, double>>();
-
-            foreach (Dictionary<NumericOption, double> selection in newSelections)
-            {
-                if (numericSelection_Validation.Contains(selection))
-                    return;
-                numericSelection_Validation.Add(selection);
-            }
+            foreach (Dictionary<NumericOption, double> oneSelection in newSelections)
+                addNumericalSelection_Validation(oneSelection);
         }
     }
 }

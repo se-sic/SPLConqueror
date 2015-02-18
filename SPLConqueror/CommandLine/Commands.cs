@@ -196,13 +196,13 @@ namespace CommandLine
                 case "printConfigs":
                     {
                         List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
-                        List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySampling = exp.BinarySelections_Learning;
+                        List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
 
                         List<Configuration> configurations = new List<Configuration>();
 
                         foreach (Dictionary<NumericOption, double> numeric in numericSampling)
                         {
-                            foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySampling)
+                            foreach (List<BinaryOption> binary in binarySampling)
                             {
                                 Configuration config = Configuration.getConfiguration(binary, numeric);
                                 if (!configurations.Contains(config))
@@ -271,7 +271,7 @@ namespace CommandLine
 
                         else
                         {
-                            foreach (Dictionary<BinaryOption,BinaryOption.BinaryValue> binConfig in exp.BinarySelections_Learning)
+                            foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
                             {
                                 foreach (Dictionary<NumericOption, double> numConf in exp.NumericSelection_Learning)
                                 {

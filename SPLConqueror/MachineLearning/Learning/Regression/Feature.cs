@@ -17,6 +17,8 @@ namespace MachineLearning.Learning.Regression
             set { constant = value; }
         }
 
+        private int hashCode;
+
         public bool Equals(Feature f)
         {
             return this.Equals((Object)f);
@@ -80,13 +82,20 @@ namespace MachineLearning.Learning.Regression
         public Feature(Feature original, Feature toAdd, VariabilityModel vm)
             : base(original.ToString() + " * " + toAdd.ToString(), vm)
         {
-
+            hashCode = initHashCode();
         }
+
+
         internal Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
 
         public override string ToString()
         {
             return base.ToString();
+        }
+
+        public int initHashCode()
+        {
+            return hashCode;
         }
 
         /// <summary>
@@ -95,7 +104,10 @@ namespace MachineLearning.Learning.Regression
         /// <returns>The String containing the generated name</returns>
         public String getName()
         {
-            HashSet<ConfigurationOption> set = participatingBoolFeatures.Union(participatingNumFeatures);
+            //HashSet<ConfigurationOption> set = participatingBoolFeatures.Union(participatingNumFeatures);
+            return "";
         }
+
+        
     }
 }
