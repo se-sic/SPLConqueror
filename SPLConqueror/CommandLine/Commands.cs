@@ -340,14 +340,14 @@ namespace CommandLine
             {
                 if (numericConfigs.Count == 0)
                 {
-                    Configuration c = new Configuration(binConfig, GlobalState.varModel);
+                    Configuration c = new Configuration(binConfig);
                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
                     GlobalState.addConfiguration(c);
                 }
                 foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
                 {
                     
-                    Configuration c = new Configuration(binConfig, numConf, GlobalState.varModel);
+                    Configuration c = new Configuration(binConfig, numConf);
                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
                     GlobalState.addConfiguration(c);
                 }

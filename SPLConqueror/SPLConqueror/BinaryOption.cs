@@ -64,11 +64,13 @@ namespace SPLConqueror_Core
             return node;
         }
 
+
         /// <summary>
-        /// 
+        /// Creates a binary option based on the information stored in the xml node. The binary option is assigned to the variability model. 
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        /// <param name="node">Node of the xml file holding the information of the binary option.</param>
+        /// <param name="vm">The variabilit model the binary option is assigned to. </param>
+        /// <returns>A binary option of the variabilit model with the information stored in the xml node.</returns>
         public static BinaryOption loadFromXML(XmlElement node, VariabilityModel vm)
         {
             BinaryOption option = new BinaryOption(vm, "temp");

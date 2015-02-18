@@ -74,51 +74,30 @@ namespace SPLConqueror_Core
         /// <summary>
         /// Constructor to create a new configuration based on selected binary options.
         /// </summary>
-        /// <param name="binaryConfig">A list of SELECTED binary configuration options</param>
-        /// <param name="vm">The variability model containing the remaining binary options. Can be null.</param>
-        public Configuration(List<BinaryOption> binaryConfig, VariabilityModel vm)
+        /// <param name="binaryConfig">A set of SELECTED binary configuration options</param>
+        public Configuration(List<BinaryOption> binaryConfig)
         {
-            if (vm == null)
+            foreach (BinaryOption opt in binaryConfig)
             {
-                foreach (BinaryOption opt in binaryConfig)
-                {
-                    binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
-                }
-            }
-            else
-            {
-                foreach (var opt in vm.BinaryOptions)
-                {
-                    if (binaryConfig.Contains(opt))
-                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
-                    else
-                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Deselected);
-                }
+                binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
             }
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
 
-        public Configuration(List<BinaryOption> binConfig, Dictionary<NumericOption, double> numConf, VariabilityModel vm)
+        /// <summary>
+        /// Creates a new configuration with the given set of binary and numeric configuration options.
+        /// </summary>
+        /// <param name="binConfig">A set of SELECTED binary configuraiton options.</param>
+        /// <param name="numConf">A set numeric configuration options with the values selected in this configuration.</param>
+        public Configuration(List<BinaryOption> binConfig, Dictionary<NumericOption, double> numConf)
         {
-            if (vm == null)
+            foreach (BinaryOption opt in binConfig)
             {
-                foreach (BinaryOption opt in binConfig)
-                {
-                    binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
-                }
-            }
-            else
-            {
-                foreach (var opt in vm.BinaryOptions)
-                {
-                    if (binConfig.Contains(opt))
-                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
-                    else
-                        this.binaryOptions.Add(opt, BinaryOption.BinaryValue.Deselected);
-                }
+                binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
             }
             if(numConf!=null)
                 numericOptions = numConf;
+
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
         }
 
@@ -195,7 +174,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// String representing the configuration. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The identifier of the configuration.</returns>
         public override string ToString()
         {
             return identifier;
@@ -259,7 +238,7 @@ namespace SPLConqueror_Core
         /// <returns>A new configuration objects with the given selections</returns>
         public static Configuration getConfiguration(List<BinaryOption> selectedBinaryOptions, Dictionary<NumericOption, double> numericOptions)
         {
-            Configuration result = new Configuration(selectedBinaryOptions, null);
+            Configuration result = new Configuration(selectedBinaryOptions);
             result.numericOptions = numericOptions;
             result.update();
             return result;
@@ -270,7 +249,7 @@ namespace SPLConqueror_Core
         /// Generates a new Configuration based on the given selected binary Options and the set values of the numeric options.
         /// However, it has not yet any measured values.
         /// </summary>
-        /// <param name="selectedBinaryOptions">A dictionary of binary options with the information whether option is selected or deselected.</param>
+        /// <param name="binaryOptions">A dictionary of binary options with the information whether option is selected or deselected.</param>
         /// <param name="numericOptions">A map of numeric option and their corresponding value.</param>
         /// <returns>A new configuration objects with the given selections</returns>
         public static Configuration getConfiguration(Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions, Dictionary<NumericOption, double> numericOptions)
@@ -283,7 +262,7 @@ namespace SPLConqueror_Core
             }
 
 
-            Configuration result = new Configuration(selectedBinaryOptions, null);
+            Configuration result = new Configuration(selectedBinaryOptions);
             if (numericOptions != null)
                 result.numericOptions = numericOptions;
             result.update();
@@ -333,7 +312,12 @@ namespace SPLConqueror_Core
         }
 
 
-        // TODO one of these lists might be empty, for example if there are no numeric options in the variability model.
+        /// <summary>
+        /// Creates a list of configurations conststing of the cartesian product of the lists of binary and numerical selections. 
+        /// </summary>
+        /// <param name="binarySelections">A list of binary selections.</param>
+        /// <param name="numericSelections">A list of numerical selections.</param>
+        /// <returns>A list of configurations.</returns>
         public static List<Configuration> getConfigurations(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
         {
             List<Configuration> configurations = new List<Configuration>();
