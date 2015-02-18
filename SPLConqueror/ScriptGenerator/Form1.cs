@@ -342,8 +342,6 @@ namespace ScriptGenerator
             List<MachineLearning.Learning.ML_Settings> mlSettings = new List<MachineLearning.Learning.ML_Settings>();
             Dictionary<string, List<Container>> runs = new Dictionary<string, List<Container>>();
 
-
-
             foreach (Container c in addedElementsList.Items)
             {
 
