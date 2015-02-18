@@ -274,7 +274,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="setOfBinaryConfigurations">A list of binary selections. Each sublist represents a selection of binary configuration options.</param>
         /// <param name="binaryConfig">A list of binary configuration options.</param>
-        /// <returns>True if the list of binary selections contains the list of binary configuration options, false otherwise. If one parameter is null this mehtod retuns false.</returns>
+        /// <returns>True if the list of binary selections contains in the list of binary configuration options, false otherwise. If one parameter is null this mehtod retuns false.</returns>
         public static bool containsBinaryConfiguration(List<List<BinaryOption>> setOfBinaryConfigurations, List<BinaryOption> binaryConfig)
         {
             if (setOfBinaryConfigurations == null || binaryConfig == null)
@@ -298,19 +298,40 @@ namespace SPLConqueror_Core
         public static bool equalBinaryConfiguration(List<BinaryOption> oneConfiguration, List<BinaryOption> otherBinaryConfiguration)
         {
             return (oneConfiguration.Count == otherBinaryConfiguration.Count) && !oneConfiguration.Except(otherBinaryConfiguration).Any();
-            /*if (oneConfiguration == null || otherBinaryConfiguration == null)
-                return false;
-            if (oneConfiguration.Count != otherBinaryConfiguration.Count)
-                return false;
-
-            foreach (BinaryOption opt in oneConfiguration)
-            {
-                if (!otherBinaryConfiguration.Contains(opt))
-                    return false;
-            }
-            return true;*/
         }
 
+        /// <summary>
+        /// This method evaluates whether the list of numeric selections contains a specific numeric selection.
+        /// </summary>
+        /// <param name="setOfNumericConfigurations">A list of numeric selections. Each sublist represents a selection of numeric configuration options.</param>
+        /// <param name="numericConfiguration">A list of numeric configuration options with selected values.</param>
+        /// <returns>True if the list of numeric selections contains in the list of numeric configuration options, false otherwise. If one parameter is null this mehtod retuns false.</returns>
+        public static bool containsNumericConfiguration(List<Dictionary<NumericOption, double>> setOfNumericConfigurations, Dictionary<NumericOption, double> numericConfiguration)
+        {
+            if (setOfNumericConfigurations == null || numericConfiguration == null)
+                return false;
+
+            foreach (Dictionary<NumericOption, double> oneNumeric in setOfNumericConfigurations)
+            {
+                if (Configuration.equalNumericalSelection(oneNumeric, numericConfiguration))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Compare two dictionaries of numerical configuration options. If both dictionaries contains the same numerical options with the same values selected, the mehthod retuns true and otherwise false. 
+        /// </summary>
+        /// <param name="oneConfiguration">A dictionary of numerical configuration options.</param>
+        /// <param name="otherNumericalConfiguration">A dictionary of numerical configuration options.</param>
+        /// <returns>True if both configurations contains the same configuration options, false otherwise.</returns>
+        public static bool equalNumericalSelection(Dictionary<NumericOption, double> oneConfiguration, Dictionary<NumericOption, double> otherNumericalConfiguration)
+        {
+            if (oneConfiguration.Count != otherNumericalConfiguration.Count)
+                return false;
+
+            return oneConfiguration.Keys.All(k => otherNumericalConfiguration.ContainsKey(k) && oneConfiguration[k] == otherNumericalConfiguration[k]);
+        }
 
         /// <summary>
         /// Creates a list of configurations conststing of the cartesian product of the lists of binary and numerical selections. 
@@ -318,7 +339,7 @@ namespace SPLConqueror_Core
         /// <param name="binarySelections">A list of binary selections.</param>
         /// <param name="numericSelections">A list of numerical selections.</param>
         /// <returns>A list of configurations.</returns>
-        public static List<Configuration> getConfigurations(List<Dictionary<BinaryOption, BinaryOption.BinaryValue>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
+        public static List<Configuration> getConfigurations(List<List<BinaryOption>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
         {
             List<Configuration> configurations = new List<Configuration>();
             if (binarySelections == null && numericSelections == null)
@@ -329,7 +350,7 @@ namespace SPLConqueror_Core
                 {
                     if (binarySelections != null && binarySelections.Count > 0)
                     {
-                        foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySelections)
+                        foreach (List<BinaryOption> binary in binarySelections)
                         {
                             Configuration config = Configuration.getConfiguration(binary, numeric);
                             if (!configurations.Contains(config))
@@ -350,7 +371,7 @@ namespace SPLConqueror_Core
             }
             else
             {//Only binary options are available
-                foreach (Dictionary<BinaryOption, BinaryOption.BinaryValue> binary in binarySelections)
+                foreach (List<BinaryOption> binary in binarySelections)
                 {
                     Configuration config = Configuration.getConfiguration(binary, null);
                     if (!configurations.Contains(config))

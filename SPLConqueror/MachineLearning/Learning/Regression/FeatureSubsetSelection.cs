@@ -571,12 +571,13 @@ namespace MachineLearning.Learning.Regression
             ILArray<double> DM = ILMath.zeros(featureSet.Count, this.learningSet.Count);
             for (int i = 0; i < featureSet.Count; i++)
             {
-                if (DM_columns.Keys.Contains(featureSet[i]))
-                    DM[i, ILMath.full] = DM_columns[featureSet[i]];
+                var x = featureSet[i];
+                if (DM_columns.ContainsKey(x))
+                    DM[i, ILMath.full] = DM_columns[x];
                 else
                 {
-                    generateDM_column(featureSet[i]);
-                    DM[i,":"] = DM_columns[featureSet[i]];
+                    generateDM_column(x);
+                    DM[i, ":"] = DM_columns[x];
                 }
             }
 
