@@ -45,8 +45,11 @@ namespace SPLConqueror_Core
 
         public void close()
         {
-            writer.Flush();
-            writer.Close();
+            if (writer != null)
+            {
+                writer.Flush();
+                writer.Close();
+            }
         }
 
     }

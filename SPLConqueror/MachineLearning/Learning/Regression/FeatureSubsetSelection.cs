@@ -488,7 +488,7 @@ namespace MachineLearning.Learning.Regression
             double[] tempArrayValid = new double[measurements.Count];
             for (int i = 0; i < measurements.Count; i++)
             {
-                this.learningSet.Add(measurements[i]);
+                this.validationSet.Add(measurements[i]);
                 double val = 0;
                 try
                 {

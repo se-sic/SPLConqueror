@@ -612,7 +612,7 @@ namespace SPLConqueror_Core
         }
 
 
-        public String ToString()
+        public override String ToString()
         {
             String returnString = wellFormedExpression;
 
