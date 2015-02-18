@@ -97,21 +97,26 @@ namespace SPLConqueror_Core
 
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
 
-                string[] binaryFeatures = binaryString.Split(',');
-                foreach (string element in binaryFeatures)
+                string[] binaryOptionNames = binaryString.Split(',');
+                foreach (string binaryOptionName in binaryOptionNames)
                 {
-                    string searchelement = element.Trim();
-                    if (searchelement.Length > 0)
+                    string currOption = binaryOptionName.Trim();
+                    if (currOption.Length > 0)
                     {
                         BinaryOption bOpt = null;
 
-                        bOpt = GlobalState.varModel.getBinaryOption(searchelement);
+                        bOpt = model.getBinaryOption(currOption);
 
                         if (bOpt == null)
-                            GlobalState.logError.log("No Binary option found with name: " + searchelement);
+                            GlobalState.logError.log("No Binary option found with name: " + currOption);
                         binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
                     }
                 }
+
+                // Add "root" binary option to the configuration
+                if (!binaryOptions.ContainsKey(model.Root))
+                    binaryOptions.Add(model.Root, BinaryOption.BinaryValue.Selected);
+
 
                 Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
                 if (!string.IsNullOrEmpty(numericString))
@@ -127,7 +132,7 @@ namespace SPLConqueror_Core
                         numOptionsKeyValue[0] = numOptionsKeyValue[0].Trim();
                         if (numOptionsKeyValue[0].Length == 0)
                             continue;
-                        NumericOption varFeat = GlobalState.varModel.getNumericOption(numOptionsKeyValue[0]);
+                        NumericOption varFeat = model.getNumericOption(numOptionsKeyValue[0]);
                         if (varFeat == null)
                             GlobalState.logError.log("No numeric option found with name: " + numOptionsKeyValue[0]);
                         double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);

@@ -20,6 +20,9 @@ namespace SPLConqueror_Core
         /// <param name="msg">The error message to be printed or logged</param>
         public override void log(String msg)
         {
+            if (!msg.EndsWith(System.Environment.NewLine))
+                msg += System.Environment.NewLine;
+
             GlobalState.logInfo.log("Error: "+msg);
 
             if (writer != null)

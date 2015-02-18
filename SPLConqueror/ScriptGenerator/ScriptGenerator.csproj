@@ -78,6 +78,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandLine\CommandLine.csproj">
+      <Project>{FE44070A-24E6-4A10-820F-854FF74C0DFB}</Project>
+      <Name>CommandLine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MachineLearning\MachineLearning.csproj">
       <Project>{AEBDC4EA-60AD-4A95-8407-059B07150782}</Project>
       <Name>MachineLearning</Name>

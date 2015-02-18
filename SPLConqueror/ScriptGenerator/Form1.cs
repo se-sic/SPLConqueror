@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
+using System.IO;
 
 using SPLConqueror_Core;
-
 using MachineLearning;
 using MachineLearning.Learning;
-using System.IO;
+using CommandLine;
 
 namespace ScriptGenerator
 {
@@ -416,15 +416,15 @@ namespace ScriptGenerator
                                 NFProperty nfpName = (NFProperty)pro;
 
 
-                                scriptContent.Append("vm " + varModel + System.Environment.NewLine);
-                                scriptContent.Append("all " + measurement + System.Environment.NewLine);
-                                scriptContent.Append("nfp " + pro.Name + System.Environment.NewLine);
+                                scriptContent.Append(Commands.COMMAND_VARIABILITYMODEL + " " + varModel + System.Environment.NewLine);
+                                scriptContent.Append(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurement + System.Environment.NewLine);
+                                scriptContent.Append(Commands.COMMAND_SET_NFP + " " + pro.Name + System.Environment.NewLine);
                                 scriptContent.Append(samplingsToConsider(runs));
                             }
                         }
                     }
                 }
-                scriptContent.Append("clear-learning");
+                scriptContent.Append(Commands.COMMAND_CLEAR_LEARNING + System.Environment.NewLine);
             }
 
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -496,8 +496,9 @@ namespace ScriptGenerator
                             sb.Append(numericSamplingString);
                             sb.Append(binaryValidSamplingString);
                             sb.Append(numericValidSamplingString);
-                            sb.Append("start" + System.Environment.NewLine);
-                            sb.Append("clean-sampling" + System.Environment.NewLine);
+                            sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
+                            sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
+                            sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
                         }
                     }
                 }
