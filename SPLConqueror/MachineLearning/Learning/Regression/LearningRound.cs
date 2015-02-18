@@ -21,9 +21,12 @@ namespace MachineLearning.Learning.Regression
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(round + ";");
-            foreach (Feature f in featureSet)
+            for (int i = 0; i < featureSet.Count; i++)
             {
-                sb.Append(f.ToString() + " + ");
+                Feature f = featureSet[i];
+                sb.Append(f.Constant + " * " + f.ToString());
+                if (i < featureSet.Count - 1)
+                    sb.Append(" + ");
             }
             sb.Append(";");
             sb.Append(learningError + ";");

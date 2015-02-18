@@ -21,6 +21,12 @@ namespace ScriptGenerator
     {
         public const string PARAMETER_NOT_SPECIFIED = "Parameter not specified!";
 
+        public const string CONTAINERKEY_MLSETTING = "mlSettings";
+        public const string CONTAINERKEY_BINARY = "binary";
+        public const string CONTAINERKEY_NUMERIC = "numeric";
+        public const string CONTAINERKEY_BINARY_VALIDATION = "binary validation";
+        public const string CONTAINERKEY_NUMERIC_VALIDATION = "numeric validation";
+
         public Form1()
         {
             InitializeComponent();
@@ -75,7 +81,7 @@ namespace ScriptGenerator
                     setting.setSetting(fieldName, ((TextBox)c).Text);
                 }
             }
-            addedElementsList.Items.Add(new Container("mlSettings", setting));
+            addedElementsList.Items.Add(new Container(CONTAINERKEY_MLSETTING, setting));
         }
         #endregion
 
@@ -343,7 +349,7 @@ namespace ScriptGenerator
 
                 switch (c.Type.Trim())
                 {
-                    case "mlSettings":
+                    case CONTAINERKEY_MLSETTING:
                         mlSettings.Add((MachineLearning.Learning.ML_Settings)c.Content);
                         break;
                     default:
