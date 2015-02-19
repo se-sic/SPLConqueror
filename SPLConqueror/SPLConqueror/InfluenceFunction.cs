@@ -489,7 +489,7 @@ namespace SPLConqueror_Core
             return numberOfParticipatingFeatures;
         }
 
-        public int getNumberOfDistinctParticipatingFeatures()
+        public int getNumberOfDistinctParticipatingOptions()
         {
             return this.participatingBoolOptions.Count + this.participatingNumOptions.Count;
         }

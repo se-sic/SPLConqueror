@@ -129,13 +129,13 @@ namespace MachineLearning.Learning.Regression
             foreach (Feature f in best.FeatureSet)
             {
                 //single binary option influence
-                if (f.participatingBoolOptions.Count == 1 && f.participatingNumOptions.Count == 0)
+                if (f.participatingBoolOptions.Count == 1 && f.participatingNumOptions.Count == 0 && f.getNumberOfParticipatingFeatures() == 1)
                 {
                     this.infModel.BinaryOptionsInfluence.Add(f.participatingBoolOptions.ElementAt(0), f);
                     continue;
                 }
                 //single numeric option influence
-                if (f.participatingBoolOptions.Count == 0 && f.participatingNumOptions.Count == 1)
+                if (f.participatingBoolOptions.Count == 0 && f.participatingNumOptions.Count == 1 && f.getNumberOfParticipatingFeatures() == 1)
                 {
                     this.infModel.NumericOptionsInfluence.Add(f.participatingNumOptions.ElementAt(0), f);
                     continue;
