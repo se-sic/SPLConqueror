@@ -11,6 +11,11 @@ namespace MachineLearning.Learning.Regression
         private double constant = 1.0;
         private String name = "";
 
+        public String Name
+        {
+            get { return name; }
+        }
+
         public double Constant
         {
             get { return constant; }
@@ -27,8 +32,8 @@ namespace MachineLearning.Learning.Regression
         /// <summary>
         /// Compares two features based on the components of the functions. 
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The object to comare with.</param>
+        /// <returns>True if both features represents the same configuration option combination, false otherwise.</returns>
         public override bool Equals(object obj)
         {
             Feature other = (Feature) obj;
@@ -93,21 +98,23 @@ namespace MachineLearning.Learning.Regression
             return base.ToString();
         }
 
-        public int initHashCode()
+        private int initHashCode()
         {
-            return hashCode;
+            string[] thisFuntion = this.wellFormedExpression.Split('*');
+            Array.Sort<string>(thisFuntion);
+
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i <thisFuntion.Length; i++)
+            {
+                sb.Append(thisFuntion[i]);
+                if (i < thisFuntion.Length - 1)
+                    sb.Append("#");
+            }
+
+            name = sb.ToString();
+
+            return name.GetHashCode();
         }
 
-        /// <summary>
-        /// Returns a generated name for this feature based on the names of the participating configuration options
-        /// </summary>
-        /// <returns>The String containing the generated name</returns>
-        public String getName()
-        {
-            //HashSet<ConfigurationOption> set = participatingBoolFeatures.Union(participatingNumFeatures);
-            return "";
-        }
-
-        
     }
 }
