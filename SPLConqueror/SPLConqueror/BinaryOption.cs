@@ -9,7 +9,7 @@ namespace SPLConqueror_Core
     public class BinaryOption : ConfigurationOption
     {
         /// <summary>
-        /// A binary feature can either be selected or selected in a specific configuration of a programm.
+        /// A binary option can either be selected or selected in a specific configuration of a programm.
         /// </summary>
         public enum BinaryValue {
             Selected = 1,//"selected",

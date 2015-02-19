@@ -38,6 +38,7 @@ namespace CommandLine
 
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printSettings";
+        public const string COMMAND_PRINT_CONFIGURATIONS = "printConfigs";
 
         public const string COMMAND_VARIABILITYMODEL = "vm";
         public const string COMMAND_SET_NFP = "nfp";
@@ -193,7 +194,7 @@ namespace CommandLine
                     GlobalState.logInfo.log(exp.mlSettings.ToString());
                     break;
 
-                case "printConfigs":
+                case COMMAND_PRINT_CONFIGURATIONS:
                     {
                         List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
                         List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
