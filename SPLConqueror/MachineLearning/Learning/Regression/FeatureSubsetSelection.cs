@@ -129,15 +129,15 @@ namespace MachineLearning.Learning.Regression
             foreach (Feature f in best.FeatureSet)
             {
                 //single binary option influence
-                if (f.participatingBoolFeatures.Count == 1 && f.participatingNumFeatures.Count == 0)
+                if (f.participatingBoolOptions.Count == 1 && f.participatingNumOptions.Count == 0)
                 {
-                    this.infModel.BinaryOptionsInfluence.Add(f.participatingBoolFeatures.ElementAt(0), f);
+                    this.infModel.BinaryOptionsInfluence.Add(f.participatingBoolOptions.ElementAt(0), f);
                     continue;
                 }
                 //single numeric option influence
-                if (f.participatingBoolFeatures.Count == 0 && f.participatingNumFeatures.Count == 1)
+                if (f.participatingBoolOptions.Count == 0 && f.participatingNumOptions.Count == 1)
                 {
-                    this.infModel.NumericOptionsInfluence.Add(f.participatingNumFeatures.ElementAt(0), f);
+                    this.infModel.NumericOptionsInfluence.Add(f.participatingNumOptions.ElementAt(0), f);
                     continue;
                 }
                 //interaction influence
@@ -244,8 +244,8 @@ namespace MachineLearning.Learning.Regression
                 if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
                     continue;
                 //We do not want to generate interactions with the root option
-                if ((feature.participatingNumFeatures.Count == 0 && feature.participatingBoolFeatures.Count == 1 && feature.participatingBoolFeatures.ElementAt(0) == infModel.Vm.Root)
-                    || basicFeature.participatingNumFeatures.Count == 0 && basicFeature.participatingBoolFeatures.Count == 1 && basicFeature.participatingBoolFeatures.ElementAt(0) == infModel.Vm.Root)
+                if ((feature.participatingNumOptions.Count == 0 && feature.participatingBoolOptions.Count == 1 && feature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
+                    || basicFeature.participatingNumOptions.Count == 0 && basicFeature.participatingBoolOptions.Count == 1 && basicFeature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
                     continue;
                 Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
@@ -253,7 +253,7 @@ namespace MachineLearning.Learning.Regression
             }
 
             //if basic feature represents a numeric option and quadratic function support is activated, then we add a feature representing a quadratic functions of this feature
-            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumFeatures.Count > 0)
+            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumOptions.Count > 0)
             {
                 Feature newCandidate = new Feature(basicFeature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
@@ -270,7 +270,7 @@ namespace MachineLearning.Learning.Regression
             }
 
             //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
-            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumFeatures.Count > 0)
+            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumOptions.Count > 0)
             {
                 Feature newCandidate = new Feature("log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
@@ -501,7 +501,7 @@ namespace MachineLearning.Learning.Regression
             List<Feature> featuresToRemove = new List<Feature>();
             foreach (Feature f in this.initialFeatures)
             {
-                if (f.participatingNumFeatures.Count > 0)
+                if (f.participatingNumOptions.Count > 0)
                     continue;
                 List<Feature> temp = new List<Feature>();
                 temp.Add(f);

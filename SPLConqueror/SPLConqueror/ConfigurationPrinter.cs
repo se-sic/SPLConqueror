@@ -36,13 +36,16 @@ namespace SPLConqueror_Core
         /// <param name="file">Path and name of the file, the configurations have to be printed in. </param>
         /// <param name="prefix">The prefix of each configuration.</param>
         /// <param name="postfix">The postfix of each configuartion.</param>
-        /// <param name="order"> Order of the configuration option. Currently no partial order is supported.</param>
+        /// <param name="order"> Order of the configuration option. If only a partial order is given, options not considered in the order are written after all options existing in the order. Information about all configuration options are used from the variability model in the GlobalState.</param>
         public ConfigurationPrinter(string file, string prefix, string postfix, List<ConfigurationOption> order)
         {
             this.file = file;
             this.prefix = prefix;
             this.postfix = postfix;
-            this.order = order;
+
+            if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > order.Count)
+                this.order = enrichWithAllOptions(order);
+
         }
 
         /// <summary>
@@ -59,7 +62,6 @@ namespace SPLConqueror_Core
             return print_order(configurations);
 
         }
-
 
         private bool print_noOrder(List<Configuration> configurations)
         {
@@ -81,15 +83,15 @@ namespace SPLConqueror_Core
 
         }
 
-        // TODO
         private bool print_order(List<Configuration> configurations)
         {
+
             StringBuilder sb = new StringBuilder();
 
             foreach (Configuration c in configurations)
             {
                 sb.Append(prefix + " ");
-                sb.Append(c.ToString() + " ");
+                sb.Append(c.ToString(order) + " ");
                 sb.Append(postfix + " " + System.Environment.NewLine);
 
             }
@@ -100,6 +102,24 @@ namespace SPLConqueror_Core
             }
             return true;
 
+        }
+
+        private List<ConfigurationOption> enrichWithAllOptions(List<ConfigurationOption> optionOrder)
+        {
+            foreach (BinaryOption bopt in GlobalState.varModel.BinaryOptions)
+            {
+                if (optionOrder.Contains(bopt))
+                    continue;
+                optionOrder.Add(bopt);
+            }
+
+            foreach (NumericOption nOpt in GlobalState.varModel.NumericOptions)
+            {
+                if(optionOrder.Contains(nOpt))
+                    continue;
+                optionOrder.Add(nOpt);
+            }
+            return optionOrder;
         }
 
 

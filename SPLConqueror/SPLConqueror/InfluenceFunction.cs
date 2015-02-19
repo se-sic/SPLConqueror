@@ -14,8 +14,8 @@ namespace SPLConqueror_Core
         private VariabilityModel varModel = null;
 
         protected string wellFormedExpression = "";
-        public HashSet<BinaryOption> participatingBoolFeatures = new HashSet<BinaryOption>();
-        public HashSet<NumericOption> participatingNumFeatures = new HashSet<NumericOption>();
+        public HashSet<BinaryOption> participatingBoolOptions = new HashSet<BinaryOption>();
+        public HashSet<NumericOption> participatingNumOptions = new HashSet<NumericOption>();
         protected int numberOfParticipatingFeatures = 0;
         protected string[] expressionArray = null;
 
@@ -167,13 +167,13 @@ namespace SPLConqueror_Core
             expTree.varModel = left.varModel;
             expTree.wellFormedExpression = left.wellFormedExpression + " * " + right.wellFormedExpression;
 
-            expTree.participatingBoolFeatures.UnionWith(left.participatingBoolFeatures);
-            expTree.participatingBoolFeatures.UnionWith(right.participatingBoolFeatures);
+            expTree.participatingBoolOptions.UnionWith(left.participatingBoolOptions);
+            expTree.participatingBoolOptions.UnionWith(right.participatingBoolOptions);
 
-            expTree.participatingNumFeatures.UnionWith(left.participatingNumFeatures);
-            expTree.participatingNumFeatures.UnionWith(right.participatingNumFeatures);
+            expTree.participatingNumOptions.UnionWith(left.participatingNumOptions);
+            expTree.participatingNumOptions.UnionWith(right.participatingNumOptions);
 
-            expTree.numberOfParticipatingFeatures = expTree.participatingBoolFeatures.Count + expTree.participatingNumFeatures.Count;
+            expTree.numberOfParticipatingFeatures = expTree.participatingBoolOptions.Count + expTree.participatingNumOptions.Count;
 
             expTree.expressionArray = left.expressionArray.ToList().Concat(right.expressionArray.ToList()).Concat(new List<String>() { "*" }).ToArray();
 
@@ -190,7 +190,7 @@ namespace SPLConqueror_Core
         {
             Dictionary<BinaryOption, BinaryOption.BinaryValue> binOptions = config.BinaryOptions;
 
-            foreach (BinaryOption bOpt in this.participatingBoolFeatures)
+            foreach (BinaryOption bOpt in this.participatingBoolOptions)
             {
                 if (bOpt.Name.Equals("root"))
                     continue;
@@ -210,7 +210,7 @@ namespace SPLConqueror_Core
             }
 
             List<NumericOption> numOptions = config.NumericOptions.Keys.ToList();
-            foreach (NumericOption num in this.participatingNumFeatures)
+            foreach (NumericOption num in this.participatingNumOptions)
             {
                 if (!numOptions.Contains(num))
                     return false;
@@ -491,7 +491,7 @@ namespace SPLConqueror_Core
 
         public int getNumberOfDistinctParticipatingFeatures()
         {
-            return this.participatingBoolFeatures.Count + this.participatingNumFeatures.Count;
+            return this.participatingBoolOptions.Count + this.participatingNumOptions.Count;
         }
 
         private bool tokenIsAFeatureOrNumber(string token, VariabilityModel varModel)
@@ -510,8 +510,8 @@ namespace SPLConqueror_Core
                 NumericOption numOption = varModel.getNumericOption(token);
                 if (numOption != null)
                 { 
-                    if (!participatingNumFeatures.Contains(numOption))
-                        this.participatingNumFeatures.Add(numOption);
+                    if (!participatingNumOptions.Contains(numOption))
+                        this.participatingNumOptions.Add(numOption);
                     numberOfParticipatingFeatures++;
                     return true;
                 }
@@ -519,8 +519,8 @@ namespace SPLConqueror_Core
                 BinaryOption binOption = varModel.getBinaryOption(token);
                 if (binOption != null)
                 {
-                    if (!participatingBoolFeatures.Contains(binOption))
-                        this.participatingBoolFeatures.Add(binOption);
+                    if (!participatingBoolOptions.Contains(binOption))
+                        this.participatingBoolOptions.Add(binOption);
                     numberOfParticipatingFeatures++;
                     return true;
                 }
@@ -698,10 +698,10 @@ namespace SPLConqueror_Core
         /// <returns></returns>
         public bool containsOption(ConfigurationOption option)
         {
-            if(this.participatingBoolFeatures.Contains(option))
+            if(this.participatingBoolOptions.Contains(option))
                 return true;
 
-            if(this.participatingNumFeatures.Contains(option))
+            if(this.participatingNumOptions.Contains(option))
                 return true;
             return false;
         }
@@ -744,14 +744,14 @@ namespace SPLConqueror_Core
 
         internal bool containsParent(InfluenceFunction featureToAdd)
         {
-            foreach (BinaryOption binOpt in featureToAdd.participatingBoolFeatures)
+            foreach (BinaryOption binOpt in featureToAdd.participatingBoolOptions)
             {
-                if (this.participatingBoolFeatures.Contains(binOpt))
+                if (this.participatingBoolOptions.Contains(binOpt))
                     return true;
                 BinaryOption parent = (BinaryOption) binOpt.Parent;
                 while (parent != null && parent != varModel.Root)
                 {
-                    if (this.participatingBoolFeatures.Contains(parent))
+                    if (this.participatingBoolOptions.Contains(parent))
                         return true;
                     parent = (BinaryOption) parent.Parent;
                 }

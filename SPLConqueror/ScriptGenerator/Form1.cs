@@ -26,6 +26,8 @@ namespace ScriptGenerator
         public const string CONTAINERKEY_NUMERIC = "numeric";
         public const string CONTAINERKEY_BINARY_VALIDATION = "binary validation";
         public const string CONTAINERKEY_NUMERIC_VALIDATION = "numeric validation";
+        public const string CONTAINERKEY_LOGFILE = "logFile";
+
 
         public Form1()
         {
@@ -128,8 +130,7 @@ namespace ScriptGenerator
                     }
                 }
                 // select nfps to consider
-                // TODO replace "\\" with the path separator
-                List<NFProperty> properties = ConfigurationReader.propertiesOfConfigurations(resultFile.Directory + "\\" + resultFile.Name);
+                List<NFProperty> properties = ConfigurationReader.propertiesOfConfigurations(resultFile.Directory.ToString() + Path.PathSeparator + resultFile.Name);
                 nfpSelection_resultFile = new Dictionary<CheckBox, NFProperty>();
 
                 for (int i = 0; i < properties.Count; i++)
@@ -244,15 +245,16 @@ namespace ScriptGenerator
         #region Experimental Designs
         private void expDesign_addButton_Click(object sender, EventArgs e)
         {
-            string containerKey = "numeric ";
+            StringBuilder containerKey = new StringBuilder();
+            containerKey.Append(CONTAINERKEY_NUMERIC).Append(" ");
             string keyInfo = "";
             List<string> samplingNames = new List<string>();
             string validation = "";
 
             if (num_forValidationCheckBox.Checked)
             {
-                validation = "validation";
-                containerKey += "validation";
+                validation = CommandLine.Commands.COMMAND_VALIDATION;
+                containerKey.Append(CommandLine.Commands.COMMAND_VALIDATION);
             }
 
             if (num_BoxBehnken_check.Checked)
@@ -327,7 +329,7 @@ namespace ScriptGenerator
                 keyInfo += str + " ";
             }
 
-            Container cont = new Container(containerKey, samplingNames);
+            Container cont = new Container(containerKey.ToString(), samplingNames);
             cont.AdditionalKeyInformation = keyInfo;
 
             addedElementsList.Items.Add(cont);
@@ -390,7 +392,7 @@ namespace ScriptGenerator
 
                 switch (c.Type.Trim())
                 {
-                    case "logFile":
+                    case CONTAINERKEY_LOGFILE:
                         scriptContent.Append("log " + (c.Content) + "\n");
                         break;
                 }
@@ -460,7 +462,7 @@ namespace ScriptGenerator
         private string samplingsToConsider(Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Container cBSamp in runs["binary"])
+            foreach (Container cBSamp in runs[CONTAINERKEY_BINARY])
             {
                 List<string> samplingNamesBinary = (List<string>)cBSamp.Content;
                 string binarySamplingString = "";
@@ -469,7 +471,7 @@ namespace ScriptGenerator
                     binarySamplingString += (samplingBinary + System.Environment.NewLine);
                 }
 
-                foreach (Container cNumeric in runs["numeric"])
+                foreach (Container cNumeric in runs[CONTAINERKEY_NUMERIC])
                 {
                     List<string> samplingNamesNumeric = (List<string>)cNumeric.Content;
                     string numericSamplingString = "";
@@ -478,7 +480,7 @@ namespace ScriptGenerator
                         numericSamplingString += (samplingNumeric + System.Environment.NewLine);
                     }
 
-                    foreach (Container cBinaryValid in runs["binary validation"])
+                    foreach (Container cBinaryValid in runs[CONTAINERKEY_BINARY_VALIDATION])
                     {
                         List<string> samplingNamesBinaryValid = (List<string>)cBinaryValid.Content;
                         string binaryValidSamplingString = "";
@@ -487,7 +489,7 @@ namespace ScriptGenerator
                             binaryValidSamplingString += (samplingBinaryValid + System.Environment.NewLine);
                         }
 
-                        foreach (Container cNumericValid in runs["numeric validation"])
+                        foreach (Container cNumericValid in runs[CONTAINERKEY_NUMERIC_VALIDATION])
                         {
                             List<string> samplingNamesNumericValid = (List<string>)cNumericValid.Content;
                             string numericValidSamplingString = "";
@@ -531,7 +533,7 @@ namespace ScriptGenerator
             if (saveFileDialog1.FileName != "")
             {                
                 // TODO what happen if there are multiple logFiles defined?
-                addedElementsList.Items.Add(new Container("logFile", saveFileDialog1.FileName));
+                addedElementsList.Items.Add(new Container(CONTAINERKEY_LOGFILE, saveFileDialog1.FileName));
 
             }
         }

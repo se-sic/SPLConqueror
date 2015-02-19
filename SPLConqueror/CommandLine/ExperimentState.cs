@@ -10,9 +10,6 @@ using MachineLearning.Learning.Regression;
 
 namespace CommandLine
 {
-
-    // TODO use Configuration.equalBinarySelection and equivalent methods. Decide whether the configurations have to be stored as 
-    // Dictionary of Binary option and selection or whether a List of binary options is enought. 
     class ExperimentState
     {
 

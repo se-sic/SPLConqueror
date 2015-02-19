@@ -60,15 +60,19 @@ namespace SPLConqueror_Core
             this.name = name;
         }
 
+        /// <summary>
+        /// Creates an interaction based on a given influence function. 
+        /// </summary>
+        /// <param name="f">A influence function consisting of configuration options.</param>
         public Interaction(InfluenceFunction f)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (BinaryOption opt in f.participatingBoolFeatures)
+            foreach (BinaryOption opt in f.participatingBoolOptions)
             {
                 sb.Append(opt.Name + "#");
                 binaryOptions.Add(opt);
             }
-            foreach (NumericOption opt in f.participatingNumFeatures)
+            foreach (NumericOption opt in f.participatingNumOptions)
             {
                 sb.Append(opt.Name + "#");
                 this.numericOptions.Add(opt);

@@ -214,6 +214,15 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// This method retuns the hash code of this configuration. 
+        /// </summary>
+        /// <returns>The hash code of the configuration based one the identifier.</returns>
+        public override int GetHashCode()
+        {
+            return this.identifier.GetHashCode();
+        }
+
+        /// <summary>
         /// This method returns a list of binary options that comply to the given configuration value.
         /// </summary>
         /// <param name="binaryValue">The configuration value ((DE-)Selected).</param>
@@ -389,6 +398,26 @@ namespace SPLConqueror_Core
                 this.nfpValues[prop] = val;
             else
                 this.nfpValues.Add(prop, val);
+        }
+
+        internal string ToString(List<ConfigurationOption> order)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (ConfigurationOption c in order)
+            {
+                if (c.GetType().Equals(typeof(BinaryOption)))
+                {
+                    if (this.BinaryOptions.ContainsKey((BinaryOption)c))
+                        sb.Append(c.Name + DEFAULT_SEPARATOR);
+                }
+                else
+                {
+                    if (this.numericOptions.ContainsKey((NumericOption)c))
+                        sb.Append(c.Name + DEFAULT_SEPARATOR);
+                }
+
+            }
+            return sb.ToString();
         }
     }
 }
