@@ -285,6 +285,9 @@ namespace CommandLine
                             }
                         }
 
+                        GlobalState.logInfo.log("Learning: " + "NumberOfSamplesLearning:" + configurations_Learning.Count + "  NumberOfSamplesValidation:" + configurations_Validation.Count);
+
+
                         // prepare the machine learning 
                         exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
