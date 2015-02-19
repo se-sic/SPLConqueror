@@ -130,7 +130,7 @@ namespace ScriptGenerator
                     }
                 }
                 // select nfps to consider
-                List<NFProperty> properties = ConfigurationReader.propertiesOfConfigurations(resultFile.Directory.ToString() + Path.PathSeparator + resultFile.Name);
+                List<NFProperty> properties = ConfigurationReader.propertiesOfConfigurations(resultFile.Directory.ToString() + Path.DirectorySeparatorChar + resultFile.Name);
                 nfpSelection_resultFile = new Dictionary<CheckBox, NFProperty>();
 
                 for (int i = 0; i < properties.Count; i++)

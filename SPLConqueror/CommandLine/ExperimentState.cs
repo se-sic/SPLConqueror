@@ -18,17 +18,17 @@ namespace CommandLine
         public ML_Settings mlSettings = new ML_Settings();
 
         string binarySamplings_Learning = "";
-        List<List<BinaryOption>> binarySelections_Learning = null;
+        List<List<BinaryOption>> binarySelections_Learning = new List<List<BinaryOption>>();
 
         string binarySamplings_Validation = "";
-        List<List<BinaryOption>> binarySelections_Validation = null;
+        List<List<BinaryOption>> binarySelections_Validation = new List<List<BinaryOption>>();
 
 
         string numericSamplings_Learning = "";
-        List<Dictionary<NumericOption, double>> numericSelection_Learning = null;
+        List<Dictionary<NumericOption, double>> numericSelection_Learning = new List<Dictionary<NumericOption, double>>();
 
         string numericSamplings_Validation = "";
-        List<Dictionary<NumericOption, double>> numericSelection_Validation = null;
+        List<Dictionary<NumericOption, double>> numericSelection_Validation = new List<Dictionary<NumericOption, double>>();
 
 
         public List<List<BinaryOption>> BinarySelections_Learning
@@ -118,16 +118,16 @@ namespace CommandLine
         public void clearSampling()
         {
             binarySamplings_Learning = "";
-            binarySelections_Learning = null;
+            binarySelections_Learning = new List<List<BinaryOption>>();
 
             binarySamplings_Validation = "";
-            binarySelections_Validation = null;
+            binarySelections_Validation = new List<List<BinaryOption>>();
 
             numericSamplings_Learning = "";
-            numericSelection_Learning = null;
+            numericSelection_Learning = new List<Dictionary<NumericOption, double>>();
 
             numericSamplings_Validation = "";
-            numericSelection_Validation = null;
+            numericSelection_Validation = new List<Dictionary<NumericOption, double>>();
         }
 
         /// <summary>
@@ -141,9 +141,6 @@ namespace CommandLine
 
         private void addBinarySelection(List<List<BinaryOption>> selections, List<BinaryOption> newSelection)
         {
-            if (selections == null)
-                selections = new List<List<BinaryOption>>();
-
             if (Configuration.containsBinaryConfiguration(selections,newSelection))
                 return;
             selections.Add(newSelection);
@@ -152,9 +149,6 @@ namespace CommandLine
 
         private void addNumericSelection(List<Dictionary<NumericOption, double>> selections, Dictionary<NumericOption, double> newSelection)
         {
-            if (selections == null)
-                selections = new List<Dictionary<NumericOption, double>>();
-
             if (Configuration.containsNumericConfiguration(selections, newSelection))
                 return;
             selections.Add(newSelection);
@@ -177,7 +171,7 @@ namespace CommandLine
         /// <param name="newSelection">A set of binary configuration-option selections. All options of are assumed to be selected.</param>
         public void addBinarySelection_Learning(List<BinaryOption> newSelection)
         {
-            addBinarySelection(binarySelections_Learning, newSelection);
+            addBinarySelection(this.binarySelections_Learning, newSelection);
         }
 
 

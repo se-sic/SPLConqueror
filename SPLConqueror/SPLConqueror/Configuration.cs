@@ -248,7 +248,8 @@ namespace SPLConqueror_Core
         public static Configuration getConfiguration(List<BinaryOption> selectedBinaryOptions, Dictionary<NumericOption, double> numericOptions)
         {
             Configuration result = new Configuration(selectedBinaryOptions);
-            result.numericOptions = numericOptions;
+            if(numericOptions != null)
+                result.numericOptions = numericOptions;
             result.update();
             return result;
         }
