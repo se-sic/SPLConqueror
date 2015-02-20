@@ -186,10 +186,10 @@ namespace MachineLearning.Learning.Regression
             }
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
-            LearningRound currentRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
-            currentModel.learningError_relative = relativeErrorTrain;
-            currentModel.validationError_relative = relativeErrorEval;
-            return currentModel;
+            LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
+            newRound.learningError_relative = relativeErrorTrain;
+            newRound.validationError_relative = relativeErrorEval;
+            return newRound;
         }
 
 
