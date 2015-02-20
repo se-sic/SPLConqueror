@@ -191,19 +191,11 @@ namespace MachineLearning.Learning.Regression
             ILArray<double> DMT = DM.T;
             ILArray<double> temparray =null;
 
-            //We need to compute the pseudo inverse of the matrix, which might result in a runtime exception
-            try
-            {
-                temparray = ILMath.pinv(DMT);
-            }
-            catch (Exception e)
-            {
-                double[,] fixSVDwithACCORD;
-                var exp = toSystemMatrix<double>(DM.T);
-                fixSVDwithACCORD = (double[,])exp;
-                fixSVDwithACCORD = fixSVDwithACCORD.PseudoInverse();
-                temparray = fixSVDwithACCORD;
-            }
+            double[,] fixSVDwithACCORD;
+            var exp = toSystemMatrix<double>(DM.T);
+            fixSVDwithACCORD = (double[,])exp;
+            fixSVDwithACCORD = fixSVDwithACCORD.PseudoInverse();
+            temparray = fixSVDwithACCORD;
 
             ILArray<double> constants;
             if (temparray.IsEmpty)
