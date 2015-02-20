@@ -363,7 +363,7 @@ namespace MachineLearning.Learning.Regression
                     GlobalState.logError.log(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
-                relativeError = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                relativeError += Math.Abs(100 - ((estimatedValue * 100) / realValue));
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {
