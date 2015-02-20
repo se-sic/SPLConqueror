@@ -10,6 +10,8 @@ namespace MachineLearning.Learning.Regression
     {
         internal double learningError = Double.MaxValue;
         internal double validationError = Double.MaxValue;
+        internal double learningError_relative = Double.MaxValue;
+        internal double validationError_relative = Double.MaxValue;
         private List<Feature> featureSet = new List<Feature>();
 
         public List<Feature> FeatureSet

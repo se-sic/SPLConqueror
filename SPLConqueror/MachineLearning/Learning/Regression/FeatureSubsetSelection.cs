@@ -176,15 +176,20 @@ namespace MachineLearning.Learning.Regression
                 newModel.Add(candidate);
                 if (!fitModel(newModel))
                     continue;
-
-                double errorOfModel = computeModelError(newModel);
+                double temp = 0;
+                double errorOfModel = computeModelError(newModel, out temp);
                 if (errorOfModel < minimalRoundError)
                 {
                     minimalRoundError = errorOfModel;
                     minimalErrorModel = newModel;
                 }
             }
-            return new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel), computeValidationError(minimalErrorModel), currentModel.round + 1);
+            double relativeErrorTrain = 0;
+            double relativeErrorEval = 0;
+            LearningRound currentRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
+            currentModel.learningError_relative = relativeErrorTrain;
+            currentModel.validationError_relative = relativeErrorEval;
+            return currentModel;
         }
 
 
@@ -309,9 +314,9 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeValidationError(List<Feature> currentModel)
+        private double computeValidationError(List<Feature> currentModel, out double relativeError)
         {
-            return computeError(currentModel, this.validationSet);
+            return computeError(currentModel, this.validationSet, out relativeError);
         }
 
         /// <summary>
@@ -341,9 +346,10 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="configs">The configuration for which the error should be computed. It contains also the actually measured value.</param>
         /// <returns>The error depending on the configured loss function (e.g., relative, least squares, absolute).</returns>
-        public double computeError(List<Feature> currentModel, List<Configuration> configs)
+        public double computeError(List<Feature> currentModel, List<Configuration> configs, out double relativeError)
         {
             double error_sum = 0;
+            relativeError = 0;
             foreach (Configuration c in configs)
             {
                 double estimatedValue = estimate(currentModel, c);
@@ -357,7 +363,7 @@ namespace MachineLearning.Learning.Regression
                     GlobalState.logError.log(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
-
+                relativeError = Math.Abs(100 - ((estimatedValue * 100) / realValue));
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {
@@ -373,6 +379,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 error_sum += error;
             }
+            relativeError = relativeError / configs.Count;
             return error_sum / configs.Count;
         }
 
@@ -380,24 +387,26 @@ namespace MachineLearning.Learning.Regression
         /// Computes the error of the current model for all configurations in the learning set.
         /// </summary>
         /// <param name="currentModel">The features that have been fitted so far.</param>
+        /// /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeLearningError(List<Feature> currentModel)
+        private double computeLearningError(List<Feature> currentModel, out double relativeError)
         {
-            return computeError(currentModel, this.learningSet);
+            return computeError(currentModel, this.learningSet, out relativeError);
         }
 
         /// <summary>
         /// This method computes the general error for the current model. It depends on the parameters of ML settings which loss function and whether cross validation is used.
         /// </summary>
         /// <param name="currentModel">The model for which the error should be computed.</param>
+        /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The prediction error of the model.</returns>
-        private double computeModelError(List<Feature> currentModel)
+        private double computeModelError(List<Feature> currentModel, out double relativeError)
         {
             if (!this.MLsettings.crossValidation)
-                return computeValidationError(currentModel);
+                return computeValidationError(currentModel, out relativeError);
             else
             {
-                return (computeLearningError(currentModel) + computeValidationError(currentModel) / 2);
+                return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
             }
             //todo k-fold
         }
@@ -406,12 +415,16 @@ namespace MachineLearning.Learning.Regression
         /// Computes the prediction error for the given set of configurations based on the current influence model. The kind of error function depends on parameters in the ML settings.
         /// </summary>
         /// <param name="list"></param>
+        /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The error rate.</returns>
-        public double evaluateError(List<Configuration> list)
+        public double evaluateError(List<Configuration> list, out double relativeError)
         {
             if (this.CurrentRound == null)
+            {
+                relativeError = Double.MaxValue;
                 return -1;
-            return computeError(this.CurrentRound.FeatureSet, list);
+            }
+            return computeError(this.CurrentRound.FeatureSet, list, out relativeError);
         }
         #endregion
 
