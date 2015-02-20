@@ -41,7 +41,8 @@ namespace MicrosoftSolverFoundation
                     if (soln.GetIntegerValue(cT) == 1)
                         config.Add(termToElem[cT]);
                 }
-                if(!Configuration.containsBinaryConfiguration(configurations, config))
+                //THese should always be new configurations
+              //  if(!Configuration.containsBinaryConfiguration(configurations, config))
                     configurations.Add(config);
 
                 soln.GetNext();

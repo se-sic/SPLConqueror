@@ -90,7 +90,9 @@ namespace CommandLine
                     StreamReader readModel = new StreamReader(task);
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
-                    exp.TrueModel = new InfluenceFunction(model, GlobalState.varModel);
+                    exp.TrueModel = new InfluenceFunction(model.Replace(',','.'), GlobalState.varModel);
+                    NFProperty artificalProp = new NFProperty("artificial");
+                    GlobalState.currentNFP = artificalProp;
                     computeEvaluationDataSetBasedOnTrueModel();
                     break;
                 case COMMAND_CLEAR_GLOBAL:
@@ -127,7 +129,9 @@ namespace CommandLine
                         FeatureSubsetSelection learning = exp.learning;
                         foreach (LearningRound lr in learning.LearningHistory)
                         {
-                            GlobalState.logInfo.log(lr.ToString() + exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations));
+                            double relativeError = 0;
+                            exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                            GlobalState.logInfo.log(lr.ToString() + relativeError);
                         }
                         
                         break;
@@ -243,9 +247,9 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
 
-                        List<Configuration> configurations_Learning = null;
+                        List<Configuration> configurations_Learning = new List<Configuration>();
                         
-                        List<Configuration> configurations_Validation = null;
+                        List<Configuration> configurations_Validation = new List<Configuration>();
 
                         if (exp.TrueModel == null)
                         {
@@ -254,23 +258,8 @@ namespace CommandLine
                             
 
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
-
-
-                            if (configurations_Learning.Count == 0)
-                            {
-                                configurations_Learning = configurations_Validation;
-                            }
-
-                            if (configurations_Learning.Count == 0)
-                                break;
-
-                            if (configurations_Validation.Count == 0)
-                            {
-                                configurations_Validation = configurations_Learning;
-                            }
                         }
-
-                        else
+                            else
                         {
                             foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
                             {
@@ -283,7 +272,23 @@ namespace CommandLine
                                         configurations_Learning.Add(c);
                                 }
                             }
+
                         }
+                            if (configurations_Learning.Count == 0)
+                            {
+                                configurations_Learning = configurations_Validation;
+                            }
+
+                            if (configurations_Learning.Count == 0)
+                                break;
+
+                            if (configurations_Validation.Count == 0)
+                            {
+                                configurations_Validation = configurations_Learning;
+                            }
+                        
+
+                        
 
                         GlobalState.logInfo.log("Learning: " + "NumberOfSamplesLearning:" + configurations_Learning.Count + "  NumberOfSamplesValidation:" + configurations_Validation.Count);
 
@@ -294,11 +299,11 @@ namespace CommandLine
                         exp.learning.setValidationSet(configurations_Validation);
 
                         exp.learning.learn();
-                        if (this.exp.TrueModel != null)
-                        {
-                            double error = exp.learning.evaluateError(GlobalState.allMeasurements.Configurations);
+                        //if (this.exp.TrueModel != null)
+                        //{
+                        //    double error = exp.learning.evaluateError(GlobalState.allMeasurements.Configurations);
                                
-                        }
+                        //}
 
                         // todo analyze the learned model and rounds leading to the model. 
                         
