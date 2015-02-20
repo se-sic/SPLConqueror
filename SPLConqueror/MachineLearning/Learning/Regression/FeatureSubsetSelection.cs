@@ -137,7 +137,13 @@ namespace MachineLearning.Learning.Regression
                 //single numeric option influence
                 if (f.participatingBoolOptions.Count == 0 && f.participatingNumOptions.Count == 1 && f.getNumberOfParticipatingFeatures() == 1)
                 {
-                    this.infModel.NumericOptionsInfluence.Add(f.participatingNumOptions.ElementAt(0), f);
+                    if (this.infModel.NumericOptionsInfluence.Keys.Contains(f.participatingNumOptions.ElementAt(0)))
+                    {
+                        InfluenceFunction composed = new InfluenceFunction(this.infModel.NumericOptionsInfluence[f.participatingNumOptions.ElementAt(0)].ToString() + " + " + f.ToString(), f.participatingNumOptions.ElementAt(0));
+                        this.infModel.NumericOptionsInfluence[f.participatingNumOptions.ElementAt(0)] = composed;
+                    } 
+                    else 
+                        this.infModel.NumericOptionsInfluence.Add(f.participatingNumOptions.ElementAt(0), f);
                     continue;
                 }
                 //interaction influence
