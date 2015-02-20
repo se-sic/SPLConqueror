@@ -37,8 +37,11 @@ namespace MachineLearning.Learning.Regression
                     sb.Append(" + ");
             }
             sb.Append(";");
+
             sb.Append(learningError + ";");
+            sb.Append(learningError_relative+";");
             sb.Append(validationError + ";");
+            sb.Append(validationError_relative + ";");
 
             return sb.ToString();
         }
