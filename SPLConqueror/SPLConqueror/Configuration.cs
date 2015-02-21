@@ -395,6 +395,9 @@ namespace SPLConqueror_Core
 
         public void setMeasuredValue(NFProperty prop, double val)
         {
+            if (prop == null) {
+                return;
+            }
             if (this.nfpValues.Keys.Contains(prop))
                 this.nfpValues[prop] = val;
             else

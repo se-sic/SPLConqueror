@@ -141,8 +141,8 @@ namespace CommandLine
 
         private void addBinarySelection(List<List<BinaryOption>> selections, List<BinaryOption> newSelection)
         {
-            if (Configuration.containsBinaryConfiguration(selections,newSelection))
-                return;
+         //   if (Configuration.containsBinaryConfiguration(selections,newSelection))
+           //     return;
             selections.Add(newSelection);
         }
 
@@ -201,7 +201,7 @@ namespace CommandLine
         /// <param name="newSelection">A set of binary configuration-option selections. All options of are assumed to be selected.</param>
         public void addBinarySelection_Validation(List<List<BinaryOption>> newSelections)
         {
-            foreach (List<BinaryOption> selection in newSelections)
+            foreach (List<BinaryOption> selection in newSelections.Distinct())
                 addBinarySelection_Validation(selection);
         }
 
