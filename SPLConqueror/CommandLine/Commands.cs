@@ -47,8 +47,8 @@ namespace CommandLine
         public const string COMMAND_START_LEARNING = "start";
 
         public const string COMMAND_EXERIMENTALDESIGN = "expDesign";
-        public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxBehnken";
-        public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralComposite";
+        public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "BoxBehnken";
+        public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "CentralComposite";
         public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullFactorial";
         public const string COMMAND_EXPDESIGN_HYPERSAMPLING = "hyperSampling";
         public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "oneFactorAtATime";
@@ -285,7 +285,7 @@ namespace CommandLine
                             }
                         }
 
-                        GlobalState.logInfo.log("Learning: " + "NumberOfSamplesLearning:" + configurations_Learning.Count + "  NumberOfSamplesValidation:" + configurations_Validation.Count);
+                        GlobalState.logInfo.log("Learning: " + "NumberOfSamplesLearning:" + configurations_Learning.Count + " NumberOfSamplesValidation:" + configurations_Validation.Count);
 
 
                         // prepare the machine learning 
