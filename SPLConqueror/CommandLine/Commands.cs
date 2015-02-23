@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using SPLConqueror_Core;
+using MachineLearning.Learning;
+using MachineLearning.Learning.Regression;
 using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Heuristics;
-
-using MachineLearning.Learning;
 using MachineLearning.Solver;
-
-using MachineLearning.Learning.Regression;
-using System.IO;
+using SPLConqueror_Core;
 
 namespace CommandLine
 {
@@ -24,7 +22,7 @@ namespace CommandLine
         public const string COMMAND_CLEAR_GLOBAL = "clean-global";
         public const string COMMAND_CLEAR_SAMPLING = "clean-sampling";
         public const string COMMAND_CLEAR_LEARNING = "clean-learning";
-        
+
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
         public const string COMMAND_LOAD_MLSETTINGS = "load_MLsettings";
 
@@ -55,8 +53,9 @@ namespace CommandLine
         public const string COMMAND_EXPDESIGN_KEXCHANGE = "kExchange";
         public const string COMMAND_EXPDESIGN_PLACKETTBURMAN = "plackettBurman";
         public const string COMMAND_EXPDESIGN_RANDOM = "random";
-        
-        
+
+        public const string COMMAND_SUBSCRIPT = "script";
+
 
         ExperimentState exp = new ExperimentState();
 
@@ -95,6 +94,27 @@ namespace CommandLine
                     GlobalState.currentNFP = artificalProp;
                     computeEvaluationDataSetBasedOnTrueModel();
                     break;
+
+                case COMMAND_SUBSCRIPT:
+                    {
+
+                        FileInfo fi = new FileInfo(task);
+                        StreamReader reader = null;
+                        if (!fi.Exists)
+                            throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
+
+                        reader = fi.OpenText();
+                        Commands co = new Commands();
+                        co.exp = this.exp;
+
+                        while (!reader.EndOfStream)
+                        {
+                            String oneLine = reader.ReadLine().Trim();
+                            co.performOneCommand(oneLine);
+
+                        }
+                    }
+                    break;
                 case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
                     break;
@@ -116,11 +136,13 @@ namespace CommandLine
                         {
                             exp.addBinarySelection_Validation(vg.generateAllVariantsFast(GlobalState.varModel));
                             exp.addBinarySampling_Validation("all-Binary");
-                        }else{
+                        }
+                        else
+                        {
                             exp.addBinarySelection_Learning(vg.generateAllVariantsFast(GlobalState.varModel));
                             exp.addBinarySampling_Learning("all-Binary");
                         }
-                        
+
                         break;
                     }
                 case COMMAND_ANALYZE_LEARNING:
@@ -129,11 +151,10 @@ namespace CommandLine
                         FeatureSubsetSelection learning = exp.learning;
                         foreach (LearningRound lr in learning.LearningHistory)
                         {
-                            double relativeError = 0;
-                            exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                            double relativeError = exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
                             GlobalState.logInfo.log(lr.ToString() + relativeError);
                         }
-                        
+
                         break;
                     }
                 case COMMAND_EXERIMENTALDESIGN:
@@ -168,7 +189,7 @@ namespace CommandLine
                     GlobalState.logInfo = new InfoLogger(location);
 
                     GlobalState.logError.close();
-                    GlobalState.logError = new ErrorLogger(location+"_error");
+                    GlobalState.logError = new ErrorLogger(location + "_error");
                     break;
                 case COMMAND_SET_MLSETTING:
                     {
@@ -248,24 +269,23 @@ namespace CommandLine
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
 
                         List<Configuration> configurations_Learning = new List<Configuration>();
-                        
+
                         List<Configuration> configurations_Validation = new List<Configuration>();
 
                         if (exp.TrueModel == null)
                         {
 
                             configurations_Learning = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning));
-                            
+
 
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
                         }
-                            else
                         {
                             foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
                             {
                                 foreach (Dictionary<NumericOption, double> numConf in exp.NumericSelection_Learning)
                                 {
-                                    
+
                                     Configuration c = new Configuration(binConfig, numConf);
                                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
                                     if (!configurations_Learning.Contains(c))
@@ -299,14 +319,12 @@ namespace CommandLine
                         exp.learning.setValidationSet(configurations_Validation);
 
                         exp.learning.learn();
-                        //if (this.exp.TrueModel != null)
-                        //{
-                        //    double error = exp.learning.evaluateError(GlobalState.allMeasurements.Configurations);
                                
+
                         //}
 
                         // todo analyze the learned model and rounds leading to the model. 
-                        
+
 
 
                     }
@@ -357,7 +375,7 @@ namespace CommandLine
                 }
                 foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
                 {
-                    
+
                     Configuration c = new Configuration(binConfig, numConf);
                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
                     GlobalState.addConfiguration(c);
@@ -473,7 +491,7 @@ namespace CommandLine
                     design = new HyperSampling(optionsToConsider);
                     ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
                     break;
-                    
+
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
                     design = new OneFactorAtATime(optionsToConsider);
                     ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
@@ -485,7 +503,7 @@ namespace CommandLine
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
                     design = new PlackettBurmanDesign(optionsToConsider);
-                    ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]),Int32.Parse(parameter["level"]));
+                    ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]), Int32.Parse(parameter["level"]));
                     break;
 
                 case COMMAND_EXPDESIGN_RANDOM:
