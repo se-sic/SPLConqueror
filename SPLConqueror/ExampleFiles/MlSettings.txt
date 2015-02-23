@@ -1,5 +1,5 @@
-abbortError 1.07
-lossFunction LEASTSQUARES
+abbortError 0.001
+lossFunction RELATIVE
 crossValidation FALSE
-numberOfRounds 19
+numberOfRounds 25
 quadraticFunctionSupport TRUE
