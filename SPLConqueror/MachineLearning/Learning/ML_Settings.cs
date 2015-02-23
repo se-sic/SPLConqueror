@@ -52,6 +52,21 @@ namespace MachineLearning.Learning
         public int numberOfRounds = 30;
 
         /// <summary>
+        /// Defines the maximum increase of the error when removing a feature from the model
+        /// </summary>
+        public double backwardErrorDelta = 1;
+
+        /// <summary>
+        /// Defines the minimum error in improved a round must reach before either the learnings is aborted or the hierachy is increased for hierarchy learning
+        /// </summary>
+        public double minImprovementPerRound = 0.1;
+
+        /// <summary>
+        /// Defines whether we learn our model in hierachical steps
+        /// </summary>
+        public bool withHierarchy = true;
+
+        /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
         /// <param name="settingLocation">Full qualified name of the settings file.</param>
@@ -160,7 +175,6 @@ namespace MachineLearning.Learning
             sb.Append(System.Environment.NewLine);
  	        return sb.ToString();
         }
-
 
     }
 }

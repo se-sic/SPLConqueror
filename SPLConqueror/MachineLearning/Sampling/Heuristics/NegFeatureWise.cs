@@ -237,7 +237,11 @@ namespace MachineLearning.Sampling.Heuristics
                     List<BinaryOption> config = new List<BinaryOption>();
                     config.Add(toConfigure);
                     config.Add(k);
-                    config = generator.maximizeConfig(config, vm, false, null)[0];
+                    List<List<BinaryOption>> temp = new List<List<BinaryOption>>();
+                    temp = generator.maximizeConfig(config, vm, false, null);
+                    if (temp == null || temp.Count == 0)
+                        continue;
+                    config = temp[0];
                     if (config == null)
                         continue;
                     configurations.Add(config);

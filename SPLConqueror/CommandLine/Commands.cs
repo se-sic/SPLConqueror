@@ -14,8 +14,8 @@ namespace CommandLine
 {
     public class Commands
     {
-        public const string COMMAND = "Command: ";
-        public const string COMMAND_TRUEMODEL = "trueModel";
+        public const string COMMAND = "command: ";
+        public const string COMMAND_TRUEMODEL = "truemodel";
 
         public const string COMMAND_LOG = "log";
 
@@ -24,34 +24,34 @@ namespace CommandLine
         public const string COMMAND_CLEAR_LEARNING = "clean-learning";
 
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
-        public const string COMMAND_LOAD_MLSETTINGS = "load_MLsettings";
+        public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
 
         public const string COMMAND_VALIDATION = "validation";
 
-        public const string COMMAND_SAMPLE_ALLBINARY = "allBinary";
-        public const string COMMAND_SAMPLE_FEATUREWISE = "featureWise";
+        public const string COMMAND_SAMPLE_ALLBINARY = "allbinary";
+        public const string COMMAND_SAMPLE_FEATUREWISE = "featurewise";
         public const string COMMAND_SAMPLE_PAIRWISE = "pairWise";
-        public const string COMMAND_SAMPLE_NEGATIVE_FEATUREWISE = "negFW";
+        public const string COMMAND_SAMPLE_NEGATIVE_FEATUREWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
 
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
-        public const string COMMAND_PRINT_MLSETTINGS = "printSettings";
-        public const string COMMAND_PRINT_CONFIGURATIONS = "printConfigs";
+        public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
+        public const string COMMAND_PRINT_CONFIGURATIONS = "printconfigs";
 
         public const string COMMAND_VARIABILITYMODEL = "vm";
         public const string COMMAND_SET_NFP = "nfp";
-        public const string COMMAND_SET_MLSETTING = "MLsettings";
+        public const string COMMAND_SET_MLSETTING = "mlsettings";
 
         public const string COMMAND_START_LEARNING = "start";
 
-        public const string COMMAND_EXERIMENTALDESIGN = "expDesign";
-        public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "BoxBehnken";
-        public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "CentralComposite";
-        public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullFactorial";
-        public const string COMMAND_EXPDESIGN_HYPERSAMPLING = "hyperSampling";
-        public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "oneFactorAtATime";
-        public const string COMMAND_EXPDESIGN_KEXCHANGE = "kExchange";
-        public const string COMMAND_EXPDESIGN_PLACKETTBURMAN = "plackettBurman";
+        public const string COMMAND_EXERIMENTALDESIGN = "expdesign";
+        public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
+        public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralcomposite";
+        public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullfactorial";
+        public const string COMMAND_EXPDESIGN_HYPERSAMPLING = "hypersampling";
+        public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "oneFactoratatime";
+        public const string COMMAND_EXPDESIGN_KEXCHANGE = "kexchange";
+        public const string COMMAND_EXPDESIGN_PLACKETTBURMAN = "plackettburman";
         public const string COMMAND_EXPDESIGN_RANDOM = "random";
 
         public const string COMMAND_SUBSCRIPT = "script";
@@ -83,7 +83,7 @@ namespace CommandLine
 
             string[] taskAsParameter = task.Split(new Char[] { ' ' });
 
-            switch (command)
+            switch (command.ToLower())
             {
                 case COMMAND_TRUEMODEL:
                     StreamReader readModel = new StreamReader(task);
@@ -151,7 +151,8 @@ namespace CommandLine
                         FeatureSubsetSelection learning = exp.learning;
                         foreach (LearningRound lr in learning.LearningHistory)
                         {
-                            double relativeError = exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                            double relativeError = 0;
+                            double relativeErro2r = exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
                             GlobalState.logInfo.log(lr.ToString() + relativeError);
                         }
 
@@ -176,8 +177,8 @@ namespace CommandLine
                     }
                     else
                     {
-                        exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                        //exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                        //exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
+                        exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
                         exp.addBinarySampling_Learning("FW");
                     }
                     break;
@@ -279,16 +280,24 @@ namespace CommandLine
 
 
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
-                        }
+                        } else
                         {
                             foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
                             {
+                                if (exp.NumericSelection_Learning.Count == 0)
+                                {
+                                    Configuration c = new Configuration(binConfig);
+                                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                                    if (!configurations_Learning.Contains(c))
+                                        configurations_Learning.Add(c);
+                                    continue;
+                                }
                                 foreach (Dictionary<NumericOption, double> numConf in exp.NumericSelection_Learning)
                                 {
 
                                     Configuration c = new Configuration(binConfig, numConf);
                                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
-                                    if (!configurations_Learning.Contains(c))
+                //                    if (!configurations_Learning.Contains(c))
                                         configurations_Learning.Add(c);
                                 }
                             }
@@ -341,7 +350,7 @@ namespace CommandLine
                     }
                     else
                     {
-                        exp.addBinarySelection_Learning(neg.generateNegativeFW(GlobalState.varModel));
+                        exp.addBinarySelection_Learning(neg.generateNegativeFWAllCombinations(GlobalState.varModel));
                         exp.addBinarySampling_Learning("newFW");
                     }
                     break;
@@ -473,7 +482,7 @@ namespace CommandLine
 
             ExperimentalDesign design = null;
 
-            switch (designName)
+            switch (designName.ToLower())
             {
                 case COMMAND_EXPDESIGN_BOXBEHNKEN:
                     design = new BoxBehnkenDesign(optionsToConsider);

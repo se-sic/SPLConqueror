@@ -40,9 +40,9 @@ namespace SPLConqueror_Core
         {
             varModel = null;
             currentNFP = null;
-            allMeasurements = null;
+            allMeasurements = new ResultDB();
             infModel = null;
-            nfProperties = null;
+            nfProperties = new Dictionary<string,NFProperty>();
         }
 
 
