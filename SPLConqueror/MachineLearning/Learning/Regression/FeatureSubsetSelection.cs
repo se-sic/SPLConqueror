@@ -180,6 +180,7 @@ namespace MachineLearning.Learning.Regression
                     continue;
                 double temp = 0;
                 double errorOfModel = computeModelError(newModel, out temp);
+
                 if (errorOfModel < minimalRoundError)
                 {
                     minimalRoundError = errorOfModel;
@@ -201,7 +202,7 @@ namespace MachineLearning.Learning.Regression
             ILArray<double> DM = createDataMatrix(newModel);
             if (DM.Size.NumberOfElements == 0)
                 return false;
-            ILArray<double> DMT = DM.T;
+         //   ILArray<double> DMT = DM.T;
             ILArray<double> temparray =null;
 
             double[,] fixSVDwithACCORD;
@@ -257,9 +258,19 @@ namespace MachineLearning.Learning.Regression
                     continue;
                 if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
                     continue;
+                
+                //Binary times the same binary makes no sense
+                if(basicFeature.participatingBoolOptions.Count > 0)
+                {
+                    foreach (var binOption in basicFeature.participatingBoolOptions)
+                        if (feature.participatingBoolOptions.Contains(binOption))
+                            goto nextRound;
+                }
+
                 Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
                     listOfCandidates.Add(newCandidate);
+                nextRound:{}
             }
 
             //if basic feature represents a numeric option and quadratic function support is activated, then we add a feature representing a quadratic functions of this feature
@@ -387,6 +398,7 @@ namespace MachineLearning.Learning.Regression
         {
             double error_sum = 0;
             relativeError = 0;
+            int skips = 0;
             foreach (Configuration c in configs)
             {
                 double estimatedValue = estimate(currentModel, c);
@@ -399,6 +411,13 @@ namespace MachineLearning.Learning.Regression
                 {
                     GlobalState.logError.log(argEx.Message);
                     realValue = c.GetNFPValue();
+                }
+                //How to handle near-zero values???
+                //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
+                if (realValue < 0.1)
+                {
+                    skips++;
+                    continue;
                 }
                 relativeError += Math.Abs(100 - ((estimatedValue * 100) / realValue));
                 double error = 0;
@@ -416,8 +435,8 @@ namespace MachineLearning.Learning.Regression
                 }
                 error_sum += error;
             }
-            relativeError = relativeError / configs.Count;
-            return error_sum / configs.Count;
+            relativeError = relativeError / (configs.Count - skips);
+            return error_sum / (configs.Count - skips);
         }
 
         /// <summary>

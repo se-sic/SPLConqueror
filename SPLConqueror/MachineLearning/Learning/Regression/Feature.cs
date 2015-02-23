@@ -6,7 +6,7 @@ using SPLConqueror_Core;
 
 namespace MachineLearning.Learning.Regression
 {
-    public class Feature : InfluenceFunction , IEquatable<Feature>
+    public class Feature : InfluenceFunction , IEquatable<Feature>, IComparer<Feature>
     {
         private double constant = 1.0;
         private String name = "";
@@ -116,5 +116,15 @@ namespace MachineLearning.Learning.Regression
             return name.GetHashCode();
         }
 
+
+        public int Compare(Feature x, Feature y)
+        {
+            return x.name.CompareTo(y.name);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.name.GetHashCode();
+        }
     }
 }
