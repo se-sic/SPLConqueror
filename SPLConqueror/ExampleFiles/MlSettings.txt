@@ -1,5 +1,5 @@
-abbortError 0.01
+abbortError 0.001
 lossFunction RELATIVE
 crossValidation FALSE
-numberOfRounds 19
+numberOfRounds 25
 quadraticFunctionSupport TRUE
