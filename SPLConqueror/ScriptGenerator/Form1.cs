@@ -211,28 +211,28 @@ namespace ScriptGenerator
 
             if (bsamp_FW_box.Checked)
             {
-                samplingNames.Add("featureWise " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_FEATUREWISE+" " + validation);
                 keyInfo += "FW ";
             }
             if (bsamp_PW_box.Checked)
             {
-                samplingNames.Add("pairWise " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_PAIRWISE+" " + validation);
                 keyInfo += "PW ";
             }
             if (bsamp_negFW_box.Checked)
             {
-                samplingNames.Add("negFW " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_NEGATIVE_FEATUREWISE+" " + validation);
                 keyInfo += "negFW ";
             }
             if (bsamp_all_box.Checked)
             {
-                samplingNames.Add("allBinary " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_ALLBINARY+" " + validation);
                 keyInfo += "all ";
             }
             if (bsamp_random_box.Checked)
             {
                 // TODO text of the textField should contain numeric characters only.
-                samplingNames.Add("random " + bsamp_random_textBox.Text + " " + bsamp_random__modulo_textBox.Text + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_BINARY_RANDOM+" " + bsamp_random_textBox.Text + " " + bsamp_random__modulo_textBox.Text + " " + validation);
                 keyInfo += "random " + bsamp_random_textBox.Text;
             }
             Container cont = new Container(containerKey, samplingNames);
@@ -259,17 +259,17 @@ namespace ScriptGenerator
 
             if (num_BoxBehnken_check.Checked)
             {
-                samplingNames.Add("expDesign BoxBehnken " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN+ " " + validation);
                 keyInfo += "BoxBehnken ";
             }
             if (num_CentralComposite_check.Checked)
             {
-                samplingNames.Add("expDesign CentralComposite " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
                 keyInfo += "CentralComposite ";
             }
             if (num_FullFactorial_check.Checked)
             {
-                samplingNames.Add("expDesign FullFactorial " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
                 keyInfo += "FullFactorial ";
             }
             if (num_hyperSampling_check.Checked)
@@ -279,7 +279,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                samplingNames.Add("expDesign HyperSampling " + num_hyper_percent_text.Text + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
                 keyInfo += "HyperSampling " + num_hyper_percent_text.Text + " ";
             }
             if (num_kEx_check.Checked)
@@ -289,7 +289,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = "expDesign kExchange sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -300,7 +300,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = "expDesign random sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -312,7 +312,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = "expDesign oneFactorAtATime distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
 
@@ -324,7 +324,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = "expDesign plackettBurman measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -393,7 +393,7 @@ namespace ScriptGenerator
                 switch (c.Type.Trim())
                 {
                     case CONTAINERKEY_LOGFILE:
-                        scriptContent.Append("log " + (c.Content) + "\n");
+                        scriptContent.Append(CommandLine.Commands.COMMAND_LOG+" " + (c.Content) + "\n");
                         break;
                 }
             }
@@ -554,7 +554,7 @@ namespace ScriptGenerator
 
         private string mlSettingsContent(ML_Settings settings)
         {
-            return "mlSettings " + settings.ToString();
+            return CommandLine.Commands.COMMAND_SET_MLSETTING+" " + settings.ToString();
         }
 
         private void logFile_Button_Click(object sender, EventArgs e)
