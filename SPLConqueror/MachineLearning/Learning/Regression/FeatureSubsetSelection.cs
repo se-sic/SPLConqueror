@@ -18,6 +18,7 @@ namespace MachineLearning.Learning.Regression
         //Information about the state of learning
         protected InfluenceModel infModel = null;
         protected List<LearningRound> learningHistory = new List<LearningRound>();
+        protected int hierachyLevel = 1;
 
         public List<LearningRound> LearningHistory
         {
@@ -91,9 +92,10 @@ namespace MachineLearning.Learning.Regression
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
-
+            double oldRoundError = Double.MaxValue;
             do 
             {
+                oldRoundError = current.validationError;
                 current = performForwardStep(current);
                 learningHistory.Add(current);
 
@@ -102,7 +104,7 @@ namespace MachineLearning.Learning.Regression
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
                 }
-            } while (!abortLearning(current));
+            } while (!abortLearning(current, oldRoundError));
             updateInfluenceModel();
         }
 
@@ -242,6 +244,9 @@ namespace MachineLearning.Learning.Regression
             if (!currentModel.Contains(basicFeature))
                 listOfCandidates.Add(basicFeature);
 
+            if (this.MLsettings.withHierarchy && this.hierachyLevel == 1)
+                return listOfCandidates;
+
             foreach (var feature in currentModel)
             {
                 if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
@@ -249,6 +254,8 @@ namespace MachineLearning.Learning.Regression
                 //We do not want to generate interactions with the root option
                 if ((feature.participatingNumOptions.Count == 0 && feature.participatingBoolOptions.Count == 1 && feature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
                     || basicFeature.participatingNumOptions.Count == 0 && basicFeature.participatingBoolOptions.Count == 1 && basicFeature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
+                    continue;
+                if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
                     continue;
                 Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
@@ -258,12 +265,14 @@ namespace MachineLearning.Learning.Regression
             //if basic feature represents a numeric option and quadratic function support is activated, then we add a feature representing a quadratic functions of this feature
             if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumOptions.Count > 0)
             {
-                Feature newCandidate = new Feature(basicFeature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                Feature newCandidate = new Feature(basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
                     listOfCandidates.Add(newCandidate);
                 
                 foreach (var feature in currentModel)
                 {
+                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
+                        continue;
                     if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
                         continue;
                     newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
@@ -273,7 +282,7 @@ namespace MachineLearning.Learning.Regression
             }
 
             //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
-            if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumOptions.Count > 0)
+            if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0)
             {
                 Feature newCandidate = new Feature("log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
                 if (!currentModel.Contains(newCandidate))
@@ -281,6 +290,8 @@ namespace MachineLearning.Learning.Regression
 
                 foreach (var feature in currentModel)
                 {
+                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
+                        continue;
                     if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
                         continue;
                     newCandidate = new Feature(feature.ToString() + " * log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
@@ -301,7 +312,33 @@ namespace MachineLearning.Learning.Regression
         /// <returns>A new model that might be smaller than the original one and might have a slightly worse prediction accuracy.</returns>
         protected LearningRound performBackwardStep(LearningRound current)
         {
-            throw new NotImplementedException();
+            if (current.round < 3 || current.FeatureSet.Count < 2)
+                return current;
+            bool abort = false;
+            List<Feature> featureSet = copyCombination(current.FeatureSet);
+            while (!abort)
+            {
+                double roundError = Double.MaxValue;
+                Feature toRemove = null;
+                foreach (Feature toDelete in featureSet)
+                {
+                    List<Feature> tempSet = copyCombination(featureSet);
+                    tempSet.Remove(toDelete);
+                    double relativeError = 0;
+                    double error = computeModelError(tempSet,out relativeError);
+                    if (error - this.MLsettings.backwardErrorDelta < current.validationError && error < roundError)
+                    {
+                        roundError = error;
+                        toRemove = toDelete;
+                    }
+                }
+                if (toRemove != null)
+                    featureSet.Remove(toRemove);
+                if (featureSet.Count <= 2)
+                    abort = true;
+            }
+            current.FeatureSet = featureSet;
+            return current;
         }
 
 
@@ -434,12 +471,22 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="current">The current state of learning (i.e., the current model).</param>
         /// <returns>True if we abort learning, false otherwise</returns>
-        protected bool abortLearning(LearningRound current)
+        protected bool abortLearning(LearningRound current,  double oldRoundError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
                 return true;
             if (abortDueError(current))
                 return true;
+            if (current.validationError + this.MLsettings.minImprovementPerRound > oldRoundError)
+            {
+                if (this.MLsettings.withHierarchy)
+                {
+                    hierachyLevel++;
+                    return false;
+                }
+                else
+                    return true;
+            }
             return false;
         }
 
