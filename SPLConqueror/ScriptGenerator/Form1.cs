@@ -461,41 +461,55 @@ namespace ScriptGenerator
         /// <param name="e"></param>
         private string samplingsToConsider(Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
+            runs = enrichSamplings(runs);
+
+
             StringBuilder sb = new StringBuilder();
             foreach (Container cBSamp in runs[CONTAINERKEY_BINARY])
             {
-                List<string> samplingNamesBinary = (List<string>)cBSamp.Content;
                 string binarySamplingString = "";
-                foreach (string samplingBinary in samplingNamesBinary)
+                if (cBSamp.Content != null)
                 {
-                    binarySamplingString += (samplingBinary + System.Environment.NewLine);
+                    List<string> samplingNamesBinary = (List<string>)cBSamp.Content;
+                    foreach (string samplingBinary in samplingNamesBinary)
+                    {
+                        binarySamplingString += (samplingBinary + System.Environment.NewLine);
+                    }
                 }
-
                 foreach (Container cNumeric in runs[CONTAINERKEY_NUMERIC])
                 {
-                    List<string> samplingNamesNumeric = (List<string>)cNumeric.Content;
                     string numericSamplingString = "";
-                    foreach (string samplingNumeric in samplingNamesNumeric)
+                    if (cNumeric.Content != null)
                     {
-                        numericSamplingString += (samplingNumeric + System.Environment.NewLine);
+                        List<string> samplingNamesNumeric = (List<string>)cNumeric.Content;
+                        foreach (string samplingNumeric in samplingNamesNumeric)
+                        {
+                            numericSamplingString += (samplingNumeric + System.Environment.NewLine);
+                        }
                     }
-
                     foreach (Container cBinaryValid in runs[CONTAINERKEY_BINARY_VALIDATION])
                     {
-                        List<string> samplingNamesBinaryValid = (List<string>)cBinaryValid.Content;
                         string binaryValidSamplingString = "";
-                        foreach (string samplingBinaryValid in samplingNamesBinaryValid)
-                        {
-                            binaryValidSamplingString += (samplingBinaryValid + System.Environment.NewLine);
-                        }
 
+                        if (cBinaryValid.Content != null)
+                        {
+                            List<string> samplingNamesBinaryValid = (List<string>)cBinaryValid.Content;
+                            foreach (string samplingBinaryValid in samplingNamesBinaryValid)
+                            {
+                                binaryValidSamplingString += (samplingBinaryValid + System.Environment.NewLine);
+                            }
+                        }
                         foreach (Container cNumericValid in runs[CONTAINERKEY_NUMERIC_VALIDATION])
                         {
-                            List<string> samplingNamesNumericValid = (List<string>)cNumericValid.Content;
                             string numericValidSamplingString = "";
-                            foreach (string samplingNumericValid in samplingNamesNumericValid)
+
+                            if (cNumericValid.Content != null)
                             {
-                                numericValidSamplingString += (samplingNumericValid + System.Environment.NewLine);
+                                List<string> samplingNamesNumericValid = (List<string>)cNumericValid.Content;
+                                foreach (string samplingNumericValid in samplingNamesNumericValid)
+                                {
+                                    numericValidSamplingString += (samplingNumericValid + System.Environment.NewLine);
+                                }
                             }
 
                             sb.Append(binarySamplingString);
@@ -513,10 +527,29 @@ namespace ScriptGenerator
             return sb.ToString();
         }
 
-        private string variabilityModelWithMeasurementFile(ScriptGenerator.Container c, ScriptGenerator.Container measurement)
+        private Dictionary<string, List<ScriptGenerator.Container>> enrichSamplings(Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
-            throw new NotImplementedException();
+            if(!runs.ContainsKey(CONTAINERKEY_BINARY))
+            {
+                runs.Add(CONTAINERKEY_BINARY, null);
+            }
+            if (!runs.ContainsKey(CONTAINERKEY_BINARY_VALIDATION))
+            {
+                runs.Add(CONTAINERKEY_BINARY_VALIDATION, null);
+            }
+            if (!runs.ContainsKey(CONTAINERKEY_NUMERIC))
+            {
+                runs.Add(CONTAINERKEY_NUMERIC, null);
+            }
+            if (!runs.ContainsKey(CONTAINERKEY_NUMERIC_VALIDATION))
+            {
+                runs.Add(CONTAINERKEY_NUMERIC_VALIDATION, null);
+            }
+
+            return runs;
         }
+
+    
 
 
         private string mlSettingsContent(ML_Settings settings)

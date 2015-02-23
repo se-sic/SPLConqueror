@@ -105,6 +105,7 @@ namespace CommandLine
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
+                        co.exp = this.exp;
 
                         while (!reader.EndOfStream)
                         {
