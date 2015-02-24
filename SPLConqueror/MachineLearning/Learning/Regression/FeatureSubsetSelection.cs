@@ -133,13 +133,13 @@ namespace MachineLearning.Learning.Regression
             foreach (Feature f in best.FeatureSet)
             {
                 //single binary option influence
-                if (f.participatingBoolOptions.Count == 1 && f.participatingNumOptions.Count == 0 && f.getNumberOfParticipatingFeatures() == 1)
+                if (f.participatingBoolOptions.Count == 1 && f.participatingNumOptions.Count == 0 && f.getNumberOfParticipatingOptions() == 1)
                 {
                     this.infModel.BinaryOptionsInfluence.Add(f.participatingBoolOptions.ElementAt(0), f);
                     continue;
                 }
                 //single numeric option influence
-                if (f.participatingBoolOptions.Count == 0 && f.participatingNumOptions.Count == 1 && f.getNumberOfParticipatingFeatures() == 1)
+                if (f.participatingBoolOptions.Count == 0 && f.participatingNumOptions.Count == 1 && f.getNumberOfParticipatingOptions() == 1)
                 {
                     if (this.infModel.NumericOptionsInfluence.Keys.Contains(f.participatingNumOptions.ElementAt(0)))
                     {
@@ -261,13 +261,13 @@ namespace MachineLearning.Learning.Regression
 
             foreach (var feature in currentModel)
             {
-                if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTrehold))
                     continue;
                 //We do not want to generate interactions with the root option
                 if ((feature.participatingNumOptions.Count == 0 && feature.participatingBoolOptions.Count == 1 && feature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
                     || basicFeature.participatingNumOptions.Count == 0 && basicFeature.participatingBoolOptions.Count == 1 && basicFeature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
                     continue;
-                if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
+                if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
                     continue;
                 
                 //Binary times the same binary makes no sense
@@ -293,9 +293,9 @@ namespace MachineLearning.Learning.Regression
                 
                 foreach (var feature in currentModel)
                 {
-                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
+                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
                         continue;
-                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTrehold))
                         continue;
                     newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
@@ -312,9 +312,9 @@ namespace MachineLearning.Learning.Regression
 
                 foreach (var feature in currentModel)
                 {
-                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingFeatures() >= this.hierachyLevel)
+                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
                         continue;
-                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingFeatures() == this.MLsettings.featureSizeTrehold))
+                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTrehold))
                         continue;
                     newCandidate = new Feature(feature.ToString() + " * log10(" + basicFeature.ToString()+")", basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
