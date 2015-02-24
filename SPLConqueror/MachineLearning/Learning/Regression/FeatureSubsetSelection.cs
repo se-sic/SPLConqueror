@@ -206,9 +206,9 @@ namespace MachineLearning.Learning.Regression
             ILArray<double> temparray =null;
 
             double[,] fixSVDwithACCORD;
-            var exp = toSystemMatrix<double>(DM.T);
-            fixSVDwithACCORD = (double[,])exp;
-            fixSVDwithACCORD = fixSVDwithACCORD.PseudoInverse();
+            //var exp = toSystemMatrix<double>(DM.T);
+           // fixSVDwithACCORD = (double[,])exp;
+            fixSVDwithACCORD = ((double[,])toSystemMatrix<double>(DM.T)).PseudoInverse();
             temparray = fixSVDwithACCORD;
 
             ILArray<double> constants;
@@ -414,17 +414,26 @@ namespace MachineLearning.Learning.Regression
                 }
                 //How to handle near-zero values???
                 //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
-                if (realValue < 0.1)
-                {
-                    skips++;
+                //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
+                if (realValue <1)
+                {//((2(true-est) / true+est) - 1 ) * 100
                     continue;
+                    relativeError += Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) -1) * 100);
+                    //skips++;
+                    //continue;
                 }
-                relativeError += Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                else
+                    relativeError += Math.Abs(100 - ((estimatedValue * 100) / realValue));
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {
                     case ML_Settings.LossFunction.RELATIVE:
-                        error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                        if (realValue < 1)
+                        {
+                            error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
+                        }
+                        else
+                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
                         break;
                     case ML_Settings.LossFunction.LEASTSQUARES:
                         error = Math.Pow(realValue - estimatedValue, 2);
