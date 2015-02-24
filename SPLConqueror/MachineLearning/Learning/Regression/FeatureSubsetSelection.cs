@@ -97,6 +97,8 @@ namespace MachineLearning.Learning.Regression
             {
                 oldRoundError = current.validationError;
                 current = performForwardStep(current);
+                if (current == null)
+                    return;
                 learningHistory.Add(current);
 
                 if (this.MLsettings.useBackward)
@@ -170,6 +172,15 @@ namespace MachineLearning.Learning.Regression
             List<Feature> candidates = new List<Feature>();
             foreach (Feature basicFeature in this.initialFeatures)
                 candidates.AddRange(generateCandidates(currentModel.FeatureSet, basicFeature));
+            
+            //If we got no candidates and we perform hierachical learning, we go one step further
+            if (candidates.Count == 0 && this.MLsettings.withHierarchy)
+            {
+                if (this.hierachyLevel > 10)
+                    return null;
+                this.hierachyLevel++;
+                return performForwardStep(currentModel);
+            }
 
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
