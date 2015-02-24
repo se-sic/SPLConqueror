@@ -49,7 +49,7 @@ namespace CommandLine
         public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralcomposite";
         public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullfactorial";
         public const string COMMAND_EXPDESIGN_HYPERSAMPLING = "hypersampling";
-        public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "oneFactoratatime";
+        public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "onefactoratatime";
         public const string COMMAND_EXPDESIGN_KEXCHANGE = "kexchange";
         public const string COMMAND_EXPDESIGN_PLACKETTBURMAN = "plackettburman";
         public const string COMMAND_EXPDESIGN_RANDOM = "random";
