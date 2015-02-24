@@ -484,11 +484,19 @@ namespace SPLConqueror_Core
             return false;
         }
 
-        public int getNumberOfParticipatingFeatures()
+        /// <summary>
+        /// Retuns the number of configuration options participating in the function. If an option apears multiple times in the function, it is counted multiple times.
+        /// </summary>
+        /// <returns>The overall number of configuration-option occurrences in the function.</returns>
+        public int getNumberOfParticipatingOptions()
         {
             return numberOfParticipatingFeatures;
         }
 
+        /// <summary>
+        /// Returns the number of different configuration options participating in the function. Mutliple occurrences of an option are ignored. 
+        /// </summary>
+        /// <returns>The number of distinct options participating in the function.</returns>
         public int getNumberOfDistinctParticipatingOptions()
         {
             return this.participatingBoolOptions.Count + this.participatingNumOptions.Count;
