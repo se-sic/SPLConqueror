@@ -28,6 +28,8 @@ namespace CommandLine
 
         public const string COMMAND_VALIDATION = "validation";
 
+        public const string COMMAND_EVALUATION_SET = "evaluationset";
+
         public const string COMMAND_SAMPLE_ALLBINARY = "allbinary";
         public const string COMMAND_SAMPLE_FEATUREWISE = "featurewise";
         public const string COMMAND_SAMPLE_PAIRWISE = "pairwise";
@@ -115,6 +117,12 @@ namespace CommandLine
                         }
                     }
                     break;
+                case COMMAND_EVALUATION_SET:
+                    {
+                        GlobalState.evalutionSet.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
+                        GlobalState.logInfo.log("Evaluation set loaded.");
+                    }
+                    break;
                 case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
                     break;
@@ -152,7 +160,15 @@ namespace CommandLine
                         foreach (LearningRound lr in learning.LearningHistory)
                         {
                             double relativeError = 0;
-                            double relativeErro2r = exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                            if (GlobalState.evalutionSet.Configurations.Count > 0)
+                            {
+                                double relativeErro2r = exp.learning.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                            }
+                            else
+                            {
+                                double relativeErro2r = exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                            }
+
                             GlobalState.logInfo.log(lr.ToString() + relativeError);
                         }
 
