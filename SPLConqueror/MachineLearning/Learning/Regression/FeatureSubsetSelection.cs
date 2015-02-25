@@ -196,7 +196,8 @@ namespace MachineLearning.Learning.Regression
                     this.badFeatures[candidate]--;
                     continue;
                 }
-
+                if (errorOfFeature.Keys.Contains(candidate))
+                    continue;
                 List<Feature> newModel = copyCombination(currentModel.FeatureSet);
                 newModel.Add(candidate);
                 if (!fitModel(newModel))
@@ -234,7 +235,10 @@ namespace MachineLearning.Learning.Regression
             {
                 if (i <= (minNumberToKeep))
                     return;
-                this.badFeatures.Add(myList[i].Key,3);//wait for 3 rounds
+                if (this.badFeatures.Keys.Contains(myList[i].Key))
+                    this.badFeatures[myList[i].Key] = 3;
+                else
+                    this.badFeatures.Add(myList[i].Key,3);//wait for 3 rounds
             }
         }
 
