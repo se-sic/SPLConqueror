@@ -41,6 +41,9 @@ namespace MachineLearning.Learning.Regression
         protected List<Configuration> validationSet = new List<Configuration>();
         protected ILArray<double> Y_learning, Y_validation = ILMath.empty();
         protected Dictionary<Feature, ILArray<double>> DM_columns = new Dictionary<Feature, ILArray<double>>();
+
+        //Optimization: Remember candidates with no or only a tiny improvement to test them not in every round, int = nb of remaining rounds to ignore this feature
+        private Dictionary<Feature, int> badFeatures = new Dictionary<Feature, int>();
         
         /// <summary>
         /// Constructor of the learning class. It reads all configuration options and generates candidates for possible influences (i.e., features).
@@ -182,15 +185,24 @@ namespace MachineLearning.Learning.Regression
                 return performForwardStep(currentModel);
             }
 
+            Dictionary<Feature, double> errorOfFeature = new Dictionary<Feature,double>();
+
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
             {
+                if (this.badFeatures.Keys.Contains(candidate) && this.badFeatures[candidate] > 0)
+                {
+                    this.badFeatures[candidate]--;
+                    continue;
+                }
+
                 List<Feature> newModel = copyCombination(currentModel.FeatureSet);
                 newModel.Add(candidate);
                 if (!fitModel(newModel))
                     continue;
                 double temp = 0;
                 double errorOfModel = computeModelError(newModel, out temp);
+                errorOfFeature.Add(candidate, temp);
 
                 if (errorOfModel < minimalRoundError)
                 {
@@ -200,6 +212,23 @@ namespace MachineLearning.Learning.Regression
             }
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
+
+            //Optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates
+            double meanDistanceToBestModel = 0;
+            foreach (Feature candidate in errorOfFeature.Keys)
+                meanDistanceToBestModel += errorOfFeature[candidate] - minimalRoundError;
+            meanDistanceToBestModel = meanDistanceToBestModel / errorOfFeature.Keys.Count;
+            foreach (Feature candidate in errorOfFeature.Keys)
+            {
+                if (errorOfFeature[candidate] > meanDistanceToBestModel)
+                {
+                    if (this.badFeatures.Keys.Contains(candidate))
+                        this.badFeatures[candidate] = 3;//wait for 3 rounds
+                    else
+                        this.badFeatures.Add(candidate, 3);//wait for 3 rounds
+                }
+            }
+
             LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
             newRound.learningError_relative = relativeErrorTrain;
             newRound.validationError_relative = relativeErrorEval;

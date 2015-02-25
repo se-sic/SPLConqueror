@@ -26,7 +26,7 @@ namespace MachineLearning.Solver
             String location = AppDomain.CurrentDomain.BaseDirectory;
 
 #if release
-                if(pathToDLL != null && pathToDll.Length > 0)
+            if (pathToDll != null && pathToDll.Length > 0)
                     location = pathToDll;
                 else
                     location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release").Length)));
@@ -42,7 +42,7 @@ namespace MachineLearning.Solver
             location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing project path
 
 #if release
-            catalog.Catalogs.Add(new DirectoryCatalog(location);
+            catalog.Catalogs.Add(new DirectoryCatalog(location));
             location = location + Path.DirectorySeparatorChar + "SolverFoundationWrapper" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release";
 #else
             location = location + Path.DirectorySeparatorChar + "SolverFoundationWrapper" + Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug";

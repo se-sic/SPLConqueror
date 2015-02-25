@@ -128,6 +128,8 @@ namespace CommandLine
 
             numericSamplings_Validation = "";
             numericSelection_Validation = new List<Dictionary<NumericOption, double>>();
+
+            this.learning = null;
         }
 
         /// <summary>

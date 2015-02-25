@@ -118,6 +118,12 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         
         protected void Recurse<TList>(double[] selected, int index, IEnumerable<TList> remaining) where TList : IEnumerable<double>
         {
+            if (this.selectedConfigurations.Count > 1000)
+            {
+                GlobalState.logInfo.log("Found more than 1000 numeric configurations. Use only 1000.");
+                return;
+            }
+                
             IEnumerable<double> nextList = remaining.FirstOrDefault();
             if (nextList == null)
             {
