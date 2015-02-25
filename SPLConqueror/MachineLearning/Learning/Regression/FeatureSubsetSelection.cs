@@ -186,6 +186,7 @@ namespace MachineLearning.Learning.Regression
             }
 
             Dictionary<Feature, double> errorOfFeature = new Dictionary<Feature,double>();
+            Feature bestCandidate = null;
 
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
@@ -208,33 +209,34 @@ namespace MachineLearning.Learning.Regression
                 {
                     minimalRoundError = errorOfModel;
                     minimalErrorModel = newModel;
+                    bestCandidate = candidate;
                 }
             }
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
-
-            //Optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates
-            double meanDistanceToBestModel = 0;
-            foreach (Feature candidate in errorOfFeature.Keys)
-                meanDistanceToBestModel += errorOfFeature[candidate] - minimalRoundError;
-            meanDistanceToBestModel = meanDistanceToBestModel / errorOfFeature.Keys.Count;
-            foreach (Feature candidate in errorOfFeature.Keys)
-            {
-                if (errorOfFeature[candidate] > meanDistanceToBestModel)
-                {
-                    if (this.badFeatures.Keys.Contains(candidate))
-                        this.badFeatures[candidate] = 3;//wait for 3 rounds
-                    else
-                        this.badFeatures.Add(candidate, 3);//wait for 3 rounds
-                }
-            }
-
+            addFeaturesToIgnore(errorOfFeature);
             LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
             newRound.learningError_relative = relativeErrorTrain;
             newRound.validationError_relative = relativeErrorEval;
             return newRound;
         }
 
+        /// <summary>
+        /// Optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates
+        /// </summary>
+        /// <param name="errorOfCandidates">The Dictionary containing all candidate features with their fitted error rate.</param>
+        private void addFeaturesToIgnore(Dictionary<Feature, double> errorOfCandidates)
+        {
+            List<KeyValuePair<Feature, double>> myList = errorOfCandidates.ToList();
+            myList.Sort((x, y) => x.Value.CompareTo(y.Value));
+            int minNumberToKeep = 5;
+            for (int i = myList.Count-1; i > myList.Count / 2; i--)
+            {
+                if (i <= (minNumberToKeep))
+                    return;
+                this.badFeatures.Add(myList[i].Key,3);//wait for 3 rounds
+            }
+        }
 
 
         private bool fitModel(List<Feature> newModel)
