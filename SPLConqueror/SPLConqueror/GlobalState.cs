@@ -24,6 +24,9 @@ namespace SPLConqueror_Core
         /// </summary>
         public static NFProperty currentNFP = null;
         public static ResultDB allMeasurements = new ResultDB();
+
+        public static ResultDB evalutionSet = new ResultDB();
+
         public static InfluenceModel infModel = null;
 
         /// <summary>
@@ -41,6 +44,7 @@ namespace SPLConqueror_Core
             varModel = null;
             currentNFP = null;
             allMeasurements = new ResultDB();
+            evalutionSet = new ResultDB();
             infModel = null;
             nfProperties = new Dictionary<string,NFProperty>();
         }
