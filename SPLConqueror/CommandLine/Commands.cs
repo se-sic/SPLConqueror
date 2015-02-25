@@ -318,26 +318,15 @@ namespace CommandLine
                             {
                                 configurations_Validation = configurations_Learning;
                             }
-                        
 
-                        
-
-                        GlobalState.logInfo.log("Learning: " + "NumberOfSamplesLearning:" + configurations_Learning.Count + " NumberOfSamplesValidation:" + configurations_Validation.Count);
-
+                            GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count + " NumberOfConfigurationsValidation:" + configurations_Validation.Count
+                            + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
 
                         // prepare the machine learning 
                         exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
                         exp.learning.setValidationSet(configurations_Validation);
-
                         exp.learning.learn();
-                               
-
-                        //}
-
-                        // todo analyze the learned model and rounds leading to the model. 
-
-
 
                     }
                     break;
