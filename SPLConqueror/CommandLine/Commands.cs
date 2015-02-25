@@ -30,7 +30,7 @@ namespace CommandLine
 
         public const string COMMAND_SAMPLE_ALLBINARY = "allbinary";
         public const string COMMAND_SAMPLE_FEATUREWISE = "featurewise";
-        public const string COMMAND_SAMPLE_PAIRWISE = "pairWise";
+        public const string COMMAND_SAMPLE_PAIRWISE = "pairwise";
         public const string COMMAND_SAMPLE_NEGATIVE_FEATUREWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
 
@@ -309,7 +309,10 @@ namespace CommandLine
                             }
 
                             if (configurations_Learning.Count == 0)
+                            {
+                                GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
                                 break;
+                            }
 
                             if (configurations_Validation.Count == 0)
                             {
@@ -367,10 +370,31 @@ namespace CommandLine
         private void computeEvaluationDataSetBasedOnTrueModel()
         {
             VariantGenerator vg = new VariantGenerator(null);
-            List<List<BinaryOption>> binaryConfigs = vg.generateAllVariantsFast(GlobalState.varModel);
+            List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
+            List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
+            //take only 10k
+            if (temp.Count > 1000)
+            {
+                GlobalState.logInfo.log("Found " + temp.Count + " configurations. Use only 1000.");
+                HashSet<int> picked = new HashSet<int>();
+                Random r = new Random(1);
+                for (int i = 0; i < 1000; i++)
+                {
+                    int x = 0;
+                    do
+                    {
+                        x = r.Next(1, temp.Count);
+                    } while (picked.Contains(x));
+                    picked.Add(x);
+                    binaryConfigs.Add(temp[x]);
+                }
+                temp.Clear();
+            }
+            else
+                binaryConfigs = temp;
             exp.addBinarySelection_Validation(binaryConfigs);
             var expDesign = new HyperSampling(GlobalState.varModel.NumericOptions);
-            expDesign.Precision = 50;
+            expDesign.Precision = 10;
             expDesign.computeDesign();
             exp.addNumericalSelection_Validation(expDesign.SelectedConfigurations);
             var numericConfigs = expDesign.SelectedConfigurations;
