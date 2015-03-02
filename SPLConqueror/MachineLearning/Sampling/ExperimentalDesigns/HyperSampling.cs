@@ -157,7 +157,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         protected int setSamplingValue(NumericOption vf, double percentage)
         {
 
-            double number = vf.getNumbeOfSteps() * percentage;
+            double number = vf.getNumberOfSteps() * percentage;
             if (number < this.minNumberOfSamplingsPerNumericOption)
                 return this.minNumberOfSamplingsPerNumericOption;
             
