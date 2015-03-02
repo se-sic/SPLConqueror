@@ -99,30 +99,26 @@ namespace SPLConqueror_Core
             return value;
         }
 
-        private List<double> allValues = null;
+ //       private List<double> allValues = null;
 
-        /// <summary>
-        /// Computes all valid values of the numeric option. Danger! This can be huge for a large value range!
-        /// </summary>
-        /// <returns>A list containing all values of the numeric options</returns>
-        public List<double> getAllValues()
+
+        private long numberOfSteps = -1;
+
+        public long getNumbeOfSteps()
         {
-            if (allValues == null)
+            if (numberOfSteps == -1)
             {
-                allValues = new List<double>();
-
-                // compute
+                numberOfSteps = 0;
                 double curr = this.min_value;
-                allValues.Add(curr); // add minimal Value
-                while (curr < this.max_value)
+                while (curr <= this.max_value)
                 {
                     curr = this.getNextValue(curr);
-                    allValues.Add(curr);
+                    numberOfSteps += 1;
                 }
-            }
-            return allValues;
-        }
 
+            }
+            return numberOfSteps;
+        }
 
 
         /// <summary>
@@ -179,16 +175,16 @@ namespace SPLConqueror_Core
                 switch (xmlInfo.Name)
                 {
                     case "minValue":
-                        this.min_value = Double.Parse(xmlInfo.InnerText);
+                        this.min_value = Double.Parse(xmlInfo.InnerText.Replace(",", "."));
                         break;
                     case "maxValue":
-                        this.max_value = Double.Parse(xmlInfo.InnerText);
+                        this.max_value = Double.Parse(xmlInfo.InnerText.Replace(",", "."));
                         break;
                     case "defaultValue":
-                        this.defaultValue = Double.Parse(xmlInfo.InnerText);
+                        this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(",", "."));
                         break;
                     case "stepFunction":
-                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText,this);
+                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(",", "."), this);
                         break;
                 }
             }
@@ -224,8 +220,38 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
-            return getAllValues()[(int)getAllValues().Count / 2];
+            return getValueForStep((int)(getNumbeOfSteps()-1)/2);
         }
 
+
+        private List<double> allValues = null;
+
+        /// <summary>
+        /// Computes all valid values of the numeric option. Danger! This can be huge for a large value range!
+        /// </summary>
+        /// <returns>A list containing all values of the numeric options</returns>
+        public List<double> getAllValues()
+        {
+            if (allValues == null)
+            {
+                allValues = new List<double>();
+
+                // compute
+                double curr = this.min_value;
+                allValues.Add(curr); // add minimal Value
+                while (curr < this.max_value)
+                {
+                    curr = this.getNextValue(curr);
+                    allValues.Add(curr);
+                }
+            }
+            return allValues;
+        }
+
+        public double getRandomValue()
+        {
+            Random r = new Random();
+            return getValueForStep(r.Next((int)this.numberOfSteps));
+        }
     }
 }

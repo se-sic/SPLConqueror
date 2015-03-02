@@ -78,7 +78,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             foreach (NumericOption vf in this.options)
             {
                 //Getting values for learning the variable feature
-                List<double> valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption, vf.getAllValues().Count), false);
+                List<double> valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption, vf.getNumbeOfSteps()), false);
                 valuesOneOption.Remove(vf.getCenterValue());
 
 
