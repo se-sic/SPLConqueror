@@ -143,13 +143,13 @@ namespace SPLConqueror_Core
 
                 Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
                 
-                if(configurations.Contains(config))
-                {
-                    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
-                }else
-                {
+                //if(configurations.Contains(config))
+                //{
+                //    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
+                //}else
+                //{
                     configurations.Add(config);
-                }
+                //}
             }
             return configurations;
         }
