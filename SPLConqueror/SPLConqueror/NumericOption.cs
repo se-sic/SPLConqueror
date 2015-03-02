@@ -104,7 +104,7 @@ namespace SPLConqueror_Core
 
         private long numberOfSteps = -1;
 
-        public long getNumbeOfSteps()
+        public long getNumberOfSteps()
         {
             if (numberOfSteps == -1)
             {
@@ -220,7 +220,7 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
-            return getValueForStep((int)(getNumbeOfSteps()-1)/2);
+            return getValueForStep((int)(getNumberOfSteps()-1)/2);
         }
 
 

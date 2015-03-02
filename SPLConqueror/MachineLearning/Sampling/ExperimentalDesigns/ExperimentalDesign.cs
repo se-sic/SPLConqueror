@@ -112,8 +112,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
         public List<double> sampleOption(NumericOption option)
         {
-            if (this.minNumberOfSamplingsPerNumericOption > option.getNumbeOfSteps())
-                return sampleOption(option, option.getNumbeOfSteps(), false);
+            if (this.minNumberOfSamplingsPerNumericOption > option.getNumberOfSteps())
+                return sampleOption(option, option.getNumberOfSteps(), false);
             return sampleOption(option, this.minNumberOfSamplingsPerNumericOption, false);
         }
 
@@ -129,7 +129,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             List<double> resultList = new List<double>();
 
-            long numberOfValues = option.getNumbeOfSteps();
+            long numberOfValues = option.getNumberOfSteps();
             if (numberOfValues <= numberOfSamples)
             {
                 double val = option.Min_value;
