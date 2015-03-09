@@ -157,6 +157,11 @@ namespace CommandLine
                     {
                         GlobalState.logInfo.log("Models:");
                         FeatureSubsetSelection learning = exp.learning;
+                        if (learning == null)
+                        {
+                            GlobalState.logError.log("Error... learning was not performed!");
+                            break;
+                        }
                         foreach (LearningRound lr in learning.LearningHistory)
                         {
                             double relativeError = 0;
@@ -296,6 +301,7 @@ namespace CommandLine
 
 
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
+                            //break;//todo only to get the configurations that we haven't measured
                         } else
                         {
                             foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
@@ -337,7 +343,7 @@ namespace CommandLine
 
                             GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count + " NumberOfConfigurationsValidation:" + configurations_Validation.Count
                             + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
-
+                            break;
                         // prepare the machine learning 
                         exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
@@ -358,7 +364,7 @@ namespace CommandLine
                     }
                     else
                     {
-                        exp.addBinarySelection_Learning(neg.generateNegativeFWAllCombinations(GlobalState.varModel));
+                        exp.addBinarySelection_Learning(neg.generateNegativeFW(GlobalState.varModel));//neg.generateNegativeFWAllCombinations(GlobalState.varModel));
                         exp.addBinarySampling_Learning("newFW");
                     }
                     break;

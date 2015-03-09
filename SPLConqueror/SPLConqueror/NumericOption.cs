@@ -179,16 +179,16 @@ namespace SPLConqueror_Core
                 switch (xmlInfo.Name)
                 {
                     case "minValue":
-                        this.min_value = Double.Parse(xmlInfo.InnerText);
+                        this.min_value = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "maxValue":
-                        this.max_value = Double.Parse(xmlInfo.InnerText);
+                        this.max_value = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "defaultValue":
-                        this.defaultValue = Double.Parse(xmlInfo.InnerText);
+                        this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "stepFunction":
-                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText,this);
+                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',','.'),this);
                         break;
                 }
             }
@@ -209,10 +209,10 @@ namespace SPLConqueror_Core
 
             while (curr < inputValue)
             {
-                curr = getNextValue(curr);
+                curr = Math.Round(getNextValue(curr),3);
             }
             lowerValue = curr;
-            upperValue = getNextValue(curr);
+            upperValue = Math.Round(getNextValue(curr),3);
 
             if (Math.Abs(lowerValue - curr) < Math.Abs(upperValue - curr))
             {
@@ -224,7 +224,7 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
-            return getAllValues()[(int)getAllValues().Count / 2];
+            return Math.Round(getAllValues()[(int)getAllValues().Count / 2]);
         }
 
     }

@@ -423,5 +423,44 @@ namespace SPLConqueror_Core
             }
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Creates a configuration based on a hash representation of that configuration.
+        /// </summary>
+        /// <param name="hashString">The String which from which we can infer the configuration</param>
+        /// <param name="vm">The variability model that is required for identifying options in the hash string to instantiate actual configuration options.</param>
+        /// <returns>A configuration that maps to the given hash string.</returns>
+        internal static Configuration createFromHashString(string hashString, VariabilityModel vm)
+        {
+            Dictionary<NumericOption, double> numOptions = new Dictionary<NumericOption, double>();
+            List<BinaryOption> binaryFeatures = new List<BinaryOption>();
+            Configuration c;
+            String[] optionList = hashString.Split(new String[] { "%;%" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (String option in optionList)
+            {
+                if (Char.IsDigit(option[option.Length - 1]))//If last char is a digit, then it must be a numeric option
+                {
+                    //Now remove the digit from the name
+                    int index = option.Length - 1;
+                    Char last = option[index];
+
+                    while (Char.IsDigit(last) || last == ',' || last == '.' || last == '-')
+                    {
+                        index--;
+                        last = option[index];
+                    }
+                    Double optionsValue = Double.Parse(option.Substring(index + 1));
+                    NumericOption no = vm.getNumericOption(option.Substring(0, index+1));
+                    numOptions.Add(no, optionsValue);
+                }
+                else
+                {
+                    BinaryOption binOpt = vm.getBinaryOption(option);
+                    binaryFeatures.Add(binOpt);
+                }
+            }
+            c = new Configuration(binaryFeatures, numOptions);
+            return c;
+        }
     }
 }
