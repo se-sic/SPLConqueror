@@ -99,30 +99,26 @@ namespace SPLConqueror_Core
             return value;
         }
 
-        private List<double> allValues = null;
+ //       private List<double> allValues = null;
 
-        /// <summary>
-        /// Computes all valid values of the numeric option. Danger! This can be huge for a large value range!
-        /// </summary>
-        /// <returns>A list containing all values of the numeric options</returns>
-        public List<double> getAllValues()
+
+        private long numberOfSteps = -1;
+
+        public long getNumberOfSteps()
         {
-            if (allValues == null)
+            if (numberOfSteps == -1)
             {
-                allValues = new List<double>();
-
-                // compute
+                numberOfSteps = 0;
                 double curr = this.min_value;
-                allValues.Add(curr); // add minimal Value
-                while (curr < this.max_value)
+                while (curr <= this.max_value)
                 {
                     curr = this.getNextValue(curr);
-                    allValues.Add(curr);
+                    numberOfSteps += 1;
                 }
-            }
-            return allValues;
-        }
 
+            }
+            return numberOfSteps;
+        }
 
 
         /// <summary>
@@ -224,8 +220,39 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
+           // return getAllValues()[(int)getAllValues().Count / 2];
             return Math.Round(getAllValues()[(int)getAllValues().Count / 2]);
         }
 
+
+        private List<double> allValues = null;
+
+        /// <summary>
+        /// Computes all valid values of the numeric option. Danger! This can be huge for a large value range!
+        /// </summary>
+        /// <returns>A list containing all values of the numeric options</returns>
+        public List<double> getAllValues()
+        {
+            if (allValues == null)
+            {
+                allValues = new List<double>();
+
+                // compute
+                double curr = this.min_value;
+                allValues.Add(curr); // add minimal Value
+                while (curr < this.max_value)
+                {
+                    curr = this.getNextValue(curr);
+                    allValues.Add(curr);
+                }
+            }
+            return allValues;
+        }
+
+        public double getRandomValue()
+        {
+            Random r = new Random();
+            return getValueForStep(r.Next((int)this.numberOfSteps));
+        }
     }
 }
