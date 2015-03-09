@@ -112,8 +112,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
         public List<double> sampleOption(NumericOption option)
         {
-            if (this.minNumberOfSamplingsPerNumericOption > option.getAllValues().Count)
-                return sampleOption(option, option.getAllValues().Count, false);
+            if (this.minNumberOfSamplingsPerNumericOption > option.getNumberOfSteps())
+                return sampleOption(option, option.getNumberOfSteps(), false);
             return sampleOption(option, this.minNumberOfSamplingsPerNumericOption, false);
         }
 
@@ -125,11 +125,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <param name="numberOfSamples">The number of different values of the numeric option.</param>
         /// <param name="useMinMaxValues">States whether the minimal and maximal value of the numeric option have to be considered during sampling.</param>
         /// <returns>A list of equal distributed values for the numeric option. The list might be empty.</returns>
-        public static List<double> sampleOption(NumericOption option, int numberOfSamples, bool useMinMaxValues)
+        public static List<double> sampleOption(NumericOption option, long numberOfSamples, bool useMinMaxValues)
         {
             List<double> resultList = new List<double>();
 
-            int numberOfValues = option.getAllValues().Count;
+            long numberOfValues = option.getNumberOfSteps();
             if (numberOfValues <= numberOfSamples)
             {
                 double val = option.Min_value;

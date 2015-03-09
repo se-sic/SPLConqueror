@@ -232,10 +232,17 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             {
                 List<double> valuesOfAFeature = sampleOption(vf, this.getLevel(chosenSeed), true);
 
+                while (valuesOfAFeature.Count < this.getLevel(chosenSeed))
+                {
+                    valuesOfAFeature.Add(vf.getRandomValue());
+                }
+
+
                 for (int i = 0; i < valuesOfAFeature.Count; i++)
                 {
                     values.Add(Tuple.Create(vf, i), valuesOfAFeature[i]);
                 }
+                
             }
             //-----------------------------
 

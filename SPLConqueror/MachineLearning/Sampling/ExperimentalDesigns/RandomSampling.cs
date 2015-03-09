@@ -87,7 +87,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 List<double> values = new List<double>();
                 for (int i = 0; i < sampleSize; i++)
                 {
-                    values.Add(no.getValueForStep((int)(rand.NextDouble() * (no.getAllValues().Count))));
+                    values.Add(no.getValueForStep((int)(rand.NextDouble() * (no.getNumberOfSteps()))));
                 }
                 optionsWithValues.Add(no, values);
             }
@@ -110,7 +110,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                     // config already used
                     foreach (NumericOption num in options)
                     {
-                        optionsWithValues[num][i] = (int)(rand.NextDouble() * (num.getAllValues().Count));
+                        optionsWithValues[num][i] = (int)(rand.NextDouble() * (num.getNumberOfSteps()));
                     }
                     i--;
                 }
