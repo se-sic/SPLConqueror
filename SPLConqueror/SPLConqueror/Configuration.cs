@@ -30,7 +30,7 @@ namespace SPLConqueror_Core
 
         private Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
 
-        private Dictionary<NFProperty, double> nfpValues = new Dictionary<NFProperty, double>();
+        public Dictionary<NFProperty, double> nfpValues = new Dictionary<NFProperty, double>();
 
         private string identifier;
 
@@ -168,6 +168,8 @@ namespace SPLConqueror_Core
         /// <returns>The value of the property stored in the configuration.</returns>
         public double GetNFPValue(NFProperty property)
         {
+            if (!nfpValues.Keys.Contains(property))
+                return -1;
             return nfpValues[property];
         }
 
@@ -449,8 +451,12 @@ namespace SPLConqueror_Core
                         index--;
                         last = option[index];
                     }
-                    Double optionsValue = Math.Round(Double.Parse(option.Substring(index + 1)),1);
+                    Double optionsValue = Math.Round(Double.Parse(option.Substring(index + 1).Replace(',','.')),1);
                     NumericOption no = vm.getNumericOption(option.Substring(0, index+1));
+                    if (optionsValue > no.Max_value && no.Name != "qcomp")
+                    {
+                        return null;
+                    }
                     numOptions.Add(no, optionsValue);
                 }
                 else

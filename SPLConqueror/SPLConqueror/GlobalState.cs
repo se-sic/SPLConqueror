@@ -39,6 +39,8 @@ namespace SPLConqueror_Core
         /// </summary>
         public static Dictionary<string, NFProperty> nfProperties = new Dictionary<string,NFProperty>();
 
+        private static Dictionary<Configuration, Configuration> substitutedConfigs = new Dictionary<Configuration, Configuration>();
+
         private GlobalState(){ }
 
         /// <summary>
@@ -111,6 +113,11 @@ namespace SPLConqueror_Core
         {
             List<Configuration> configsWithValues = new List<Configuration>();
             foreach(var config in list) {
+                if (substitutedConfigs.Keys.Contains(config))
+                {
+                    configsWithValues.Add(substitutedConfigs[config]);
+                    continue;
+                }
                 List<Configuration> similarOnes = new List<Configuration>();
                 int nbCount = config.BinaryOptions.Count;
                 if (config.BinaryOptions.Keys.Contains(varModel.Root))
@@ -134,8 +141,12 @@ namespace SPLConqueror_Core
                 if (!found) {
                     if (takeSimilarConfig && similarOnes.Count > 0)
                     {
-                        configsWithValues.Add(findSimilarConfigNumeric(config, similarOnes));
-                        logError.log("Substituted a not found configuration with a similar one.");
+                        Configuration c = findSimilarConfigNumeric(config, similarOnes);
+                        if(c != null) {
+                            substitutedConfigs.Add(config, c);
+                            configsWithValues.Add(c);
+                            logError.log("Substituted a not found configuration with a similar one.");
+                        }
                     }
                     else
                     {
@@ -163,7 +174,13 @@ namespace SPLConqueror_Core
                 int distance = 0;
                 foreach (var numOpt in conf.NumericOptions.Keys)
                 {
-                    distance += Math.Abs(stepInValueRange[numOpt] - numOpt.getStep(conf.NumericOptions[numOpt]));
+                    if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
+                        continue;
+                    double valDist = Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
+                    distance += numOpt.getStepFast(valDist + numOpt.Min_value);
+                    //distance += Math.Abs(stepInValueRange[numOpt] - numOpt.getStep(conf.NumericOptions[numOpt]));
+                    if (distance > minDistance)
+                        break;
                 }
                 if (distance < minDistance)
                 {

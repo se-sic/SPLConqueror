@@ -76,8 +76,11 @@ namespace SPLConqueror_Core
                 string configID = "";
                 Dictionary<NFProperty, double> measuredProperty = new Dictionary<NFProperty, double>();
                 Configuration c = null;
+                bool hasSetConfig = false;
                 foreach (XmlNode childNode in node.ChildNodes)
                 {
+                    if (c == null && hasSetConfig)
+                        continue;
                     switch (childNode.Attributes[0].Value)
                     {
                         // TODO we use this to support result files having the old structure
@@ -87,7 +90,6 @@ namespace SPLConqueror_Core
                         case "Variable Features":
                             numericString = childNode.InnerText;
                             break;
-
 
                         case "BinaryOptions":
                             binaryString = childNode.InnerText;
@@ -104,6 +106,7 @@ namespace SPLConqueror_Core
                                 configID = childNode.InnerText;
                             alternativeFormat = true;
                             c = Configuration.createFromHashString(configID, GlobalState.varModel);
+                            hasSetConfig = true;
                             break;
                         case "CompilerOptions":
                             //todo
@@ -162,7 +165,7 @@ namespace SPLConqueror_Core
                     }
                 }
 
-                if (alternativeFormat)
+                if (alternativeFormat && c != null)
                 {
                     if (configurations.Contains(c))
                     {
@@ -172,6 +175,7 @@ namespace SPLConqueror_Core
                     {
                         configurations.Add(c);
                     }
+                cont: { }
                     continue;
                 }
 

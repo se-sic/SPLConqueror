@@ -83,6 +83,13 @@ namespace SPLConqueror_Core
             return count;
         }
 
+        public int getStepFast(double parameter)
+        {
+            double stepDistance = Math.Abs(this.min_value - this.getNextValue(this.min_value));
+            double steps = (parameter - this.min_value) / stepDistance;
+            return (int)Math.Round(steps,0);
+        }
+
         /// <summary>
         /// Computes the value within the options value range for a given step. Required for some experimental designs
         /// </summary>

@@ -451,6 +451,11 @@ namespace MachineLearning.Learning.Regression
                 double realValue = 0;
                 try
                 {
+                    if (!c.nfpValues.Keys.Contains(GlobalState.currentNFP))
+                    {
+                        skips++;
+                        continue;
+                    }
                     realValue = c.GetNFPValue(GlobalState.currentNFP);
                 }
                 catch (ArgumentException argEx)
@@ -463,7 +468,7 @@ namespace MachineLearning.Learning.Regression
                 //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
                 if (realValue <1)
                 {//((2(true-est) / true+est) - 1 ) * 100
-                    continue;
+                    //continue;
                     relativeError += Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) -1) * 100);
                     //skips++;
                     //continue;
