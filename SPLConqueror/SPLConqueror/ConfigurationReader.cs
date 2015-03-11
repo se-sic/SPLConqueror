@@ -130,16 +130,23 @@ namespace SPLConqueror_Core
                             if (readMultipleMeasurements)
                             {
                                 String[] m = childNode.InnerText.ToString().Split(',');
-                                double val1 = Convert.ToDouble(m[0]);
-                                double val2 = Convert.ToDouble(m[1]);
-                                if (val1 == -1)
-                                    measuredValue = val2;
-                                else if (val1 == -1 && val2 == -1)
-                                    measuredValue = Convert.ToDouble(m[2]);
-                                else if (val2 == -1)
-                                    measuredValue = val1;
+                                double val1 = 0;
+                                if(!Double.TryParse(m[0], out val1))
+                                    break;
+                                if (m.Length > 1)
+                                {
+                                    double val2 = Convert.ToDouble(m[1]);
+                                    if (val1 == -1)
+                                        measuredValue = val2;
+                                    else if (val1 == -1 && val2 == -1)
+                                        measuredValue = Convert.ToDouble(m[2]);
+                                    else if (val2 == -1)
+                                        measuredValue = val1;
+                                    else
+                                        measuredValue = (val1 + val2) / 2;
+                                }
                                 else
-                                    measuredValue = (val1 + val2) / 2;
+                                    measuredValue = val1;
                             }
                             else
                                 measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));

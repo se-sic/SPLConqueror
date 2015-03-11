@@ -210,7 +210,7 @@ namespace SPLConqueror_Core
         /// <returns>States whether the two configurations desribes the same configuration option selection.</returns>
         public bool Equals(Configuration other)
         {
-            return this.identifier.Equals(other.identifier);
+            return this.identifier.Replace("root%;%", "").Equals(other.identifier.Replace("root%;%", ""));
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace SPLConqueror_Core
         /// <returns>The hash code of the configuration based one the identifier.</returns>
         public override int GetHashCode()
         {
-            return this.identifier.GetHashCode();
+            return this.identifier.Replace("root%;%", "").GetHashCode();
         }
 
         /// <summary>
@@ -449,7 +449,7 @@ namespace SPLConqueror_Core
                         index--;
                         last = option[index];
                     }
-                    Double optionsValue = Double.Parse(option.Substring(index + 1));
+                    Double optionsValue = Math.Round(Double.Parse(option.Substring(index + 1)),1);
                     NumericOption no = vm.getNumericOption(option.Substring(0, index+1));
                     numOptions.Add(no, optionsValue);
                 }

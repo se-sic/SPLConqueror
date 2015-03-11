@@ -340,10 +340,10 @@ namespace CommandLine
                             {
                                 configurations_Validation = configurations_Learning;
                             }
-
+                            //break;
                             GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count + " NumberOfConfigurationsValidation:" + configurations_Validation.Count
                             + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
-                            break;
+                            
                         // prepare the machine learning 
                         exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
