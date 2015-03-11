@@ -30,6 +30,11 @@ namespace SPLConqueror_Core
         public static InfluenceModel infModel = null;
 
         /// <summary>
+        /// If we require a configuration for learning, but haven't measured it, shall we use a similar one instead?
+        /// </summary>
+        public static bool takeSimilarConfig = true;
+
+        /// <summary>
         /// All properties of the current case study. 
         /// </summary>
         public static Dictionary<string, NFProperty> nfProperties = new Dictionary<string,NFProperty>();
@@ -106,6 +111,10 @@ namespace SPLConqueror_Core
         {
             List<Configuration> configsWithValues = new List<Configuration>();
             foreach(var config in list) {
+                List<Configuration> similarOnes = new List<Configuration>();
+                int nbCount = config.BinaryOptions.Count;
+                if (config.BinaryOptions.Keys.Contains(varModel.Root))
+                    nbCount--;
                 bool found = false;
                 foreach (var configInGS in GlobalState.allMeasurements.Configurations)
                 {
@@ -115,11 +124,73 @@ namespace SPLConqueror_Core
                         found = true;
                         break;
                     }
+                    else if (takeSimilarConfig)
+                    {
+                        var conf = findSimilarConfigBinary(config, configInGS, nbCount);
+                        if(conf != null)
+                            similarOnes.Add(conf);
+                    }
                 }
-                if (!found)
-                    logError.log("Did not find a measured value for the configuration: " + config.ToString());
+                if (!found) {
+                    if (takeSimilarConfig && similarOnes.Count > 0)
+                    {
+                        configsWithValues.Add(findSimilarConfigNumeric(config, similarOnes));
+                        logError.log("Substituted a not found configuration with a similar one.");
+                    }
+                    else
+                    {
+                        if (similarOnes.Count == 0)
+                            logInfo.log(config.ToString());
+                        logError.log("Did not find a measured value for the configuration: " + config.ToString());
+                    }
+                        
+                }
             }
             return configsWithValues;
+        }
+
+        private static Configuration findSimilarConfigNumeric(Configuration config, List<Configuration> similarOnes)
+        {
+            Dictionary<NumericOption, int> stepInValueRange = new Dictionary<NumericOption, int>();
+            foreach (var numOpt in config.NumericOptions.Keys)
+            {
+                stepInValueRange.Add(numOpt, numOpt.getStep(config.NumericOptions[numOpt]));
+            }
+            int minDistance = Int32.MaxValue;
+            Configuration best = null;
+            foreach (var conf in similarOnes)
+            {
+                int distance = 0;
+                foreach (var numOpt in conf.NumericOptions.Keys)
+                {
+                    distance += Math.Abs(stepInValueRange[numOpt] - numOpt.getStep(conf.NumericOptions[numOpt]));
+                }
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    best = conf;
+                }
+            }
+            return best;
+        }
+
+        private static Configuration findSimilarConfigBinary(Configuration config, Configuration configInGS, int nbCount)
+        {
+            int nbCount2 = configInGS.BinaryOptions.Count;
+            if (configInGS.BinaryOptions.Keys.Contains(varModel.Root))
+                nbCount2--;
+            if (nbCount != nbCount2)
+                return null;
+            foreach (var binOpt in config.BinaryOptions.Keys)
+            {
+                if (binOpt == varModel.Root)
+                    continue;
+                if (!configInGS.BinaryOptions.Keys.Contains(binOpt))
+                {
+                    return null;
+                }
+            }
+            return configInGS;
         }
     }
 }

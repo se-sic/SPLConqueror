@@ -62,7 +62,7 @@ namespace SPLConqueror_Core
         {
             Dictionary<NumericOption, double> t = new Dictionary<NumericOption, double>();
             t.Add(this, value);
-            return stepFunction.eval(t);
+            return Math.Round(stepFunction.eval(t),3);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace SPLConqueror_Core
         public double getCenterValue()
         {
            // return getAllValues()[(int)getAllValues().Count / 2];
-            return Math.Round(getAllValues()[(int)getAllValues().Count / 2]);
+            return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
         }
 
 
