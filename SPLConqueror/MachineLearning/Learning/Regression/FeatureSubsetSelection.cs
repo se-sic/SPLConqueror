@@ -466,15 +466,18 @@ namespace MachineLearning.Learning.Regression
                 //How to handle near-zero values???
                 //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
                 //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
-                if (realValue <1)
+                if (realValue < 1)
                 {//((2(true-est) / true+est) - 1 ) * 100
                     //continue;
-                    relativeError += Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) -1) * 100);
-                    //skips++;
-                    //continue;
+                    //relativeError += Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) -1) * 100);
+                    skips++;
+                    continue;
                 }
                 else
-                    relativeError += Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                {
+                    double er =  Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                    relativeError += er;
+                }
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {

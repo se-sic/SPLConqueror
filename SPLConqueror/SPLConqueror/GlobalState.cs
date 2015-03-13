@@ -10,6 +10,7 @@ namespace SPLConqueror_Core
     /// </summary>
     public class GlobalState
     {
+
         public static InfoLogger logInfo = new InfoLogger(null);
 
         public static ErrorLogger logError = new ErrorLogger(null);
@@ -145,14 +146,18 @@ namespace SPLConqueror_Core
                         if(c != null) {
                             substitutedConfigs.Add(config, c);
                             configsWithValues.Add(c);
-                            logError.log("Substituted a not found configuration with a similar one.");
+                           // logError.log("Substituted a not found configuration with a similar one.");
                         }
                     }
                     else
                     {
                         if (similarOnes.Count == 0)
-                            logInfo.log(config.ToString());
-                        logError.log("Did not find a measured value for the configuration: " + config.ToString());
+                        {
+
+                            logError.log("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
+
+                        }
+                       // logError.log("Did not find a measured value for the configuration: " + config.ToString());
                     }
                         
                 }
