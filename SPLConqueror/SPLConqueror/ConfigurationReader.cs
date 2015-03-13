@@ -58,41 +58,125 @@ namespace SPLConqueror_Core
             
             XmlElement currentElemt = dat.DocumentElement;
 
-            List<Configuration> configurations = new List<Configuration>();
+            HashSet<Configuration> configurations = new HashSet<Configuration>();
 
             int numberOfConfigs = currentElemt.ChildNodes.Count;
+
             foreach (XmlNode node in currentElemt.ChildNodes)
             {
+                bool readMultipleMeasurements = false;
+                if (node.Attributes.Count > 0 && node.Attributes[0].Value.ToLower() == "true")
+                {
+                    readMultipleMeasurements = true;
+                }
                 Dictionary<NFProperty, double> propertiesForConfig = new Dictionary<NFProperty, double>(); ;
-
+                bool alternativeFormat = false;
                 string binaryString = "";
                 string numericString = "";
+                string configID = "";
                 Dictionary<NFProperty, double> measuredProperty = new Dictionary<NFProperty, double>();
+                Configuration c = null;
+                bool hasSetConfig = false;
                 foreach (XmlNode childNode in node.ChildNodes)
                 {
+                    if (c == null && hasSetConfig)
+                        continue;
                     switch (childNode.Attributes[0].Value)
                     {
                         // TODO we use this to support result files having the old structure
                         case "Configuration":
-                            binaryString = childNode.InnerText.ToString();
+                            binaryString = childNode.InnerText;
                             break;
                         case "Variable Features":
-                            numericString = childNode.InnerText.ToString();
+                            numericString = childNode.InnerText;
                             break;
-
 
                         case "BinaryOptions":
-                            binaryString = childNode.InnerText.ToString();
+                            binaryString = childNode.InnerText;
                             break;
                         case "NumericOptions":
-                            numericString = childNode.InnerText.ToString();
+                            numericString = childNode.InnerText;
                             break;
-                        default: 
+                        case "ConfigID":
+                            if (readMultipleMeasurements)
+                            {
+                                configID = childNode.InnerText.Replace("_","%;%");
+                            }
+                            else
+                                configID = childNode.InnerText;
+                            alternativeFormat = true;
+                            c = Configuration.createFromHashString(configID, GlobalState.varModel);
+                            hasSetConfig = true;
+                            break;
+                        case "CompilerOptions":
+                            //todo
+                            break;
+                        case "ConfigFileOptions":
+                            //todo
+                            break;
+                        case "ParameterOptions":
+                            //todo
+                            break;
+                        case "ProgramName":
+                            //todo
+                            break;
+                        case "StartupBegin":
+                            //todo
+                            break;
+                        case "StartupEnd":
+                            //todo
+                            break;
+                        default:
                             NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
-                            double measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
-                            measuredProperty.Add(property, measuredValue);
+                            double measuredValue = 0;
+                            //-1 means that measurement failed... 3rd values strongly devigates in C.'s measurements, hence we use it only in case we have no other measurements
+                            if (readMultipleMeasurements)
+                            {
+                                String[] m = childNode.InnerText.ToString().Split(',');
+                                double val1 = 0;
+                                if(!Double.TryParse(m[0], out val1))
+                                    break;
+                                if (m.Length > 1)
+                                {
+                                    double val2 = Convert.ToDouble(m[1]);
+                                    if (val1 == -1)
+                                        measuredValue = val2;
+                                    else if (val1 == -1 && val2 == -1)
+                                        measuredValue = Convert.ToDouble(m[2]);
+                                    else if (val2 == -1)
+                                        measuredValue = val1;
+                                    else
+                                        measuredValue = (val1 + val2) / 2;
+                                }
+                                else
+                                    measuredValue = val1;
+                            }
+                            else
+                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
+                            if (alternativeFormat && c != null)
+                            {
+                                c.setMeasuredValue(property, measuredValue);
+                            }
+                            else
+                            {
+                                measuredProperty.Add(property, measuredValue);
+                            }
                             break;
                     }
+                }
+
+                if (alternativeFormat && c != null)
+                {
+                    if (configurations.Contains(c))
+                    {
+                        GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + c.ToString());
+                    }
+                    else
+                    {
+                        configurations.Add(c);
+                    }
+                cont: { }
+                    continue;
                 }
 
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
@@ -151,7 +235,7 @@ namespace SPLConqueror_Core
                     configurations.Add(config);
                 //}
             }
-            return configurations;
+            return configurations.ToList();
         }
 
 
