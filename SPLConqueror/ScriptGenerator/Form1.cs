@@ -531,19 +531,19 @@ namespace ScriptGenerator
         {
             if(!runs.ContainsKey(CONTAINERKEY_BINARY))
             {
-                runs.Add(CONTAINERKEY_BINARY, null);
+                runs.Add(CONTAINERKEY_BINARY, new List<Container>() { new Container() });
             }
             if (!runs.ContainsKey(CONTAINERKEY_BINARY_VALIDATION))
             {
-                runs.Add(CONTAINERKEY_BINARY_VALIDATION, null);
+                runs.Add(CONTAINERKEY_BINARY_VALIDATION, new List<Container>() { new Container() });
             }
             if (!runs.ContainsKey(CONTAINERKEY_NUMERIC))
             {
-                runs.Add(CONTAINERKEY_NUMERIC, null);
+                runs.Add(CONTAINERKEY_NUMERIC, new List<Container>() { new Container() });
             }
             if (!runs.ContainsKey(CONTAINERKEY_NUMERIC_VALIDATION))
             {
-                runs.Add(CONTAINERKEY_NUMERIC_VALIDATION, null);
+                runs.Add(CONTAINERKEY_NUMERIC_VALIDATION, new List<Container>() { new Container() });
             }
 
             return runs;

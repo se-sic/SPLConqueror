@@ -36,6 +36,10 @@ namespace ScriptGenerator
             get { return additionalInformation; }
         }
 
+        public Container()
+        {
+        }
+
         public Container(string type, object content)
         {
             this.elementType = type;

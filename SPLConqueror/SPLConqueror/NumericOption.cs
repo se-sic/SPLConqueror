@@ -62,7 +62,7 @@ namespace SPLConqueror_Core
         {
             Dictionary<NumericOption, double> t = new Dictionary<NumericOption, double>();
             t.Add(this, value);
-            return stepFunction.eval(t);
+            return Math.Round(stepFunction.eval(t),3);
         }
 
         /// <summary>
@@ -81,6 +81,13 @@ namespace SPLConqueror_Core
                 count++;
             }
             return count;
+        }
+
+        public int getStepFast(double parameter)
+        {
+            double stepDistance = Math.Abs(this.min_value - this.getNextValue(this.min_value));
+            double steps = (parameter - this.min_value) / stepDistance;
+            return (int)Math.Round(steps,0);
         }
 
         /// <summary>
@@ -175,16 +182,16 @@ namespace SPLConqueror_Core
                 switch (xmlInfo.Name)
                 {
                     case "minValue":
-                        this.min_value = Double.Parse(xmlInfo.InnerText.Replace(",", "."));
+                        this.min_value = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "maxValue":
-                        this.max_value = Double.Parse(xmlInfo.InnerText.Replace(",", "."));
+                        this.max_value = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "defaultValue":
-                        this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(",", "."));
+                        this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "stepFunction":
-                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(",", "."), this);
+                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',','.'),this);
                         break;
                 }
             }
@@ -205,10 +212,10 @@ namespace SPLConqueror_Core
 
             while (curr < inputValue)
             {
-                curr = getNextValue(curr);
+                curr = Math.Round(getNextValue(curr),3);
             }
             lowerValue = curr;
-            upperValue = getNextValue(curr);
+            upperValue = Math.Round(getNextValue(curr),3);
 
             if (Math.Abs(lowerValue - curr) < Math.Abs(upperValue - curr))
             {
@@ -220,7 +227,9 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
-            return getValueForStep((int)(getNumberOfSteps())/2);
+            
+           // return getAllValues()[(int)getAllValues().Count / 2];
+            return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
         }
 
 
