@@ -64,8 +64,8 @@ namespace CommandLine
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
         /// </summary>
-        /// <param name="line"></param>
-        /// <returns></returns>
+        /// <param name="line">One command with its parameters.</param>
+        /// <returns>Returns an empty string if the command could be performed by the method. If the command could not be performed by the method, the original command is returned.</returns>
         public string performOneCommand(string line)
         {
             GlobalState.logInfo.log(COMMAND + line);

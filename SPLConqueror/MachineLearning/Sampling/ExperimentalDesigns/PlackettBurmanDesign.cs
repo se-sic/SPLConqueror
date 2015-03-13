@@ -234,7 +234,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
                 while (valuesOfAFeature.Count < this.getLevel(chosenSeed))
                 {
-                    valuesOfAFeature.Add(vf.getRandomValue());
+                    valuesOfAFeature.Add(vf.getRandomValue(valuesOfAFeature.Count));
                 }
 
 
