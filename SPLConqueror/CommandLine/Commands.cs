@@ -133,7 +133,7 @@ namespace CommandLine
                     exp.clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
-                    GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
+                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
                     GlobalState.logInfo.log("Configurations loaded.");
 
                     break;
@@ -298,9 +298,10 @@ namespace CommandLine
                         {
 
                             configurations_Learning = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning));
-
+                            configurations_Learning = configurations_Learning.Distinct().ToList();
 
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
+                            configurations_Validation = configurations_Validation.Distinct().ToList();
                             //break;//todo only to get the configurations that we haven't measured
                         } else
                         {

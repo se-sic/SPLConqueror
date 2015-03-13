@@ -453,10 +453,8 @@ namespace SPLConqueror_Core
                     }
                     Double optionsValue = Math.Round(Double.Parse(option.Substring(index + 1).Replace(',','.')),1);
                     NumericOption no = vm.getNumericOption(option.Substring(0, index+1));
-                    if (optionsValue > no.Max_value && no.Name != "qcomp")
-                    {
-                        return null;
-                    }
+                    if (no == null)
+                        continue;
                     numOptions.Add(no, optionsValue);
                 }
                 else
@@ -467,6 +465,38 @@ namespace SPLConqueror_Core
             }
             c = new Configuration(binaryFeatures, numOptions);
             return c;
+        }
+
+        /// <summary>
+        /// Prints a string that respects the variant generation setting of each option. 
+        /// This function should be called if we want to get the parameter string to fit it to a program.
+        /// </summary>
+        /// <returns>The parameter string of the configuration</returns>
+        public string printConfigurationForMeasurement()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int binaryAndNumericFeatureSize = this.BinaryOptions.Count + this.numericOptions.Count;
+            foreach (BinaryOption binary in this.BinaryOptions.Keys)
+            {
+                if (this.BinaryOptions[binary] == BinaryOption.BinaryValue.Deselected)
+                    continue;
+                if (binary.OutputString == "noOutput")
+                    continue;
+                sb.Append(binary.OutputString + " ");
+            }
+
+            foreach (NumericOption no in this.numericOptions.Keys)
+            {
+
+                sb.Append(no.Prefix + this.numericOptions[no] + " ");
+                if (no.Postfix.Length > 0)
+                {
+                    sb.Append(no.Postfix + " ");
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
