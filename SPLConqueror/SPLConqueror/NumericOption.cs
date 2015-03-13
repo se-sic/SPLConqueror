@@ -227,6 +227,7 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
+            
            // return getAllValues()[(int)getAllValues().Count / 2];
             return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
         }
@@ -259,6 +260,12 @@ namespace SPLConqueror_Core
         public double getRandomValue()
         {
             Random r = new Random();
+            return getValueForStep(r.Next((int)this.numberOfSteps));
+        }
+
+        public double getRandomValue(int seed)
+        {
+            Random r = new Random(seed);
             return getValueForStep(r.Next((int)this.numberOfSteps));
         }
     }
