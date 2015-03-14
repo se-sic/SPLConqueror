@@ -19,6 +19,7 @@ namespace MachineLearning.Learning.Regression
         protected InfluenceModel infModel = null;
         protected List<LearningRound> learningHistory = new List<LearningRound>();
         protected int hierachyLevel = 1;
+        protected DateTime startTime;
 
         public List<LearningRound> LearningHistory
         {
@@ -91,7 +92,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (!allInformationAvailable())
                 return;
-
+            this.startTime = System.DateTime.Now;
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
@@ -556,6 +557,9 @@ namespace MachineLearning.Learning.Regression
         protected bool abortLearning(LearningRound current,  double oldRoundError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
+                return true;
+            TimeSpan diff = DateTime.Now - this.startTime;
+            if (current.round > 30 && diff.Minutes > 60)
                 return true;
             if (abortDueError(current))
                 return true;

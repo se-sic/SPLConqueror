@@ -214,5 +214,42 @@ namespace SPLConqueror_Core
             }
             return configInGS;
         }
+
+        public static List<Configuration> getAvailableBinary(List<List<BinaryOption>> list, List<Dictionary<NumericOption, double>> numericSelections)
+        {
+            HashSet<Configuration> result = new HashSet<Configuration>();
+            foreach (var binConf in list)
+            {
+                foreach (var availConf in allMeasurements.Configurations)
+                {
+                    if(availConf.nfpValues.Keys.Contains(currentNFP)  == false)
+                        continue;
+                    if (availConf.BinaryOptions.Count+1 == binConf.Count)
+                    {
+                        bool found = true;
+                        foreach (var opt in binConf)
+                        {
+                            if (opt == varModel.Root)
+                                continue;
+                            if (availConf.BinaryOptions.Keys.Contains(opt) == false)
+                            {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found)
+                        {
+                            foreach(var numCOnf in numericSelections) {
+                                if(Configuration.equalNumericalSelection(numCOnf,availConf.NumericOptions))
+                                    result.Add(availConf);
+                            }
+                            
+                        }
+                    }
+                }
+            }
+
+            return result.ToList();
+        }
     }
 }

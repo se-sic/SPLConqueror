@@ -296,8 +296,9 @@ namespace CommandLine
 
                         if (exp.TrueModel == null)
                         {
-
-                            configurations_Learning = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning));
+                            //List<List<BinaryOption>> availableBinary 
+                            configurations_Learning = GlobalState.getAvailableBinary(exp.BinarySelections_Learning, exp.NumericSelection_Learning);
+                            //configurations_Learning = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(availableBinary, exp.NumericSelection_Learning));
                             configurations_Learning = configurations_Learning.Distinct().ToList();
 
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));

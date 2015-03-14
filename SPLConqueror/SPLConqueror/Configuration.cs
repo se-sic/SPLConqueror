@@ -353,9 +353,9 @@ namespace SPLConqueror_Core
         /// <returns>A list of configurations.</returns>
         public static List<Configuration> getConfigurations(List<List<BinaryOption>> binarySelections, List<Dictionary<NumericOption, double>> numericSelections)
         {
-            List<Configuration> configurations = new List<Configuration>();
+            HashSet<Configuration> configurations = new HashSet<Configuration>();
             if (binarySelections == null && numericSelections == null)
-                return configurations;
+                return configurations.ToList();
             if (numericSelections != null && numericSelections.Count > 0)
             {
                 foreach (Dictionary<NumericOption, double> numeric in numericSelections)
@@ -365,10 +365,10 @@ namespace SPLConqueror_Core
                         foreach (List<BinaryOption> binary in binarySelections)
                         {
                             Configuration config = Configuration.getConfiguration(binary, numeric);
-                            if (!configurations.Contains(config))
-                            {
+                           // if (!configurations.Contains(config))
+                            //{
                                 configurations.Add(config);
-                            }
+                            //}
                         }
                     }
                     else//We have numeric options, but no binary options
@@ -392,7 +392,7 @@ namespace SPLConqueror_Core
                     }
                 }
             }
-            return configurations;
+            return configurations.ToList();
         }
 
         public void setMeasuredValue(NFProperty prop, double val)
