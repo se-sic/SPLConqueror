@@ -179,7 +179,7 @@ namespace SPLConqueror_Core
                     }
                     else
                     {
-                        if (GlobalState.currentNFP != null && c.nfpValues.Keys.Contains(GlobalState.currentNFP) && c.nfpValues[GlobalState.currentNFP] != -1)
+                       // if (GlobalState.currentNFP != null && c.nfpValues.Keys.Contains(GlobalState.currentNFP) && c.nfpValues[GlobalState.currentNFP] != -1)
                             configurations.Add(c);
                     }
                 cont: { }
