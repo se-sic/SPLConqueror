@@ -49,6 +49,10 @@ namespace SPLConqueror_Core
 
         public bool configIsValid(Configuration config)
         {
+            if (!configHasOptionsOfConstraint(config))
+                return true;
+
+
             double left = leftHandSide.eval(config);
             double right = rightHandSide.eval(config);
 
@@ -87,6 +91,23 @@ namespace SPLConqueror_Core
             }
 
             return false;
+        }
+
+        private bool configHasOptionsOfConstraint(Configuration config)
+        {
+            foreach(BinaryOption bo in leftHandSide.participatingBoolOptions.Union(rightHandSide.participatingBoolOptions))
+            {
+                if (!config.BinaryOptions.ContainsKey(bo))
+                    return false;
+            }
+
+            foreach (NumericOption no in leftHandSide.participatingNumOptions.Union(rightHandSide.participatingNumOptions))
+            {
+                if (!config.NumericOptions.ContainsKey(no))
+                    return false;
+            }
+
+            return true;
         }
 
     }
