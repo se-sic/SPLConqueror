@@ -64,6 +64,15 @@ namespace SPLConqueror_Core
             set { booleanConstraints = value; }
         }
 
+        private List<NonBooleanConstraint> nonBooleanConstraints = new List<NonBooleanConstraint>();
+
+        public List<NonBooleanConstraint> NonBooleanConstraints
+        {
+            get { return nonBooleanConstraints; }
+            set { nonBooleanConstraints = value; }
+        }
+
+
         public VariabilityModel(String name)
         {
             this.name = name;
@@ -181,6 +190,9 @@ namespace SPLConqueror_Core
                     case "booleanConstraints":
                         loadBooleanConstraints(xmlNode);
                         break;
+                    case "nonBooleanConstraints":
+                        loadNonBooleanConstraint(xmlNode);
+                        break;
                 }
             }
 
@@ -205,6 +217,16 @@ namespace SPLConqueror_Core
                 this.booleanConstraints.Add(boolConstr.InnerText);
             }
         }
+
+        private void loadNonBooleanConstraint(XmlElement xmlNode)
+        {
+            foreach (XmlElement nonBoolConstr in xmlNode.ChildNodes)
+            {
+                this.nonBooleanConstraints.Add(new NonBooleanConstraint(nonBoolConstr.InnerText,this));
+            }
+        }
+
+
 
         private void loadNumericOptions(XmlElement xmlNode)
         {
@@ -289,6 +311,17 @@ namespace SPLConqueror_Core
             }
             return null;
         }
-        
+
+
+        public bool configurationIsValid(Configuration c)
+        {
+            foreach (NonBooleanConstraint nonBC in this.nonBooleanConstraints)
+            {
+                if (!nonBC.configIsValid(c))
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

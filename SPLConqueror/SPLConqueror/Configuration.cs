@@ -140,7 +140,7 @@ namespace SPLConqueror_Core
 
             foreach (NumericOption numeric in numericSelection)
             {
-                sb.Append(numeric.Name+ numericOptions[numeric] + separator);
+                sb.Append(numeric.Name +"="+ numericOptions[numeric] + separator);
             }
             
 

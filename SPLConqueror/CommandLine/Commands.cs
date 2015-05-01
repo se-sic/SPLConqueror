@@ -253,7 +253,7 @@ namespace CommandLine
                             foreach (List<BinaryOption> binary in binarySampling)
                             {
                                 Configuration config = Configuration.getConfiguration(binary, numeric);
-                                if (!configurations.Contains(config))
+                                if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
                                 {
                                     configurations.Add(config);
                                 }
@@ -321,6 +321,7 @@ namespace CommandLine
 
                                     Configuration c = new Configuration(binConfig, numConf);
                                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                                    if(GlobalState.varModel.configurationIsValid(c))
                 //                    if (!configurations_Learning.Contains(c))
                                         configurations_Learning.Add(c);
                                 }
