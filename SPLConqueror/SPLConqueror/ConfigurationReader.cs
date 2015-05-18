@@ -104,6 +104,12 @@ namespace SPLConqueror_Core
                             }
                             else
                                 configID = childNode.InnerText;
+                            if (configID.Contains("%;%seek") && configID.Contains("%;%seek0") == false)
+                            {
+                                hasSetConfig = true;
+                                c = null;
+                                break;
+                            }
                             alternativeFormat = true;
                             c = Configuration.createFromHashString(configID, GlobalState.varModel);
                             hasSetConfig = true;
@@ -173,7 +179,8 @@ namespace SPLConqueror_Core
                     }
                     else
                     {
-                        configurations.Add(c);
+                       // if (GlobalState.currentNFP != null && c.nfpValues.Keys.Contains(GlobalState.currentNFP) && c.nfpValues[GlobalState.currentNFP] != -1)
+                            configurations.Add(c);
                     }
                 cont: { }
                     continue;

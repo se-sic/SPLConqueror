@@ -10,6 +10,7 @@ namespace SPLConqueror_Core
     /// </summary>
     public class GlobalState
     {
+
         public static InfoLogger logInfo = new InfoLogger(null);
 
         public static ErrorLogger logError = new ErrorLogger(null);
@@ -145,14 +146,18 @@ namespace SPLConqueror_Core
                         if(c != null) {
                             substitutedConfigs.Add(config, c);
                             configsWithValues.Add(c);
-                            logError.log("Substituted a not found configuration with a similar one.");
+                           // logError.log("Substituted a not found configuration with a similar one.");
                         }
                     }
                     else
                     {
                         if (similarOnes.Count == 0)
-                            logInfo.log(config.ToString());
-                        logError.log("Did not find a measured value for the configuration: " + config.ToString());
+                        {
+
+                            logError.log("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
+
+                        }
+                       // logError.log("Did not find a measured value for the configuration: " + config.ToString());
                     }
                         
                 }
@@ -208,6 +213,43 @@ namespace SPLConqueror_Core
                 }
             }
             return configInGS;
+        }
+
+        public static List<Configuration> getAvailableBinary(List<List<BinaryOption>> list, List<Dictionary<NumericOption, double>> numericSelections)
+        {
+            HashSet<Configuration> result = new HashSet<Configuration>();
+            foreach (var binConf in list)
+            {
+                foreach (var availConf in allMeasurements.Configurations)
+                {
+                    if(availConf.nfpValues.Keys.Contains(currentNFP)  == false)
+                        continue;
+                    if (availConf.BinaryOptions.Count+1 == binConf.Count)
+                    {
+                        bool found = true;
+                        foreach (var opt in binConf)
+                        {
+                            if (opt == varModel.Root)
+                                continue;
+                            if (availConf.BinaryOptions.Keys.Contains(opt) == false)
+                            {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found)
+                        {
+                            foreach(var numCOnf in numericSelections) {
+                                if(Configuration.equalNumericalSelection(numCOnf,availConf.NumericOptions))
+                                    result.Add(availConf);
+                            }
+                            
+                        }
+                    }
+                }
+            }
+
+            return result.ToList();
         }
     }
 }

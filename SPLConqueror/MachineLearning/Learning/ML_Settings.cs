@@ -49,7 +49,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Defines the number of rounds the learning process have to be performed. 
         /// </summary>
-        public int numberOfRounds = 30;
+        public int numberOfRounds = 50;
 
         /// <summary>
         /// Defines the maximum increase of the error when removing a feature from the model
