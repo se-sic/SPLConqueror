@@ -794,6 +794,5 @@ namespace MachineLearning.Learning.Regression
         #endregion
 
 
-        public DateTime startTime { get; set; }
     }
 }
