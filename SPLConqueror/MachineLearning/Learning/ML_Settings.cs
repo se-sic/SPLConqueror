@@ -69,27 +69,22 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
-        /// <param name="settingLocation">Full qualified name of the settings file.</param>
+        /// <param name="settingLocation">All settings to be changed in a string with whitespaces as separator .</param>
         /// <returns>A settings object with the values specified in the file.</returns>
-        public static ML_Settings readSettings(string settingLocation)
+        public static ML_Settings readSettings(string settings)
         {
             ML_Settings mls = new ML_Settings();
-            if (System.IO.File.Exists(settingLocation) == false)
+            String[] settingArray = settings.Split(' ');
+
+            for (int i = 0; i < settingArray.Length; i++)
             {
-                GlobalState.logError.log("Could not load ML settings file! File ("+settingLocation +") does not exit.");
-                return mls;
-            }
-            System.IO.StreamReader file = new System.IO.StreamReader(settingLocation);
-            string line;
-            while ((line = file.ReadLine()) != null)
-            {
-                string[] nameAndValue = line.Split(new char[]{' '},2);
+                string[] nameAndValue = settingArray[i].Split(new char[] { ':' }, 2);
                 if (!mls.setSetting(nameAndValue[0], nameAndValue[1]))
                 {
                     GlobalState.logError.log("MlSetting " + nameAndValue[0] + " not found!");
                 }
+
             }
-            file.Close();
 
             return mls;
         }
@@ -143,7 +138,7 @@ namespace MachineLearning.Learning
                 }
                 if (value.Equals("ABSOLUTE"))
                 {
-                    fi.SetValue(this, LossFunction.ABSOLUTE);
+                    fi.SetValue(this, LossFunction.ABSOLUTE); 
                     return true;
                 }
             }

@@ -91,7 +91,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (!allInformationAvailable())
                 return;
-
+            this.startTime = System.DateTime.Now; 
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
@@ -550,9 +550,12 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="current">The current state of learning (i.e., the current model).</param>
         /// <returns>True if we abort learning, false otherwise</returns>
-        protected bool abortLearning(LearningRound current,  double oldRoundError)
+        protected bool abortLearning(LearningRound current, double oldRoundError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
+                return true;
+            TimeSpan diff = DateTime.Now - this.startTime;
+            if (current.round > 30 && diff.Minutes > 60)
                 return true;
             if (abortDueError(current))
                 return true;
@@ -568,6 +571,7 @@ namespace MachineLearning.Learning.Regression
             }
             return false;
         }
+
 
         /// <summary>
         /// This method checks whether we should abort learning due to perfect prediction or worsening prediction.
@@ -785,5 +789,7 @@ namespace MachineLearning.Learning.Regression
         }
         #endregion
 
+
+        public DateTime startTime { get; set; }
     }
 }

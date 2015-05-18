@@ -554,7 +554,7 @@ namespace ScriptGenerator
 
         private string mlSettingsContent(ML_Settings settings)
         {
-            return CommandLine.Commands.COMMAND_SET_MLSETTING+" " + settings.ToString();
+            return CommandLine.Commands.COMMAND_LOAD_MLSETTINGS+" " + settings.ToString();
         }
 
         private void logFile_Button_Click(object sender, EventArgs e)
