@@ -19,6 +19,7 @@ namespace MachineLearning.Learning.Regression
         protected InfluenceModel infModel = null;
         protected List<LearningRound> learningHistory = new List<LearningRound>();
         protected int hierachyLevel = 1;
+        protected DateTime startTime;
 
         public List<LearningRound> LearningHistory
         {
@@ -91,7 +92,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (!allInformationAvailable())
                 return;
-            this.startTime = System.DateTime.Now; 
+            this.startTime = System.DateTime.Now;
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
@@ -466,15 +467,18 @@ namespace MachineLearning.Learning.Regression
                 //How to handle near-zero values???
                 //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
                 //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
-                if (realValue <1)
+
+                if (realValue < 1)
                 {//((2(true-est) / true+est) - 1 ) * 100
                     //continue;
-                    relativeError += Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) -1) * 100);
-                    //skips++;
-                    //continue;
+                    skips++;
+                    continue;
                 }
                 else
-                    relativeError += Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                 {
+                    double er =  Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                    relativeError += er;
+                }
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {
@@ -550,7 +554,7 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="current">The current state of learning (i.e., the current model).</param>
         /// <returns>True if we abort learning, false otherwise</returns>
-        protected bool abortLearning(LearningRound current, double oldRoundError)
+            protected bool abortLearning(LearningRound current, double oldRoundError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
                 return true;
