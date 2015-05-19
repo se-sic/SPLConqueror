@@ -11,6 +11,8 @@ namespace MachineLearning.Sampling.Heuristics
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
         private Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
 
+        
+
         /// <summary>
         /// Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, impliciation-relationships
         /// </summary>
@@ -18,13 +20,18 @@ namespace MachineLearning.Sampling.Heuristics
         /// <returns>A list of configurations in which each configuration is represented by a list of SELECTED binary options</returns>
         public List<List<BinaryOption>> generatePairWiseVariants(VariabilityModel vm)
         {
+            List<String> activeLearning = new List<string>(new string[] { "ls", "inl", "cf", "dcr", "saa", "ive", "wlur", "lir", "vp", "saacyc" });
             this.configurations.Clear();
             List<BinaryOption> measuredElements = new List<BinaryOption>();
             foreach (BinaryOption current in vm.BinaryOptions)
             {
+                if (!activeLearning.Contains(current.Name))
+                    continue;
                 measuredElements.Add(current);
                 foreach (BinaryOption pair in vm.BinaryOptions)
                 {
+                    if (!activeLearning.Contains(pair.Name))
+                        continue;
                     //Check parent-child relationship
                     if (pair.isAncestor(current) || current.isAncestor(pair) || pair == current)
                         continue;

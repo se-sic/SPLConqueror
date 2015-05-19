@@ -61,7 +61,7 @@ namespace SPLConqueror_Core
             HashSet<Configuration> configurations = new HashSet<Configuration>();
 
             int numberOfConfigs = currentElemt.ChildNodes.Count;
-
+            int configsWithTooLargeDeviation = 0;
             foreach (XmlNode node in currentElemt.ChildNodes)
             {
                 bool readMultipleMeasurements = false;
@@ -138,13 +138,43 @@ namespace SPLConqueror_Core
                             //-1 means that measurement failed... 3rd values strongly devigates in C.'s measurements, hence we use it only in case we have no other measurements
                             if (readMultipleMeasurements)
                             {
+                                if (property.Name != "run-real")
+                                    continue;
                                 String[] m = childNode.InnerText.ToString().Split(',');
                                 double val1 = 0;
                                 if(!Double.TryParse(m[0], out val1))
                                     break;
                                 if (m.Length > 1)
                                 {
-                                    double val2 = Convert.ToDouble(m[1]);
+                                    List<double> values = new List<double>();
+                                    double avg = 0;
+                                    foreach (var i in m)
+                                    {
+                                        double d = Convert.ToDouble(i);
+                                        if (d != -1)
+                                        {
+                                            values.Add(d);
+                                            avg += d;
+                                        }
+                                    }
+                                    if (values.Count == 0)
+                                    {
+                                        configsWithTooLargeDeviation++;
+                                        c = null;
+                                        break;
+                                    }
+                                    avg = avg / values.Count;
+                                   /* foreach (var d in values)
+                                    {
+                                        if ((d / avg) * 100 > 10)
+                                        {
+                                            configsWithTooLargeDeviation++;
+                                            c = null;
+                                            break;
+                                        }
+                                    }*/
+                                    measuredValue = avg;
+                                    /*double val2 = Convert.ToDouble(m[1]);
                                     if (val1 == -1)
                                         measuredValue = val2;
                                     else if (val1 == -1 && val2 == -1)
@@ -152,7 +182,7 @@ namespace SPLConqueror_Core
                                     else if (val2 == -1)
                                         measuredValue = val1;
                                     else
-                                        measuredValue = (val1 + val2) / 2;
+                                        measuredValue = (val1 + val2) / 2;*/
                                 }
                                 else
                                     measuredValue = val1;
@@ -242,6 +272,7 @@ namespace SPLConqueror_Core
                     configurations.Add(config);
                 //}
             }
+            GlobalState.logInfo.log("Configs with too large deviation: " + configsWithTooLargeDeviation);
             return configurations.ToList();
         }
 
