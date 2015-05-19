@@ -736,6 +736,16 @@ namespace MachineLearning.Learning.Regression
         protected void generateDM_column(Feature feature)
         {
             ILArray<double> column = ILMath.zeros(this.learningSet.Count);
+            if (feature.participatingBoolOptions.Count == 1 && feature.participatingNumOptions.Count == 0 && feature.participatingBoolOptions.Contains(this.infModel.Vm.Root))
+            {
+                for (int r = 0; r < this.learningSet.Count; r++)
+                {
+                    column[r] = 1;
+                }
+                this.DM_columns.Add(feature, column);
+                return;
+            }
+
             int i = 0;
             foreach (Configuration config in this.learningSet)
             {
