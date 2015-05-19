@@ -28,7 +28,11 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool limitFeatureSize = false;
 
-        public int featureSizeTrehold = 4;
+
+        /// <summary>
+        /// The maximal number of options participating in one interaction.
+        /// </summary>
+        public int featureSizeTreshold = 4;
 
         /// <summary>
         /// The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true.
@@ -69,7 +73,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
-        /// <param name="settingLocation">All settings to be changed in a string with whitespaces as separator .</param>
+        /// <param name="settings">All settings to be changed in a string with whitespaces as separator .</param>
         /// <returns>A settings object with the values specified in the file.</returns>
         public static ML_Settings readSettings(string settings)
         {
@@ -88,6 +92,35 @@ namespace MachineLearning.Learning
 
             return mls;
         }
+
+        /// <summary>
+        /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
+        /// </summary>
+        /// <param name="settingLocation">Full qualified name of the settings file.</param>
+        /// <returns>A settings object with the values specified in the file.</returns>
+        public static ML_Settings readSettingsFromFile(string settingLocation)
+        {
+            ML_Settings mls = new ML_Settings();
+            if (System.IO.File.Exists(settingLocation) == false)
+            {
+                GlobalState.logError.log("Could not load ML settings file! File (" + settingLocation + ") does not exit.");
+                return mls;
+            }
+            System.IO.StreamReader file = new System.IO.StreamReader(settingLocation);
+            string line;
+            while ((line = file.ReadLine()) != null)
+            {
+                string[] nameAndValue = line.Split(new char[] { ' ' }, 2);
+                if (!mls.setSetting(nameAndValue[0], nameAndValue[1]))
+                {
+                    GlobalState.logError.log("MlSetting " + nameAndValue[0] + " not found!");
+                }
+            }
+            file.Close();
+
+            return mls;
+        }
+
 
         public ML_Settings()
         {

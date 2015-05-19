@@ -214,13 +214,10 @@ namespace CommandLine
                     GlobalState.logError = new ErrorLogger(location + "_error");
                     break;
                 case COMMAND_SET_MLSETTING:
-                    {
-                        string[] para = task.Split(new char[] { ' ' });
-                        exp.mlSettings.setSetting(para[0], para[1]);
-                        break;
-                    }
-                case COMMAND_LOAD_MLSETTINGS:
                     exp.mlSettings = ML_Settings.readSettings(task);
+                    break;
+                case COMMAND_LOAD_MLSETTINGS:
+                    exp.mlSettings = ML_Settings.readSettingsFromFile(task);
                     break;
 
                 case COMMAND_SAMPLE_PAIRWISE:
