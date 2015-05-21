@@ -207,7 +207,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// After loading all options, we can replace the names for children, the parent, etc. with the actual objects
+        /// After loading all options, we can replace the names for children, the parent, etc. with the actual objects.
         /// </summary>
         private void initOptions()
         {

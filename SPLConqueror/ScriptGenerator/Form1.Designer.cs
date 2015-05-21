@@ -53,6 +53,9 @@
             this.bsamp_ForValidation = new System.Windows.Forms.CheckBox();
             this.bsamp_addButton = new System.Windows.Forms.Button();
             this.expDasign_group = new System.Windows.Forms.GroupBox();
+            this.num_oneFactorAtATime_num_Text = new System.Windows.Forms.TextBox();
+            this.num_oneFactorAtATime_num_Label = new System.Windows.Forms.Label();
+            this.num_oneFactorAtATime_Box = new System.Windows.Forms.CheckBox();
             this.num_rand_seed_Text = new System.Windows.Forms.TextBox();
             this.num_rand_seed_Label = new System.Windows.Forms.Label();
             this.num_Plackett_n_Box = new System.Windows.Forms.TextBox();
@@ -76,16 +79,17 @@
             this.num_BoxBehnken_check = new System.Windows.Forms.CheckBox();
             this.num_forValidationCheckBox = new System.Windows.Forms.CheckBox();
             this.expDesign_addButton = new System.Windows.Forms.Button();
-            this.num_oneFactorAtATime_Box = new System.Windows.Forms.CheckBox();
-            this.num_oneFactorAtATime_num_Label = new System.Windows.Forms.Label();
-            this.num_oneFactorAtATime_num_Text = new System.Windows.Forms.TextBox();
             this.logFile_Button = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.print_button = new System.Windows.Forms.RadioButton();
+            this.learn_button = new System.Windows.Forms.RadioButton();
             this.MlSettings_Box.SuspendLayout();
             this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
             this.addResultFile_Group.SuspendLayout();
             this.bsamp_group.SuspendLayout();
             this.expDasign_group.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // GenerateScript
@@ -362,6 +366,34 @@
             this.expDasign_group.TabStop = false;
             this.expDasign_group.Text = "Experimental design";
             // 
+            // num_oneFactorAtATime_num_Text
+            // 
+            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(199, 179);
+            this.num_oneFactorAtATime_num_Text.Name = "num_oneFactorAtATime_num_Text";
+            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(38, 20);
+            this.num_oneFactorAtATime_num_Text.TabIndex = 34;
+            this.num_oneFactorAtATime_num_Text.Text = "5";
+            this.num_oneFactorAtATime_num_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // num_oneFactorAtATime_num_Label
+            // 
+            this.num_oneFactorAtATime_num_Label.AutoSize = true;
+            this.num_oneFactorAtATime_num_Label.Location = new System.Drawing.Point(152, 181);
+            this.num_oneFactorAtATime_num_Label.Name = "num_oneFactorAtATime_num_Label";
+            this.num_oneFactorAtATime_num_Label.Size = new System.Drawing.Size(41, 13);
+            this.num_oneFactorAtATime_num_Label.TabIndex = 33;
+            this.num_oneFactorAtATime_num_Label.Text = "values:";
+            // 
+            // num_oneFactorAtATime_Box
+            // 
+            this.num_oneFactorAtATime_Box.AutoSize = true;
+            this.num_oneFactorAtATime_Box.Location = new System.Drawing.Point(7, 181);
+            this.num_oneFactorAtATime_Box.Name = "num_oneFactorAtATime_Box";
+            this.num_oneFactorAtATime_Box.Size = new System.Drawing.Size(126, 17);
+            this.num_oneFactorAtATime_Box.TabIndex = 32;
+            this.num_oneFactorAtATime_Box.Text = "One Factor at a Time";
+            this.num_oneFactorAtATime_Box.UseVisualStyleBackColor = true;
+            // 
             // num_rand_seed_Text
             // 
             this.num_rand_seed_Text.Location = new System.Drawing.Point(238, 137);
@@ -578,34 +610,6 @@
             this.expDesign_addButton.UseVisualStyleBackColor = true;
             this.expDesign_addButton.Click += new System.EventHandler(this.expDesign_addButton_Click);
             // 
-            // num_oneFactorAtATime_Box
-            // 
-            this.num_oneFactorAtATime_Box.AutoSize = true;
-            this.num_oneFactorAtATime_Box.Location = new System.Drawing.Point(7, 181);
-            this.num_oneFactorAtATime_Box.Name = "num_oneFactorAtATime_Box";
-            this.num_oneFactorAtATime_Box.Size = new System.Drawing.Size(126, 17);
-            this.num_oneFactorAtATime_Box.TabIndex = 32;
-            this.num_oneFactorAtATime_Box.Text = "One Factor at a Time";
-            this.num_oneFactorAtATime_Box.UseVisualStyleBackColor = true;
-            // 
-            // num_oneFactorAtATime_num_Label
-            // 
-            this.num_oneFactorAtATime_num_Label.AutoSize = true;
-            this.num_oneFactorAtATime_num_Label.Location = new System.Drawing.Point(152, 181);
-            this.num_oneFactorAtATime_num_Label.Name = "num_oneFactorAtATime_num_Label";
-            this.num_oneFactorAtATime_num_Label.Size = new System.Drawing.Size(41, 13);
-            this.num_oneFactorAtATime_num_Label.TabIndex = 33;
-            this.num_oneFactorAtATime_num_Label.Text = "values:";
-            // 
-            // num_oneFactorAtATime_num_Text
-            // 
-            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(199, 179);
-            this.num_oneFactorAtATime_num_Text.Name = "num_oneFactorAtATime_num_Text";
-            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(38, 20);
-            this.num_oneFactorAtATime_num_Text.TabIndex = 34;
-            this.num_oneFactorAtATime_num_Text.Text = "5";
-            this.num_oneFactorAtATime_num_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // logFile_Button
             // 
             this.logFile_Button.Location = new System.Drawing.Point(125, 14);
@@ -616,11 +620,43 @@
             this.logFile_Button.UseVisualStyleBackColor = true;
             this.logFile_Button.Click += new System.EventHandler(this.logFile_Button_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.learn_button);
+            this.groupBox1.Controls.Add(this.print_button);
+            this.groupBox1.Location = new System.Drawing.Point(703, 258);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(92, 74);
+            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabStop = false;
+            // 
+            // print_button
+            // 
+            this.print_button.AutoSize = true;
+            this.print_button.Location = new System.Drawing.Point(7, 20);
+            this.print_button.Name = "print_button";
+            this.print_button.Size = new System.Drawing.Size(45, 17);
+            this.print_button.TabIndex = 0;
+            this.print_button.TabStop = true;
+            this.print_button.Text = "print";
+            this.print_button.UseVisualStyleBackColor = true;
+            // 
+            // learn_button
+            // 
+            this.learn_button.Location = new System.Drawing.Point(7, 44);
+            this.learn_button.Name = "learn_button";
+            this.learn_button.Size = new System.Drawing.Size(52, 24);
+            this.learn_button.TabIndex = 1;
+            this.learn_button.TabStop = true;
+            this.learn_button.Text = "learn";
+            this.learn_button.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 415);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.logFile_Button);
             this.Controls.Add(this.expDasign_group);
             this.Controls.Add(this.bsamp_group);
@@ -641,6 +677,8 @@
             this.bsamp_group.PerformLayout();
             this.expDasign_group.ResumeLayout(false);
             this.expDasign_group.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -700,6 +738,9 @@
         private System.Windows.Forms.Label num_oneFactorAtATime_num_Label;
         private System.Windows.Forms.TextBox num_oneFactorAtATime_num_Text;
         private System.Windows.Forms.Button logFile_Button;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton learn_button;
+        private System.Windows.Forms.RadioButton print_button;
     }
 }
 

@@ -20,18 +20,18 @@ namespace MachineLearning.Sampling.Heuristics
         /// <returns>A list of configurations in which each configuration is represented by a list of SELECTED binary options</returns>
         public List<List<BinaryOption>> generatePairWiseVariants(VariabilityModel vm)
         {
-            List<String> activeLearning = new List<string>(new string[] { "ls", "inl", "cf", "dcr", "saa", "ive", "wlur", "lir", "vp", "saacyc" });
+            //List<String> activeLearning = new List<string>(new string[] { "ls", "inl", "cf", "dcr", "saa", "ive", "wlur", "lir", "vp", "saacyc" });
             this.configurations.Clear();
             List<BinaryOption> measuredElements = new List<BinaryOption>();
             foreach (BinaryOption current in vm.BinaryOptions)
             {
-                if (!activeLearning.Contains(current.Name))
-                    continue;
+                //if (!activeLearning.Contains(current.Name))
+                //    continue;
                 measuredElements.Add(current);
                 foreach (BinaryOption pair in vm.BinaryOptions)
                 {
-                    if (!activeLearning.Contains(pair.Name))
-                        continue;
+                    //if (!activeLearning.Contains(pair.Name))
+                    //    continue;
                     //Check parent-child relationship
                     if (pair.isAncestor(current) || current.isAncestor(pair) || pair == current)
                         continue;
