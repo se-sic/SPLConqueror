@@ -258,7 +258,6 @@ namespace CommandLine
                                 }
                             }
                         }
-
                         string[] para = task.Split(new char[] { ' ' });
                         // TODO very error prune..
                         ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2]);

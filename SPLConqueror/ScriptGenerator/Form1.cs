@@ -425,7 +425,7 @@ namespace ScriptGenerator
                                 scriptContent.Append(Commands.COMMAND_VARIABILITYMODEL + " " + varModel + System.Environment.NewLine);
                                 scriptContent.Append(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurement + System.Environment.NewLine);
                                 scriptContent.Append(Commands.COMMAND_SET_NFP + " " + pro.Name + System.Environment.NewLine);
-                                scriptContent.Append(samplingsToConsider(runs));
+                                scriptContent.Append(samplingsToConsider(runs, varModel.Directory.FullName));
                             }
                         }
                     }
@@ -452,14 +452,12 @@ namespace ScriptGenerator
         }
 
         /// <summary>
-        /// numeric
-        /// numeric validation
-        /// binary 
-        /// binary validation
+        /// 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private string samplingsToConsider(Dictionary<string, List<ScriptGenerator.Container>> runs)
+        /// <param name="runs"></param>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        private string samplingsToConsider(Dictionary<string, List<ScriptGenerator.Container>> runs, String directory)
         {
             runs = enrichSamplings(runs);
 
@@ -516,9 +514,22 @@ namespace ScriptGenerator
                             sb.Append(numericSamplingString);
                             sb.Append(binaryValidSamplingString);
                             sb.Append(numericValidSamplingString);
-                            sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
-                            sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
-                            sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                            if (print_button.Checked)
+                            {
+                                string fileName = binarySamplingString + "_" + numericSamplingString + "_" + binaryValidSamplingString + "_" + numericValidSamplingString + ".txt";
+                                fileName = fileName.Replace(System.Environment.NewLine, "-");
+                                fileName = fileName.Replace(" ", "");
+                                fileName = fileName.Replace(":", "-");
+
+                                sb.Append(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + directory + Path.DirectorySeparatorChar + fileName + " prefix suffix" + System.Environment.NewLine);
+                                sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                            }
+                            if (learn_button.Checked)
+                            {
+                                sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
+                                sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
+                                sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                            }
                         }
                     }
                 }
