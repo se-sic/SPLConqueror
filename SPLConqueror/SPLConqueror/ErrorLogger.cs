@@ -22,9 +22,6 @@ namespace SPLConqueror_Core
         {
             if (!msg.EndsWith(System.Environment.NewLine))
                 msg += System.Environment.NewLine;
-
-            //GlobalState.logInfo.log("Error: "+msg);
-
             if (writer != null)
                 writer.Write(msg);
             else
