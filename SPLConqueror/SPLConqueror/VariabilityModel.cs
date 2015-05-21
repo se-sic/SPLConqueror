@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace SPLConqueror_Core
 {
@@ -158,25 +159,30 @@ namespace SPLConqueror_Core
         /// Static method that reads an xml file and constructs a variability model using the stored information
         /// </summary>
         /// <param name="path">Path to the XML File</param>
-        /// <returns>The intatiated variability model</returns>
+        /// <returns>The instantiated variability model or null if there is no variability model at the path or if the model could not be parsed.</returns>
         public static VariabilityModel loadFromXML(String path)
         {
             VariabilityModel vm = new VariabilityModel("temp");
-            vm.loadXML(path);
-            return vm;
+            if (vm.loadXML(path))
+                return vm;
+            else
+                return null;
         }
 
         /// <summary>
         /// Loads an XML file containing information about the variability model.
         /// </summary>
         /// <param name="path">Path to the XML file</param>
-        public void loadXML(String path)
+        /// <returns>True if the variability model could be parsed, false otherwise.</returns>
+        public Boolean loadXML(String path)
         {
             XmlDocument dat = new System.Xml.XmlDocument();
+            if (!File.Exists(path))
+                return false;
             dat.Load(path);
+    
             XmlElement currentElemt = dat.DocumentElement;
             this.name = currentElemt.Attributes["name"].Value.ToString();
-
             foreach (XmlElement xmlNode in currentElemt.ChildNodes)
             {
                 switch (xmlNode.Name)
@@ -197,6 +203,7 @@ namespace SPLConqueror_Core
             }
 
             initOptions();
+            return true;
         }
 
         /// <summary>

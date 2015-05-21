@@ -185,6 +185,8 @@ namespace CommandLine
 
                 case COMMAND_VARIABILITYMODEL:
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
+                    if (GlobalState.varModel == null)
+                        GlobalState.logError.log("No variability model found at " + task);
                     break;
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
