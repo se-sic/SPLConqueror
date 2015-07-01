@@ -42,6 +42,8 @@ namespace SPLConqueror_Core
 
         private static Dictionary<Configuration, Configuration> substitutedConfigs = new Dictionary<Configuration, Configuration>();
 
+        public static List<ConfigurationOption> optionOrder = new List<ConfigurationOption>();
+
         private GlobalState(){ }
 
         /// <summary>
@@ -55,6 +57,7 @@ namespace SPLConqueror_Core
             evalutionSet = new ResultDB();
             infModel = null;
             nfProperties = new Dictionary<string,NFProperty>();
+            optionOrder = new List<ConfigurationOption>();
         }
 
 

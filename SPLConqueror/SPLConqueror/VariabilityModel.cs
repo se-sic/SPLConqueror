@@ -290,7 +290,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Searches for a binary option with the given name
+        /// Searches for a binary option with the given name.
         /// </summary>
         /// <param name="name">Name of the option</param>
         /// <returns>Either the binary option with the given name or NULL if not found</returns>
@@ -305,7 +305,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Searches for a numeric option with the given name
+        /// Searches for a numeric option with the given name.
         /// </summary>
         /// <param name="name">Name of the option</param>
         /// <returns>Either the numeric option with the given name or NULL if not found</returns>
@@ -317,6 +317,21 @@ namespace SPLConqueror_Core
                     return numO;
             }
             return null;
+        }
+
+        /// <summary>
+        /// This method retuns the configuration with the given name.
+        /// </summary>
+        /// <param name="name">Name of the option under consideration.</param>
+        /// <returns>The option with the given name or NULL of no option with the name is defined.</returns>
+        public ConfigurationOption getOption(String name)
+        {
+            ConfigurationOption opt = getNumericOption(name);
+            if (opt != null)
+                return opt;
+            opt = getBinaryOption(name);
+
+            return opt;
         }
 
 
