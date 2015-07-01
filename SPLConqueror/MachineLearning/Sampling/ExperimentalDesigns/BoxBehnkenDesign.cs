@@ -35,7 +35,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             items.AddRange(Enumerable.Range(0, k));
 
             List<Tuple<int, int>> combinations = combinate(items);
-            matrix = new int[combinations.Count() * 4 + 1, k]; // TODO > add multiple center point runs?
+            matrix = new int[combinations.Count() * 4 + 1, k]; 
 
             int offset = 0;
             foreach (Tuple<int, int> c in combinations)

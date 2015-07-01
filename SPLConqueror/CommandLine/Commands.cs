@@ -38,6 +38,9 @@ namespace CommandLine
 
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
+        
+        // using this option, a partial or full option order can be defined. The order is used during the printconfigs command. To define an order, the names of the options separated with whitespace have to be defined. If an option is not defined in the ordering its name and the value is printed at the end of the configurtion. 
+        public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
         public const string COMMAND_PRINT_CONFIGURATIONS = "printconfigs";
 
         public const string COMMAND_VARIABILITYMODEL = "vm";
@@ -183,6 +186,10 @@ namespace CommandLine
                     performOneCommand_ExpDesign(task);
                     break;
 
+                case COMMAND_SAMPLING_OPTIONORDER:
+                    parseOptionOrder(task)
+                    break;
+
                 case COMMAND_VARIABILITYMODEL:
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     if (GlobalState.varModel == null)
@@ -260,7 +267,7 @@ namespace CommandLine
                         }
                         string[] para = task.Split(new char[] { ' ' });
                         // TODO very error prune..
-                        ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2]);
+                        ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2], GlobalState.optionOrder);
                         printer.print(configurations);
 
                         break;
@@ -373,6 +380,17 @@ namespace CommandLine
                     return command;
             }
             return "";
+        }
+
+        private void parseOptionOrder(string task)
+        {
+            String[] optionNames = task.Split(' ');
+            foreach(String option in optionNames){
+                if (option.Trim().Length == 0)
+                    continue;
+                GlobalState.optionOrder.Add(GlobalState.varModel.getOption(option.Trim()));
+            }
+
         }
 
         /// <summary>

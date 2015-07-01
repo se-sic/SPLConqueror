@@ -198,10 +198,10 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// This mehtod returns nearest valid value of the numerical option to the given value.  
+        /// This method returns the valid value with the smallest distance to the value given.  
         /// </summary>
         /// <param name="inputValue">A value the nearest valid have to be computet for.</param>
-        /// <returns>A valid value.</returns>
+        /// <returns>The valid value with the smallest distance to the input value.</returns>
         public double nearestValidValue(double inputValue)
         {
             ////TODO improve performance with Dictionary as described in Wunderlist TODO
