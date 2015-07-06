@@ -7,6 +7,10 @@ using SPLConqueror_Core;
 
 namespace MachineLearning.Sampling.ExperimentalDesigns
 {
+    /// <summary>
+    /// This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of 
+    /// Quantitative Variables". 
+    /// </summary>
     public class BoxBehnkenDesign : ExperimentalDesign
     {
 
