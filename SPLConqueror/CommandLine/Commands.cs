@@ -146,12 +146,12 @@ namespace CommandLine
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             exp.addBinarySelection_Validation(vg.generateAllVariantsFast(GlobalState.varModel));
-                            exp.addBinarySampling_Validation("all-Binary");
+                            exp.addBinarySampling_Validation(COMMAND_SAMPLE_ALLBINARY);
                         }
                         else
                         {
                             exp.addBinarySelection_Learning(vg.generateAllVariantsFast(GlobalState.varModel));
-                            exp.addBinarySampling_Learning("all-Binary");
+                            exp.addBinarySampling_Learning(COMMAND_SAMPLE_ALLBINARY);
                         }
 
                         break;
@@ -552,12 +552,14 @@ namespace CommandLine
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:
                     design = new HyperSampling(optionsToConsider);
-                    ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
+                    if(parameter.ContainsKey("precision"))
+                        ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
                     break;
 
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
                     design = new OneFactorAtATime(optionsToConsider);
-                    ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
+                    if(parameter.ContainsKey("distinctValuesPerOption"))
+                        ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
                     break;
 
                 case COMMAND_EXPDESIGN_KEXCHANGE:
@@ -566,7 +568,8 @@ namespace CommandLine
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
                     design = new PlackettBurmanDesign(optionsToConsider);
-                    ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]), Int32.Parse(parameter["level"]));
+                    if(parameter.ContainsKey("measurements") && parameter.ContainsKey("level"))
+                        ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]), Int32.Parse(parameter["level"]));
                     break;
 
                 case COMMAND_EXPDESIGN_RANDOM:
