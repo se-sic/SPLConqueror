@@ -91,7 +91,8 @@ namespace SPLConqueror_Core
             foreach (Configuration c in configurations)
             {
                 sb.Append(prefix + " ");
-                sb.Append(c.ToString(order) + " ");
+                sb.Append("\""+c.ToString(order) + "\"");
+                sb.Append(c.OutputString(order) + " ");
                 sb.Append(postfix + " " + System.Environment.NewLine);
 
             }
