@@ -187,7 +187,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_SAMPLING_OPTIONORDER:
-                    parseOptionOrder(task)
+                    parseOptionOrder(task);
                     break;
 
                 case COMMAND_VARIABILITYMODEL:

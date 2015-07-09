@@ -426,6 +426,26 @@ namespace SPLConqueror_Core
             return sb.ToString();
         }
 
+        public string OutputString(List<ConfigurationOption> order)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (ConfigurationOption c in order)
+            {
+                if (c.GetType().Equals(typeof(BinaryOption)))
+                {
+                    if (this.BinaryOptions.ContainsKey((BinaryOption)c))
+                        sb.Append(c.OutputString + " ");
+                }
+                else
+                {
+                    if (this.numericOptions.ContainsKey((NumericOption)c))
+                        sb.Append(c.Prefix + this.NumericOptions[(NumericOption)c]+" ");
+                }
+
+            }
+            return sb.ToString();
+        }
+
         /// <summary>
         /// Creates a configuration based on a hash representation of that configuration.
         /// </summary>
