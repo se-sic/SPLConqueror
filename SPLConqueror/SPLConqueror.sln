@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptGenerator", "ScriptGenerator\ScriptGenerator.csproj", "{D56A3575-D0FD-45DD-82A1-D0BA3BAE834A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariabilitModel_GUI", "VariabilitModel_GUI\VariabilitModel_GUI.csproj", "{3C922751-4E88-47F8-89D7-1D3D4BC4E533}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,20 @@ Global
 		{D56A3575-D0FD-45DD-82A1-D0BA3BAE834A}.Release|x64.Build.0 = Release|x64
 		{D56A3575-D0FD-45DD-82A1-D0BA3BAE834A}.Release|x86.ActiveCfg = Release|x86
 		{D56A3575-D0FD-45DD-82A1-D0BA3BAE834A}.Release|x86.Build.0 = Release|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|Win32.ActiveCfg = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|x64.ActiveCfg = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|x86.ActiveCfg = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Debug|x86.Build.0 = Debug|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|Any CPU.ActiveCfg = Release|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|Mixed Platforms.Build.0 = Release|x64
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|Win32.ActiveCfg = Release|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|x64.ActiveCfg = Release|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|x86.ActiveCfg = Release|x86
+		{3C922751-4E88-47F8-89D7-1D3D4BC4E533}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

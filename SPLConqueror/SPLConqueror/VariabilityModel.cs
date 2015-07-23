@@ -334,6 +334,18 @@ namespace SPLConqueror_Core
             return opt;
         }
 
+        /// <summary>
+        /// Returns a list containing all configuration options of the variability model. 
+        /// </summary>
+        /// <returns>List of all options of the variability model.</returns>
+        public List<ConfigurationOption> getOptions()
+        {
+            List<ConfigurationOption> options = new List<ConfigurationOption>();
+            options.AddRange(binaryOptions);
+            options.AddRange(numericOptions);
+            return options;
+        }
+
 
         public bool configurationIsValid(Configuration c)
         {
@@ -344,6 +356,11 @@ namespace SPLConqueror_Core
             }
 
             return true;
+        }
+
+        public void deleteOption(ConfigurationOption toDelete)
+        {
+            throw new NotImplementedException();
         }
     }
 }
