@@ -99,7 +99,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// This option's child options. These are not necessarily implied.
         /// </summary>
-        internal List<ConfigurationOption> Children
+        public List<ConfigurationOption> Children
         {
             get { return children; }
             set { children = value; }
@@ -321,5 +321,15 @@ namespace SPLConqueror_Core
         {
             return this.Name;
         }
+
+        public void updateChildren()
+        {
+            foreach(ConfigurationOption other in vm.getOptions())
+            {
+                if(other.parent != null && other.parent.Equals(this) && !this.children.Contains(other))
+                    this.children.Add(other);
+            }
+        }
+
     }
 }

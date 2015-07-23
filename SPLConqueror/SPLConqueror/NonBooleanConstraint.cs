@@ -110,5 +110,10 @@ namespace SPLConqueror_Core
             return true;
         }
 
+
+        public override string ToString()
+        {
+            return leftHandSide + " " + comparator + " " + rightHandSide; 
+        }
     }
 }
