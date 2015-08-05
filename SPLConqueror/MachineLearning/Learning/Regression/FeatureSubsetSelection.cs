@@ -217,10 +217,18 @@ namespace MachineLearning.Learning.Regression
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
             addFeaturesToIgnore(errorOfFeature);
-            LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
-            newRound.learningError_relative = relativeErrorTrain;
-            newRound.validationError_relative = relativeErrorEval;
-            return newRound;
+            if (minimalErrorModel == null)
+            {
+                return null;
+            }
+            else
+            {
+                LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
+                newRound.learningError_relative = relativeErrorTrain;
+                newRound.validationError_relative = relativeErrorEval;
+                return newRound;
+
+            }
         }
 
         /// <summary>
@@ -779,7 +787,7 @@ namespace MachineLearning.Learning.Regression
         }
 
         /// <summary>
-        /// This methids creates a system array based on an ILNumerics array.
+        /// This method creates a system array based on an ILNumerics array.
         /// </summary>
         /// <typeparam name="T">The type of the objects stored in the array.</typeparam>
         /// <param name="A">The ILNumerics array.</param>
