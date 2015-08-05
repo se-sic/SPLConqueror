@@ -138,8 +138,8 @@ namespace SPLConqueror_Core
                             //-1 means that measurement failed... 3rd values strongly devigates in C.'s measurements, hence we use it only in case we have no other measurements
                             if (readMultipleMeasurements)
                             {
-                                if (property.Name != "run-real")
-                                    continue;
+                                //if (property.Name != "run-real")
+                                //    continue;
                                 String[] m = childNode.InnerText.ToString().Split(',');
                                 double val1 = 0;
                                 if(!Double.TryParse(m[0], out val1))
