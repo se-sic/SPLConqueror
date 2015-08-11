@@ -137,7 +137,7 @@ namespace CommandLine
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
-                    GlobalState.logInfo.log("Configurations loaded.");
+                    GlobalState.logInfo.log(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
 
                     break;
                 case COMMAND_SAMPLE_ALLBINARY:

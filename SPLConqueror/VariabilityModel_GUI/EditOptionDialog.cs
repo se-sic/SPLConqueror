@@ -14,16 +14,28 @@ namespace VariabilitModel_GUI
 
         List<string> currentEquation = new List<string>();
 
-        public EditOptionDialog()
+        VariabilityModel_Form parent = null;
+
+        public EditOptionDialog(VariabilityModel_Form parentForm)
         {
+            parent = parentForm;
             InitializeComponent();
+            updateGUI();
+        }
+
+        private void updateGUI()
+        {
+            this.otherBox.Items.Clear();
+            this.selectBox.Items.Clear();
+            this.nbConstraintBox.Items.Clear();
+
             List<ConfigurationOption> options = GlobalState.varModel.getOptions();
             for (int i = 0; i < options.Count; i++)
             {
+                this.selectBox.Items.Add(options[i]);
                 if (options[i] is BinaryOption)
                 {
                     this.otherBox.Items.Add(options[i]);
-                    this.selectBox.Items.Add(options[i]);
                 }
                 this.nbConstOptions.Items.Add(options[i]);
             }
@@ -32,6 +44,7 @@ namespace VariabilitModel_GUI
             {
                 this.nbConstraintBox.Items.Add(nbConst[i]);
             }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -147,11 +160,12 @@ namespace VariabilitModel_GUI
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.otherBox.Items.Remove(this.selectBox.Text);
+            
             BinaryOption temp = GlobalState.varModel.getBinaryOption(this.selectBox.Text);
-            //if (temp.isDynamic())
-            //    this.checkBox2.Checked = true;
-            //else
-            //    this.checkBox2.Checked = false;
+
+            if (temp == null)
+                return;
+            
             if (temp.Optional)
                 this.checkBox1.Checked = true;
             else
@@ -248,6 +262,7 @@ namespace VariabilitModel_GUI
                     return;
                 }
                 GlobalState.varModel.getOption(this.selectBox.Text).Name = renameOption_TextBox.Text;
+                updateGUI();
             }
         }
 
@@ -654,6 +669,11 @@ namespace VariabilitModel_GUI
         private void setParent_Click(object sender, EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void EditOptionDialog_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            parent.InitTreeView();
         }
 
        

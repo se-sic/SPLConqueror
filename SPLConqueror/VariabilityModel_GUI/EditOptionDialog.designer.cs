@@ -129,7 +129,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.OrangeRed;
-            this.label7.Location = new System.Drawing.Point(10, 191);
+            this.label7.Location = new System.Drawing.Point(10, 188);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(58, 15);
             this.label7.TabIndex = 7;
@@ -351,7 +351,7 @@
             // 
             this.requiresOverviewDelButton.BackColor = System.Drawing.Color.Transparent;
             this.requiresOverviewDelButton.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.requiresOverviewDelButton.Location = new System.Drawing.Point(13, 265);
+            this.requiresOverviewDelButton.Location = new System.Drawing.Point(13, 260);
             this.requiresOverviewDelButton.Name = "requiresOverviewDelButton";
             this.requiresOverviewDelButton.Size = new System.Drawing.Size(48, 23);
             this.requiresOverviewDelButton.TabIndex = 61;
@@ -387,7 +387,7 @@
             this.requiresOverview.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.requiresOverview.FormattingEnabled = true;
             this.requiresOverview.ItemHeight = 15;
-            this.requiresOverview.Location = new System.Drawing.Point(13, 210);
+            this.requiresOverview.Location = new System.Drawing.Point(13, 205);
             this.requiresOverview.Name = "requiresOverview";
             this.requiresOverview.Size = new System.Drawing.Size(101, 49);
             this.requiresOverview.TabIndex = 58;
@@ -751,9 +751,8 @@
             this.WarningLabel.AutoSize = true;
             this.WarningLabel.Location = new System.Drawing.Point(13, 573);
             this.WarningLabel.Name = "WarningLabel";
-            this.WarningLabel.Size = new System.Drawing.Size(46, 16);
+            this.WarningLabel.Size = new System.Drawing.Size(0, 16);
             this.WarningLabel.TabIndex = 54;
-            this.WarningLabel.Text = "label3";
             // 
             // EditOptionDialog
             // 
@@ -767,6 +766,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "EditOptionDialog";
             this.Text = "Assignment of Options and Constraints";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.EditOptionDialog_FormClosed);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
