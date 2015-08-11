@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptGenerator", "ScriptGenerator\ScriptGenerator.csproj", "{D56A3575-D0FD-45DD-82A1-D0BA3BAE834A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariabilitModel_GUI", "VariabilitModel_GUI\VariabilitModel_GUI.csproj", "{3C922751-4E88-47F8-89D7-1D3D4BC4E533}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariabilityModel_GUI", "VariabilityModel_GUI\VariabilityModel_GUI.csproj", "{3C922751-4E88-47F8-89D7-1D3D4BC4E533}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

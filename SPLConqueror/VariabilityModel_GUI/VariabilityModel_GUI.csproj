@@ -86,11 +86,11 @@
     <Compile Include="EditOptionDialog.designer.cs">
       <DependentUpon>EditOptionDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="VariabilityModel_Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="VariabilityModel_Form.Designer.cs">
+      <DependentUpon>VariabilityModel_Form.cs</DependentUpon>
     </Compile>
     <Compile Include="NewOption.cs">
       <SubType>Form</SubType>
@@ -103,8 +103,8 @@
     <EmbeddedResource Include="EditOptionDialog.resx">
       <DependentUpon>EditOptionDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="VariabilityModel_Form.resx">
+      <DependentUpon>VariabilityModel_Form.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewOption.resx">
       <DependentUpon>NewOption.cs</DependentUpon>

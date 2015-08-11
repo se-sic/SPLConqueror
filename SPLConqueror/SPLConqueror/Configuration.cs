@@ -419,7 +419,7 @@ namespace SPLConqueror_Core
                 else
                 {
                     if (this.numericOptions.ContainsKey((NumericOption)c))
-                        sb.Append(c.Name + DEFAULT_SEPARATOR);
+                        sb.Append(c.Name +";"+ this.numericOptions[(NumericOption)c] + DEFAULT_SEPARATOR);
                 }
 
             }
