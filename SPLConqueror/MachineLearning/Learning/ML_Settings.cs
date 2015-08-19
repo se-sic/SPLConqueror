@@ -71,6 +71,28 @@ namespace MachineLearning.Learning
         public bool withHierarchy = true;
 
         /// <summary>
+        /// Defines how candidate features are generated.  False - candidates 
+        /// are generated in each step based on the features in the model and a
+        /// set of initial features.  True - all possible combinations of initial
+        /// features (up to featureSizeTreshold) are generated and used as
+        /// candidates (brute force means, that features alredy present in the
+        /// model are not taken inot account).
+        /// </summary>
+        public bool bruteForceCandidates = false;
+
+        /// <summary>
+        /// Enables an optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates.
+        /// </summary>
+        public bool ignoreBadFeatures = true;
+
+        /// <summary>
+        /// If true, stop learning if the whole process is running longer than 1 hour and the current round runs longer then 30 minutes.
+        /// </summary>
+        public bool stopOnLongRound = true;
+
+        public double candidateSizePenalty = 0;
+
+        /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
         /// <param name="settings">All settings to be changed in a string with whitespaces as separator .</param>
