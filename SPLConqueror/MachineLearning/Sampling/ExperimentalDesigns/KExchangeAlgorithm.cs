@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using ILNumerics;
+using System.IO;
+using Accord.Math;
+using Accord.Math.Decompositions;
 using SPLConqueror_Core;
 using ILNumerics;
 
@@ -189,6 +192,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 configs.Add(run);
             }
 
+            this.selectedConfigurations = configs;
+
             return true;
         }
 
@@ -262,7 +267,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         private ILArray<double> calculateDispersion(double[,] matrix)
         {
             ILArray<double> tmp = matrix;
-            return ILMath.pinv(ILMath.multiply(tmp, tmp.T));
+            return ((double[,])MachineLearning.Learning.Regression.FeatureSubsetSelection.toSystemMatrix<double>((ILMath.multiply(tmp, tmp.T)))).PseudoInverse();
         }
 
         private double[] getRowFromMatrix(double[,] matrix, int row)
@@ -287,7 +292,12 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             ILArray<double> vector = run;
             ILArray<double> matrix = candidateMatrix;
-            ILArray<double> inverse = ILMath.pinv(ILMath.multiply(matrix, matrix.T));
+
+            ILArray<double> matrixTimes = ILMath.multiply(matrix, matrix.T);
+
+
+
+            ILArray<double> inverse = ((double[,])MachineLearning.Learning.Regression.FeatureSubsetSelection.toSystemMatrix<double>(matrixTimes)).PseudoInverse();
 
             return (double)ILMath.multiply(ILMath.multiply(vector.T, inverse), vector);
         }
@@ -303,7 +313,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             ILArray<double> xiIL = xi;
             ILArray<double> xjIL = xj;
             ILArray<double> matrixIL = matrix;
-            ILArray<double> inverse = ILMath.pinv(ILMath.multiply(matrixIL, matrixIL.T));
+            ILArray<double> inverse = ((double[,])MachineLearning.Learning.Regression.FeatureSubsetSelection.toSystemMatrix<double>((ILMath.multiply(matrixIL, matrixIL.T)))).PseudoInverse();
 
             return (double)ILMath.multiply(ILMath.multiply(xiIL.T, inverse), xjIL);
         }
