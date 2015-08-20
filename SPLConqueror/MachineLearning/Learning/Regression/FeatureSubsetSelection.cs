@@ -792,7 +792,7 @@ namespace MachineLearning.Learning.Regression
         /// <typeparam name="T">The type of the objects stored in the array.</typeparam>
         /// <param name="A">The ILNumerics array.</param>
         /// <returns>Returns the newly created system array contain the values of the ILNumerics array.</returns>
-        private static System.Array toSystemMatrix<T>(ILInArray<T> A)
+        public static System.Array toSystemMatrix<T>(ILInArray<T> A)
         {
             using (ILScope.Enter(A))
             {
