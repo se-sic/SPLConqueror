@@ -313,7 +313,7 @@ namespace MachineLearning.Learning.Regression
                     listOfCandidates.Add(basicFeature);
 
                 if (this.MLsettings.withHierarchy && this.hierachyLevel == 1)
-                    return listOfCandidates;
+                    continue;
 
                 foreach (var feature in currentModel)
                 {
