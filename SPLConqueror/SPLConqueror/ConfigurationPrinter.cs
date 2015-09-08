@@ -97,10 +97,9 @@ namespace SPLConqueror_Core
 
             }
 
-            using (StreamWriter outfile = new StreamWriter(file))
-            {
-                outfile.Write(sb.ToString());
-            }
+            StreamWriter outfile = new StreamWriter(file);
+            outfile.Write(sb.ToString());
+
             return true;
 
         }
