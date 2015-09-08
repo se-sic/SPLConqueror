@@ -8,10 +8,10 @@ namespace MachineLearning.Learning.Regression
 {
     public class LearningRound
     {
-        internal double learningError = Double.MaxValue;
-        internal double validationError = Double.MaxValue;
-        internal double learningError_relative = Double.MaxValue;
-        internal double validationError_relative = Double.MaxValue;
+        public double learningError = Double.MaxValue;
+        public double validationError = Double.MaxValue;
+        public double learningError_relative = Double.MaxValue;
+        public double validationError_relative = Double.MaxValue;
         private List<Feature> featureSet = new List<Feature>();
 
         public List<Feature> FeatureSet
@@ -19,7 +19,7 @@ namespace MachineLearning.Learning.Regression
             get { return featureSet; }
             set { featureSet = value; }
         }
-        internal int round = 0;
+        public int round = 0;
 
         /// <summary>
         /// TODO: Prints the information learned in a round.

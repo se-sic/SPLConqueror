@@ -11,6 +11,10 @@ namespace SPLConqueror_Core
 
         protected StreamWriter writer = null;
 
+        public Logger()
+        {
+        }
+
         public Logger(String outputLocation)
         {
             if (writer != null)

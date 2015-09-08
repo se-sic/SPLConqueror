@@ -8,11 +8,16 @@ namespace SPLConqueror_Core
     public class InfoLogger : Logger
     {
 
+        public InfoLogger()
+        {
+        }
+
         public InfoLogger(String location)
             : base(location)
         {
             if(writer!=null)
                 Console.SetOut(writer);
+
         }
 
         /// <summary>
@@ -21,6 +26,7 @@ namespace SPLConqueror_Core
         /// <param name="msg">The message to be printed or logged</param>
         public override void log(String msg)
         {
+
             if (!msg.EndsWith(System.Environment.NewLine))
                 msg += System.Environment.NewLine;
 
