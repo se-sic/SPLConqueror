@@ -134,7 +134,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Collects all options that are excluded by this option and that have the same parent
+        /// Collects all options that are excluded by this option and that have the same parent (i.e., the alternative group)
         /// </summary>
         /// <returns>The list of alternative options</returns>
         public List<ConfigurationOption> collectAlternativeOptions()
@@ -142,19 +142,19 @@ namespace SPLConqueror_Core
             List<ConfigurationOption> result = new List<ConfigurationOption>();
             if (this.Optional == true)
                 return result;
-            foreach (var exclOptions in Excluded_Options)
+            foreach (var exclOptionGroup in Excluded_Options)
             {
-                if (exclOptions.Count != 1)
+                if (exclOptionGroup.Count != 1)
                     continue;
-                if (exclOptions[0].Parent == this.Parent && ((BinaryOption)exclOptions[0]).Optional == false)
-                    result.Add(exclOptions[0]);
+                if (exclOptionGroup[0].Parent == this.Parent && ((BinaryOption)exclOptionGroup[0]).Optional == false)
+                    result.Add(exclOptionGroup[0]);
             }
             return result;
         }
 
 
         /// <summary>
-        /// Collects all options that are excluded by this option, but do not have the same parent
+        /// Collects all options that are excluded by this option, but do not have the same parent (i.e., cross-tree constraints)
         /// </summary>
         /// <returns>The list of cross-tree excluded options.</returns>
         public List<List<ConfigurationOption>> getNonAlternativeExlcudedOptions()
