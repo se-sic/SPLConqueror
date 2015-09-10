@@ -120,6 +120,8 @@ namespace PerformancePrediction_GUI
         private void cleanButton_Click(object sender, EventArgs e)
         {
             cmd.performOneCommand(Commands.COMMAND_CLEAR_SAMPLING);
+            perfInfGridView.Rows.Clear();
+            perfInfGridView.Refresh();
         }
 
         private void StartLearningButton_Click(object sender, EventArgs e)
@@ -170,30 +172,39 @@ namespace PerformancePrediction_GUI
 
         Dictionary<String, int> termToIndex = null;
 
+        int perfInfGrid_definedColumns = 3;
+
         private void InitDataGridView()
         {
             termToIndex = new Dictionary<string, int>();
 
             perfInfGridView.ColumnCount = cmd.exp.mlSettings.numberOfRounds * 2;
-            perfInfGridView.Columns[0].Name = "round";
-            perfInfGridView.Columns[1].Name = "error";
+            perfInfGridView.Columns[0].Name = "Round";
+            perfInfGridView.Columns[1].Name = "Learning error";
+            perfInfGridView.Columns[1].Name = "Global error";
         }
 
         private void UpdateDataGridView(MachineLearning.Learning.Regression.LearningRound lastRound)
         {
             string[] row = new string[cmd.exp.mlSettings.numberOfRounds * 2];
             row[0] = lastRound.round.ToString();
-            row[1] = lastRound.validationError.ToString();
+            row[1] = lastRound.learningError.ToString();
+            double relativeError = 0.0;
+            cmd.exp.learning.computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+            row[2] = relativeError.ToString();
+
+
+            lastRound.learningError.ToString();
 
             foreach (Feature f in lastRound.FeatureSet)
             {
                 string name = f.ToString();
                 if (!termToIndex.ContainsKey(name))
                 {
-                    perfInfGridView.Invoke((MethodInvoker)(() => perfInfGridView.Columns[termToIndex.Count + 2].Name = name));
+                    perfInfGridView.Invoke((MethodInvoker)(() => perfInfGridView.Columns[termToIndex.Count + perfInfGrid_definedColumns].Name = name));
 
-                    
-                    termToIndex.Add(name, termToIndex.Count + 2);
+
+                    termToIndex.Add(name, termToIndex.Count + perfInfGrid_definedColumns);
 
                 }
                 row[termToIndex[name]] = f.Constant.ToString();
@@ -213,6 +224,8 @@ namespace PerformancePrediction_GUI
         {
             string validation = "";
 
+            if (this.OW.Checked)
+                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
             if (this.OW.Checked)
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
             if (this.PW.Checked)
