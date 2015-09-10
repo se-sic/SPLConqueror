@@ -211,7 +211,7 @@ namespace ScriptGenerator
 
             if (bsamp_FW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_FEATUREWISE+" " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_OPTIONWISE+" " + validation);
                 keyInfo += "FW ";
             }
             if (bsamp_PW_box.Checked)
@@ -221,7 +221,7 @@ namespace ScriptGenerator
             }
             if (bsamp_negFW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_NEGATIVE_FEATUREWISE+" " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE+" " + validation);
                 keyInfo += "negFW ";
             }
             if (bsamp_all_box.Checked)

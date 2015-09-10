@@ -81,8 +81,8 @@
             this.expDesign_addButton = new System.Windows.Forms.Button();
             this.logFile_Button = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.print_button = new System.Windows.Forms.RadioButton();
             this.learn_button = new System.Windows.Forms.RadioButton();
+            this.print_button = new System.Windows.Forms.RadioButton();
             this.MlSettings_Box.SuspendLayout();
             this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
@@ -630,6 +630,16 @@
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             // 
+            // learn_button
+            // 
+            this.learn_button.Location = new System.Drawing.Point(7, 44);
+            this.learn_button.Name = "learn_button";
+            this.learn_button.Size = new System.Drawing.Size(52, 24);
+            this.learn_button.TabIndex = 1;
+            this.learn_button.TabStop = true;
+            this.learn_button.Text = "learn";
+            this.learn_button.UseVisualStyleBackColor = true;
+            // 
             // print_button
             // 
             this.print_button.AutoSize = true;
@@ -640,16 +650,6 @@
             this.print_button.TabStop = true;
             this.print_button.Text = "print";
             this.print_button.UseVisualStyleBackColor = true;
-            // 
-            // learn_button
-            // 
-            this.learn_button.Location = new System.Drawing.Point(7, 44);
-            this.learn_button.Name = "learn_button";
-            this.learn_button.Size = new System.Drawing.Size(52, 24);
-            this.learn_button.TabIndex = 1;
-            this.learn_button.TabStop = true;
-            this.learn_button.Text = "learn";
-            this.learn_button.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

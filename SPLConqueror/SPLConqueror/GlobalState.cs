@@ -11,9 +11,9 @@ namespace SPLConqueror_Core
     public class GlobalState
     {
 
-        public static InfoLogger logInfo = new InfoLogger(null);
+        public static Logger logInfo = new InfoLogger(null);
 
-        public static ErrorLogger logError = new ErrorLogger(null);
+        public static Logger logError = new ErrorLogger(null);
 
         /// <summary>
         /// The variability model of the case study. 
