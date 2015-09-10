@@ -43,7 +43,7 @@ namespace MachineLearning.Solver
 
             location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing tailing dir sep
             location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing project path
-            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//test for PerformancePrediction_GUI
+            //location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//test for PerformancePrediction_GUI
 
 #if release
             catalog.Catalogs.Add(new DirectoryCatalog(location));
