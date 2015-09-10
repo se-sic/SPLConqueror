@@ -71,6 +71,7 @@
             this.readMeasurements = new System.Windows.Forms.Button();
             this.cleanButton = new System.Windows.Forms.Button();
             this.readVarModel = new System.Windows.Forms.Button();
+            this.binWholePop = new System.Windows.Forms.CheckBox();
             this.BinarySamplingGroup.SuspendLayout();
             this.LogGroup.SuspendLayout();
             this.expDasign_group.SuspendLayout();
@@ -82,15 +83,16 @@
             // 
             // BinarySamplingGroup
             // 
+            this.BinarySamplingGroup.Controls.Add(this.binWholePop);
             this.BinarySamplingGroup.Controls.Add(this.negOW);
             this.BinarySamplingGroup.Controls.Add(this.PW);
             this.BinarySamplingGroup.Controls.Add(this.OW);
             this.BinarySamplingGroup.Location = new System.Drawing.Point(113, 12);
             this.BinarySamplingGroup.Name = "BinarySamplingGroup";
-            this.BinarySamplingGroup.Size = new System.Drawing.Size(397, 45);
+            this.BinarySamplingGroup.Size = new System.Drawing.Size(461, 45);
             this.BinarySamplingGroup.TabIndex = 0;
             this.BinarySamplingGroup.TabStop = false;
-            this.BinarySamplingGroup.Text = "Binary Sampling Heuristics";
+            this.BinarySamplingGroup.Text = "Binary Options: Sampling Heuristics ";
             // 
             // negOW
             // 
@@ -144,7 +146,7 @@
             // 
             // StartLearningButton
             // 
-            this.StartLearningButton.Location = new System.Drawing.Point(982, 713);
+            this.StartLearningButton.Location = new System.Drawing.Point(981, 225);
             this.StartLearningButton.Name = "StartLearningButton";
             this.StartLearningButton.Size = new System.Drawing.Size(93, 23);
             this.StartLearningButton.TabIndex = 4;
@@ -181,10 +183,10 @@
             this.expDasign_group.Controls.Add(this.num_BoxBehnken_check);
             this.expDasign_group.Location = new System.Drawing.Point(113, 63);
             this.expDasign_group.Name = "expDasign_group";
-            this.expDasign_group.Size = new System.Drawing.Size(397, 184);
+            this.expDasign_group.Size = new System.Drawing.Size(461, 184);
             this.expDasign_group.TabIndex = 8;
             this.expDasign_group.TabStop = false;
-            this.expDasign_group.Text = "Experimental design";
+            this.expDasign_group.Text = "Numeric Options: Experimental Designs";
             // 
             // num_allValues
             // 
@@ -198,7 +200,7 @@
             // 
             // num_oneFactorAtATime_num_Text
             // 
-            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(201, 134);
+            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(205, 134);
             this.num_oneFactorAtATime_num_Text.Name = "num_oneFactorAtATime_num_Text";
             this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(36, 20);
             this.num_oneFactorAtATime_num_Text.TabIndex = 34;
@@ -208,7 +210,7 @@
             // num_oneFactorAtATime_num_Label
             // 
             this.num_oneFactorAtATime_num_Label.AutoSize = true;
-            this.num_oneFactorAtATime_num_Label.Location = new System.Drawing.Point(152, 136);
+            this.num_oneFactorAtATime_num_Label.Location = new System.Drawing.Point(156, 136);
             this.num_oneFactorAtATime_num_Label.Name = "num_oneFactorAtATime_num_Label";
             this.num_oneFactorAtATime_num_Label.Size = new System.Drawing.Size(41, 13);
             this.num_oneFactorAtATime_num_Label.TabIndex = 33;
@@ -226,7 +228,7 @@
             // 
             // num_rand_seed_Text
             // 
-            this.num_rand_seed_Text.Location = new System.Drawing.Point(279, 92);
+            this.num_rand_seed_Text.Location = new System.Drawing.Point(283, 92);
             this.num_rand_seed_Text.Name = "num_rand_seed_Text";
             this.num_rand_seed_Text.Size = new System.Drawing.Size(33, 20);
             this.num_rand_seed_Text.TabIndex = 31;
@@ -236,7 +238,7 @@
             // num_rand_seed_Label
             // 
             this.num_rand_seed_Label.AutoSize = true;
-            this.num_rand_seed_Label.Location = new System.Drawing.Point(247, 92);
+            this.num_rand_seed_Label.Location = new System.Drawing.Point(251, 92);
             this.num_rand_seed_Label.Name = "num_rand_seed_Label";
             this.num_rand_seed_Label.Size = new System.Drawing.Size(33, 13);
             this.num_rand_seed_Label.TabIndex = 30;
@@ -244,7 +246,7 @@
             // 
             // num_Plackett_n_Box
             // 
-            this.num_Plackett_n_Box.Location = new System.Drawing.Point(279, 66);
+            this.num_Plackett_n_Box.Location = new System.Drawing.Point(283, 66);
             this.num_Plackett_n_Box.Name = "num_Plackett_n_Box";
             this.num_Plackett_n_Box.Size = new System.Drawing.Size(33, 20);
             this.num_Plackett_n_Box.TabIndex = 29;
@@ -254,7 +256,7 @@
             // num_Plackett_n_Label
             // 
             this.num_Plackett_n_Label.AutoSize = true;
-            this.num_Plackett_n_Label.Location = new System.Drawing.Point(247, 68);
+            this.num_Plackett_n_Label.Location = new System.Drawing.Point(251, 68);
             this.num_Plackett_n_Label.Name = "num_Plackett_n_Label";
             this.num_Plackett_n_Label.Size = new System.Drawing.Size(16, 13);
             this.num_Plackett_n_Label.TabIndex = 28;
@@ -262,7 +264,7 @@
             // 
             // num_Plackett_Level_Box
             // 
-            this.num_Plackett_Level_Box.Location = new System.Drawing.Point(201, 66);
+            this.num_Plackett_Level_Box.Location = new System.Drawing.Point(205, 66);
             this.num_Plackett_Level_Box.Name = "num_Plackett_Level_Box";
             this.num_Plackett_Level_Box.Size = new System.Drawing.Size(36, 20);
             this.num_Plackett_Level_Box.TabIndex = 27;
@@ -272,7 +274,7 @@
             // num_Plackett_Level_Label
             // 
             this.num_Plackett_Level_Label.AutoSize = true;
-            this.num_Plackett_Level_Label.Location = new System.Drawing.Point(152, 68);
+            this.num_Plackett_Level_Label.Location = new System.Drawing.Point(156, 68);
             this.num_Plackett_Level_Label.Name = "num_Plackett_Level_Label";
             this.num_Plackett_Level_Label.Size = new System.Drawing.Size(32, 13);
             this.num_Plackett_Level_Label.TabIndex = 26;
@@ -280,7 +282,7 @@
             // 
             // num_hyper_percent_text
             // 
-            this.num_hyper_percent_text.Location = new System.Drawing.Point(201, 110);
+            this.num_hyper_percent_text.Location = new System.Drawing.Point(205, 110);
             this.num_hyper_percent_text.Name = "num_hyper_percent_text";
             this.num_hyper_percent_text.Size = new System.Drawing.Size(36, 20);
             this.num_hyper_percent_text.TabIndex = 25;
@@ -290,7 +292,7 @@
             // num_hyper_percent_Label
             // 
             this.num_hyper_percent_Label.AutoSize = true;
-            this.num_hyper_percent_Label.Location = new System.Drawing.Point(152, 113);
+            this.num_hyper_percent_Label.Location = new System.Drawing.Point(156, 113);
             this.num_hyper_percent_Label.Name = "num_hyper_percent_Label";
             this.num_hyper_percent_Label.Size = new System.Drawing.Size(46, 13);
             this.num_hyper_percent_Label.TabIndex = 24;
@@ -298,7 +300,7 @@
             // 
             // num_random_n_Text
             // 
-            this.num_random_n_Text.Location = new System.Drawing.Point(201, 89);
+            this.num_random_n_Text.Location = new System.Drawing.Point(205, 89);
             this.num_random_n_Text.Name = "num_random_n_Text";
             this.num_random_n_Text.Size = new System.Drawing.Size(36, 20);
             this.num_random_n_Text.TabIndex = 23;
@@ -308,7 +310,7 @@
             // num_rand_n_Label
             // 
             this.num_rand_n_Label.AutoSize = true;
-            this.num_rand_n_Label.Location = new System.Drawing.Point(152, 92);
+            this.num_rand_n_Label.Location = new System.Drawing.Point(156, 92);
             this.num_rand_n_Label.Name = "num_rand_n_Label";
             this.num_rand_n_Label.Size = new System.Drawing.Size(16, 13);
             this.num_rand_n_Label.TabIndex = 22;
@@ -316,7 +318,7 @@
             // 
             // num_kEx_k_Box
             // 
-            this.num_kEx_k_Box.Location = new System.Drawing.Point(279, 41);
+            this.num_kEx_k_Box.Location = new System.Drawing.Point(283, 41);
             this.num_kEx_k_Box.Name = "num_kEx_k_Box";
             this.num_kEx_k_Box.Size = new System.Drawing.Size(33, 20);
             this.num_kEx_k_Box.TabIndex = 21;
@@ -326,7 +328,7 @@
             // num_kEx_k_Label
             // 
             this.num_kEx_k_Label.AutoSize = true;
-            this.num_kEx_k_Label.Location = new System.Drawing.Point(247, 44);
+            this.num_kEx_k_Label.Location = new System.Drawing.Point(251, 44);
             this.num_kEx_k_Label.Name = "num_kEx_k_Label";
             this.num_kEx_k_Label.Size = new System.Drawing.Size(16, 13);
             this.num_kEx_k_Label.TabIndex = 20;
@@ -334,7 +336,7 @@
             // 
             // num_kEx_n_Box
             // 
-            this.num_kEx_n_Box.Location = new System.Drawing.Point(201, 41);
+            this.num_kEx_n_Box.Location = new System.Drawing.Point(205, 41);
             this.num_kEx_n_Box.Name = "num_kEx_n_Box";
             this.num_kEx_n_Box.Size = new System.Drawing.Size(36, 20);
             this.num_kEx_n_Box.TabIndex = 19;
@@ -344,7 +346,7 @@
             // num_kEx_n_Label
             // 
             this.num_kEx_n_Label.AutoSize = true;
-            this.num_kEx_n_Label.Location = new System.Drawing.Point(152, 43);
+            this.num_kEx_n_Label.Location = new System.Drawing.Point(156, 43);
             this.num_kEx_n_Label.Name = "num_kEx_n_Label";
             this.num_kEx_n_Label.Size = new System.Drawing.Size(16, 13);
             this.num_kEx_n_Label.TabIndex = 18;
@@ -375,9 +377,9 @@
             this.num_PlackettBurman_check.AutoSize = true;
             this.num_PlackettBurman_check.Location = new System.Drawing.Point(7, 66);
             this.num_PlackettBurman_check.Name = "num_PlackettBurman_check";
-            this.num_PlackettBurman_check.Size = new System.Drawing.Size(101, 17);
+            this.num_PlackettBurman_check.Size = new System.Drawing.Size(104, 17);
             this.num_PlackettBurman_check.TabIndex = 13;
-            this.num_PlackettBurman_check.Text = "PlackettBurman";
+            this.num_PlackettBurman_check.Text = "Plackett-Burman";
             this.num_PlackettBurman_check.UseVisualStyleBackColor = true;
             // 
             // num_kEx_check
@@ -385,9 +387,9 @@
             this.num_kEx_check.AutoSize = true;
             this.num_kEx_check.Location = new System.Drawing.Point(7, 43);
             this.num_kEx_check.Name = "num_kEx_check";
-            this.num_kEx_check.Size = new System.Drawing.Size(128, 17);
+            this.num_kEx_check.Size = new System.Drawing.Size(138, 17);
             this.num_kEx_check.TabIndex = 12;
-            this.num_kEx_check.Text = "k-Exchange algorithm";
+            this.num_kEx_check.Text = "D-Optimal (k-Exchange)";
             this.num_kEx_check.UseVisualStyleBackColor = true;
             // 
             // num_FullFactorial_check
@@ -464,7 +466,7 @@
             this.MlSettings_Box.Size = new System.Drawing.Size(292, 205);
             this.MlSettings_Box.TabIndex = 11;
             this.MlSettings_Box.TabStop = false;
-            this.MlSettings_Box.Text = "mlSettings";
+            this.MlSettings_Box.Text = "Machine-Learning Settings";
             // 
             // mlSettingsPanel
             // 
@@ -487,7 +489,7 @@
             this.readMeasurements.Name = "readMeasurements";
             this.readMeasurements.Size = new System.Drawing.Size(95, 36);
             this.readMeasurements.TabIndex = 12;
-            this.readMeasurements.Text = "read Measurements";
+            this.readMeasurements.Text = "Read Measurements";
             this.readMeasurements.UseVisualStyleBackColor = true;
             this.readMeasurements.Click += new System.EventHandler(this.readMeasurements_Click);
             // 
@@ -507,9 +509,19 @@
             this.readVarModel.Name = "readVarModel";
             this.readVarModel.Size = new System.Drawing.Size(95, 36);
             this.readVarModel.TabIndex = 14;
-            this.readVarModel.Text = "read Variability Model";
+            this.readVarModel.Text = "Read Variability Model";
             this.readVarModel.UseVisualStyleBackColor = true;
             this.readVarModel.Click += new System.EventHandler(this.readVarModel_Click);
+            // 
+            // binWholePop
+            // 
+            this.binWholePop.AutoSize = true;
+            this.binWholePop.Location = new System.Drawing.Point(309, 19);
+            this.binWholePop.Name = "binWholePop";
+            this.binWholePop.Size = new System.Drawing.Size(110, 17);
+            this.binWholePop.TabIndex = 3;
+            this.binWholePop.Text = "Whole Population";
+            this.binWholePop.UseVisualStyleBackColor = true;
             // 
             // PerformancePrediction_Frame
             // 
@@ -589,6 +601,7 @@
         private System.Windows.Forms.Button cleanButton;
         public System.Windows.Forms.TextBox LogBox;
         private System.Windows.Forms.Button readVarModel;
+        private System.Windows.Forms.CheckBox binWholePop;
     }
 }
 
