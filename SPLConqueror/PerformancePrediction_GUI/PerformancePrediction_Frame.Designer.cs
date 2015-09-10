@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.BinarySamplingGroup = new System.Windows.Forms.GroupBox();
+            this.binWholePop = new System.Windows.Forms.CheckBox();
             this.negOW = new System.Windows.Forms.CheckBox();
             this.PW = new System.Windows.Forms.CheckBox();
             this.OW = new System.Windows.Forms.CheckBox();
@@ -67,18 +68,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.MlSettings_Box = new System.Windows.Forms.GroupBox();
             this.mlSettingsPanel = new System.Windows.Forms.Panel();
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.readMeasurements = new System.Windows.Forms.Button();
             this.cleanButton = new System.Windows.Forms.Button();
             this.readVarModel = new System.Windows.Forms.Button();
-            this.binWholePop = new System.Windows.Forms.CheckBox();
             this.BinarySamplingGroup.SuspendLayout();
             this.LogGroup.SuspendLayout();
             this.expDasign_group.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.perfInfGridView)).BeginInit();
             this.pim_group.SuspendLayout();
             this.MlSettings_Box.SuspendLayout();
-            this.mlSettingsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // BinarySamplingGroup
@@ -87,12 +85,22 @@
             this.BinarySamplingGroup.Controls.Add(this.negOW);
             this.BinarySamplingGroup.Controls.Add(this.PW);
             this.BinarySamplingGroup.Controls.Add(this.OW);
-            this.BinarySamplingGroup.Location = new System.Drawing.Point(113, 12);
+            this.BinarySamplingGroup.Location = new System.Drawing.Point(113, 7);
             this.BinarySamplingGroup.Name = "BinarySamplingGroup";
-            this.BinarySamplingGroup.Size = new System.Drawing.Size(461, 45);
+            this.BinarySamplingGroup.Size = new System.Drawing.Size(461, 50);
             this.BinarySamplingGroup.TabIndex = 0;
             this.BinarySamplingGroup.TabStop = false;
             this.BinarySamplingGroup.Text = "Binary Options: Sampling Heuristics ";
+            // 
+            // binWholePop
+            // 
+            this.binWholePop.AutoSize = true;
+            this.binWholePop.Location = new System.Drawing.Point(309, 19);
+            this.binWholePop.Name = "binWholePop";
+            this.binWholePop.Size = new System.Drawing.Size(110, 17);
+            this.binWholePop.TabIndex = 3;
+            this.binWholePop.Text = "Whole Population";
+            this.binWholePop.UseVisualStyleBackColor = true;
             // 
             // negOW
             // 
@@ -126,27 +134,27 @@
             // 
             // LogBox
             // 
-            this.LogBox.Location = new System.Drawing.Point(7, 19);
+            this.LogBox.Location = new System.Drawing.Point(7, 20);
             this.LogBox.Multiline = true;
             this.LogBox.Name = "LogBox";
             this.LogBox.ReadOnly = true;
             this.LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LogBox.Size = new System.Drawing.Size(950, 70);
+            this.LogBox.Size = new System.Drawing.Size(1048, 70);
             this.LogBox.TabIndex = 2;
             // 
             // LogGroup
             // 
             this.LogGroup.Controls.Add(this.LogBox);
-            this.LogGroup.Location = new System.Drawing.Point(13, 641);
+            this.LogGroup.Location = new System.Drawing.Point(13, 708);
             this.LogGroup.Name = "LogGroup";
-            this.LogGroup.Size = new System.Drawing.Size(963, 95);
+            this.LogGroup.Size = new System.Drawing.Size(1061, 95);
             this.LogGroup.TabIndex = 3;
             this.LogGroup.TabStop = false;
             this.LogGroup.Text = "Log";
             // 
             // StartLearningButton
             // 
-            this.StartLearningButton.Location = new System.Drawing.Point(981, 225);
+            this.StartLearningButton.Location = new System.Drawing.Point(683, 298);
             this.StartLearningButton.Name = "StartLearningButton";
             this.StartLearningButton.Size = new System.Drawing.Size(93, 23);
             this.StartLearningButton.TabIndex = 4;
@@ -425,7 +433,7 @@
             // perfInfGridView
             // 
             this.perfInfGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.perfInfGridView.Location = new System.Drawing.Point(6, 19);
+            this.perfInfGridView.Location = new System.Drawing.Point(6, 20);
             this.perfInfGridView.Name = "perfInfGridView";
             this.perfInfGridView.Size = new System.Drawing.Size(1049, 356);
             this.perfInfGridView.TabIndex = 9;
@@ -433,7 +441,7 @@
             // pim_group
             // 
             this.pim_group.Controls.Add(this.perfInfGridView);
-            this.pim_group.Location = new System.Drawing.Point(13, 254);
+            this.pim_group.Location = new System.Drawing.Point(13, 321);
             this.pim_group.Name = "pim_group";
             this.pim_group.Size = new System.Drawing.Size(1061, 381);
             this.pim_group.TabIndex = 4;
@@ -461,27 +469,19 @@
             // MlSettings_Box
             // 
             this.MlSettings_Box.Controls.Add(this.mlSettingsPanel);
-            this.MlSettings_Box.Location = new System.Drawing.Point(782, 12);
+            this.MlSettings_Box.Location = new System.Drawing.Point(782, 7);
             this.MlSettings_Box.Name = "MlSettings_Box";
-            this.MlSettings_Box.Size = new System.Drawing.Size(292, 205);
+            this.MlSettings_Box.Size = new System.Drawing.Size(292, 314);
             this.MlSettings_Box.TabIndex = 11;
             this.MlSettings_Box.TabStop = false;
             this.MlSettings_Box.Text = "Machine-Learning Settings";
             // 
             // mlSettingsPanel
             // 
-            this.mlSettingsPanel.Controls.Add(this.vScrollBar1);
-            this.mlSettingsPanel.Location = new System.Drawing.Point(7, 20);
+            this.mlSettingsPanel.Location = new System.Drawing.Point(7, 19);
             this.mlSettingsPanel.Name = "mlSettingsPanel";
-            this.mlSettingsPanel.Size = new System.Drawing.Size(279, 166);
+            this.mlSettingsPanel.Size = new System.Drawing.Size(279, 289);
             this.mlSettingsPanel.TabIndex = 0;
-            // 
-            // vScrollBar1
-            // 
-            this.vScrollBar1.Location = new System.Drawing.Point(262, 1);
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(17, 165);
-            this.vScrollBar1.TabIndex = 0;
             // 
             // readMeasurements
             // 
@@ -505,7 +505,7 @@
             // 
             // readVarModel
             // 
-            this.readVarModel.Location = new System.Drawing.Point(12, 13);
+            this.readVarModel.Location = new System.Drawing.Point(13, 7);
             this.readVarModel.Name = "readVarModel";
             this.readVarModel.Size = new System.Drawing.Size(95, 36);
             this.readVarModel.TabIndex = 14;
@@ -513,21 +513,11 @@
             this.readVarModel.UseVisualStyleBackColor = true;
             this.readVarModel.Click += new System.EventHandler(this.readVarModel_Click);
             // 
-            // binWholePop
-            // 
-            this.binWholePop.AutoSize = true;
-            this.binWholePop.Location = new System.Drawing.Point(309, 19);
-            this.binWholePop.Name = "binWholePop";
-            this.binWholePop.Size = new System.Drawing.Size(110, 17);
-            this.binWholePop.TabIndex = 3;
-            this.binWholePop.Text = "Whole Population";
-            this.binWholePop.UseVisualStyleBackColor = true;
-            // 
             // PerformancePrediction_Frame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1086, 748);
+            this.ClientSize = new System.Drawing.Size(1086, 815);
             this.Controls.Add(this.readVarModel);
             this.Controls.Add(this.cleanButton);
             this.Controls.Add(this.readMeasurements);
@@ -550,7 +540,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.perfInfGridView)).EndInit();
             this.pim_group.ResumeLayout(false);
             this.MlSettings_Box.ResumeLayout(false);
-            this.mlSettingsPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -596,7 +585,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox MlSettings_Box;
         private System.Windows.Forms.Panel mlSettingsPanel;
-        private System.Windows.Forms.VScrollBar vScrollBar1;
         private System.Windows.Forms.Button readMeasurements;
         private System.Windows.Forms.Button cleanButton;
         public System.Windows.Forms.TextBox LogBox;

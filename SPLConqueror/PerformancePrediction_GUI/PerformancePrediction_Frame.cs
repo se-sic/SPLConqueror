@@ -57,9 +57,9 @@ namespace PerformancePrediction_GUI
                 TextBox t = new TextBox();
                 mlSettingsPanel.Controls.Add(t);
 
-                t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i);
+                t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i );
                 t.Name = fields[i].Name + "_textBox";
-                t.Size = new System.Drawing.Size(150, 20);
+                t.Size = new System.Drawing.Size(150, 15);
                 t.TabIndex = i * 2 + 1;
                 t.Text = fields[i].GetValue(settingsObject).ToString();
             }
