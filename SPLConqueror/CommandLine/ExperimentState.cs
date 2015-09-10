@@ -10,10 +10,10 @@ using MachineLearning.Learning.Regression;
 
 namespace CommandLine
 {
-    class ExperimentState
+    public class ExperimentState
     {
 
-        public FeatureSubsetSelection learning = null;
+        public FeatureSubsetSelection learning = new FeatureSubsetSelection();
 
         public ML_Settings mlSettings = new ML_Settings();
 
@@ -129,7 +129,7 @@ namespace CommandLine
             numericSamplings_Validation = "";
             numericSelection_Validation = new List<Dictionary<NumericOption, double>>();
 
-            this.learning = null;
+            this.learning = new FeatureSubsetSelection();
         }
 
         /// <summary>

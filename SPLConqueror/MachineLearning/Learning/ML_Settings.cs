@@ -99,6 +99,8 @@ namespace MachineLearning.Learning
         /// <returns>A settings object with the values specified in the file.</returns>
         public static ML_Settings readSettings(string settings)
         {
+            settings = settings.Trim();
+            settings = settings.Replace(System.Environment.NewLine, "");
             ML_Settings mls = new ML_Settings();
             String[] settingArray = settings.Split(' ');
 

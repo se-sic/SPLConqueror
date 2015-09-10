@@ -31,9 +31,9 @@ namespace CommandLine
         public const string COMMAND_EVALUATION_SET = "evaluationset";
 
         public const string COMMAND_SAMPLE_ALLBINARY = "allbinary";
-        public const string COMMAND_SAMPLE_FEATUREWISE = "featurewise";
+        public const string COMMAND_SAMPLE_OPTIONWISE = "featurewise";
         public const string COMMAND_SAMPLE_PAIRWISE = "pairwise";
-        public const string COMMAND_SAMPLE_NEGATIVE_FEATUREWISE = "negfw";
+        public const string COMMAND_SAMPLE_NEGATIVE_OPTIONWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
 
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
@@ -62,7 +62,7 @@ namespace CommandLine
         public const string COMMAND_SUBSCRIPT = "script";
 
 
-        ExperimentState exp = new ExperimentState();
+        public ExperimentState exp = new ExperimentState();
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -198,7 +198,7 @@ namespace CommandLine
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
                     break;
-                case COMMAND_SAMPLE_FEATUREWISE:
+                case COMMAND_SAMPLE_OPTIONWISE:
                     FeatureWise fw = new FeatureWise();
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
@@ -353,7 +353,7 @@ namespace CommandLine
                             + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
                             
                         // prepare the machine learning 
-                        exp.learning = new FeatureSubsetSelection(infMod, exp.mlSettings);
+                        exp.learning.init(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
                         exp.learning.setValidationSet(configurations_Validation);
                         exp.learning.learn();
@@ -361,7 +361,7 @@ namespace CommandLine
                     }
                     break;
 
-                case COMMAND_SAMPLE_NEGATIVE_FEATUREWISE:
+                case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
                     NegFeatureWise neg = new NegFeatureWise();
 
