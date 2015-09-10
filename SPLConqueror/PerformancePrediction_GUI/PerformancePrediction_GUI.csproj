@@ -98,10 +98,6 @@
       <Project>{1F035958-15B1-450A-BFC5-BEBD95376C40}</Project>
       <Name>SPLConqueror_Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VariabilityModel_GUI\VariabilityModel_GUI.csproj">
-      <Project>{3C922751-4E88-47F8-89D7-1D3D4BC4E533}</Project>
-      <Name>VariabilityModel_GUI</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

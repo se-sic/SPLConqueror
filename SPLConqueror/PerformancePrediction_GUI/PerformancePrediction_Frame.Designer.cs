@@ -198,9 +198,9 @@
             // 
             // num_oneFactorAtATime_num_Text
             // 
-            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(199, 134);
+            this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(201, 134);
             this.num_oneFactorAtATime_num_Text.Name = "num_oneFactorAtATime_num_Text";
-            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(38, 20);
+            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(36, 20);
             this.num_oneFactorAtATime_num_Text.TabIndex = 34;
             this.num_oneFactorAtATime_num_Text.Text = "5";
             this.num_oneFactorAtATime_num_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -226,9 +226,9 @@
             // 
             // num_rand_seed_Text
             // 
-            this.num_rand_seed_Text.Location = new System.Drawing.Point(238, 92);
+            this.num_rand_seed_Text.Location = new System.Drawing.Point(279, 92);
             this.num_rand_seed_Text.Name = "num_rand_seed_Text";
-            this.num_rand_seed_Text.Size = new System.Drawing.Size(29, 20);
+            this.num_rand_seed_Text.Size = new System.Drawing.Size(33, 20);
             this.num_rand_seed_Text.TabIndex = 31;
             this.num_rand_seed_Text.Text = "0";
             this.num_rand_seed_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -236,7 +236,7 @@
             // num_rand_seed_Label
             // 
             this.num_rand_seed_Label.AutoSize = true;
-            this.num_rand_seed_Label.Location = new System.Drawing.Point(205, 92);
+            this.num_rand_seed_Label.Location = new System.Drawing.Point(247, 92);
             this.num_rand_seed_Label.Name = "num_rand_seed_Label";
             this.num_rand_seed_Label.Size = new System.Drawing.Size(33, 13);
             this.num_rand_seed_Label.TabIndex = 30;
@@ -244,9 +244,9 @@
             // 
             // num_Plackett_n_Box
             // 
-            this.num_Plackett_n_Box.Location = new System.Drawing.Point(238, 64);
+            this.num_Plackett_n_Box.Location = new System.Drawing.Point(279, 66);
             this.num_Plackett_n_Box.Name = "num_Plackett_n_Box";
-            this.num_Plackett_n_Box.Size = new System.Drawing.Size(29, 20);
+            this.num_Plackett_n_Box.Size = new System.Drawing.Size(33, 20);
             this.num_Plackett_n_Box.TabIndex = 29;
             this.num_Plackett_n_Box.Text = "9";
             this.num_Plackett_n_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -254,7 +254,7 @@
             // num_Plackett_n_Label
             // 
             this.num_Plackett_n_Label.AutoSize = true;
-            this.num_Plackett_n_Label.Location = new System.Drawing.Point(221, 66);
+            this.num_Plackett_n_Label.Location = new System.Drawing.Point(247, 68);
             this.num_Plackett_n_Label.Name = "num_Plackett_n_Label";
             this.num_Plackett_n_Label.Size = new System.Drawing.Size(16, 13);
             this.num_Plackett_n_Label.TabIndex = 28;
@@ -262,9 +262,9 @@
             // 
             // num_Plackett_Level_Box
             // 
-            this.num_Plackett_Level_Box.Location = new System.Drawing.Point(185, 64);
+            this.num_Plackett_Level_Box.Location = new System.Drawing.Point(201, 66);
             this.num_Plackett_Level_Box.Name = "num_Plackett_Level_Box";
-            this.num_Plackett_Level_Box.Size = new System.Drawing.Size(31, 20);
+            this.num_Plackett_Level_Box.Size = new System.Drawing.Size(36, 20);
             this.num_Plackett_Level_Box.TabIndex = 27;
             this.num_Plackett_Level_Box.Text = "3";
             this.num_Plackett_Level_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -272,7 +272,7 @@
             // num_Plackett_Level_Label
             // 
             this.num_Plackett_Level_Label.AutoSize = true;
-            this.num_Plackett_Level_Label.Location = new System.Drawing.Point(152, 66);
+            this.num_Plackett_Level_Label.Location = new System.Drawing.Point(152, 68);
             this.num_Plackett_Level_Label.Name = "num_Plackett_Level_Label";
             this.num_Plackett_Level_Label.Size = new System.Drawing.Size(32, 13);
             this.num_Plackett_Level_Label.TabIndex = 26;
@@ -280,7 +280,7 @@
             // 
             // num_hyper_percent_text
             // 
-            this.num_hyper_percent_text.Location = new System.Drawing.Point(202, 110);
+            this.num_hyper_percent_text.Location = new System.Drawing.Point(201, 110);
             this.num_hyper_percent_text.Name = "num_hyper_percent_text";
             this.num_hyper_percent_text.Size = new System.Drawing.Size(36, 20);
             this.num_hyper_percent_text.TabIndex = 25;
@@ -298,9 +298,9 @@
             // 
             // num_random_n_Text
             // 
-            this.num_random_n_Text.Location = new System.Drawing.Point(172, 89);
+            this.num_random_n_Text.Location = new System.Drawing.Point(201, 89);
             this.num_random_n_Text.Name = "num_random_n_Text";
-            this.num_random_n_Text.Size = new System.Drawing.Size(30, 20);
+            this.num_random_n_Text.Size = new System.Drawing.Size(36, 20);
             this.num_random_n_Text.TabIndex = 23;
             this.num_random_n_Text.Text = "100";
             this.num_random_n_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -316,7 +316,7 @@
             // 
             // num_kEx_k_Box
             // 
-            this.num_kEx_k_Box.Location = new System.Drawing.Point(224, 41);
+            this.num_kEx_k_Box.Location = new System.Drawing.Point(279, 41);
             this.num_kEx_k_Box.Name = "num_kEx_k_Box";
             this.num_kEx_k_Box.Size = new System.Drawing.Size(33, 20);
             this.num_kEx_k_Box.TabIndex = 21;
@@ -326,7 +326,7 @@
             // num_kEx_k_Label
             // 
             this.num_kEx_k_Label.AutoSize = true;
-            this.num_kEx_k_Label.Location = new System.Drawing.Point(211, 44);
+            this.num_kEx_k_Label.Location = new System.Drawing.Point(247, 44);
             this.num_kEx_k_Label.Name = "num_kEx_k_Label";
             this.num_kEx_k_Label.Size = new System.Drawing.Size(16, 13);
             this.num_kEx_k_Label.TabIndex = 20;
@@ -334,9 +334,9 @@
             // 
             // num_kEx_n_Box
             // 
-            this.num_kEx_n_Box.Location = new System.Drawing.Point(166, 41);
+            this.num_kEx_n_Box.Location = new System.Drawing.Point(201, 41);
             this.num_kEx_n_Box.Name = "num_kEx_n_Box";
-            this.num_kEx_n_Box.Size = new System.Drawing.Size(39, 20);
+            this.num_kEx_n_Box.Size = new System.Drawing.Size(36, 20);
             this.num_kEx_n_Box.TabIndex = 19;
             this.num_kEx_n_Box.Text = "50";
             this.num_kEx_n_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
