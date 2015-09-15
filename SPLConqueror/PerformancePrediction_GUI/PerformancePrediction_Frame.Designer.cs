@@ -37,7 +37,6 @@
             this.LogGroup = new System.Windows.Forms.GroupBox();
             this.StartLearningButton = new System.Windows.Forms.Button();
             this.expDasign_group = new System.Windows.Forms.GroupBox();
-            this.num_allValues = new System.Windows.Forms.CheckBox();
             this.num_oneFactorAtATime_num_Text = new System.Windows.Forms.TextBox();
             this.num_oneFactorAtATime_num_Label = new System.Windows.Forms.Label();
             this.num_oneFactorAtATime_Box = new System.Windows.Forms.CheckBox();
@@ -164,7 +163,6 @@
             // 
             // expDasign_group
             // 
-            this.expDasign_group.Controls.Add(this.num_allValues);
             this.expDasign_group.Controls.Add(this.num_oneFactorAtATime_num_Text);
             this.expDasign_group.Controls.Add(this.num_oneFactorAtATime_num_Label);
             this.expDasign_group.Controls.Add(this.num_oneFactorAtATime_Box);
@@ -191,20 +189,10 @@
             this.expDasign_group.Controls.Add(this.num_BoxBehnken_check);
             this.expDasign_group.Location = new System.Drawing.Point(113, 63);
             this.expDasign_group.Name = "expDasign_group";
-            this.expDasign_group.Size = new System.Drawing.Size(461, 184);
+            this.expDasign_group.Size = new System.Drawing.Size(461, 160);
             this.expDasign_group.TabIndex = 8;
             this.expDasign_group.TabStop = false;
             this.expDasign_group.Text = "Numeric Options: Experimental Designs";
-            // 
-            // num_allValues
-            // 
-            this.num_allValues.AutoSize = true;
-            this.num_allValues.Location = new System.Drawing.Point(7, 159);
-            this.num_allValues.Name = "num_allValues";
-            this.num_allValues.Size = new System.Drawing.Size(72, 17);
-            this.num_allValues.TabIndex = 35;
-            this.num_allValues.Text = "All Values";
-            this.num_allValues.UseVisualStyleBackColor = true;
             // 
             // num_oneFactorAtATime_num_Text
             // 
@@ -495,7 +483,7 @@
             // 
             // cleanButton
             // 
-            this.cleanButton.Location = new System.Drawing.Point(12, 211);
+            this.cleanButton.Location = new System.Drawing.Point(12, 181);
             this.cleanButton.Name = "cleanButton";
             this.cleanButton.Size = new System.Drawing.Size(75, 36);
             this.cleanButton.TabIndex = 13;
@@ -578,7 +566,6 @@
         private System.Windows.Forms.CheckBox num_FullFactorial_check;
         private System.Windows.Forms.CheckBox num_CentralComposite_check;
         private System.Windows.Forms.CheckBox num_BoxBehnken_check;
-        private System.Windows.Forms.CheckBox num_allValues;
         private System.Windows.Forms.DataGridView perfInfGridView;
         private System.Windows.Forms.GroupBox pim_group;
         private System.Windows.Forms.CheckedListBox nfpSelection;
