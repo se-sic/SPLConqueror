@@ -153,7 +153,7 @@
             // 
             // StartLearningButton
             // 
-            this.StartLearningButton.Location = new System.Drawing.Point(683, 298);
+            this.StartLearningButton.Location = new System.Drawing.Point(639, 298);
             this.StartLearningButton.Name = "StartLearningButton";
             this.StartLearningButton.Size = new System.Drawing.Size(93, 23);
             this.StartLearningButton.TabIndex = 4;
@@ -457,9 +457,9 @@
             // MlSettings_Box
             // 
             this.MlSettings_Box.Controls.Add(this.mlSettingsPanel);
-            this.MlSettings_Box.Location = new System.Drawing.Point(782, 7);
+            this.MlSettings_Box.Location = new System.Drawing.Point(738, 7);
             this.MlSettings_Box.Name = "MlSettings_Box";
-            this.MlSettings_Box.Size = new System.Drawing.Size(292, 314);
+            this.MlSettings_Box.Size = new System.Drawing.Size(336, 314);
             this.MlSettings_Box.TabIndex = 11;
             this.MlSettings_Box.TabStop = false;
             this.MlSettings_Box.Text = "Machine-Learning Settings";
@@ -468,7 +468,7 @@
             // 
             this.mlSettingsPanel.Location = new System.Drawing.Point(7, 19);
             this.mlSettingsPanel.Name = "mlSettingsPanel";
-            this.mlSettingsPanel.Size = new System.Drawing.Size(279, 289);
+            this.mlSettingsPanel.Size = new System.Drawing.Size(323, 289);
             this.mlSettingsPanel.TabIndex = 0;
             // 
             // readMeasurements

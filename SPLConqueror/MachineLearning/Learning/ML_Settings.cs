@@ -168,18 +168,44 @@ namespace MachineLearning.Learning
 
             if (fi.FieldType.FullName.Equals("System.Boolean"))
             {
-                fi.SetValue(this, Convert.ToBoolean(value));
-                return true;
+                if (value == "true" || value == "false")
+                {
+                    fi.SetValue(this, Convert.ToBoolean(value));
+                    return true;
+                }else
+                    return false;
+
             }
             if (fi.FieldType.FullName.Equals("System.Int32"))
             {
-                fi.SetValue(this, Convert.ToInt32(value));
-                return true;
+                int n;
+                bool isNumeric = int.TryParse(value, out n);
+
+                if (isNumeric)
+                {
+                    fi.SetValue(this, n);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             if (fi.FieldType.FullName.Equals("System.Int64"))
             {
-                fi.SetValue(this, Convert.ToInt64(value));
-                return true;
+                int n;
+                bool isNumeric = int.TryParse(value, out n);
+
+                if (isNumeric)
+                {
+                    fi.SetValue(this, n);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
             }
             if (fi.FieldType.FullName.Equals("MachineLearning.Learning.ML_Settings+LossFunction"))
             {
@@ -201,8 +227,19 @@ namespace MachineLearning.Learning
             }
             if (fi.FieldType.FullName.Equals("System.Double"))
             {
-                fi.SetValue(this, Convert.ToDouble(value));
-                return true;
+                double n;
+                bool isNumeric = double.TryParse(value, out n);
+
+                if (isNumeric)
+                {
+                    fi.SetValue(this, n);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
             }
 
 
