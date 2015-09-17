@@ -20,8 +20,9 @@ namespace MicrosoftSolverFoundation
         /// </summary>
         /// <param name="config">The list of binary options that are SELECTED (only selected options must occur in the list).</param>
         /// <param name="vm">The variability model that represents the context of the configuration.</param>
+        /// <param name="vm">Whether the given list of options represents only a partial configuration. This means that options not in config might be additionally select to obtain a valid configuration.</param>
         /// <returns>True if it is a valid selection w.r.t. the VM, false otherwise</returns>
-        public bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm)
+        public bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm, bool partialConfiguration)
 		{
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
@@ -36,7 +37,7 @@ namespace MicrosoftSolverFoundation
                 {
                     S.AddConstraints(S.Implies(S.True, term));
                 }
-                else
+                else if (!partialConfiguration)
                 {
                     S.AddConstraints(S.Implies(S.True, S.Not(term)));
                 }
@@ -45,17 +46,6 @@ namespace MicrosoftSolverFoundation
             ConstraintSolverSolution sol = S.Solve();
 			if (sol.HasFoundSolution)
 			{
-				int count = 0;
-                foreach (CspTerm cT in variables)
-                {
-                    if (sol.GetIntegerValue(cT) == 1)
-                        count++;
-                }
-                //Needs testing TODO
-				if (count != config.Count)
-				{
-					return false;
-				}
 				return true;
 			}
 			else
