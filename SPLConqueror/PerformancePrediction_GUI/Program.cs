@@ -17,13 +17,6 @@ namespace PerformancePrediction_GUI
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
-
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new VariabilityModel_Form());
-
-            //new Thread(() => Application.Run(someForm)).Start();
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new PerformancePrediction_Frame());
