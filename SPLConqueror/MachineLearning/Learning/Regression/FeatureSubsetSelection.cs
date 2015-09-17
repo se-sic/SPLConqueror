@@ -11,6 +11,7 @@ using SPLConqueror_Core;
 using MachineLearning.Learning;
 using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
+using MachineLearning.Solver;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -409,6 +410,7 @@ namespace MachineLearning.Learning.Regression
         /// The basicFeatures comes from the pool of initial features (e.g., all configuration options of the variability model or predefined combinations of options).
         /// Further candidates are combinations of the basic features. That is, we generate candidates as representatives of interactions or higher polynomial functions.
         /// Which candidates (i.e. their maximum size) and polynomial degrees are generated depends on the parameters given in ML_settings.
+        /// Candidates that do not sattisfy the fieature model are removed.
         /// </summary>
         /// <param name="currentModel">The model containing the features found so far. These features are combined with the basic feature.</param>
         /// <param name="basicFeatures">The features for which we generate new candidates.</param>
@@ -437,7 +439,15 @@ namespace MachineLearning.Learning.Regression
                     {
                         newCandidate = newCandidate == null ? new Feature(feature.ToString(), feature.getVariabilityModel()) : new Feature(newCandidate.ToString() + '*' + feature.ToString(), feature.getVariabilityModel());
                     }
-                    bruteForceCandidates.Add(newCandidate);
+                    if (newCandidate != null)
+                    {
+                        var configChecker = new CheckConfigSAT(null);
+                        bool isValid = configChecker.checkConfigurationSAT(newCandidate.participatingBoolOptions.ToList(), newCandidate.getVariabilityModel(), true);
+                        if (isValid)
+                        {
+                            bruteForceCandidates.Add(newCandidate);
+                        }
+                    }
                 }
             }
 
