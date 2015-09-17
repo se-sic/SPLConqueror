@@ -44,24 +44,24 @@ namespace PerformancePrediction_GUI
 
             for (int i = 0; i < fields.Length; i++)
             {
-                Label l = new Label();
-                mlSettingsPanel.Controls.Add(l);
+                    Label l = new Label();
+                    mlSettingsPanel.Controls.Add(l);
 
-                l.AutoSize = true;
-                l.Location = new System.Drawing.Point(5, 5 + ML_FIELDS_OFFSET * i);
-                l.Name = fields[i].Name + "_label";
-                l.Size = new System.Drawing.Size(35, 15);
-                l.TabIndex = i * 2;
-                l.Text = fields[i].Name;
+                    l.AutoSize = true;
+                    l.Location = new System.Drawing.Point(5, 5 + ML_FIELDS_OFFSET * i);
+                    l.Name = fields[i].Name + "_label";
+                    l.Size = new System.Drawing.Size(50, 15);
+                    l.TabIndex = i * 2;
+                    l.Text = fields[i].Name;
 
-                TextBox t = new TextBox();
-                mlSettingsPanel.Controls.Add(t);
+                    TextBox t = new TextBox();
+                    mlSettingsPanel.Controls.Add(t);
 
-                t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i);
-                t.Name = fields[i].Name + "_textBox";
-                t.Size = new System.Drawing.Size(150, 20);
-                t.TabIndex = i * 2 + 1;
-                t.Text = fields[i].GetValue(settingsObject).ToString();
+                    t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i);
+                    t.Name = fields[i].Name + "_textBox";
+                    t.Size = new System.Drawing.Size(150, 15);
+                    t.TabIndex = i * 2 + 1;
+                    t.Text = fields[i].GetValue(settingsObject).ToString();
             }
         }
 
@@ -120,19 +120,25 @@ namespace PerformancePrediction_GUI
         private void cleanButton_Click(object sender, EventArgs e)
         {
             cmd.performOneCommand(Commands.COMMAND_CLEAR_SAMPLING);
+            perfInfGridView.Rows.Clear();
+            perfInfGridView.Refresh();
         }
 
         private void StartLearningButton_Click(object sender, EventArgs e)
         {
+            cleanButton_Click(null, null);
+
             setMLSettings();
 
 
-            createSamplingCommands();
+            bool ableToStart = createSamplingCommands();
 
-            System.Threading.Thread myThread;
-            myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
-            myThread.Start();
-            InitDataGridView();
+            if(ableToStart){
+                System.Threading.Thread myThread;
+                myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
+                myThread.Start();
+                InitDataGridView();
+            }   
         }
 
         private void setMLSettings()
@@ -170,33 +176,42 @@ namespace PerformancePrediction_GUI
 
         Dictionary<String, int> termToIndex = null;
 
+        int perfInfGrid_definedColumns = 3;
+
         private void InitDataGridView()
         {
             termToIndex = new Dictionary<string, int>();
 
             perfInfGridView.ColumnCount = cmd.exp.mlSettings.numberOfRounds * 2;
-            perfInfGridView.Columns[0].Name = "round";
-            perfInfGridView.Columns[1].Name = "error";
+            perfInfGridView.Columns[0].Name = "Round";
+            perfInfGridView.Columns[1].Name = "Learning error";
+            perfInfGridView.Columns[2].Name = "Global error";
         }
 
         private void UpdateDataGridView(MachineLearning.Learning.Regression.LearningRound lastRound)
         {
             string[] row = new string[cmd.exp.mlSettings.numberOfRounds * 2];
             row[0] = lastRound.round.ToString();
-            row[1] = lastRound.validationError.ToString();
+            row[1] = lastRound.learningError.ToString();
+            double relativeError = 0.0;
+            cmd.exp.learning.computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+            row[2] = relativeError.ToString();
+
+
+            lastRound.learningError.ToString();
 
             foreach (Feature f in lastRound.FeatureSet)
             {
                 string name = f.ToString();
                 if (!termToIndex.ContainsKey(name))
                 {
-                    perfInfGridView.Invoke((MethodInvoker)(() => perfInfGridView.Columns[termToIndex.Count + 2].Name = name));
+                    perfInfGridView.Invoke((MethodInvoker)(() => perfInfGridView.Columns[termToIndex.Count + perfInfGrid_definedColumns].Name = name));
 
-                    
-                    termToIndex.Add(name, termToIndex.Count + 2);
+
+                    termToIndex.Add(name, termToIndex.Count + perfInfGrid_definedColumns);
 
                 }
-                row[termToIndex[name]] = f.Constant.ToString();
+                row[termToIndex[name]] = Math.Round(f.Constant,2).ToString();
             }
 
             
@@ -209,49 +224,75 @@ namespace PerformancePrediction_GUI
 
         }
 
-        private void createSamplingCommands()
+        private bool createSamplingCommands()
         {
+            bool binarySelected = false;
+            bool numSelected = false;
             string validation = "";
 
             if (this.OW.Checked)
+            {
+                binarySelected = true;
+                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
+            }
+            if (this.OW.Checked)
+            {
+                binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
-            if (this.PW.Checked)
+            }
+            if (this.PW.Checked){
+                binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);
-            if (this.negOW.Checked)
+            }
+            if (this.negOW.Checked){
+                binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
-
+            }
             if (num_BoxBehnken_check.Checked)
+            {
+                numSelected = true;
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
+            }
             if (num_CentralComposite_check.Checked)
+            {
+                numSelected = true;
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
-            if (num_FullFactorial_check.Checked)
+            }
+            if (num_FullFactorial_check.Checked){
+                numSelected = true;
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
+            }
             if (num_hyperSampling_check.Checked)
             {
                 if (num_hyper_percent_text.Text.Trim() == "")
                 {
                     error();
-                    return;
+                    return false;
                 }
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
+                numSelected = true;
             }
             if (num_kEx_check.Checked)
             {
                 if (num_kEx_n_Box.Text.Trim() == "" || num_kEx_k_Box.Text.Trim() == "")
                 {
                     error();
-                    return;
+                    return false;
+
                 }
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
+                numSelected = true;
             }
             if (num_randomSampling_num.Checked)
             {
                 if (num_random_n_Text.Text.Trim() == "" || num_rand_seed_Text.Text.Trim() == "")
                 {
                     error();
-                    return;
+                    return false;
+
                 }
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
+                numSelected = true;
             }
 
             if (num_oneFactorAtATime_Box.Checked)
@@ -259,9 +300,11 @@ namespace PerformancePrediction_GUI
                 if (num_oneFactorAtATime_num_Text.Text.Trim() == "")
                 {
                     error();
-                    return;
+                    return false;
+
                 }
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim());
+                numSelected = true;
 
             }
             if (num_PlackettBurman_check.Checked)
@@ -269,11 +312,14 @@ namespace PerformancePrediction_GUI
                 if (num_Plackett_Level_Box.Text.Trim() == "" || num_Plackett_n_Box.Text.Trim() == "")
                 {
                     error();
-                    return;
+                    return false;
+
                 }
                 cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
-
+                numSelected = true;
             }
+
+            return numSelected && binarySelected;
 
         }
 
