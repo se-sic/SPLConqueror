@@ -168,7 +168,7 @@ namespace MachineLearning.Learning
 
             if (fi.FieldType.FullName.Equals("System.Boolean"))
             {
-                if (value == "true" || value == "false")
+                if (value.ToLowerInvariant() == "true" || value.ToLowerInvariant() == "false")
                 {
                     fi.SetValue(this, Convert.ToBoolean(value));
                     return true;
