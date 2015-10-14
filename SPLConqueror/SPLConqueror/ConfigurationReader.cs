@@ -36,7 +36,7 @@ namespace SPLConqueror_Core
         /// 
         ///
         /// </summary>
-        /// <param name="dat">Object representing the configuration file.</param>
+        /// <param name="file">Full qualified file name.</param>
         /// <param name="model">Variability model of the configurations.</param>
         /// <returns></returns>
         public static List<Configuration> readConfigurations(string file, VariabilityModel model)
