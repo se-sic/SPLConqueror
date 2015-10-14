@@ -10,6 +10,7 @@ namespace SPLConqueror_Core
     {
         private VariabilityModel vm = null;
 
+
         public VariabilityModel Vm
         {
             get { return vm; }

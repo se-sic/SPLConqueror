@@ -28,6 +28,8 @@ namespace SPLConqueror_Core
           //  set { binaryOptions = value; }
         }
 
+        public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
+        
         String name = "empty";
 
         /// <summary>
@@ -282,10 +284,21 @@ namespace SPLConqueror_Core
             //Every option must have a parent
             if (option.Parent == null)
                 option.Parent = this.root;
+            
+            if(parentChildRelationships.ContainsKey(option.Parent))
+                parentChildRelationships[option.Parent].Add(option);
+            else
+            {
+                List<ConfigurationOption> childs = new List<ConfigurationOption>();
+                childs.Add(option);
+                parentChildRelationships.Add(option.Parent,childs);
+            }
+   
             if (option is BinaryOption)
                 this.binaryOptions.Add((BinaryOption)option);
             else
                 this.numericOptions.Add((NumericOption)option);
+
             return true;
         }
 
@@ -296,6 +309,8 @@ namespace SPLConqueror_Core
         /// <returns>Either the binary option with the given name or NULL if not found</returns>
         public BinaryOption getBinaryOption(String name)
         {
+
+            name = ConfigurationOption.removeInvalidCharsFromName(name);
             foreach (var binO in binaryOptions)
             {
                 if (binO.Name.Equals(name))
@@ -311,6 +326,7 @@ namespace SPLConqueror_Core
         /// <returns>Either the numeric option with the given name or NULL if not found</returns>
         public NumericOption getNumericOption(String name)
         {
+            name = ConfigurationOption.removeInvalidCharsFromName(name);
             foreach (var numO in numericOptions)
             {
                 if (numO.Name.Equals(name))
@@ -326,6 +342,7 @@ namespace SPLConqueror_Core
         /// <returns>The option with the given name or NULL of no option with the name is defined.</returns>
         public ConfigurationOption getOption(String name)
         {
+            name = ConfigurationOption.removeInvalidCharsFromName(name);
             ConfigurationOption opt = getNumericOption(name);
             if (opt != null)
                 return opt;
