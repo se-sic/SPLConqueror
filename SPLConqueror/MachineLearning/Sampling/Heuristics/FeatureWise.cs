@@ -48,7 +48,7 @@ namespace MachineLearning.Sampling.Heuristics
             Solver.CheckConfigSAT checkSAT = new Solver.CheckConfigSAT(null);
             Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
             //Generating new configurations: one per option
-            if (checkSAT.checkConfigurationSAT(firstLevelMandatoryFeatures, vm))
+            if (checkSAT.checkConfigurationSAT(firstLevelMandatoryFeatures, vm, false))
                 this.configurations.Add(firstLevelMandatoryFeatures);
             foreach (BinaryOption e in binOptions)
             {
@@ -58,7 +58,7 @@ namespace MachineLearning.Sampling.Heuristics
                 if (!tme.Contains(e))
                 {
                     tme.Add(e);
-                    if (checkSAT.checkConfigurationSAT(tme, vm))
+                    if (checkSAT.checkConfigurationSAT(tme, vm, false))
                     {
                         if (!this.configurations.Contains(tme))
                             this.configurations.Add(tme);
