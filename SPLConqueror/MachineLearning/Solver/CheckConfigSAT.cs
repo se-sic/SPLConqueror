@@ -70,18 +70,19 @@ namespace MachineLearning.Solver
         /// </summary>
         /// <param name="config">The list of binary options that are SELECTED (only selected options must occur in the list).</param>
         /// <param name="vm">The variability model that represents the context of the configuration.</param>
+        /// <param name="vm">Whether the given list of options represents only a partial configuration. This means that options not in config might be additionally select to obtain a valid configuration.</param>
         /// <returns>True if it is a valid selection w.r.t. the VM, false otherwise</returns>
-        public bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm)
+        public bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm, bool partialConfiguration)
         {
             foreach (Lazy<ICheckConfigSAT, ISolverType> solver in solvers)
             {
-                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return solver.Value.checkConfigurationSAT(config, vm);
+                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return solver.Value.checkConfigurationSAT(config, vm, partialConfiguration);
             }
 
             //If not MS Solver, take any solver. Should be changed when supporting more than 2 solvers here
             foreach (Lazy<ICheckConfigSAT, ISolverType> solver in solvers)
             {
-                return solver.Value.checkConfigurationSAT(config, vm);
+                return solver.Value.checkConfigurationSAT(config, vm, partialConfiguration);
             }
 
             return false;
