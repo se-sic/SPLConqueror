@@ -308,12 +308,17 @@ namespace SPLConqueror_Core
             return false;
         }
 
+        /// <summary>
+        /// This method removes all characters form the string that are neither a letter nor '_'. This is necessary because a valid mane for a configuration option should only contains this characters.  
+        /// </summary>
+        /// <param name="s">The desired name for a configuration option.</param>
+        /// <returns>A valid name for the configuration option.</returns>
         public static String removeInvalidCharsFromName(string s)
         {
             StringBuilder sb = new StringBuilder();
             foreach (char c in s)
             {
-                if (!Char.IsLetter(c) || c.Equals('_'))
+                if (!Char.IsLetter(c) && !c.Equals('_'))
                     continue;
                 else
                     sb.Append(c);

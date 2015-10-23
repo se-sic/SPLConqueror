@@ -36,9 +36,11 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_NEGATIVE_OPTIONWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
 
+        public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
+
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
-        
+
         // using this option, a partial or full option order can be defined. The order is used during the printconfigs command. To define an order, the names of the options separated with whitespace have to be defined. If an option is not defined in the ordering its name and the value is printed at the end of the configurtion. 
         public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
         public const string COMMAND_PRINT_CONFIGURATIONS = "printconfigs";
@@ -90,11 +92,39 @@ namespace CommandLine
 
             switch (command.ToLower())
             {
+                case COMMAND_START_ALLMEASUREMENTS:
+                    {
+                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+
+                        List<Configuration> configurations_Learning = new List<Configuration>();
+
+                        foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                        {
+                            if (config.nfpValues.ContainsKey(GlobalState.currentNFP))
+                                configurations_Learning.Add(config);
+                        }
+
+                        if (configurations_Learning.Count == 0)
+                        {
+                            GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
+                            break;
+                        }
+
+                        GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
+                        // prepare the machine learning 
+                        exp.learning.init(infMod, exp.mlSettings);
+                        exp.learning.setLearningSet(configurations_Learning);
+                        exp.learning.setValidationSet(configurations_Learning);
+                        exp.learning.learn();
+
+                    }
+                    break;
+
                 case COMMAND_TRUEMODEL:
                     StreamReader readModel = new StreamReader(task);
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
-                    exp.TrueModel = new InfluenceFunction(model.Replace(',','.'), GlobalState.varModel);
+                    exp.TrueModel = new InfluenceFunction(model.Replace(',', '.'), GlobalState.varModel);
                     NFProperty artificalProp = new NFProperty("artificial");
                     GlobalState.currentNFP = artificalProp;
                     computeEvaluationDataSetBasedOnTrueModel();
@@ -309,7 +339,8 @@ namespace CommandLine
                             configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
                             configurations_Validation = configurations_Validation.Distinct().ToList();
                             //break;//todo only to get the configurations that we haven't measured
-                        } else
+                        }
+                        else
                         {
                             foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
                             {
@@ -326,32 +357,33 @@ namespace CommandLine
 
                                     Configuration c = new Configuration(binConfig, numConf);
                                     c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
-                                    if(GlobalState.varModel.configurationIsValid(c))
-                //                    if (!configurations_Learning.Contains(c))
+                                    if (GlobalState.varModel.configurationIsValid(c))
+                                        //                    if (!configurations_Learning.Contains(c))
                                         configurations_Learning.Add(c);
                                 }
                             }
 
                         }
-                            if (configurations_Learning.Count == 0)
-                            {
-                                configurations_Learning = configurations_Validation;
-                            }
 
-                            if (configurations_Learning.Count == 0)
-                            {
-                                GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
-                                break;
-                            }
+                        if (configurations_Learning.Count == 0)
+                        {
+                            configurations_Learning = configurations_Validation;
+                        }
 
-                            if (configurations_Validation.Count == 0)
-                            {
-                                configurations_Validation = configurations_Learning;
-                            }
-                            //break;
-                            GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count + " NumberOfConfigurationsValidation:" + configurations_Validation.Count
-                            + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
-                            
+                        if (configurations_Learning.Count == 0)
+                        {
+                            GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
+                            break;
+                        }
+
+                        if (configurations_Validation.Count == 0)
+                        {
+                            configurations_Validation = configurations_Learning;
+                        }
+                        //break;
+                        GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count + " NumberOfConfigurationsValidation:" + configurations_Validation.Count
+                        + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
+
                         // prepare the machine learning 
                         exp.learning.init(infMod, exp.mlSettings);
                         exp.learning.setLearningSet(configurations_Learning);
@@ -385,7 +417,8 @@ namespace CommandLine
         private void parseOptionOrder(string task)
         {
             String[] optionNames = task.Split(' ');
-            foreach(String option in optionNames){
+            foreach (String option in optionNames)
+            {
                 if (option.Trim().Length == 0)
                     continue;
                 GlobalState.optionOrder.Add(GlobalState.varModel.getOption(option.Trim()));
@@ -548,17 +581,18 @@ namespace CommandLine
                     design = new FullFactorialDesign(optionsToConsider);
                     break;
                 case "featureInteraction":
+                    GlobalState.logError.log("not implemented yet");
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:
                     design = new HyperSampling(optionsToConsider);
-                    if(parameter.ContainsKey("precision"))
+                    if (parameter.ContainsKey("precision"))
                         ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
                     break;
 
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
                     design = new OneFactorAtATime(optionsToConsider);
-                    if(parameter.ContainsKey("distinctValuesPerOption"))
+                    if (parameter.ContainsKey("distinctValuesPerOption"))
                         ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
                     break;
 
@@ -568,7 +602,7 @@ namespace CommandLine
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
                     design = new PlackettBurmanDesign(optionsToConsider);
-                    if(parameter.ContainsKey("measurements") && parameter.ContainsKey("level"))
+                    if (parameter.ContainsKey("measurements") && parameter.ContainsKey("level"))
                         ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]), Int32.Parse(parameter["level"]));
                     break;
 
