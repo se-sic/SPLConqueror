@@ -289,9 +289,9 @@ namespace SPLConqueror_Core
                 parentChildRelationships[option.Parent].Add(option);
             else
             {
-                List<ConfigurationOption> childs = new List<ConfigurationOption>();
-                childs.Add(option);
-                parentChildRelationships.Add(option.Parent,childs);
+                List<ConfigurationOption> children = new List<ConfigurationOption>();
+                children.Add(option);
+                parentChildRelationships.Add(option.Parent, children);
             }
    
             if (option is BinaryOption)
