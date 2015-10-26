@@ -318,7 +318,7 @@ namespace SPLConqueror_Core
             StringBuilder sb = new StringBuilder();
             foreach (char c in s)
             {
-                if (!Char.IsLetter(c) && !c.Equals('_'))
+                if (!Char.IsLetter(c) && !c.Equals('_') && !Char.IsNumber(c))
                     continue;
                 else
                     sb.Append(c);
