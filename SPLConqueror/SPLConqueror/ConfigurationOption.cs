@@ -86,6 +86,11 @@ namespace SPLConqueror_Core
         private ConfigurationOption parent = null;
         private String parentName = "";
 
+        public String ParentName
+        {
+            get { return parentName; }
+        }
+
         /// <summary>
         /// This options implies the selection of its parent (hence, it is also present in the implied_Options field
         /// </summary>

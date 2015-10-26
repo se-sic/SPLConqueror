@@ -281,6 +281,10 @@ namespace SPLConqueror_Core
                     return false;
             }
 
+            if (this.hasOption(option.ParentName))
+                option.Parent = this.getOption(option.ParentName);
+
+
             //Every option must have a parent
             if (option.Parent == null)
                 option.Parent = this.root;
@@ -378,6 +382,11 @@ namespace SPLConqueror_Core
         public void deleteOption(ConfigurationOption toDelete)
         {
             throw new NotImplementedException();
+        }
+
+        internal bool hasOption(string name)
+        {
+            return (this.getBinaryOption(name) != null) || (this.getNumericOption(name) != null); 
         }
     }
 }
