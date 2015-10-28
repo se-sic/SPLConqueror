@@ -152,6 +152,10 @@ namespace SPLConqueror_Core
             return parts[0] + newLeftBracket + secondPart.ToString();
         }
 
+        public string[] getExpressionTree()
+        {
+            return expressionArray;
+        }
 
         /// <summary>
         /// This method creates an influence function that is the combination of the left and the right functions. Both funtions should
