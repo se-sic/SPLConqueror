@@ -99,7 +99,7 @@ namespace SPLConqueror_GUI
                 for (int i = 0; i < parts.Length; i++)
                     parts[i] = parts[i].Replace(',', '.');
 
-                if (!isOperator(parts[1]))
+                if (!isOperator(parts[1]) && parts[0] != "log10(")
                     expression = String.Join(" ", parts, 1, parts.Length - 1);
                 else
                     expression = String.Join(" ", parts, 0, parts.Length);
@@ -249,10 +249,20 @@ namespace SPLConqueror_GUI
                 return;
             }
 
+            String optExpression = Regex.Replace(exp, @"\r\n?|\n", "");
+
+            // Test if the loaded expression can be used
+            try
+            {
+                new InfluenceFunction(optExpression);
+            } catch
+            {
+                MessageBox.Show("The read expression is in an invalid form.");
+                return;
+            }
+
             if (originalFunction == null)
                 initializeOnce();
-
-            String optExpression = Regex.Replace(exp, @"\r\n?|\n", "");
             
             modelLoaded = model != null;
             originalFunction = modelLoaded ? new InfluenceFunction(optExpression, model) : new InfluenceFunction(optExpression);
@@ -297,7 +307,8 @@ namespace SPLConqueror_GUI
             {
                 double d;
 
-                if (!isOperator(prt) && !double.TryParse(prt, style, culture, out d)
+                if (!isOperator(prt) && prt != "log10(" && prt != ")"
+                    && !double.TryParse(prt, style, culture, out d)
                     && !(prt.Contains('.') && (prt.Contains('E') || prt.Contains('e')))
                     && model.getOption(prt) == null)
                 {
