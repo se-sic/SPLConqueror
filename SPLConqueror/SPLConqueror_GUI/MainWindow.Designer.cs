@@ -786,8 +786,10 @@
             // 
             // constraintTextbox
             // 
+            this.constraintTextbox.BackColor = System.Drawing.SystemColors.Window;
             this.constraintTextbox.Location = new System.Drawing.Point(6, 19);
             this.constraintTextbox.Name = "constraintTextbox";
+            this.constraintTextbox.ReadOnly = true;
             this.constraintTextbox.Size = new System.Drawing.Size(301, 208);
             this.constraintTextbox.TabIndex = 12;
             this.constraintTextbox.Text = "";
