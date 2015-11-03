@@ -65,6 +65,7 @@ namespace SPLConqueror_GUI
         private ILArray<float> drawnPerformances;
         private ILArray<float> calculatedPerformances;
         private bool measurementsLoaded = false;
+        private Color measurementColor = Color.Green;
 
         // For reading in the right numbers
         private NumberStyles style = NumberStyles.Number;
@@ -1853,9 +1854,9 @@ namespace SPLConqueror_GUI
                 differenceCube = new ILPlotCube(twoDMode: true);
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                bothGraphsCube.Axes.YAxis.Label.Text = performanceAxisLabel;
+                bothGraphsCube.Axes.YAxis.Label.Text = "Corresponding Values";
                 measurementsOnlyCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                measurementsOnlyCube.Axes.YAxis.Label.Text = performanceAxisLabel;
+                measurementsOnlyCube.Axes.YAxis.Label.Text = "Measured Values";
                 differenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 differenceCube.Axes.YAxis.Label.Text = "Absolute Difference";
 
@@ -1884,8 +1885,14 @@ namespace SPLConqueror_GUI
                     {
                         if (XY.Size[0] > 0)
                         {
-                            bothGraphsCube.Add(new ILLinePlot(XY));
-                            measurementsOnlyCube.Add(new ILLinePlot(XY));
+                            bothGraphsCube.Add(new ILLinePlot(XY)
+                            {
+                                ColorOverride = measurementColor
+                            });
+                            measurementsOnlyCube.Add(new ILLinePlot(XY)
+                            {
+                                ColorOverride = measurementColor
+                            });
                             differenceCube.Add(new ILLinePlot(differences));
 
                             XY = ILMath.zeros<float>(0, 0);
@@ -1919,9 +1926,15 @@ namespace SPLConqueror_GUI
                     }
                 }
 
-                bothGraphsCube.Add(new ILLinePlot(XY));
+                bothGraphsCube.Add(new ILLinePlot(XY)
+                {
+                    ColorOverride = measurementColor
+                });
                 bothGraphsCube.Add(new ILLinePlot(calculatedPerformances));
-                measurementsOnlyCube.Add(new ILLinePlot(XY));
+                measurementsOnlyCube.Add(new ILLinePlot(XY)
+                {
+                    ColorOverride = measurementColor
+                });
                 differenceCube.Add(new ILLinePlot(differences));
                 differenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
             }
@@ -1935,13 +1948,13 @@ namespace SPLConqueror_GUI
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 bothGraphsCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                bothGraphsCube.Axes.ZAxis.Label.Text = performanceAxisLabel;
+                bothGraphsCube.Axes.ZAxis.Label.Text = "Corresponding Values";
                 measurementsOnlyCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 measurementsOnlyCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                measurementsOnlyCube.Axes.ZAxis.Label.Text = performanceAxisLabel;
+                measurementsOnlyCube.Axes.ZAxis.Label.Text = "Measured Values";
                 differenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 differenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                differenceCube.Axes.ZAxis.Label.Text = performanceAxisLabel;
+                differenceCube.Axes.ZAxis.Label.Text = "Absolute Difference";
 
                 X = Array.ConvertAll(chosenOptions.Item1.getAllValues().ToArray(), x => (float)x);
                 Y = Array.ConvertAll(chosenOptions.Item2.getAllValues().ToArray(), y => (float)y);
