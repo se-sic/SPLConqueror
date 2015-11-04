@@ -86,8 +86,14 @@ namespace SPLConqueror_GUI
             public FactorizationOption(String s)
             {
                 label.Text = s;
+                upDown.MouseWheel += UpDown_MouseWheel;
 
                 initializePanel();
+            }
+
+            private void UpDown_MouseWheel(object sender, MouseEventArgs e)
+            {
+                ((HandledMouseEventArgs)e).Handled = true;
             }
 
             private void initializePanel()
