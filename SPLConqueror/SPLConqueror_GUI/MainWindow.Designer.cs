@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea17 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend17 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea18 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend18 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea19 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend19 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea20 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend20 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
             this.settingsButton = new System.Windows.Forms.Button();
@@ -83,8 +83,8 @@
             this.interactionTextBox = new System.Windows.Forms.RichTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.measurementPointLabel = new System.Windows.Forms.Label();
-            this.differencePanel = new System.Windows.Forms.Panel();
-            this.differenceIlPanel = new ILNumerics.Drawing.ILPanel();
+            this.absoluteDifferencePanel = new System.Windows.Forms.Panel();
+            this.absoluteDifferenceIlPanel = new ILNumerics.Drawing.ILPanel();
             this.measurementsOnlyPanel = new System.Windows.Forms.Panel();
             this.measurementsOnlyIlPanel = new ILNumerics.Drawing.ILPanel();
             this.measurementViewCombobox = new System.Windows.Forms.ComboBox();
@@ -94,12 +94,14 @@
             this.nfpValueCombobox = new System.Windows.Forms.ComboBox();
             this.loadMeasurementButton = new System.Windows.Forms.Button();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.helpTextBox = new System.Windows.Forms.RichTextBox();
             this.constraintTextbox = new System.Windows.Forms.RichTextBox();
             this.factorizationSettingsButton = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.relativeDifferencePanel = new System.Windows.Forms.Panel();
+            this.relativeDifferenceIlPanel = new ILNumerics.Drawing.ILPanel();
             this.groupBox4.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -116,12 +118,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.constantChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.influenceChart)).BeginInit();
             this.tabPage3.SuspendLayout();
-            this.differencePanel.SuspendLayout();
+            this.absoluteDifferencePanel.SuspendLayout();
             this.measurementsOnlyPanel.SuspendLayout();
             this.bothGraphsPanel.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.relativeDifferencePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox4
@@ -549,10 +552,10 @@
             // 
             // rangeOccuranceChart
             // 
-            chartArea1.Name = "ChartArea1";
-            this.rangeOccuranceChart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.rangeOccuranceChart.Legends.Add(legend1);
+            chartArea17.Name = "ChartArea1";
+            this.rangeOccuranceChart.ChartAreas.Add(chartArea17);
+            legend17.Name = "Legend1";
+            this.rangeOccuranceChart.Legends.Add(legend17);
             this.rangeOccuranceChart.Location = new System.Drawing.Point(0, 342);
             this.rangeOccuranceChart.Name = "rangeOccuranceChart";
             this.rangeOccuranceChart.Size = new System.Drawing.Size(490, 284);
@@ -561,10 +564,10 @@
             // 
             // rangeChart
             // 
-            chartArea2.Name = "ChartArea1";
-            this.rangeChart.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.rangeChart.Legends.Add(legend2);
+            chartArea18.Name = "ChartArea1";
+            this.rangeChart.ChartAreas.Add(chartArea18);
+            legend18.Name = "Legend1";
+            this.rangeChart.Legends.Add(legend18);
             this.rangeChart.Location = new System.Drawing.Point(0, 342);
             this.rangeChart.Name = "rangeChart";
             this.rangeChart.Size = new System.Drawing.Size(490, 284);
@@ -583,10 +586,10 @@
             // 
             // constantChart
             // 
-            chartArea3.Name = "ChartArea1";
-            this.constantChart.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.constantChart.Legends.Add(legend3);
+            chartArea19.Name = "ChartArea1";
+            this.constantChart.ChartAreas.Add(chartArea19);
+            legend19.Name = "Legend1";
+            this.constantChart.Legends.Add(legend19);
             this.constantChart.Location = new System.Drawing.Point(0, 342);
             this.constantChart.Name = "constantChart";
             this.constantChart.Size = new System.Drawing.Size(490, 284);
@@ -607,10 +610,10 @@
             // 
             // influenceChart
             // 
-            chartArea4.Name = "ChartArea1";
-            this.influenceChart.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.influenceChart.Legends.Add(legend4);
+            chartArea20.Name = "ChartArea1";
+            this.influenceChart.ChartAreas.Add(chartArea20);
+            legend20.Name = "Legend1";
+            this.influenceChart.Legends.Add(legend20);
             this.influenceChart.Location = new System.Drawing.Point(0, 342);
             this.influenceChart.Name = "influenceChart";
             this.influenceChart.Size = new System.Drawing.Size(490, 284);
@@ -629,8 +632,9 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.relativeDifferencePanel);
             this.tabPage3.Controls.Add(this.measurementPointLabel);
-            this.tabPage3.Controls.Add(this.differencePanel);
+            this.tabPage3.Controls.Add(this.absoluteDifferencePanel);
             this.tabPage3.Controls.Add(this.measurementsOnlyPanel);
             this.tabPage3.Controls.Add(this.measurementViewCombobox);
             this.tabPage3.Controls.Add(this.measurementErrorLabel);
@@ -656,27 +660,27 @@
             this.measurementPointLabel.Text = "label8";
             this.measurementPointLabel.Visible = false;
             // 
-            // differencePanel
+            // absoluteDifferencePanel
             // 
-            this.differencePanel.Controls.Add(this.differenceIlPanel);
-            this.differencePanel.Location = new System.Drawing.Point(0, 30);
-            this.differencePanel.Name = "differencePanel";
-            this.differencePanel.Size = new System.Drawing.Size(656, 575);
-            this.differencePanel.TabIndex = 6;
-            this.differencePanel.Visible = false;
+            this.absoluteDifferencePanel.Controls.Add(this.absoluteDifferenceIlPanel);
+            this.absoluteDifferencePanel.Location = new System.Drawing.Point(0, 30);
+            this.absoluteDifferencePanel.Name = "absoluteDifferencePanel";
+            this.absoluteDifferencePanel.Size = new System.Drawing.Size(656, 575);
+            this.absoluteDifferencePanel.TabIndex = 6;
+            this.absoluteDifferencePanel.Visible = false;
             // 
-            // differenceIlPanel
+            // absoluteDifferenceIlPanel
             // 
-            this.differenceIlPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.differenceIlPanel.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
-            this.differenceIlPanel.Editor = null;
-            this.differenceIlPanel.Location = new System.Drawing.Point(0, 0);
-            this.differenceIlPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.differenceIlPanel.Name = "differenceIlPanel";
-            this.differenceIlPanel.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("differenceIlPanel.Rectangle")));
-            this.differenceIlPanel.ShowUIControls = false;
-            this.differenceIlPanel.Size = new System.Drawing.Size(656, 575);
-            this.differenceIlPanel.TabIndex = 0;
+            this.absoluteDifferenceIlPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.absoluteDifferenceIlPanel.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
+            this.absoluteDifferenceIlPanel.Editor = null;
+            this.absoluteDifferenceIlPanel.Location = new System.Drawing.Point(0, 0);
+            this.absoluteDifferenceIlPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.absoluteDifferenceIlPanel.Name = "absoluteDifferenceIlPanel";
+            this.absoluteDifferenceIlPanel.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("absoluteDifferenceIlPanel.Rectangle")));
+            this.absoluteDifferenceIlPanel.ShowUIControls = false;
+            this.absoluteDifferenceIlPanel.Size = new System.Drawing.Size(656, 575);
+            this.absoluteDifferenceIlPanel.TabIndex = 0;
             // 
             // measurementsOnlyPanel
             // 
@@ -707,7 +711,7 @@
             this.measurementViewCombobox.FormattingEnabled = true;
             this.measurementViewCombobox.Location = new System.Drawing.Point(383, 3);
             this.measurementViewCombobox.Name = "measurementViewCombobox";
-            this.measurementViewCombobox.Size = new System.Drawing.Size(114, 21);
+            this.measurementViewCombobox.Size = new System.Drawing.Size(123, 21);
             this.measurementViewCombobox.TabIndex = 4;
             this.measurementViewCombobox.SelectedIndexChanged += new System.EventHandler(this.measurementViewCombobox_SelectedIndexChanged);
             // 
@@ -766,7 +770,7 @@
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.richTextBox1);
+            this.tabPage5.Controls.Add(this.helpTextBox);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -775,15 +779,15 @@
             this.tabPage5.Text = "Help";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // richTextBox1
+            // helpTextBox
             // 
-            this.richTextBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBox1.Location = new System.Drawing.Point(0, 0);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(656, 626);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.helpTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.helpTextBox.Location = new System.Drawing.Point(0, 0);
+            this.helpTextBox.Name = "helpTextBox";
+            this.helpTextBox.ReadOnly = true;
+            this.helpTextBox.Size = new System.Drawing.Size(656, 626);
+            this.helpTextBox.TabIndex = 0;
+            this.helpTextBox.Text = resources.GetString("helpTextBox.Text");
             // 
             // constraintTextbox
             // 
@@ -841,6 +845,28 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Constraints";
             // 
+            // relativeDifferencePanel
+            // 
+            this.relativeDifferencePanel.Controls.Add(this.relativeDifferenceIlPanel);
+            this.relativeDifferencePanel.Location = new System.Drawing.Point(0, 30);
+            this.relativeDifferencePanel.Name = "relativeDifferencePanel";
+            this.relativeDifferencePanel.Size = new System.Drawing.Size(656, 575);
+            this.relativeDifferencePanel.TabIndex = 7;
+            this.relativeDifferencePanel.Visible = false;
+            // 
+            // relativeDifferenceIlPanel
+            // 
+            this.relativeDifferenceIlPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.relativeDifferenceIlPanel.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
+            this.relativeDifferenceIlPanel.Editor = null;
+            this.relativeDifferenceIlPanel.Location = new System.Drawing.Point(0, 0);
+            this.relativeDifferenceIlPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.relativeDifferenceIlPanel.Name = "relativeDifferenceIlPanel";
+            this.relativeDifferenceIlPanel.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("relativeDifferenceIlPanel.Rectangle")));
+            this.relativeDifferenceIlPanel.ShowUIControls = false;
+            this.relativeDifferenceIlPanel.Size = new System.Drawing.Size(656, 575);
+            this.relativeDifferenceIlPanel.TabIndex = 0;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -881,13 +907,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.influenceChart)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            this.differencePanel.ResumeLayout(false);
+            this.absoluteDifferencePanel.ResumeLayout(false);
             this.measurementsOnlyPanel.ResumeLayout(false);
             this.bothGraphsPanel.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox6.ResumeLayout(false);
+            this.relativeDifferencePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -948,14 +975,16 @@
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.ComboBox measurementViewCombobox;
         private System.Windows.Forms.Panel measurementsOnlyPanel;
-        private System.Windows.Forms.Panel differencePanel;
-        private ILNumerics.Drawing.ILPanel differenceIlPanel;
+        private System.Windows.Forms.Panel absoluteDifferencePanel;
+        private ILNumerics.Drawing.ILPanel absoluteDifferenceIlPanel;
         private ILNumerics.Drawing.ILPanel measurementsOnlyIlPanel;
         private System.Windows.Forms.Label pointPositionLabel;
         private ILNumerics.Drawing.ILPanel ilFunctionPanel;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Button resetFactorizationButton;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox helpTextBox;
+        private System.Windows.Forms.Panel relativeDifferencePanel;
+        private ILNumerics.Drawing.ILPanel relativeDifferenceIlPanel;
     }
 }

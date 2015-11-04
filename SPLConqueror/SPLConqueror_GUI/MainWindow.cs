@@ -27,6 +27,10 @@ namespace SPLConqueror_GUI
         private const string secondEmptyOption = "---------------";
         private const string buttonPressRequest = "Please press the button.";
         private const string performanceAxisLabel = "Calculated Performance";
+        private const string correspondingValuesLabel = "Corresponding values";
+        private const string measuredValueLabel = "Measured Values";
+        private const string absoluteDifferenceLabel = "Absolute Difference";
+        private const string relativeDifferenceLabel = "Relative Difference in %";
         private const string failureNoModel = "You have to load a model to generate a graph!";
         private const string failureDoubleOption = "You may not choose the same option twice!";
         private const string comboboxInteractionsOption = "Interactions";
@@ -35,7 +39,8 @@ namespace SPLConqueror_GUI
         private const string comboboxRangeOccuranceOption = "Constants Range Occurance";
         private const string comboboxBothOption = "Both";
         private const string comboboxMeasurementsOption = "Measurements only";
-        private const string comboboxDifferenceOption = "Difference";
+        private const string comboboxAbsoluteDifferenceOption = "Absolute Difference";
+        private const string comboboxRelativeDifferenceOption = "Relative Difference";
         private const string errorNoMeasurmentsLoaded = "Please load some measurements.";
         private const string errorNoPerformances = "Please calculate a graph first.";
         private const string errorIllegalConfiguration = "The current configuration is not valid.";
@@ -50,7 +55,6 @@ namespace SPLConqueror_GUI
         private string[] adjustedExpressionTree;
         private bool modelLoaded = false;
         private double maxAbstractConstant = 0.0;
-        private Dictionary<string, Dictionary<string, int>> allInteractions;
         private Dictionary<string, int> occuranceOfOptions = new Dictionary<string, int>();
         private Dictionary<NumericOption, float> numericSettings = new Dictionary<NumericOption, float>();
         private Dictionary<ConfigurationOption, double> factorizationPriorities =
@@ -66,6 +70,7 @@ namespace SPLConqueror_GUI
         private ILArray<float> calculatedPerformances;
         private bool measurementsLoaded = false;
         private Color measurementColor = Color.Green;
+        private string adjustedMeasurementFunction;
 
         // For reading in the right numbers
         private NumberStyles style = NumberStyles.Number;
@@ -232,7 +237,7 @@ namespace SPLConqueror_GUI
                 MessageBox.Show("The file doesn't match with the current variability model!");
             }
 
-            updateDifferenceTab();
+            updateMeasurementTab();
         }
 
         /// <summary>
@@ -279,9 +284,6 @@ namespace SPLConqueror_GUI
             // Update readFunction-textbox
             getMaxAbstractConstant();
             updateFunctionTextBox(originalFunctionTextBox, sortExpression(originalFunction.ToString()));
-
-            // Calculating current interactions
-            allInteractions = getInteractions();
             
             // Activating all components and returning their original state
             ilFunctionPanel.Scene = new ILScene();
@@ -368,7 +370,8 @@ namespace SPLConqueror_GUI
 
             measurementViewCombobox.Items.Add(comboboxBothOption);
             measurementViewCombobox.Items.Add(comboboxMeasurementsOption);
-            measurementViewCombobox.Items.Add(comboboxDifferenceOption);
+            measurementViewCombobox.Items.Add(comboboxAbsoluteDifferenceOption);
+            measurementViewCombobox.Items.Add(comboboxRelativeDifferenceOption);
             measurementViewCombobox.SelectedIndex = 0;
 
             variableTreeView.BeforeCheck += (o, e) => {
@@ -411,7 +414,7 @@ namespace SPLConqueror_GUI
             numericSettings.Clear();
 
             foreach (NumericOption option in originalFunction.participatingNumOptions)
-                numericSettings.Add(option, (float) option.Min_value);
+                numericSettings.Add(option, (float) option.DefaultValue);
 
             // Evaluation configuration
             calculationResultLabel.Text = buttonPressRequest;
@@ -433,14 +436,16 @@ namespace SPLConqueror_GUI
             measurementsLoaded = false;
             nfpValueCombobox.Items.Clear();
             nfpValueCombobox.Enabled = false;
-            updateDifferenceTab();
+            updateMeasurementTab();
 
             bothGraphsIlPanel.Scene = new ILScene();
             measurementsOnlyIlPanel.Scene = new ILScene();
-            differenceIlPanel.Scene = new ILScene();
+            absoluteDifferenceIlPanel.Scene = new ILScene();
+            relativeDifferenceIlPanel.Scene = new ILScene();
             bothGraphsIlPanel.Refresh();
             measurementsOnlyIlPanel.Refresh();
-            differenceIlPanel.Refresh();
+            absoluteDifferenceIlPanel.Refresh();
+            relativeDifferenceIlPanel.Refresh();
         }
 
         /// <summary>
@@ -496,16 +501,15 @@ namespace SPLConqueror_GUI
         /// </summary>
         private void initializeVariableConfiguration()
         {
-            filterVariablesCheckbox.Checked = false;
-
             // Initializing combobox
             filterOptionCombobox.Items.Clear();
-            filterOptionCombobox.Items.Add(filteringListBox);
             filterOptionCombobox.Items.Add(filteringTreeView);
+            filterOptionCombobox.Items.Add(filteringListBox);
             filterOptionCombobox.SelectedIndex = 0;
+            filterVariablesCheckbox.Checked = false;
 
             // Initializing listbox
-            variableListBox.Visible = true;
+            variableListBox.Visible = false;
             variableListBox.Enabled = false;
             variableListBox.Items.Clear();
 
@@ -516,7 +520,7 @@ namespace SPLConqueror_GUI
                 variableListBox.Items.Add(option.Name, false);
 
             // Initializing tree view
-            variableTreeView.Visible = false;
+            variableTreeView.Visible = true;
             variableTreeView.Enabled = false;
             variableTreeView.Nodes.Clear();
             
@@ -535,10 +539,10 @@ namespace SPLConqueror_GUI
             variableTreeView.AfterCheck -= ownAfterCheck;
 
             setChildrenChecked(e.Node);
-            updateInteractionsTab();
             updateTreeView();
             updateEvaluationConfiguration();
             updateAdjustedFunction();
+            updateInteractionsTab();
 
             variableTreeView.AfterCheck += ownAfterCheck;
         }
@@ -627,7 +631,7 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Calculates and returns all interactions of the currently loades function.
+        /// Calculates and returns all interactions of the adjusted function.
         /// </summary>
         /// <returns>Dictionary with all interactions of each option</returns>
         private Dictionary<string, Dictionary<string, int>> getInteractions()
@@ -635,7 +639,7 @@ namespace SPLConqueror_GUI
             Dictionary<string, Dictionary<string, int>> currInteractions =
                 new Dictionary<string, Dictionary<string, int>>();
 
-            foreach (string component in originalFunction.ToString().Split('+'))
+            foreach (string component in adjustedMeasurementFunction.ToString().Split('+'))
             {
                 //Getting a list of all options in a component
                 List<ConfigurationOption> componentOptions = new List<ConfigurationOption>();
@@ -682,40 +686,20 @@ namespace SPLConqueror_GUI
             return currInteractions;
         }
 
-        /// <summary>
-        /// Calculates and returns all interactions that are currently in the adjusted expression.
-        /// </summary>
-        /// <returns>Filtered interactions</returns>
-        private Dictionary<string, Dictionary<string, int>> getFilteredInteractions()
-        {
-            Dictionary<string, Dictionary<string, int>> filteredInteractions = new Dictionary<string, Dictionary<string, int>>();
-            List<string> legalOptions = getLegalOptions();
-
-            foreach (KeyValuePair<string, Dictionary<string, int>> entry in allInteractions)
-            {
-                if (legalOptions.Contains(entry.Key))
-                {
-                    Dictionary<string, int> current = new Dictionary<string, int>();
-
-                    foreach (KeyValuePair<string, int> pair in entry.Value)
-                    {
-                        if (legalOptions.Contains(pair.Key))
-                            current.Add(pair.Key, pair.Value);
-                    }
-
-                    filteredInteractions.Add(entry.Key, current);
-                }
-            }
-
-            return filteredInteractions;
-        }
-
         /// Returns the current options that are allowed in the function.
         /// </summary>
         /// <returns>List of legal options</returns>
         private List<string> getLegalOptions()
         {
             List<string> legalOptions = new List<string>();
+
+            if (!filterVariablesCheckbox.Checked)
+            {
+                foreach (ConfigurationOption opt in currentModel.getOptions())
+                    legalOptions.Add(opt.ToString());
+
+                return legalOptions;
+            }
 
             switch (filterOptionCombobox.SelectedItem.ToString())
             {
@@ -728,18 +712,21 @@ namespace SPLConqueror_GUI
                     break;
 
                 case filteringTreeView:
-                    Stack<TreeNode> stack = new Stack<TreeNode>();
-                    stack.Push(variableTreeView.Nodes[0]);
-
-                    while (stack.Count > 0)
+                    if (variableTreeView.Nodes.Count > 0)
                     {
-                        TreeNode node = stack.Pop();
+                        Stack<TreeNode> stack = new Stack<TreeNode>();
+                        stack.Push(variableTreeView.Nodes[0]);
 
-                        foreach (TreeNode child in node.Nodes)
-                            stack.Push(child);
+                        while (stack.Count > 0)
+                        {
+                            TreeNode node = stack.Pop();
 
-                        if (node.Checked)
-                            legalOptions.Add(node.Text);
+                            foreach (TreeNode child in node.Nodes)
+                                stack.Push(child);
+
+                            if (node.Checked)
+                                legalOptions.Add(node.Text);
+                        }
                     }
                     break;
             }
@@ -754,7 +741,7 @@ namespace SPLConqueror_GUI
         {
             interactionTextBox.Clear();
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> entry in getFilteredInteractions())
+            foreach (KeyValuePair<string, Dictionary<string, int>> entry in getInteractions())
             {
                 // Appending text to display all interactions
                 interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Bold);
@@ -840,7 +827,7 @@ namespace SPLConqueror_GUI
             configurationForCalculation = new Configuration(bins, usedNumericOptions);
 
             updateFunctionPanel();
-            updateDifferenceTab();
+            updateMeasurementTab();
         }
 
         /// <summary>
@@ -859,6 +846,7 @@ namespace SPLConqueror_GUI
             constantsDigitsUpDown.Enabled = constantDecimalCheckBox.Checked;
 
             updateAdjustedFunction();
+            updateCharts();
         }
 
         /// <summary>
@@ -871,6 +859,7 @@ namespace SPLConqueror_GUI
         private void constantsDigitsUpDown_ValueChanged(object sender, EventArgs e)
         {
             updateAdjustedFunction();
+            updateCharts();
         }
 
         /// <summary>
@@ -902,6 +891,7 @@ namespace SPLConqueror_GUI
             constantRelativeValueSlider.Enabled = constantFilteringCheckbox.Checked;
 
             updateAdjustedFunction();
+            updateCharts();
         }
 
         /// <summary>
@@ -916,6 +906,7 @@ namespace SPLConqueror_GUI
         private void constantRelativeValueSlider_Scroll(object sender, EventArgs e)
         {
             updateAdjustedFunction();
+            updateCharts();
         }
 
         /// <summary>
@@ -930,10 +921,10 @@ namespace SPLConqueror_GUI
         /// <param name="e"></param>
         private void filterVariablesCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            updateInteractionsTab();
             updateVariableConfiguration();
             updateEvaluationConfiguration();
             updateAdjustedFunction();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -965,9 +956,9 @@ namespace SPLConqueror_GUI
                     break;
             }
 
-            updateInteractionsTab();
             updateEvaluationConfiguration();
             updateAdjustedFunction();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -980,9 +971,9 @@ namespace SPLConqueror_GUI
         /// <param name="e"></param>
         private void variableListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            updateInteractionsTab();
             updateEvaluationConfiguration();
             updateAdjustedFunction();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -1165,7 +1156,7 @@ namespace SPLConqueror_GUI
         /// <param name="e"></param>
         private void nfpValueCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            updateDifferenceTab();
+            updateMeasurementTab();
         }
 
         /// <summary>
@@ -1337,7 +1328,8 @@ namespace SPLConqueror_GUI
             {
                 if (!modelLoaded)
                     failureLabel.Text = failureNoModel;
-                else if (firstAxisCombobox.SelectedItem.Equals(secondAxisCombobox.SelectedItem))
+                else if (firstAxisCombobox.SelectedItem != null
+                    && firstAxisCombobox.SelectedItem.Equals(secondAxisCombobox.SelectedItem))
                     failureLabel.Text = failureDoubleOption;
 
                 failureLabel.Visible = true;
@@ -1368,7 +1360,7 @@ namespace SPLConqueror_GUI
             influenceChart.Series.Add("Series1");
             influenceChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> entry in getFilteredInteractions())
+            foreach (KeyValuePair<string, Dictionary<string, int>> entry in getInteractions())
             {
                 int value = 0;
 
@@ -1389,7 +1381,7 @@ namespace SPLConqueror_GUI
             Dictionary<string, double> constantInfluences = new Dictionary<string, double>();
             Dictionary<string, double> constantRangeInfluences = new Dictionary<string, double>();
             
-            foreach (string component in originalFunction.ToString().Split('+'))
+            foreach (string component in adjustedMeasurementFunction.ToString().Split('+'))
             {
                 double constant = 1.0;
                 double currConstantRange = 0;
@@ -1436,7 +1428,7 @@ namespace SPLConqueror_GUI
                     NumericOption opt = currentModel.getNumericOption(var);
 
                     if (opt != null)
-                        currConstantRange = currConstantRange * opt.Max_value;
+                        currConstantRange = currConstantRange * opt.Max_value;                        
                 }
 
                 foreach (string var in variables)
@@ -1582,7 +1574,9 @@ namespace SPLConqueror_GUI
             // Calculate simplyfied expression in infix notation
             string adjustedExpression = sortExpression(calculateFunctionExpression(expressionParts));
             expressionParts.CopyTo(adjustedExpressionTree, 0);
-            
+
+            adjustedMeasurementFunction = String.Copy(adjustedExpression);
+
             // If needed, calculate a factorized form of the expression
             if (factorRadioButton.Checked)
                 adjustedExpression = factorizeExpression(adjustedExpression);
@@ -1645,6 +1639,32 @@ namespace SPLConqueror_GUI
                     bool firstSuccess = double.TryParse(first.Item1, style, culture, out numFst);
                     bool secondSuccess = double.TryParse(second.Item1, style, culture, out numSnd);
 
+                    // Check if the first number is an E-number
+                    if (first.Item1.Contains(".") && (first.Item1.Contains("E") || first.Item1.Contains("e")))
+                    {
+                        string[] parts = first.Item1.Split(new char[] { 'E', 'e' });
+                        double exponent;
+
+                        double.TryParse(parts[0], style, culture, out numFst);
+                        double.TryParse(parts[1], style, culture, out exponent);
+
+                        numFst = numFst * Math.Pow(10, exponent);
+                        firstSuccess = true;
+                    }
+
+                    // Check if the second number is an E-number
+                    if (second.Item1.Contains(".") && (second.Item1.Contains("E") || second.Item1.Contains("e")))
+                    {
+                        string[] parts = second.Item1.Split(new char[] { 'E', 'e' });
+                        double exponent;
+
+                        double.TryParse(parts[0], style, culture, out numSnd);
+                        double.TryParse(parts[1], style, culture, out exponent);
+
+                        numSnd = numSnd * Math.Pow(10, exponent);
+                        secondSuccess = true;
+                    }
+
                     if (firstSuccess || secondSuccess)
                     {
                         Tuple<string, string> simple;
@@ -1659,7 +1679,7 @@ namespace SPLConqueror_GUI
                                 else if (firstSuccess && secondSuccess)
                                     simple = Tuple.Create<string, string>((numFst + numSnd).ToString().Replace(',', '.'), null);
                                 else
-                                    simple = Tuple.Create<string, string>(first + " + " + second, "+");
+                                    simple = Tuple.Create<string, string>(first.Item1 + " + " + second.Item1, "+");
                                 break;
                             case "*":
                                 if (firstSuccess && numFst == 0.0 || secondSuccess && numSnd == 0.0)
@@ -1761,9 +1781,9 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Updates the difference tab of the application.
+        /// Updates the measurement tab of the application.
         /// </summary>
-        private void updateDifferenceTab()
+        private void updateMeasurementTab()
         {
             // Check if measurements are loaded
             if (!measurementsLoaded)
@@ -1842,7 +1862,7 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.SelectedIndex = 0;
             }
 
-            ILPlotCube bothGraphsCube, measurementsOnlyCube, differenceCube;
+            ILPlotCube bothGraphsCube, measurementsOnlyCube, absoluteDifferenceCube, relativeDifferenceCube;
             NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
 
             // Decide if there has to be a 2D or 3D shape
@@ -1851,18 +1871,22 @@ namespace SPLConqueror_GUI
                 // Define plot cubes
                 bothGraphsCube = new ILPlotCube(twoDMode: true);
                 measurementsOnlyCube = new ILPlotCube(twoDMode: true);
-                differenceCube = new ILPlotCube(twoDMode: true);
+                absoluteDifferenceCube = new ILPlotCube(twoDMode: true);
+                relativeDifferenceCube = new ILPlotCube(twoDMode: true);
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                bothGraphsCube.Axes.YAxis.Label.Text = "Corresponding Values";
+                bothGraphsCube.Axes.YAxis.Label.Text = correspondingValuesLabel;
                 measurementsOnlyCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                measurementsOnlyCube.Axes.YAxis.Label.Text = "Measured Values";
-                differenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                differenceCube.Axes.YAxis.Label.Text = "Absolute Difference";
+                measurementsOnlyCube.Axes.YAxis.Label.Text = measuredValueLabel;
+                absoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                absoluteDifferenceCube.Axes.YAxis.Label.Text = absoluteDifferenceLabel;
+                relativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                relativeDifferenceCube.Axes.YAxis.Label.Text = relativeDifferenceLabel;
 
                 // Add all values into the array
                 ILArray<float> XY = ILMath.zeros<float>(0, 0);
-                ILArray<float> differences = ILMath.zeros<float>(0, 0);
+                ILArray<float> absoluteDifferences = ILMath.zeros<float>(0, 0);
+                ILArray<float> relativeDifferences = ILMath.zeros<float>(0, 0);
                 List<double> values = chosenOptions.Item1.getAllValues();
                 values.Sort();
 
@@ -1893,10 +1917,12 @@ namespace SPLConqueror_GUI
                             {
                                 ColorOverride = measurementColor
                             });
-                            differenceCube.Add(new ILLinePlot(differences));
+                            absoluteDifferenceCube.Add(new ILLinePlot(absoluteDifferences));
+                            relativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
 
                             XY = ILMath.zeros<float>(0, 0);
-                            differences = ILMath.zeros<float>(0, 0);
+                            absoluteDifferences = ILMath.zeros<float>(0, 0);
+                            relativeDifferences = ILMath.zeros<float>(0, 0);
                             pos = 0;
                         }
                     }
@@ -1905,8 +1931,10 @@ namespace SPLConqueror_GUI
                         c.nfpValues.TryGetValue(prop, out d);
                         XY[0, pos] = (float)value;
                         XY[1, pos] = (float)d;
-                        differences[0, pos] = (float)value;
-                        differences[1, pos] = ILMath.abs((float)d - calculatedPerformances[1, values.IndexOf(value)]); ;
+                        absoluteDifferences[0, pos] = (float)value;
+                        absoluteDifferences[1, pos] = ILMath.abs((float)d - calculatedPerformances[1, values.IndexOf(value)]);
+                        relativeDifferences[0, pos] = (float)value;
+                        relativeDifferences[1, pos] = absoluteDifferences[1, pos] >= 1 ? absoluteDifferences[1, pos]/XY[1, pos] * 100 : 0;
 
                         ILPoints point = createPoint(XY[0, pos], XY[1, pos], 0, measurementPointLabel);
 
@@ -1935,26 +1963,32 @@ namespace SPLConqueror_GUI
                 {
                     ColorOverride = measurementColor
                 });
-                differenceCube.Add(new ILLinePlot(differences));
-                differenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
+                absoluteDifferenceCube.Add(new ILLinePlot(absoluteDifferences));
+                absoluteDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
+                relativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
+                relativeDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
             }
             else
             {
-                ILArray<float> A, X, Y, differences;
+                ILArray<float> A, X, Y, absoluteDifferences, relativeDifferences;
 
                 bothGraphsCube = new ILPlotCube(twoDMode: false);
                 measurementsOnlyCube = new ILPlotCube(twoDMode: false);
-                differenceCube = new ILPlotCube(twoDMode: false);
+                absoluteDifferenceCube = new ILPlotCube(twoDMode: false);
+                relativeDifferenceCube = new ILPlotCube(twoDMode: false);
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 bothGraphsCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                bothGraphsCube.Axes.ZAxis.Label.Text = "Corresponding Values";
+                bothGraphsCube.Axes.ZAxis.Label.Text = correspondingValuesLabel;
                 measurementsOnlyCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 measurementsOnlyCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                measurementsOnlyCube.Axes.ZAxis.Label.Text = "Measured Values";
-                differenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                differenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                differenceCube.Axes.ZAxis.Label.Text = "Absolute Difference";
+                measurementsOnlyCube.Axes.ZAxis.Label.Text = measuredValueLabel;
+                absoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                absoluteDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
+                absoluteDifferenceCube.Axes.ZAxis.Label.Text = absoluteDifferenceLabel;
+                relativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                relativeDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
+                relativeDifferenceCube.Axes.ZAxis.Label.Text = relativeDifferenceLabel;
 
                 X = Array.ConvertAll(chosenOptions.Item1.getAllValues().ToArray(), x => (float)x);
                 Y = Array.ConvertAll(chosenOptions.Item2.getAllValues().ToArray(), y => (float)y);
@@ -1963,7 +1997,8 @@ namespace SPLConqueror_GUI
                 ILArray<float> YMat = ILMath.meshgrid(Y, X, XMat);
 
                 A = ILMath.zeros<float>(X.Length, Y.Length, 3);
-                differences = ILMath.zeros<float>(X.Length, Y.Length, 3);
+                absoluteDifferences = ILMath.zeros<float>(X.Length, Y.Length, 3);
+                relativeDifferences = ILMath.zeros<float>(X.Length, Y.Length, 3);
 
                 // Fill array with values
                 A[":;:;1"] = XMat;
@@ -2018,9 +2053,14 @@ namespace SPLConqueror_GUI
                 {
                     for (int j = 0; j < A.Size[1]; j++)
                     {
-                        differences[i, j, 0] = A[i, j, 0] == float.NegativeInfinity ? float.NegativeInfinity : Math.Abs(A[i, j, 0].GetArrayForRead()[0] - calculatedPerformances[i, j, 0].GetArrayForRead()[0]);
-                        differences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
-                        differences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
+                        absoluteDifferences[i, j, 0] = A[i, j, 0] == float.NegativeInfinity
+                            ? float.NegativeInfinity : Math.Abs(A[i, j, 0].GetArrayForRead()[0] - calculatedPerformances[i, j, 0].GetArrayForRead()[0]);
+                        absoluteDifferences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
+                        absoluteDifferences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
+                        relativeDifferences[i, j, 0] = A[i, j, 0] == float.NegativeInfinity
+                            ? float.NegativeInfinity : (absoluteDifferences[i, j, 0] >= 1 ? absoluteDifferences[i, j, 0]/A[i, j, 0] * 100 : 0);
+                        relativeDifferences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
+                        relativeDifferences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
                     }
                 }
 
@@ -2035,17 +2075,22 @@ namespace SPLConqueror_GUI
                         ColorMode = ILSurface.ColorModes.Solid
                     }
                 );
-                differenceCube.Add(new ILSurface(differences));
-                differenceCube.Add(new ILSurface(ILMath.zeros<float>(3,3,3)));
+
+                absoluteDifferenceCube.Add(new ILSurface(absoluteDifferences));
+                absoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3,3,3)));
+                relativeDifferenceCube.Add(new ILSurface(relativeDifferences));
+                relativeDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
             }
 
             bothGraphsIlPanel.Scene = new ILScene { bothGraphsCube };
             measurementsOnlyIlPanel.Scene = new ILScene { measurementsOnlyCube };
-            differenceIlPanel.Scene = new ILScene { differenceCube };
+            absoluteDifferenceIlPanel.Scene = new ILScene { absoluteDifferenceCube };
+            relativeDifferenceIlPanel.Scene = new ILScene { relativeDifferenceCube };
 
             bothGraphsIlPanel.Refresh();
             measurementsOnlyIlPanel.Refresh();
-            differenceIlPanel.Refresh();
+            absoluteDifferenceIlPanel.Refresh();
+            relativeDifferenceIlPanel.Refresh();
             
             updateMeasurementPanel();
         }
@@ -2059,8 +2104,9 @@ namespace SPLConqueror_GUI
         {
             bothGraphsPanel.Visible = false;
             measurementsOnlyPanel.Visible = false;
-            differencePanel.Visible = false;
-
+            absoluteDifferencePanel.Visible = false;
+            relativeDifferencePanel.Visible = false;
+            
             switch (measurementViewCombobox.SelectedItem.ToString())
             {
                 case comboboxBothOption:
@@ -2069,8 +2115,11 @@ namespace SPLConqueror_GUI
                 case comboboxMeasurementsOption:
                     measurementsOnlyPanel.Visible = true;
                     break;
-                case comboboxDifferenceOption:
-                    differencePanel.Visible = true;
+                case comboboxAbsoluteDifferenceOption:
+                    absoluteDifferencePanel.Visible = true;
+                    break;
+                case comboboxRelativeDifferenceOption:
+                    relativeDifferencePanel.Visible = true;
                     break;
                 default:
                     throw new Exception("This should not happen. An unknown option was found.");
@@ -2494,6 +2543,7 @@ namespace SPLConqueror_GUI
                                 ILArray<float> calcResult = calculateFunction(innerLog, optNames, vars);
                                 ILArray<float> logResult = ILMath.zeros<float>(1, 1);
 
+                                // Be careful! Here: log(0) = 0
                                 for (int j = 0; j < calcResult.Size[0]; j++)
                                     for (int k = 0; k < calcResult.Size[1]; k++)
                                         logResult[j, k] = calcResult[j, k] <= 0 ? ILMath.zeros<float>(1) : ILMath.log10(calcResult[j, k]);
