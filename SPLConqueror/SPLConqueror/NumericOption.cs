@@ -15,7 +15,7 @@ namespace SPLConqueror_Core
             get { return min_value; }
             set { min_value = value; }
         }
-        private double max_value = 0;
+        private double max_value = 10;
 
         public double Max_value
         {
