@@ -72,10 +72,6 @@ namespace SPLConqueror_GUI
         private Color measurementColor = Color.Green;
         private string adjustedMeasurementFunction;
 
-        // For reading in the right numbers
-        private NumberStyles style = NumberStyles.Number;
-        private CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
-
         /// <summary>
         /// Constructor of this class.
         /// </summary>
@@ -311,8 +307,7 @@ namespace SPLConqueror_GUI
                 double d;
 
                 if (!isOperator(prt) && prt != "log10(" && prt != ")"
-                    && !double.TryParse(prt, style, culture, out d)
-                    && !(prt.Contains('.') && (prt.Contains('E') || prt.Contains('e')))
+                    && !double.TryParse(prt, out d)
                     && model.getOption(prt) == null)
                 {
                     return false;
@@ -618,7 +613,7 @@ namespace SPLConqueror_GUI
             {
                 double i;
 
-                if (double.TryParse(prt, style, culture, out i))
+                if (double.TryParse(prt, out i))
                 {
                     int j = prt.Split(new char[] {'.', ',' })[1].Length;
 
@@ -774,7 +769,7 @@ namespace SPLConqueror_GUI
             {
                 double i = 0.0;
 
-                if (double.TryParse(part, style, culture, out i))
+                if (double.TryParse(part, out i))
                     constants.Add(Math.Abs(i));
             }
 
@@ -1021,9 +1016,7 @@ namespace SPLConqueror_GUI
 
                 // If the part is a number or an operator, it will be written back into the array.
                 // Every remaining binary option will be set to 1.0.
-                if (double.TryParse(part, style, culture, out d)
-                    || part.Contains(".") && (part.Contains("E") || part.Contains("e"))
-                    || isOperator(part))
+                if (double.TryParse(part, out d) || isOperator(part))
                     expressionParts[i] = part;
                 else
                     expressionParts[i] = "1.0";
@@ -1390,26 +1383,12 @@ namespace SPLConqueror_GUI
                 foreach (string part in component.Split(' '))
                 {
                     double num = 0.0;
-                    bool isConstant = double.TryParse(part, style, culture, out num);
+                    bool isConstant = double.TryParse(part, out num);
 
                     constant = isConstant ? num : constant;
 
-                    if (!isConstant && part != "")
-                    {
-                        if (part.Contains(".") && (part.Contains("E") || part.Contains("e")))
-                        {
-                            string[] parts = part.Split(new char[] { 'E', 'e' });
-                            double numFirst = 0.0;
-                            double numSecond = 0.0;
-
-                            double.TryParse(parts[0], style, culture, out numFirst);
-                            double.TryParse(parts[1], style, culture, out numSecond);
-
-                            constant = numFirst * Math.Pow(10, numSecond);
-                        }
-                        else if (!isOperator(part))
-                            variables.Add(part);
-                    }
+                    if (!isConstant && part != "" && !isOperator(part))
+                        variables.Add(part);
                 }
 
                 currConstantRange = constant;
@@ -1518,7 +1497,7 @@ namespace SPLConqueror_GUI
                     string part = expressionParts[i];
                     double number = 0.0;
 
-                    if (double.TryParse(part, style, culture, out number))
+                    if (double.TryParse(part, out number))
                     {
                         if (Math.Abs(number) < minAbstract)
                             part = "0.0";
@@ -1531,35 +1510,6 @@ namespace SPLConqueror_GUI
                                 part = parts[0] + ".0";
                             else if (parts[1].Length > maxDigits)
                                 part = parts[0] + "." + parts[1].Substring(0, maxDigits);
-                        }
-                    }
-                    else if (part.Contains(".") && (part.Contains("E") || part.Contains("e")))
-                    {
-                        string[] numParts = part.Split(new char[] {'E', 'e' });
-                        double numFst = 0.0;
-                        double numSnd = 0.0;
-
-                        double.TryParse(numParts[0], style, culture, out numFst);
-                        double.TryParse(numParts[1], style, culture, out numSnd);
-
-                        double constant = numFst * Math.Pow(10, numSnd);
-
-                        if (Math.Abs(constant) < minAbstract)
-                            part = "0.0";
-
-                        if (constantDecimalCheckBox.Checked && part != "0.0")
-                        {
-                            string[] parts;
-
-                            if (part.Contains("."))
-                                parts = part.Split(new char[] { 'E', 'e', '.' });
-                            else
-                                throw new Exception("Unknown style found! Use . or , for your constants!");
-
-                            if (maxDigits == 0)
-                                part = parts[0] + ".0E" + parts[2];
-                            else if (parts[1].Length > maxDigits)
-                                part = parts[0] + "." + parts[1].Substring(0, maxDigits) + "E" + parts[2];
                         }
                     }
 
@@ -1636,34 +1586,8 @@ namespace SPLConqueror_GUI
                     double numFst = -1.0;
                     double numSnd = -1.0;
 
-                    bool firstSuccess = double.TryParse(first.Item1, style, culture, out numFst);
-                    bool secondSuccess = double.TryParse(second.Item1, style, culture, out numSnd);
-
-                    // Check if the first number is an E-number
-                    if (first.Item1.Contains(".") && (first.Item1.Contains("E") || first.Item1.Contains("e")))
-                    {
-                        string[] parts = first.Item1.Split(new char[] { 'E', 'e' });
-                        double exponent;
-
-                        double.TryParse(parts[0], style, culture, out numFst);
-                        double.TryParse(parts[1], style, culture, out exponent);
-
-                        numFst = numFst * Math.Pow(10, exponent);
-                        firstSuccess = true;
-                    }
-
-                    // Check if the second number is an E-number
-                    if (second.Item1.Contains(".") && (second.Item1.Contains("E") || second.Item1.Contains("e")))
-                    {
-                        string[] parts = second.Item1.Split(new char[] { 'E', 'e' });
-                        double exponent;
-
-                        double.TryParse(parts[0], style, culture, out numSnd);
-                        double.TryParse(parts[1], style, culture, out exponent);
-
-                        numSnd = numSnd * Math.Pow(10, exponent);
-                        secondSuccess = true;
-                    }
+                    bool firstSuccess = double.TryParse(first.Item1, out numFst);
+                    bool secondSuccess = double.TryParse(second.Item1, out numSnd);
 
                     if (firstSuccess || secondSuccess)
                     {
@@ -2155,24 +2079,11 @@ namespace SPLConqueror_GUI
                     double d;
                     string addingComponent = component;
 
-                    if (double.TryParse(component, style, culture, out d))
+                    if (double.TryParse(component, out d))
                     {
                         // Adds color for the constants
                         textbox.SelectionBackColor = Color.FromArgb((int) (255 * Math.Abs(d) / maxAbstractConstant),
                             (int) (255 * (maxAbstractConstant - Math.Abs(d)) / maxAbstractConstant), 0);
-                    }
-                    else if (component.Contains(".") && (component.Contains("E") || component.Contains("e")))
-                    {
-                        // Adds color for constants with *10^
-                        string[] parts = component.Split(new char[] {'E', 'e' });
-                        double exponent;
-
-                        double.TryParse(parts[0], style, culture, out d);
-                        double.TryParse(parts[1], style, culture, out exponent);
-
-                        d = d * Math.Pow(10, exponent);
-                        textbox.SelectionBackColor = Color.FromArgb((int)(255 * Math.Abs(d) / maxAbstractConstant),
-                            (int)(255 * (maxAbstractConstant - Math.Abs(d)) / maxAbstractConstant), 0);
                     }
                     else if (addingComponent == "(" || addingComponent == "log10(")
                     {
@@ -2574,19 +2485,8 @@ namespace SPLConqueror_GUI
                 {
                     float num = (float) 0.0;
 
-                    if (float.TryParse(prt, style, culture, out num))
+                    if (float.TryParse(prt, out num))
                         stack.Push(num);
-                    else if (prt.Contains(".") && (prt.Contains("E") || prt.Contains("e")))
-                    {
-                        string[] parts = prt.Split(new char[] { 'E', 'e' });
-                        double numFirst = 0.0;
-                        double numSecond = 0.0;
-
-                        double.TryParse(parts[0], style, culture, out numFirst);
-                        double.TryParse(parts[1], style, culture, out numSecond);
-
-                        stack.Push((float) (numFirst * Math.Pow(10, numSecond)));
-                    }
                     else
                         throw new Exception("Expression contains unknown parts!");
                 }
@@ -2635,9 +2535,7 @@ namespace SPLConqueror_GUI
                 {
                     double i;
 
-                    if (!double.TryParse(prt, style, culture, out i)
-                        && !(prt.Contains(".") && (prt.Contains("E") || prt.Contains("e")))
-                        && !isOperator(prt))
+                    if (!double.TryParse(prt, out i) && !isOperator(prt))
                     {
                         if (counting.ContainsKey(prt))
                         {
