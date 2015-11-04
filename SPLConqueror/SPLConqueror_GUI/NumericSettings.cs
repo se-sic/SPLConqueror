@@ -97,8 +97,14 @@ namespace SPLConqueror_GUI
                     throw new ArgumentNullException("Parameter option must not be null!");
 
                 upDown = new OwnNumericUpDown(option.getAllValues(), currValue);
+                upDown.MouseWheel += UpDown_MouseWheel;
 
                 initializePanel(option);
+            }
+
+            private void UpDown_MouseWheel(object sender, MouseEventArgs e)
+            {
+                ((HandledMouseEventArgs)e).Handled = true;
             }
 
             /// <summary>
@@ -182,6 +188,8 @@ namespace SPLConqueror_GUI
 
                 UpdateEditText();
             }
+
+            
         }
     }
 }
