@@ -69,6 +69,7 @@ namespace SPLConqueror_GUI
         private ILArray<float> drawnPerformances;
         private ILArray<float> calculatedPerformances;
         private bool measurementsLoaded = false;
+        private Color calculatedColor = Color.Red;
         private Color measurementColor = Color.Green;
         private string adjustedMeasurementFunction;
 
@@ -626,25 +627,29 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Calculates and returns all interactions of the adjusted function.
+        /// Calculates and returns all interactions and their degrees of the adjusted function.
         /// </summary>
-        /// <returns>Dictionary with all interactions of each option</returns>
-        private Dictionary<string, Dictionary<string, int>> getInteractions()
+        /// <returns>Dictionary with all interactions and their degrees of each option</returns>
+        private Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> getInteractions()
         {
-            Dictionary<string, Dictionary<string, int>> currInteractions =
-                new Dictionary<string, Dictionary<string, int>>();
+            Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> currInteractions =
+                new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
 
             foreach (string component in adjustedMeasurementFunction.ToString().Split('+'))
             {
                 //Getting a list of all options in a component
                 List<ConfigurationOption> componentOptions = new List<ConfigurationOption>();
+                int degree = 0;
 
                 foreach (string part in component.Split(' '))
                 {
                     ConfigurationOption option = currentModel.getOption(part);
-
+                
                     if (option != null && !componentOptions.Contains(option))
+                    {
                         componentOptions.Add(option);
+                        degree++;
+                    }
                 }
 
                 ConfigurationOption[] options = componentOptions.ToArray();
@@ -652,24 +657,43 @@ namespace SPLConqueror_GUI
                 // Calculating all interactions for the list of found options
                 for (int i = 0; i < options.Length; i++)
                 {
-                    Dictionary<string, int> optionInteractions;
+                    Dictionary<string, List<Tuple<int, int>>> optionInteractions;
 
                     if (!currInteractions.TryGetValue(options[i].Name, out optionInteractions))
-                        optionInteractions = new Dictionary<string, int>();
+                        optionInteractions = new Dictionary<string, List<Tuple<int,int>>>();
 
                     for (int j = 0; j < options.Length; j++)
                     {
                         if (i != j)
                         {
-                            int count;
+                            List<Tuple<int, int>> val;
 
-                            if (optionInteractions.TryGetValue(options[j].Name, out count))
+                            if (optionInteractions.TryGetValue(options[j].Name, out val))
                             {
-                                optionInteractions.Remove(options[j].Name);
-                                optionInteractions.Add(options[j].Name, count + 1);
+                                bool degreeFound = false;
+                                int degreePos = 0;
+                                int newValue = 1;
+
+                                for (int k = 0; k < val.Count && !degreeFound; k++)
+                                    if (val[k].Item1 == degree)
+                                    {
+                                        degreeFound = true;
+                                        degreePos = k;
+                                        newValue = val[k].Item2 + 1;
+                                    }
+
+                                if (degreeFound)
+                                    val.Remove(val[degreePos]);
+
+                                val.Add(new Tuple<int, int>(degree, newValue));
                             }
                             else
-                                optionInteractions.Add(options[j].Name, 1);
+                            {
+                                List<Tuple<int, int>> list = new List<Tuple<int, int>>();
+                                list.Add(new Tuple<int, int>(degree, 1));
+
+                                optionInteractions.Add(options[j].Name, list);
+                            }
                         }
                     }
 
@@ -736,7 +760,7 @@ namespace SPLConqueror_GUI
         {
             interactionTextBox.Clear();
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> entry in getInteractions())
+            foreach (KeyValuePair<string, Dictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
                 // Appending text to display all interactions
                 interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Bold);
@@ -748,10 +772,22 @@ namespace SPLConqueror_GUI
                     interactionTextBox.AppendText("nothing...\n");
                 else
                 {
-                    KeyValuePair<string, int>[] values = entry.Value.ToArray();
+                    KeyValuePair<string, List<Tuple<int, int>>>[] values = entry.Value.ToArray();
 
                     for (int i = 0; i < values.Length; i++)
-                        interactionTextBox.AppendText("- " + values[i].Key + " (" + values[i].Value + ")\n\t\t");
+                    {
+                        interactionTextBox.AppendText("- " + values[i].Key + " (");
+
+                        for (int j = 0; j < values[i].Value.Count; j++)
+                        {
+                            interactionTextBox.AppendText("Degree " + values[i].Value[j].Item1 + ": " + values[i].Value[j].Item2);
+
+                            if (j < values[i].Value.Count - 1)
+                                interactionTextBox.AppendText(", ");
+                        }
+
+                        interactionTextBox.AppendText(")\n\t\t");
+                    }
                 }
 
                 interactionTextBox.AppendText("\n");
@@ -1352,19 +1388,24 @@ namespace SPLConqueror_GUI
             influenceChart.Series.Clear();
             influenceChart.Series.Add("Series1");
             influenceChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            influenceChart.Series["Series1"]["PointWidth"] = "0.1";
+            influenceChart.Series["Series1"]["PieLabelStyle"] = "Outside";
+            influenceChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
 
-            foreach (KeyValuePair<string, Dictionary<string, int>> entry in getInteractions())
+            foreach (KeyValuePair<string, Dictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
                 int value = 0;
 
-                foreach (KeyValuePair<string, int> pair in entry.Value)
-                    value += pair.Value;
+                foreach (KeyValuePair<string, List<Tuple<int, int>>> pair in entry.Value)
+                    foreach (Tuple<int, int> tup in pair.Value)
+                        value += tup.Item2;
 
                 if (value != 0)
                 {
                     System.Windows.Forms.DataVisualization.Charting.DataPoint point = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point.Label = entry.Key + " (#VALY)";
+                    point.Label = entry.Key;
                     point.SetValueY(value);
+                    point.ToolTip = "Number of interactions: #VALY";
 
                     influenceChart.Series["Series1"].Points.Insert(0, point);
                 }
@@ -1426,15 +1467,24 @@ namespace SPLConqueror_GUI
             constantChart.Series.Clear();
             constantChart.Series.Add("Series1");
             constantChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            constantChart.Series["Series1"]["PointWidth"] = "0.1";
+            constantChart.Series["Series1"]["PieLabelStyle"] = "Outside";
+            constantChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
 
             rangeChart.Series.Clear();
             rangeChart.Series.Add("Series1");
             rangeChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            rangeChart.Series["Series1"]["PointWidth"] = "0.1";
+            rangeChart.Series["Series1"]["PieLabelStyle"] = "Outside";
+            rangeChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
 
             rangeOccuranceChart.Series.Clear();
             rangeOccuranceChart.Series.Add("Series1");
             rangeOccuranceChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            
+            rangeOccuranceChart.Series["Series1"]["PointWidth"] = "0.1";
+            rangeOccuranceChart.Series["Series1"]["PieLabelStyle"] = "Outside";
+            rangeOccuranceChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
+
             // Update constant chart
             foreach (KeyValuePair<string, double> entry in constantInfluences)
             {
@@ -1882,7 +1932,14 @@ namespace SPLConqueror_GUI
                 {
                     ColorOverride = measurementColor
                 });
-                bothGraphsCube.Add(new ILLinePlot(calculatedPerformances));
+                bothGraphsCube.Add(new ILLinePlot(calculatedPerformances)
+                {
+                    Line =
+                    {
+                        Color = calculatedColor,
+                        DashStyle = DashStyle.Dashed
+                    }
+                });
                 measurementsOnlyCube.Add(new ILLinePlot(XY)
                 {
                     ColorOverride = measurementColor
@@ -2073,6 +2130,7 @@ namespace SPLConqueror_GUI
             for (int i = 0; i < expressionParts.Length; i++)
             {
                 string[] partComponents = expressionParts[i].Split(' ');
+                int pos = 0;
 
                 foreach (string component in partComponents)
                 {
@@ -2098,14 +2156,18 @@ namespace SPLConqueror_GUI
                     {
                         // Removes one tab if there is a closing bracket
                         tabs = tabs.Remove(tabs.Length - bracketTab.Length);
-                        addingComponent = addingComponent + tabs;
+
+                        if (pos < partComponents.Length - 2)
+                            addingComponent = addingComponent + "\n" + tabs;
                     }
 
                     textbox.AppendText(addingComponent);
                     textbox.SelectionBackColor = Color.White;
                     textbox.AppendText(" ");
-                }
 
+                    pos++;
+                }
+                
                 if (i < expressionParts.Length - 1)
                     textbox.AppendText("\n" + tabs + "+");
             }
@@ -2202,7 +2264,13 @@ namespace SPLConqueror_GUI
             }
 
             // Adding a lineplot to the cube
-            ILLinePlot linePlot = new ILLinePlot(XY);
+            ILLinePlot linePlot = new ILLinePlot(XY)
+            {
+                Line =
+                {
+                    Color = calculatedColor
+                }
+            };
             
             cube.Add(linePlot);
 
@@ -2531,19 +2599,32 @@ namespace SPLConqueror_GUI
 
             foreach (string section in expParts)
             {
-                foreach (string prt in section.Split(' '))
-                {
-                    double i;
+                string[] sectionParts = section.Split(' ');
+                List<string> usedOptions = new List<string>();
 
-                    if (!double.TryParse(prt, out i) && !isOperator(prt))
+                for (int i = 0; i < sectionParts.Length; i++)
+                {
+                    double d;
+
+                    if (sectionParts[i] == "log10(")
                     {
-                        if (counting.ContainsKey(prt))
+                        while (sectionParts[i] != ")")
+                            i++;
+                    }
+                    else if (!double.TryParse(sectionParts[i], out d) && !isOperator(sectionParts[i]))
+                    {
+                        if (!usedOptions.Contains(sectionParts[i]))
                         {
-                            counting[prt] += 1;
-                            greaterThanOne = true;
+                            if (counting.ContainsKey(sectionParts[i]))
+                            {
+                                counting[sectionParts[i]] += 1;
+                                greaterThanOne = true;
+                            }
+                            else
+                                counting.Add(sectionParts[i], 1);
+
+                            usedOptions.Add(sectionParts[i]);
                         }
-                        else
-                            counting.Add(prt, 1);
                     }
                 }
             }
@@ -2620,8 +2701,16 @@ namespace SPLConqueror_GUI
 
                     for (int i = 0; i < parts.Length && !containsExactVar; i++)
                     {
-                        containsExactVar = parts[i].Equals(max);
-                        varPos = i;
+                        if (parts[i] == "log10(")
+                        {
+                            while (parts[i] != ")")
+                                i++;
+                        }
+                        else
+                        {
+                            containsExactVar = parts[i].Equals(max);
+                            varPos = i;
+                        }
                     }
                     
                     if (containsExactVar)
@@ -2651,21 +2740,20 @@ namespace SPLConqueror_GUI
                         others.Add(prt);
                 }
 
-                result = max + " * ( " + String.Join(" + ", varRest) + " ) + "
-                    + factorizeExpression(String.Join("+", others));
+                string factorizedRest = factorizeExpression(String.Join(" + ", varRest));
+                string[] splitRest = factorizedRest.Split(' ');
+
+                if (splitRest[2] == "(" && splitRest[splitRest.Length-1] == ")")
+                    result = max + " * " + factorizedRest;
+                else
+                    result = max + " * ( " + factorizedRest + " )"; 
+
+                if (others.Count > 0)
+                    result = result + " + " + factorizeExpression(String.Join("+", others));
 
             }
             else
-            {
-                for(int i = 0; i < expParts.Length; i++)
-                {
-                    result = result + expParts[i];
-
-                    if (i < expParts.Length - 1)
-                        result = result + " + ";
-                }
-
-            }
+                result = String.Join(" + ", expParts);
 
             return result;
         }
