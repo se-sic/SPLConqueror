@@ -279,7 +279,7 @@ namespace SPLConqueror_GUI
             calculateOccurances();
 
             // Update readFunction-textbox
-            getMaxAbstractConstant();
+            getMaxAbstractConstant(originalFunction.ToString());
             updateFunctionTextBox(originalFunctionTextBox, sortExpression(originalFunction.ToString()));
             
             // Activating all components and returning their original state
@@ -795,18 +795,33 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Extracts the maximum abstract constant of the original Influence_Function.
+        /// Extracts the maximum abstract constant of the specified expression.
         /// </summary>
-        private void getMaxAbstractConstant()
+        private void getMaxAbstractConstant(string exp)
         {
             List<double> constants = new List<double>();
+            string[] components = exp.Split('+');
 
-            foreach (string part in originalFunction.ToString().Split(' '))
+            foreach (string part in components)
             {
-                double i = 0.0;
+                bool valid = true;
+                List<double> nums = new List<double>();
 
-                if (double.TryParse(part, out i))
-                    constants.Add(Math.Abs(i));
+                foreach (string prt in part.Split(' '))
+                {
+                    double i = 0.0;
+
+                    if (double.TryParse(prt, out i))
+                    {
+                        if (i == 0)
+                            valid = false;
+                        else
+                            nums.Add(Math.Abs(i));
+                    }
+                }
+
+                if (valid)
+                    constants.AddRange(nums);
             }
 
             maxAbstractConstant = constants.Count == 0 ? 1.0 : constants.Max();
@@ -1536,6 +1551,13 @@ namespace SPLConqueror_GUI
             for (int i = 0; i < expressionParts.Length; i++)
                 expressionParts[i] = String.Copy(originalFunction.getExpressionTree()[i]);
 
+            // Adjusting variables
+            if (filterVariablesCheckbox.Checked)
+                expressionParts = filterVariables(expressionParts);
+
+            // Get new maximal abstract constant
+            getMaxAbstractConstant(calculateFunctionExpression(expressionParts));
+
             // Adjusting constants
             if (constantDecimalCheckBox.Checked || constantFilteringCheckbox.Checked)
             {
@@ -1566,10 +1588,6 @@ namespace SPLConqueror_GUI
                     expressionParts[i] = part;
                 }
             }
-
-            // Adjusting variables
-            if (filterVariablesCheckbox.Checked)
-                expressionParts = filterVariables(expressionParts);
 
             // Calculate simplyfied expression in infix notation
             string adjustedExpression = sortExpression(calculateFunctionExpression(expressionParts));
@@ -1908,7 +1926,11 @@ namespace SPLConqueror_GUI
                         absoluteDifferences[0, pos] = (float)value;
                         absoluteDifferences[1, pos] = ILMath.abs((float)d - calculatedPerformances[1, values.IndexOf(value)]);
                         relativeDifferences[0, pos] = (float)value;
-                        relativeDifferences[1, pos] = absoluteDifferences[1, pos] >= 1 ? absoluteDifferences[1, pos]/XY[1, pos] * 100 : 0;
+
+                        if (XY[1, pos] == 0)
+                            relativeDifferences[1, pos] = absoluteDifferences[1, pos] == 0 ? 0 : 100;
+                        else
+                            relativeDifferences[1, pos] = absoluteDifferences[1, pos] >= 1 ? absoluteDifferences[1, pos]/XY[1, pos] * 100 : 0;
 
                         ILPoints point = createPoint(XY[0, pos], XY[1, pos], 0, measurementPointLabel);
 
@@ -2038,8 +2060,14 @@ namespace SPLConqueror_GUI
                             ? float.NegativeInfinity : Math.Abs(A[i, j, 0].GetArrayForRead()[0] - calculatedPerformances[i, j, 0].GetArrayForRead()[0]);
                         absoluteDifferences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
                         absoluteDifferences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
-                        relativeDifferences[i, j, 0] = A[i, j, 0] == float.NegativeInfinity
-                            ? float.NegativeInfinity : (absoluteDifferences[i, j, 0] >= 1 ? absoluteDifferences[i, j, 0]/A[i, j, 0] * 100 : 0);
+
+                        if (A[i, j, 0] == float.NegativeInfinity)
+                            relativeDifferences[i, j, 0] = float.NegativeInfinity;
+                        else if (A[i, j, 0] == 0)
+                            relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] == 0 ? 0 : 100;
+                        else
+                            relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] >= 1 ? absoluteDifferences[i, j, 0] / A[i, j, 0] * 100 : 0;
+                        
                         relativeDifferences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
                         relativeDifferences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
                     }
@@ -2140,8 +2168,11 @@ namespace SPLConqueror_GUI
                     if (double.TryParse(component, out d))
                     {
                         // Adds color for the constants
-                        textbox.SelectionBackColor = Color.FromArgb((int) (255 * Math.Abs(d) / maxAbstractConstant),
-                            (int) (255 * (maxAbstractConstant - Math.Abs(d)) / maxAbstractConstant), 0);
+                        if (maxAbstractConstant == 0)
+                            textbox.SelectionBackColor = Color.LightGreen;
+                        else
+                            textbox.SelectionBackColor = Color.FromArgb((int) (255 * Math.Abs(d) / maxAbstractConstant),
+                                (int) (255 * (maxAbstractConstant - Math.Abs(d)) / maxAbstractConstant), 0);
                     }
                     else if (addingComponent == "(" || addingComponent == "log10(")
                     {
