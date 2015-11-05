@@ -1832,9 +1832,18 @@ namespace SPLConqueror_GUI
                     neededConfigurations.Add(conf);
             }
 
-            // Check if there are any measurements for the current settings
+            // Check if there are no measurements for the current settings
             if (neededConfigurations.Count == 0)
             {
+                bothGraphsIlPanel.Scene = new ILScene();
+                measurementsOnlyIlPanel.Scene = new ILScene();
+                absoluteDifferenceIlPanel.Scene = new ILScene();
+                relativeDifferenceIlPanel.Scene = new ILScene();
+                bothGraphsIlPanel.Refresh();
+                measurementsOnlyIlPanel.Refresh();
+                absoluteDifferenceIlPanel.Refresh();
+                relativeDifferenceIlPanel.Refresh();
+
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
