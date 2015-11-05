@@ -263,7 +263,7 @@ namespace SPLConqueror_GUI
                 MessageBox.Show("The read expression is in an invalid form.");
                 return;
             }
-
+            
             if (originalFunction == null)
                 initializeOnce();
             
@@ -533,7 +533,7 @@ namespace SPLConqueror_GUI
         private void ownAfterCheck(object sender, TreeViewEventArgs e)
         {
             variableTreeView.AfterCheck -= ownAfterCheck;
-
+            
             setChildrenChecked(e.Node);
             updateTreeView();
             updateEvaluationConfiguration();
@@ -892,7 +892,7 @@ namespace SPLConqueror_GUI
             constantsDigitsUpDown.Enabled = constantDecimalCheckBox.Checked;
 
             updateAdjustedFunction();
-            updateCharts();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -905,7 +905,7 @@ namespace SPLConqueror_GUI
         private void constantsDigitsUpDown_ValueChanged(object sender, EventArgs e)
         {
             updateAdjustedFunction();
-            updateCharts();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -937,7 +937,7 @@ namespace SPLConqueror_GUI
             constantRelativeValueSlider.Enabled = constantFilteringCheckbox.Checked;
 
             updateAdjustedFunction();
-            updateCharts();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -952,7 +952,7 @@ namespace SPLConqueror_GUI
         private void constantRelativeValueSlider_Scroll(object sender, EventArgs e)
         {
             updateAdjustedFunction();
-            updateCharts();
+            updateInteractionsTab();
         }
 
         /// <summary>
@@ -978,7 +978,7 @@ namespace SPLConqueror_GUI
         /// 
         /// It will deactivate all other views and will make them invisible to the user. Only the selected
         /// view will be shown and enabled. After choosing a new index the adjusted function and configuration
-       /// options will be updated.
+        /// options will be updated.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1153,12 +1153,12 @@ namespace SPLConqueror_GUI
         /// <param name="e"></param>
         private void chartComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            influenceChart.Visible = false;
-            constantChart.Visible = false;
-            rangeChart.Visible = false;
-            rangeOccuranceChart.Visible = false;
+                influenceChart.Visible = false;
+                constantChart.Visible = false;
+                rangeChart.Visible = false;
+                rangeOccuranceChart.Visible = false;
 
-            String s = chartComboBox.SelectedItem.ToString();
+                String s = chartComboBox.SelectedItem.ToString();
 
             switch (chartComboBox.SelectedItem.ToString())
             {
