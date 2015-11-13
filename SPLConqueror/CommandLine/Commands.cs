@@ -70,7 +70,7 @@ namespace MachineLearning
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
-        public Learning.Regression.Learning exp = new Learning.Regression.Learning();
+        public Learning.Regression.LearningTest exp = new Learning.Regression.LearningTest();
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -118,7 +118,7 @@ namespace MachineLearning
 
                         GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
-                        exp = new Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        exp = new Learning.Regression.LearningTest(configurations_Learning, configurations_Learning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
@@ -193,26 +193,56 @@ namespace MachineLearning
                 case COMMAND_ANALYZE_LEARNING:
                     {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.log("Models:");
-                        FeatureSubsetSelection learnedModel = exp.models[0];
-                        if (learnedModel == null)
+                        if (this.mlSettings.bagging)
                         {
-                            GlobalState.logError.log("Error... learning was not performed!");
-                            break;
-                        }
-                        foreach (LearningRound lr in learnedModel.LearningHistory)
-                        {
-                            double relativeError = 0;
-                            if (GlobalState.evalutionSet.Configurations.Count > 0)
+                            for (int i = 0; i < this.exp.models.Count; i++)
                             {
-                                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
-                            }
-                            else
-                            {
-                                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
-                            }
+                                FeatureSubsetSelection learnedModel = exp.models[i];
+                                if (learnedModel == null)
+                                {
+                                    GlobalState.logError.log("Error... learning was not performed!");
+                                    break;
+                                }
+                                foreach (LearningRound lr in learnedModel.LearningHistory)
+                                {
+                                    double relativeError = 0;
+                                    if (GlobalState.evalutionSet.Configurations.Count > 0)
+                                    {
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                    }
+                                    else
+                                    {
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                    }
 
-                            GlobalState.logInfo.log(lr.ToString() + relativeError);
+                                    GlobalState.logInfo.log(lr.ToString() + relativeError);
+                                }
+                            }
                         }
+                        else
+                        {
+                            FeatureSubsetSelection learnedModel = exp.models[0];
+                            if (learnedModel == null)
+                            {
+                                GlobalState.logError.log("Error... learning was not performed!");
+                                break;
+                            }
+                            foreach (LearningRound lr in learnedModel.LearningHistory)
+                            {
+                                double relativeError = 0;
+                                if (GlobalState.evalutionSet.Configurations.Count > 0)
+                                {
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                }
+                                else
+                                {
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                }
+
+                                GlobalState.logInfo.log(lr.ToString() + relativeError);
+                            }
+                        }
+                       
 
                         break;
                     }
@@ -350,7 +380,7 @@ namespace MachineLearning
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // prepare the machine learning 
-                        exp = new Learning.Regression.Learning(configurationsLearning, configurationsLearning);
+                        exp = new Learning.Regression.LearningTest(configurationsLearning, configurationsLearning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
