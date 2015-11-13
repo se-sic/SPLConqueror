@@ -26,7 +26,12 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Specifies how often an influence model is learned based on a subset of the measurement data
         /// </summary>
-        public int baggingNumbers = 10;
+        public int baggingNumbers = 50;
+
+        /// <summary>
+        /// Specifies the percentage of data taken from the test set to be used in one learning run
+        /// </summary>
+        public int baggingTestDataFraction = 70;
 
         /// <summary>
         /// Features existing in the model can be removed during the learning procedure if removal leads to a better model.  

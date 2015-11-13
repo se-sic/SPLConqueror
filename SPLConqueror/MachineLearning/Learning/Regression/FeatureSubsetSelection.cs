@@ -18,7 +18,7 @@ namespace MachineLearning.Learning.Regression
     public class FeatureSubsetSelection
     {
         //Information about the state of learning
-        protected InfluenceModel infModel = null;
+        public InfluenceModel infModel = null;
         protected ObservableCollection<LearningRound> learningHistory = new ObservableCollection<LearningRound>();
         protected int hierachyLevel = 1;
         protected DateTime startTime;
@@ -27,6 +27,7 @@ namespace MachineLearning.Learning.Regression
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
         protected ML_Settings MLsettings = null;
         protected List<Feature> bruteForceCandidates = new List<Feature>();
+        public double finalError = 0.0;
 
         //Learning and validation data sets
         protected List<Configuration> learningSet = new List<Configuration>();
@@ -155,6 +156,7 @@ namespace MachineLearning.Learning.Regression
                 }
             } while (!abortLearning(current, oldRoundError));
             updateInfluenceModel();
+            this.finalError = evaluateError(this.validationSet, out this.finalError);
         }
 
 
