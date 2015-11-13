@@ -74,6 +74,25 @@ namespace MachineLearning.Learning.Regression
         /// Constructor of the learning class. It reads all configuration options and generates candidates for possible influences (i.e., features).
         /// </summary>
         /// <param name="infModel">The influence model which will later hold all determined influences and contains the variability model from which we derive all configuration options.</param>
+        public FeatureSubsetSelection(InfluenceModel infModel, ML_Settings settings)
+        {
+            this.infModel = infModel;
+            this.MLsettings = settings;
+            foreach (var opt in infModel.Vm.BinaryOptions)
+            {
+                if (opt == infModel.Vm.Root)
+                    continue;
+                initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+            }
+            this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
+            foreach (var opt in infModel.Vm.NumericOptions)
+                initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+        }
+
+        /// <summary>
+        /// Initialize of the learning class. Required only when the empty constructor was used. It reads all configuration options and generates candidates for possible influences (i.e., features).
+        /// </summary>
+        /// <param name="infModel">The influence model which will later hold all determined influences and contains the variability model from which we derive all configuration options.</param>
         public void init(InfluenceModel infModel, ML_Settings settings)
         {
             this.infModel = infModel;
@@ -137,6 +156,7 @@ namespace MachineLearning.Learning.Regression
             } while (!abortLearning(current, oldRoundError));
             updateInfluenceModel();
         }
+
 
         /// <summary>
         /// Based on the given learning round, the method intantiates the influence model.
