@@ -9,8 +9,9 @@ using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
+using MachineLearning.Sampling;
 
-namespace CommandLine
+namespace MachineLearning
 {
     public class Commands
     {
@@ -63,8 +64,13 @@ namespace CommandLine
 
         public const string COMMAND_SUBSCRIPT = "script";
 
+        
+        List<SamplingStrategies> toSample = new List<SamplingStrategies>();
+        List<SamplingStrategies> toSampleValidation = new List<SamplingStrategies>();
+        ML_Settings mlSettings = new ML_Settings();
+        InfluenceFunction trueModel = null;
 
-        public ExperimentState exp = new ExperimentState();
+        public Learning.Regression.Learning exp = new Learning.Regression.Learning();
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -112,11 +118,10 @@ namespace CommandLine
 
                         GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
-                        exp.learning.init(infMod, exp.mlSettings);
-                        exp.learning.setLearningSet(configurations_Learning);
-                        exp.learning.setValidationSet(configurations_Learning);
-                        exp.learning.learn();
-
+                        exp = new Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        exp.metaModel = infMod;
+                        exp.mLsettings = this.mlSettings;
+                        exp.learn();
                     }
                     break;
 
@@ -124,10 +129,10 @@ namespace CommandLine
                     StreamReader readModel = new StreamReader(task);
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
-                    exp.TrueModel = new InfluenceFunction(model.Replace(',', '.'), GlobalState.varModel);
+                    this.trueModel = new InfluenceFunction(model.Replace(',', '.'), GlobalState.varModel);
                     NFProperty artificalProp = new NFProperty("artificial");
                     GlobalState.currentNFP = artificalProp;
-                    computeEvaluationDataSetBasedOnTrueModel();
+                    //computeEvaluationDataSetBasedOnTrueModel();
                     break;
 
                 case COMMAND_SUBSCRIPT:
@@ -172,39 +177,38 @@ namespace CommandLine
                     break;
                 case COMMAND_SAMPLE_ALLBINARY:
                     {
-                        VariantGenerator vg = new VariantGenerator(null);
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
-                            exp.addBinarySelection_Validation(vg.generateAllVariantsFast(GlobalState.varModel));
-                            exp.addBinarySampling_Validation(COMMAND_SAMPLE_ALLBINARY);
+                            this.toSampleValidation.Add(SamplingStrategies.ALLBINARY);
+                            this.exp.info.binarySamplings_Validation = "ALLBINARY";
                         }
                         else
                         {
-                            exp.addBinarySelection_Learning(vg.generateAllVariantsFast(GlobalState.varModel));
-                            exp.addBinarySampling_Learning(COMMAND_SAMPLE_ALLBINARY);
+                            this.toSample.Add(SamplingStrategies.ALLBINARY);
+                            this.exp.info.binarySamplings_Learning = "ALLBINARY";
                         }
 
                         break;
                     }
                 case COMMAND_ANALYZE_LEARNING:
-                    {
+                    {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.log("Models:");
-                        FeatureSubsetSelection learning = exp.learning;
-                        if (learning == null)
+                        FeatureSubsetSelection learnedModel = exp.models[0];
+                        if (learnedModel == null)
                         {
                             GlobalState.logError.log("Error... learning was not performed!");
                             break;
                         }
-                        foreach (LearningRound lr in learning.LearningHistory)
+                        foreach (LearningRound lr in learnedModel.LearningHistory)
                         {
                             double relativeError = 0;
                             if (GlobalState.evalutionSet.Configurations.Count > 0)
                             {
-                                double relativeErro2r = exp.learning.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
                             }
                             else
                             {
-                                double relativeErro2r = exp.learning.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
                             }
 
                             GlobalState.logInfo.log(lr.ToString() + relativeError);
@@ -229,17 +233,15 @@ namespace CommandLine
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
                     break;
                 case COMMAND_SAMPLE_OPTIONWISE:
-                    FeatureWise fw = new FeatureWise();
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
-                        exp.addBinarySelection_Validation(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                        exp.addBinarySampling_Validation("FW");
+                        this.toSampleValidation.Add(SamplingStrategies.OPTIONWISE);
+                        this.exp.info.binarySamplings_Validation = "OPTIONSWISE";
                     }
                     else
                     {
-                        //exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigsCSP(GlobalState.varModel));
-                        exp.addBinarySelection_Learning(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
-                        exp.addBinarySampling_Learning("FW");
+                        this.toSample.Add(SamplingStrategies.OPTIONWISE);
+                        this.exp.info.binarySamplings_Learning = "OPTIONSWISE";
                     }
                     break;
 
@@ -253,33 +255,33 @@ namespace CommandLine
                     GlobalState.logError = new ErrorLogger(location + "_error");
                     break;
                 case COMMAND_SET_MLSETTING:
-                    exp.mlSettings = ML_Settings.readSettings(task);
+                    this.mlSettings = ML_Settings.readSettings(task);
                     break;
                 case COMMAND_LOAD_MLSETTINGS:
-                    exp.mlSettings = ML_Settings.readSettingsFromFile(task);
+                    this.mlSettings = ML_Settings.readSettingsFromFile(task);
                     break;
 
                 case COMMAND_SAMPLE_PAIRWISE:
-                    PairWise pw = new PairWise();
+                    
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
-                        exp.addBinarySelection_Validation(pw.generatePairWiseVariants(GlobalState.varModel));
-                        exp.addBinarySampling_Validation("PW");
+                        this.toSampleValidation.Add(SamplingStrategies.PAIRWISE);
+                        this.exp.info.binarySamplings_Validation = "PAIRWISE";
                     }
                     else
                     {
-                        exp.addBinarySelection_Learning(pw.generatePairWiseVariants(GlobalState.varModel));
-                        exp.addBinarySampling_Learning("PW");
+                        this.toSample.Add(SamplingStrategies.PAIRWISE);
+                        this.exp.info.binarySamplings_Learning = "PAIRWISE";
                     }
                     break;
 
                 case COMMAND_PRINT_MLSETTINGS:
-                    GlobalState.logInfo.log(exp.mlSettings.ToString());
+                    GlobalState.logInfo.log(this.mlSettings.ToString());
                     break;
 
                 case COMMAND_PRINT_CONFIGURATIONS:
                     {
-                        List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
+                       /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
                         List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
 
                         List<Configuration> configurations = new List<Configuration>();
@@ -294,124 +296,125 @@ namespace CommandLine
                                     configurations.Add(config);
                                 }
                             }
-                        }
+                        }*/
                         string[] para = task.Split(new char[] { ' ' });
-                        // TODO very error prune..
+                        // TODO very error prone..
                         ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2], GlobalState.optionOrder);
-                        printer.print(configurations);
+                        printer.print(this.exp.testSet);
 
                         break;
                     }
                 case COMMAND_SAMPLE_BINARY_RANDOM:
                     {
                         string[] para = task.Split(new char[] { ' ' });
-                        int treshold = Convert.ToInt32(para[0]);
-                        int modulu = Convert.ToInt32(para[1]);
+                        ConfigurationBuilder.binaryThreshold = Convert.ToInt32(para[0]);
+                        ConfigurationBuilder.binaryModulu = Convert.ToInt32(para[1]);
 
                         VariantGenerator vg = new VariantGenerator(null);
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
-                            exp.addBinarySelection_Validation(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
-                            exp.addBinarySampling_Validation("random " + task);
+                            this.toSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
+                            this.exp.info.binarySamplings_Validation = "BINARY_RANDOM";
                         }
                         else
                         {
-                            exp.addBinarySelection_Learning(vg.generateRandomVariants(GlobalState.varModel, treshold, modulu));
-                            exp.addBinarySampling_Learning("random " + task);
+                            this.toSample.Add(SamplingStrategies.BINARY_RANDOM);
+                            this.exp.info.binarySamplings_Learning = "BINARY_RANDOM " + task;
                         }
                         break;
                     }
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-
-                        List<Configuration> configurations_Learning = new List<Configuration>();
-
-                        List<Configuration> configurations_Validation = new List<Configuration>();
-
-                        if (exp.TrueModel == null)
+                        List<Configuration> configurationsLearning = buildTestSet();
+                        List<Configuration> configurationsValidation = buildValidationSet();
+                        
+                        if (configurationsLearning.Count == 0)
                         {
-                            //List<List<BinaryOption>> availableBinary 
-                            //configurations_Learning = GlobalState.getMeasuredConfigs(exp.BinarySelections_Learning, exp.NumericSelection_Learning);
-                            configurations_Learning = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Learning, exp.NumericSelection_Learning));
-                            configurations_Learning = configurations_Learning.Distinct().ToList();
-
-                            configurations_Validation = GlobalState.getMeasuredConfigs(Configuration.getConfigurations(exp.BinarySelections_Validation, exp.NumericSelection_Validation));
-                            configurations_Validation = configurations_Validation.Distinct().ToList();
-                            //break;//todo only to get the configurations that we haven't measured
-                        }
-                        else
-                        {
-                            foreach (List<BinaryOption> binConfig in exp.BinarySelections_Learning)
-                            {
-                                if (exp.NumericSelection_Learning.Count == 0)
-                                {
-                                    Configuration c = new Configuration(binConfig);
-                                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
-                                    if (!configurations_Learning.Contains(c))
-                                        configurations_Learning.Add(c);
-                                    continue;
-                                }
-                                foreach (Dictionary<NumericOption, double> numConf in exp.NumericSelection_Learning)
-                                {
-
-                                    Configuration c = new Configuration(binConfig, numConf);
-                                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
-                                    if (GlobalState.varModel.configurationIsValid(c))
-                                        //                    if (!configurations_Learning.Contains(c))
-                                        configurations_Learning.Add(c);
-                                }
-                            }
-
+                            configurationsLearning = configurationsValidation;
                         }
 
-                        if (configurations_Learning.Count == 0)
-                        {
-                            configurations_Learning = configurations_Validation;
-                        }
-
-                        if (configurations_Learning.Count == 0)
+                        if (configurationsLearning.Count == 0)
                         {
                             GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
                             break;
                         }
 
-                        if (configurations_Validation.Count == 0)
+                        if (configurationsValidation.Count == 0)
                         {
-                            configurations_Validation = configurations_Learning;
+                            configurationsValidation = configurationsLearning;
                         }
-                        //break;
-                        GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count + " NumberOfConfigurationsValidation:" + configurations_Validation.Count
-                        + " UnionNumberOfConfigurations:" + (configurations_Learning.Union(configurations_Validation)).Count());
+                        
+                        
+                        GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+                        //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // prepare the machine learning 
-                        exp.learning.init(infMod, exp.mlSettings);
-                        exp.learning.setLearningSet(configurations_Learning);
-                        exp.learning.setValidationSet(configurations_Validation);
-                        exp.learning.learn();
+                        exp = new Learning.Regression.Learning(configurationsLearning, configurationsLearning);
+                        exp.metaModel = infMod;
+                        exp.mLsettings = this.mlSettings;
+                        exp.learn();
 
                     }
                     break;
 
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
-                    NegFeatureWise neg = new NegFeatureWise();
 
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
-                        exp.addBinarySelection_Validation(neg.generateNegativeFW(GlobalState.varModel));
-                        exp.addBinarySampling_Validation("newFW");
+                        this.toSampleValidation.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
+                        this.exp.info.binarySamplings_Validation = "NEGATIVE_OPTIONWISE";
                     }
                     else
                     {
-                        exp.addBinarySelection_Learning(neg.generateNegativeFW(GlobalState.varModel));//neg.generateNegativeFWAllCombinations(GlobalState.varModel));
-                        exp.addBinarySampling_Learning("newFW");
+                        this.toSample.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
+                        this.exp.info.binarySamplings_Learning = "NEGATIVE_OPTIONWISE";
                     }
                     break;
                 default:
                     return command;
             }
             return "";
+        }
+
+        private List<Configuration> buildValidationSet()
+        {
+            List<Configuration> configurationsValidation = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSampleValidation);
+            //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
+            if (trueModel != null)
+            {
+                foreach (Configuration conf in configurationsValidation)
+                {
+                    conf.setMeasuredValue(GlobalState.currentNFP, trueModel.eval(conf));
+                    GlobalState.addConfiguration(conf);
+                }
+            }
+            else
+            {
+                configurationsValidation = GlobalState.getMeasuredConfigs(configurationsValidation);
+            }
+            return configurationsValidation;
+        }
+
+        private List<Configuration> buildTestSet()
+        {
+            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+            //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
+            if (trueModel != null)
+            {
+                foreach (Configuration conf in configurationsTest)
+                {
+                    conf.setMeasuredValue(GlobalState.currentNFP, trueModel.eval(conf));
+                    GlobalState.addConfiguration(conf);
+                }
+            }
+            else
+            {
+                configurationsTest = GlobalState.getMeasuredConfigs(configurationsTest);
+            }
+            return configurationsTest;
+
         }
 
         private void parseOptionOrder(string task)
@@ -432,7 +435,7 @@ namespace CommandLine
         /// </summary>
         private void computeEvaluationDataSetBasedOnTrueModel()
         {
-            VariantGenerator vg = new VariantGenerator(null);
+         /*   VariantGenerator vg = new VariantGenerator(null);
             List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
             //take only 10k
@@ -466,17 +469,17 @@ namespace CommandLine
                 if (numericConfigs.Count == 0)
                 {
                     Configuration c = new Configuration(binConfig);
-                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                    c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
                     GlobalState.addConfiguration(c);
                 }
                 foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
                 {
 
                     Configuration c = new Configuration(binConfig, numConf);
-                    c.setMeasuredValue(GlobalState.currentNFP, exp.TrueModel.eval(c));
+                    c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
                     GlobalState.addConfiguration(c);
                 }
-            }
+            }*/
         }
 
 
@@ -567,63 +570,124 @@ namespace CommandLine
             if (optionsToConsider.Count == 0)
                 optionsToConsider = GlobalState.varModel.NumericOptions;
 
-            ExperimentalDesign design = null;
-
+            
             switch (designName.ToLower())
             {
                 case COMMAND_EXPDESIGN_BOXBEHNKEN:
-                    design = new BoxBehnkenDesign(optionsToConsider);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.BOXBEHNKEN);
+                        this.exp.info.numericSamplings_Validation = "BOXBEHNKEN";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.BOXBEHNKEN);
+                        this.exp.info.numericSamplings_Learning = "BOXBEHNKEN";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BOXBEHNKEN, parameter);
                     break;
                 case COMMAND_EXPDESIGN_CENTRALCOMPOSITE:
-                    design = new CentralCompositeInscribedDesign(optionsToConsider);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.CENTRALCOMPOSITE);
+                        this.exp.info.numericSamplings_Validation = "CENTRALCOMPOSITE";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.CENTRALCOMPOSITE);
+                        this.exp.info.numericSamplings_Learning = "CENTRALCOMPOSITE";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.CENTRALCOMPOSITE, parameter);
                     break;
                 case COMMAND_EXPDESIGN_FULLFACTORIAL:
-                    design = new FullFactorialDesign(optionsToConsider);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.FULLFACTORIAL);
+                        this.exp.info.numericSamplings_Validation = "FULLFACTORIAL";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.FULLFACTORIAL);
+                        this.exp.info.numericSamplings_Learning = "FULLFACTORIAL";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.FULLFACTORIAL, parameter);
                     break;
                 case "featureInteraction":
                     GlobalState.logError.log("not implemented yet");
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:
-                    design = new HyperSampling(optionsToConsider);
-                    if (parameter.ContainsKey("precision"))
-                        ((HyperSampling)design).Precision = Int32.Parse(parameter["precision"]);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.HYPERSAMPLING);
+                        this.exp.info.numericSamplings_Validation = "HYPERSAMPLING";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.HYPERSAMPLING);
+                        this.exp.info.numericSamplings_Learning = "HYPERSAMPLING";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.HYPERSAMPLING, parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
-                    design = new OneFactorAtATime(optionsToConsider);
-                    if (parameter.ContainsKey("distinctValuesPerOption"))
-                        ((OneFactorAtATime)design).distinctValuesPerOption = Int32.Parse(parameter["distinctValuesPerOption"]);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.ONEFACTORATATIME);
+                        this.exp.info.numericSamplings_Validation = "ONEFACTORATATIME";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.ONEFACTORATATIME);
+                        this.exp.info.numericSamplings_Learning = "ONEFACTORATATIME";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.ONEFACTORATATIME, parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_KEXCHANGE:
-                    design = new KExchangeAlgorithm(optionsToConsider);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.KEXCHANGE);
+                        this.exp.info.numericSamplings_Validation = "KEXCHANGE";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.KEXCHANGE);
+                        this.exp.info.numericSamplings_Learning = "KEXCHANGE";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.KEXCHANGE, parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
-                    design = new PlackettBurmanDesign(optionsToConsider);
-                    if (parameter.ContainsKey("measurements") && parameter.ContainsKey("level"))
-                        ((PlackettBurmanDesign)design).setSeed(Int32.Parse(parameter["measurements"]), Int32.Parse(parameter["level"]));
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.PLACKETTBURMAN);
+                        this.exp.info.numericSamplings_Validation = "PLACKETTBURMAN";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.PLACKETTBURMAN);
+                        this.exp.info.numericSamplings_Learning = "PLACKETTBURMAN";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.PLACKETTBURMAN, parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_RANDOM:
-                    design = new RandomSampling(optionsToConsider);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.toSampleValidation.Add(SamplingStrategies.RANDOM);
+                        this.exp.info.numericSamplings_Validation = "RANDOM";
+                    }
+                    else
+                    {
+                        this.toSample.Add(SamplingStrategies.RANDOM);
+                        this.exp.info.numericSamplings_Learning = "RANDOM";
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.RANDOM, parameter);
                     break;
 
                 default:
                     return task;
-            }
-
-            design.computeDesign(parameter);
-            if (parameter.ContainsKey("validation"))
-            {
-                exp.addNumericSampling_Validation(design.getName());
-                exp.addNumericalSelection_Validation(design.SelectedConfigurations);
-            }
-            else
-            {
-                exp.addNumericSampling_Learning(design.getName());
-                exp.addNumericalSelection_Learning(design.SelectedConfigurations);
             }
 
             return "";

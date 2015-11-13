@@ -8,7 +8,7 @@
     <ProjectGuid>{FE44070A-24E6-4A10-820F-854FF74C0DFB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommandLine</RootNamespace>
+    <RootNamespace>MachineLearning</RootNamespace>
     <AssemblyName>CommandLine</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -81,7 +81,6 @@
   <ItemGroup>
     <Compile Include="CommandLine.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="ExperimentState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script.cs" />

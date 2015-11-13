@@ -13,14 +13,29 @@ namespace MachineLearning.Learning
 
         public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
 
+        /// <summary>
+        /// The loss function on which bases features are added to the influence model.
+        /// </summary>
         public LossFunction lossFunction = LossFunction.RELATIVE;
+
+        /// <summary>
+        /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
+        /// </summary>
+        public bool bagging = true;
+
+        /// <summary>
+        /// Specifies how often an influence model is learned based on a subset of the measurement data
+        /// </summary>
+        public int baggingNumbers = 10;
 
         /// <summary>
         /// Features existing in the model can be removed during the learning procedure if removal leads to a better model.  
         /// </summary>
         public bool useBackward = false;
 
-
+        /// <summary>
+        /// The threshold at which the learning process stops.
+        /// </summary>
         public double abortError = 1;
 
         /// <summary>
