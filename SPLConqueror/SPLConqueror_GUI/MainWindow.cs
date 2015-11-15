@@ -33,11 +33,18 @@ namespace SPLConqueror_GUI
         private const string relativeDifferenceLabel = "Relative Difference in %";
         private const string failureNoModel = "You have to load a model to generate a graph!";
         private const string failureDoubleOption = "You may not choose the same option twice!";
+        private const string interactionsInformation = "In how many interactions do the possible variables occur?";
+        private const string constantInformation = "What is the abstract influence of each variable?";
+        private const string maxInformation = "What is the maximum abstract influence of each variable?";
+        private const string maxOccuranceInformation = "What is the maximum abstract influence of each variable depended on its usage in the configurations?";
+        private const string rangeInformation = "What is the influence range of each variable?";
         private const string comboboxInteractionsOption = "Interactions";
         private const string comboboxConstantOption = "Constants";
-        private const string comboboxRangeOption = "Constants Range";
-        private const string comboboxRangeOccuranceOption = "Constants Range Occurance";
-        private const string comboboxBothOption = "Both";
+        private const string comboboxMaxOption = "Constants Max";
+        private const string comboboxMaxOccuranceOption = "Constants Max Occurance";
+        private const string comboboxRangeOption = "Variable Range";
+        private const string comboboxOverviewOption = "Overview";
+        private const string comboboxBothOption = "Both Graphs";
         private const string comboboxMeasurementsOption = "Measurements only";
         private const string comboboxAbsoluteDifferenceOption = "Absolute Difference";
         private const string comboboxRelativeDifferenceOption = "Relative Difference";
@@ -56,12 +63,15 @@ namespace SPLConqueror_GUI
         private bool modelLoaded = false;
         private double maxAbstractConstant = 0.0;
         private Dictionary<string, int> occuranceOfOptions = new Dictionary<string, int>();
-        private Dictionary<NumericOption, float> numericSettings = new Dictionary<NumericOption, float>();
+        protected Dictionary<NumericOption, float> numericSettings = new Dictionary<NumericOption, float>();
         private Dictionary<ConfigurationOption, double> factorizationPriorities =
             new Dictionary<ConfigurationOption, double>();
         private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT(
             Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(
             System.IO.Directory.GetCurrentDirectory()))) + "\\dll\\Microsoft.Solver.Foundation.dll");
+        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator(
+                Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())))
+                + "\\dll\\Microsoft.Solver.Foundation.dll");
 
         // Everything for the measurements
         private Configuration configurationForCalculation;
@@ -326,10 +336,6 @@ namespace SPLConqueror_GUI
         {
             occuranceOfOptions.Clear();
 
-            MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator(
-                Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())))
-                + "\\dll\\Microsoft.Solver.Foundation.dll");
-
             foreach (List<BinaryOption> variant in varGen.generateAllVariantsFast(currentModel))
             {
                 foreach (BinaryOption opt in variant)
@@ -352,18 +358,22 @@ namespace SPLConqueror_GUI
             constantDecimalCheckBox.Enabled = true;
             constantFilteringCheckbox.Enabled = true;
             filterVariablesCheckbox.Enabled = true;
+            filterRegexCheckBox.Enabled = true;
             firstAxisCombobox.Enabled = true;
             secondAxisCombobox.Enabled = true;
-            settingsButton.Enabled = true;
+            numericDefaultPanel.Enabled = true;
             normalRadioButton.Enabled = true;
             factorRadioButton.Enabled = true;
+            chartDescriptionLabel.Visible = true;
 
             chartComboBox.Enabled = true;
             chartComboBox.Items.Add(comboboxInteractionsOption);
             chartComboBox.Items.Add(comboboxConstantOption);
+            chartComboBox.Items.Add(comboboxMaxOption);
+            chartComboBox.Items.Add(comboboxMaxOccuranceOption);
             chartComboBox.Items.Add(comboboxRangeOption);
-            chartComboBox.Items.Add(comboboxRangeOccuranceOption);
 
+            measurementViewCombobox.Items.Add(comboboxOverviewOption);
             measurementViewCombobox.Items.Add(comboboxBothOption);
             measurementViewCombobox.Items.Add(comboboxMeasurementsOption);
             measurementViewCombobox.Items.Add(comboboxAbsoluteDifferenceOption);
@@ -416,8 +426,40 @@ namespace SPLConqueror_GUI
             calculationResultLabel.Text = buttonPressRequest;
             updateEvaluationConfiguration();
 
+            // Initializing the numeric default settings panel
+            if (modelLoaded)
+                initializeNumericPanels();
+
             // Measurement view
             initializeMeasurementView();
+        }
+
+        /// <summary>
+        /// Initializes the panel conatining all numeric panels.
+        /// </summary>
+        private void initializeNumericPanels()
+        {
+            numericDefaultPanel.Controls.Clear();
+
+            int i = 0;
+
+            foreach (NumericOption option in currentModel.NumericOptions)
+            {
+                float val = 0;
+                numericSettings.TryGetValue(option, out val);
+
+                NumericPanel panel = new NumericPanel(option, val);
+                panel.upDown.ValueChanged += (s, e) =>
+                {
+                    numericSettings.Remove(panel.option);
+                    numericSettings.Add(panel.option, (float)panel.upDown.Value);
+                };
+
+                numericDefaultPanel.Controls.Add(panel);
+
+                panel.Location = new System.Drawing.Point(0, i * panel.Size.Height);
+                i++;
+            }
         }
 
         /// <summary>
@@ -434,10 +476,19 @@ namespace SPLConqueror_GUI
             nfpValueCombobox.Enabled = false;
             updateMeasurementTab();
 
+            overviewPerformanceIlPanel.Scene = new ILScene();
+            overviewMeasurementIlPanel.Scene = new ILScene();
+            overviewAbsoluteDifferenceIlPanel.Scene = new ILScene();
+            overviewRelativeDifferenceIlPanel.Scene = new ILScene();
             bothGraphsIlPanel.Scene = new ILScene();
             measurementsOnlyIlPanel.Scene = new ILScene();
             absoluteDifferenceIlPanel.Scene = new ILScene();
             relativeDifferenceIlPanel.Scene = new ILScene();
+
+            overviewPerformanceIlPanel.Refresh();
+            overviewMeasurementIlPanel.Refresh();
+            overviewAbsoluteDifferenceIlPanel.Refresh();
+            overviewRelativeDifferenceIlPanel.Refresh();
             bothGraphsIlPanel.Refresh();
             measurementsOnlyIlPanel.Refresh();
             absoluteDifferenceIlPanel.Refresh();
@@ -453,7 +504,9 @@ namespace SPLConqueror_GUI
 
             if (currentModel.BooleanConstraints.Count != 0)
             {
+                constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Bold);
                 constraintTextbox.AppendText("Boolean constraints:\n\n");
+                constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Regular);
 
                 foreach (string constraint in currentModel.BooleanConstraints)
                     constraintTextbox.AppendText(constraint + "\n");
@@ -463,7 +516,9 @@ namespace SPLConqueror_GUI
 
             if (currentModel.NonBooleanConstraints.Count != 0)
             {
+                constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Bold);
                 constraintTextbox.AppendText("Non-Boolean constraints:\n\n");
+                constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Regular);
 
                 foreach (NonBooleanConstraint constraint in currentModel.NonBooleanConstraints)
                     constraintTextbox.AppendText(constraint.ToString() + "\n");
@@ -497,12 +552,13 @@ namespace SPLConqueror_GUI
         /// </summary>
         private void initializeVariableConfiguration()
         {
+            filterVariablesCheckbox.Checked = false;
+
             // Initializing combobox
             filterOptionCombobox.Items.Clear();
             filterOptionCombobox.Items.Add(filteringTreeView);
             filterOptionCombobox.Items.Add(filteringListBox);
             filterOptionCombobox.SelectedIndex = 0;
-            filterVariablesCheckbox.Checked = false;
 
             // Initializing listbox
             variableListBox.Visible = false;
@@ -521,6 +577,10 @@ namespace SPLConqueror_GUI
             variableTreeView.Nodes.Clear();
             
             variableTreeView.Nodes.Add(insertIntoTreeView(currentModel.Root));
+
+            // Initializing regex filtering
+            filterRegexCheckBox.Checked = false;
+            regexTextbox.Text = "";
         }
 
         /// <summary>
@@ -627,6 +687,59 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
+        /// Calculates and returns the components of the specified expression.
+        /// 
+        /// The outer additions will be seen as separator of the components.
+        /// </summary>
+        /// <param name="exp">Specified expression. Must not be null.</param>
+        /// <returns></returns>
+        private List<string> getComponents(string exp)
+        {
+            if (exp == null)
+                throw new ArgumentNullException("Parameter exp must nor be null!");
+
+            string[] currExpression = exp.Split(' ');
+            List<string> components = new List<string>();
+            List<string> componentParts = new List<string>();
+
+            // Calculate all necessary components of the expression
+            for (int i = 0; i < currExpression.Length; i++)
+            {
+                if (currExpression[i] == "log10(")
+                {
+                    int bracketCount = 1;
+
+                    while (bracketCount > 0)
+                    {
+                        componentParts.Add(currExpression[i]);
+                        i++;
+
+                        if (currExpression[i] == "log10(")
+                            bracketCount++;
+
+                        if (currExpression[i] == ")")
+                            bracketCount--;
+                    }
+
+                    componentParts.Add(currExpression[i]);
+                }
+                else if (currExpression[i] == "+" || i == currExpression.Length - 1)
+                {
+                    if (i == currExpression.Length - 1)
+                        componentParts.Add(currExpression[i]);
+                    
+                    components.Add(String.Join(" ", componentParts));
+
+                    componentParts.Clear();
+                }
+                else
+                    componentParts.Add(currExpression[i]);
+            }
+
+            return components;
+        }
+
+        /// <summary>
         /// Calculates and returns all interactions and their degrees of the adjusted function.
         /// </summary>
         /// <returns>Dictionary with all interactions and their degrees of each option</returns>
@@ -634,10 +747,11 @@ namespace SPLConqueror_GUI
         {
             Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> currInteractions =
                 new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
-
-            foreach (string component in adjustedMeasurementFunction.ToString().Split('+'))
+            
+            foreach (string component in getComponents(adjustedMeasurementFunction))
             {
-                //Getting a list of all options in a component
+                // Getting a list of all options in a component. Presuming that there is no
+                // addition in logarithms (due to the learned function) 
                 List<ConfigurationOption> componentOptions = new List<ConfigurationOption>();
                 int degree = 0;
 
@@ -652,23 +766,21 @@ namespace SPLConqueror_GUI
                     }
                 }
 
-                ConfigurationOption[] options = componentOptions.ToArray();
-
                 // Calculating all interactions for the list of found options
-                for (int i = 0; i < options.Length; i++)
+                for (int i = 0; i < componentOptions.Count; i++)
                 {
                     Dictionary<string, List<Tuple<int, int>>> optionInteractions;
 
-                    if (!currInteractions.TryGetValue(options[i].Name, out optionInteractions))
+                    if (!currInteractions.TryGetValue(componentOptions[i].Name, out optionInteractions))
                         optionInteractions = new Dictionary<string, List<Tuple<int,int>>>();
 
-                    for (int j = 0; j < options.Length; j++)
+                    for (int j = 0; j < componentOptions.Count; j++)
                     {
                         if (i != j)
                         {
                             List<Tuple<int, int>> val;
 
-                            if (optionInteractions.TryGetValue(options[j].Name, out val))
+                            if (optionInteractions.TryGetValue(componentOptions[j].Name, out val))
                             {
                                 bool degreeFound = false;
                                 int degreePos = 0;
@@ -692,13 +804,13 @@ namespace SPLConqueror_GUI
                                 List<Tuple<int, int>> list = new List<Tuple<int, int>>();
                                 list.Add(new Tuple<int, int>(degree, 1));
 
-                                optionInteractions.Add(options[j].Name, list);
+                                optionInteractions.Add(componentOptions[j].Name, list);
                             }
                         }
                     }
 
-                    currInteractions.Remove(options[i].Name);
-                    currInteractions.Add(options[i].Name, optionInteractions);
+                    currInteractions.Remove(componentOptions[i].Name);
+                    currInteractions.Add(componentOptions[i].Name, optionInteractions);
                 }
             }
 
@@ -712,42 +824,69 @@ namespace SPLConqueror_GUI
         {
             List<string> legalOptions = new List<string>();
 
+            // Variables filtering
             if (!filterVariablesCheckbox.Checked)
             {
                 foreach (ConfigurationOption opt in currentModel.getOptions())
                     legalOptions.Add(opt.ToString());
+            }
+            else
+            {
+                switch (filterOptionCombobox.SelectedItem.ToString())
+                {
+                    case filteringListBox:
+                        foreach (string s in variableListBox.Items)
+                        {
+                            if (!variableListBox.CheckedItems.Contains(s))
+                                legalOptions.Add(s);
+                        }
+                        break;
 
-                return legalOptions;
+                    case filteringTreeView:
+                        if (variableTreeView.Nodes.Count > 0)
+                        {
+                            Stack<TreeNode> stack = new Stack<TreeNode>();
+                            stack.Push(variableTreeView.Nodes[0]);
+
+                            while (stack.Count > 0)
+                            {
+                                TreeNode node = stack.Pop();
+
+                                foreach (TreeNode child in node.Nodes)
+                                    stack.Push(child);
+
+                                if (node.Checked)
+                                    legalOptions.Add(node.Text);
+                            }
+                        }
+                        break;
+                }
             }
 
-            switch (filterOptionCombobox.SelectedItem.ToString())
+            // Regex filtering
+            if (filterRegexCheckBox.Checked && regexTextbox.Text != "")
             {
-                case filteringListBox:
-                    foreach (string s in variableListBox.Items)
-                    {
-                        if (!variableListBox.CheckedItems.Contains(s))
-                            legalOptions.Add(s);
-                    }
-                    break;
+                List<string> list = new List<string>();
+                string[] regexes = regexTextbox.Text.Split(new char[] { ',', ';', '|' });
 
-                case filteringTreeView:
-                    if (variableTreeView.Nodes.Count > 0)
-                    {
-                        Stack<TreeNode> stack = new Stack<TreeNode>();
-                        stack.Push(variableTreeView.Nodes[0]);
+                for (int i = 0; i < regexes.Length; i++)
+                    regexes[i] = regexes[i].Trim();
 
-                        while (stack.Count > 0)
+                foreach (string opt in legalOptions)
+                {
+                    bool containsRegex = false;
+
+                    for (int i = 0; i < regexes.Length && !containsRegex; i++)
+                    {
+                        if (opt.Contains(regexes[i]) && regexes[i].Length > 0)
                         {
-                            TreeNode node = stack.Pop();
-
-                            foreach (TreeNode child in node.Nodes)
-                                stack.Push(child);
-
-                            if (node.Checked)
-                                legalOptions.Add(node.Text);
+                            containsRegex = true;
+                            list.Add(opt);
                         }
                     }
-                    break;
+                }
+
+                legalOptions = list;
             }
 
             return legalOptions;
@@ -762,6 +901,8 @@ namespace SPLConqueror_GUI
 
             foreach (KeyValuePair<string, Dictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
+                int totalInteractions = 0;
+
                 // Appending text to display all interactions
                 interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Bold);
                 interactionTextBox.AppendText(entry.Key);
@@ -780,6 +921,7 @@ namespace SPLConqueror_GUI
 
                         for (int j = 0; j < values[i].Value.Count; j++)
                         {
+                            totalInteractions += values[i].Value[j].Item2;
                             interactionTextBox.AppendText("Degree " + values[i].Value[j].Item1 + ": " + values[i].Value[j].Item2);
 
                             if (j < values[i].Value.Count - 1)
@@ -788,6 +930,13 @@ namespace SPLConqueror_GUI
 
                         interactionTextBox.AppendText(")\n\t\t");
                     }
+                }
+
+                if (entry.Value.Count > 0)
+                {
+                    interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Bold);
+                    interactionTextBox.AppendText("Number of total interactions: " + totalInteractions);
+                    interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Regular);
                 }
 
                 interactionTextBox.AppendText("\n");
@@ -800,9 +949,8 @@ namespace SPLConqueror_GUI
         private void getMaxAbstractConstant(string exp)
         {
             List<double> constants = new List<double>();
-            string[] components = exp.Split('+');
 
-            foreach (string part in components)
+            foreach (string part in getComponents(exp))
             {
                 bool valid = true;
                 List<double> nums = new List<double>();
@@ -825,19 +973,6 @@ namespace SPLConqueror_GUI
             }
 
             maxAbstractConstant = constants.Count == 0 ? 1.0 : constants.Max();
-        }
-
-        /// <summary>
-        /// Invokes if the corresponding button (settingsButton) was pressed.
-        /// 
-        /// This opens a new form for the custom setting of default values of the NumericOptions.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void settingsButton_Click(object sender, EventArgs e)
-        {
-            Form form = new NumericSettings(numericSettings);
-            form.ShowDialog();
         }
 
         /// <summary>
@@ -1077,6 +1212,38 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
+        /// Invokes if the status of the specified checkbox changed.
+        /// 
+        /// If the checkbox is selected, the regex textbox will be activated. If there already was something
+        /// written in the textbox, the filtering will occur with the current text. If the checkbox is
+        /// deselected, the regex textbox will be disabled and there will be no regex filtering.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void filterRegexCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            updateVariableConfiguration();
+            updateEvaluationConfiguration();
+            updateAdjustedFunction();
+            updateInteractionsTab();
+        }
+
+        /// <summary>
+        /// Invokes if the text in the corresponding textbox has changed.
+        /// 
+        /// If the regex filtering is activated, all strings in the textbox will be used as
+        /// search material of legal variables.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void regexTextbox_TextChanged(object sender, EventArgs e)
+        {
+            updateEvaluationConfiguration();
+            updateAdjustedFunction();
+            updateInteractionsTab();
+        }
+
+        /// <summary>
         /// Invokes if the check state of the corresponding radiobutton (normalRadioButton) has changed.
         /// 
         /// If checked, the adjustedTextbox will display the adjusted function without any
@@ -1153,26 +1320,33 @@ namespace SPLConqueror_GUI
         /// <param name="e"></param>
         private void chartComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-                influenceChart.Visible = false;
-                constantChart.Visible = false;
-                rangeChart.Visible = false;
-                rangeOccuranceChart.Visible = false;
-
-                String s = chartComboBox.SelectedItem.ToString();
+            influenceChart.Visible = false;
+            constantChart.Visible = false;
+            maxChart.Visible = false;
+            maxOccuranceChart.Visible = false;
+            rangeChart.Visible = false;
 
             switch (chartComboBox.SelectedItem.ToString())
             {
                 case comboboxInteractionsOption:
                     influenceChart.Visible = true;
+                    chartDescriptionLabel.Text = interactionsInformation;
                     break;
                 case comboboxConstantOption:
                     constantChart.Visible = true;
+                    chartDescriptionLabel.Text = constantInformation;
+                    break;
+                case comboboxMaxOption:
+                    maxChart.Visible = true;
+                    chartDescriptionLabel.Text = maxInformation;
+                    break;
+                case comboboxMaxOccuranceOption:
+                    maxOccuranceChart.Visible = true;
+                    chartDescriptionLabel.Text = maxOccuranceInformation;
                     break;
                 case comboboxRangeOption:
                     rangeChart.Visible = true;
-                    break;
-                case comboboxRangeOccuranceOption:
-                    rangeOccuranceChart.Visible = true;
+                    chartDescriptionLabel.Text = rangeInformation;
                     break;
                 default:
                     throw new Exception("This should not happen. An unknown option was selected!");
@@ -1227,6 +1401,8 @@ namespace SPLConqueror_GUI
                         break;
                 }
             }
+
+            regexTextbox.Enabled = filterRegexCheckBox.Checked;
         }
 
         /// <summary>
@@ -1331,7 +1507,7 @@ namespace SPLConqueror_GUI
 
                 foreach (NumericOption option in originalFunction.participatingNumOptions)
                 {
-                    if (!filterVariablesCheckbox.Checked || legalOptions.Contains(option.Name))
+                    if (legalOptions.Contains(option.Name))
                     {
                         firstAxisCombobox.Items.Add(option.Name);
                         secondAxisCombobox.Items.Add(option.Name);
@@ -1402,10 +1578,6 @@ namespace SPLConqueror_GUI
             // Update influence chart
             influenceChart.Series.Clear();
             influenceChart.Series.Add("Series1");
-            influenceChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            influenceChart.Series["Series1"]["PointWidth"] = "0.1";
-            influenceChart.Series["Series1"]["PieLabelStyle"] = "Outside";
-            influenceChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
 
             foreach (KeyValuePair<string, Dictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
@@ -1418,7 +1590,7 @@ namespace SPLConqueror_GUI
                 if (value != 0)
                 {
                     System.Windows.Forms.DataVisualization.Charting.DataPoint point = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point.Label = entry.Key;
+                    point.AxisLabel = entry.Key;
                     point.SetValueY(value);
                     point.ToolTip = "Number of interactions: #VALY";
 
@@ -1426,11 +1598,12 @@ namespace SPLConqueror_GUI
                 }
             }
 
-            // Calculate the constant influences
+            Dictionary<string, Tuple<double, double>> rangeInfluences = calculateRangeInfluences();
             Dictionary<string, double> constantInfluences = new Dictionary<string, double>();
-            Dictionary<string, double> constantRangeInfluences = new Dictionary<string, double>();
+            Dictionary<string, double> constantMaxInfluences = new Dictionary<string, double>();
             
-            foreach (string component in adjustedMeasurementFunction.ToString().Split('+'))
+            // Calculate the constant influences
+            foreach (string component in getComponents(adjustedMeasurementFunction))
             {
                 double constant = 1.0;
                 double currConstantRange = 0;
@@ -1459,7 +1632,7 @@ namespace SPLConqueror_GUI
 
                     constantInfluences.Add(var, oldValue + Math.Abs(constant));
 
-                    // Calculating range influences
+                    // Calculating max influences
                     NumericOption opt = currentModel.getNumericOption(var);
 
                     if (opt != null)
@@ -1470,72 +1643,233 @@ namespace SPLConqueror_GUI
                 {
                     double oldValue = 0.0;
 
-                    if (constantRangeInfluences.TryGetValue(var, out oldValue))
-                        constantRangeInfluences.Remove(var);
+                    if (constantMaxInfluences.TryGetValue(var, out oldValue))
+                        constantMaxInfluences.Remove(var);
 
-                    constantRangeInfluences.Add(var, oldValue + Math.Abs(currConstantRange));
+                    constantMaxInfluences.Add(var, oldValue + Math.Abs(currConstantRange));
                 }
-
             }
-            
+
             // Update other charts
             constantChart.Series.Clear();
             constantChart.Series.Add("Series1");
-            constantChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            constantChart.Series["Series1"]["PointWidth"] = "0.1";
-            constantChart.Series["Series1"]["PieLabelStyle"] = "Outside";
-            constantChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
+
+            maxChart.Series.Clear();
+            maxChart.Series.Add("Series1");
+
+            maxOccuranceChart.Series.Clear();
+            maxOccuranceChart.Series.Add("Series1");
 
             rangeChart.Series.Clear();
             rangeChart.Series.Add("Series1");
-            rangeChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            rangeChart.Series["Series1"]["PointWidth"] = "0.1";
-            rangeChart.Series["Series1"]["PieLabelStyle"] = "Outside";
-            rangeChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
+            rangeChart.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.RangeColumn;
 
-            rangeOccuranceChart.Series.Clear();
-            rangeOccuranceChart.Series.Add("Series1");
-            rangeOccuranceChart.Series["Series1"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            rangeOccuranceChart.Series["Series1"]["PointWidth"] = "0.1";
-            rangeOccuranceChart.Series["Series1"]["PieLabelStyle"] = "Outside";
-            rangeOccuranceChart.Series["Series1"]["DrawingStyle"] = "Cylinder";
-
-            // Update constant chart
+            // Update abstract constant chart
             foreach (KeyValuePair<string, double> entry in constantInfluences)
             {
                 if (legalOptions.Contains(entry.Key))
                 {
                     System.Windows.Forms.DataVisualization.Charting.DataPoint point = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point.Label = entry.Key;
+                    point.AxisLabel = entry.Key;
                     point.SetValueY(entry.Value);
 
                     constantChart.Series["Series1"].Points.Insert(0, point);
                 }
             }
 
-            // Update range and range occurance chart
-            foreach (KeyValuePair<string, double> entry in constantRangeInfluences)
+            int amountOfVariants = varGen.generateAllVariantsFast(currentModel).Count;
+
+            // Update max and max occurance chart
+            foreach (KeyValuePair<string, double> entry in constantMaxInfluences)
             {
                 if (legalOptions.Contains(entry.Key))
                 {
                     System.Windows.Forms.DataVisualization.Charting.DataPoint point1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point1.Label = entry.Key;
+                    point1.AxisLabel = entry.Key;
                     point1.SetValueY(entry.Value);
 
-                    rangeChart.Series["Series1"].Points.Insert(0, point1);
-
-                    int i = 0;
-
-                    if (!occuranceOfOptions.TryGetValue(entry.Key, out i))
-                        i = 1;
-
+                    maxChart.Series["Series1"].Points.Insert(0, point1);
+                    
                     System.Windows.Forms.DataVisualization.Charting.DataPoint point2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point2.Label = entry.Key;
-                    point2.SetValueY(entry.Value / i);
+                    point2.AxisLabel = entry.Key;
 
-                    rangeOccuranceChart.Series["Series1"].Points.Insert(0, point2);
+                    if (currentModel.getNumericOption(entry.Key) != null)
+                        point2.SetValueY(entry.Value);
+                    else
+                    {
+                        int i = 0;
+
+                        if (!occuranceOfOptions.TryGetValue(entry.Key, out i))
+                            i = 1;
+
+                        point2.SetValueY(entry.Value * i / amountOfVariants);
+                    }
+
+                    maxOccuranceChart.Series["Series1"].Points.Insert(0, point2);
                 }
             }
+            
+            foreach (KeyValuePair<string, Tuple<double, double>> entry in rangeInfluences)
+            {
+                System.Windows.Forms.DataVisualization.Charting.DataPoint point1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+                point1.AxisLabel = entry.Key;
+                point1.SetValueY(entry.Value.Item1, entry.Value.Item2);
+
+                rangeChart.Series[0].Points.Add(point1);
+            }
+        }
+
+        /// <summary>
+        /// Calculates and returns the range influence of each numeric option.
+        /// </summary>
+        /// <returns>Range influences of numeric options</returns>
+        private Dictionary<string, Tuple<double, double>> calculateRangeInfluences()
+        {
+            Dictionary<string, Tuple<double, double>> influences = new Dictionary<string, Tuple<double, double>>();
+            string[] currExpression = String.Copy(adjustedMeasurementFunction).Split(' ');
+            List<string> optionList = new List<string>();
+
+            // Remove all binary options and remember all numeric options
+            for (int i = 0; i < currExpression.Length; i++)
+            {
+                if (currentModel.getOption(currExpression[i]) != null && !optionList.Contains(currExpression[i]))
+                    optionList.Add(currExpression[i]);
+            }
+
+            // Calculate the range influence of each option
+            foreach (string option in optionList)
+            {
+                List<string> expressions = new List<string>();
+                List<string> neededComponents = new List<string>();
+                
+                foreach (string comp in getComponents(String.Join(" ", currExpression)))
+                {
+                    string[] splitComponent = comp.Split(' ');
+                    bool componentAdded = false;
+
+                    for (int i = 0; i < splitComponent.Length && !componentAdded; i++)
+                    {
+                        if (splitComponent[i] == option)
+                        {
+                            componentAdded = true;
+                            neededComponents.Add(comp);
+                        }
+                    }
+                }
+
+                expressions.Add(String.Join(" + ", neededComponents));
+
+                // Calculate all possible combinations of expressions
+                foreach (string innerOption in optionList)
+                {
+                    ConfigurationOption opt = currentModel.getOption(innerOption);
+                    List<string> insertedExpressions = new List<string>();
+
+                    foreach (string exp in expressions)
+                    {
+                        string[] minExpression = String.Copy(exp).Split(' ');
+                        string[] maxExpression = String.Copy(exp).Split(' ');
+
+                        for (int i = 0; i < minExpression.Length; i++)
+                        {
+                            if (minExpression[i] == innerOption)
+                            {
+                                if (opt is BinaryOption)
+                                {
+                                    minExpression[i] = "0.0";
+                                    maxExpression[i] = "1.0";
+                                }
+                                else if (opt is NumericOption)
+                                {
+                                    NumericOption numOpt = (NumericOption)opt;
+
+                                    minExpression[i] = numOpt.Min_value.ToString().Replace(',', '.');
+                                    maxExpression[i] = numOpt.Max_value.ToString().Replace(',', '.');
+                                }
+                                else
+                                    throw new Exception("This should not happen! Error while checking types of options!");
+
+                            }
+                        }
+
+                        insertedExpressions.Add(String.Join(" ", minExpression));
+                        insertedExpressions.Add(String.Join(" ", maxExpression));
+                    }
+
+                    expressions = insertedExpressions;
+                }
+
+                List<double> values = new List<double>();
+
+                foreach (string exp in expressions)
+                    values.Add(evaluateExpression(exp));
+
+                influences.Add(option, new Tuple<double, double>(values.Min(), values.Max()));
+            }
+
+            return influences;
+        }
+
+        /// <summary>
+        /// Evaluates the specified expression.
+        /// 
+        /// This only works if the expression does not contain any configuration options anymore.
+        /// </summary>
+        /// <param name="exp">Specified expression with no configuration options. Must not be null.</param>
+        /// <returns>Evaluated value</returns>
+        private double evaluateExpression(String exp)
+        {
+            if (exp == null)
+                throw new ArgumentNullException("Parameter exp must not be null!");
+
+            List<string> components = getComponents(exp);
+            double finalValue = 0.0;
+            
+            // Components only contain multiplication or logarithm
+            foreach (string comp in components)
+            {
+                double currentValue = 1.0;
+                string[] compParts = comp.Split(' ');
+
+                for (int i = 0; i < compParts.Length && currentValue != 0; i++)
+                {
+                    if (compParts[i] == "log10(")
+                    {
+                        int bracketCounter = 1;
+                        int currPos = i;
+
+                        while (bracketCounter > 0)
+                        {
+                            i++;
+
+                            if (compParts[i] == "log10(")
+                                bracketCounter++;
+
+                            if (compParts[i] == ")")
+                                bracketCounter--;
+                        }
+
+                        // log(x) == 0 if x <= 0
+                        // TODO: Schauen, ob das passt
+                        string[] innerLog = new string[i - currPos - 1];
+                        Array.Copy(compParts, currPos + 1, innerLog, 0, i - currPos - 1);
+
+                        double val = evaluateExpression(String.Join(" ", innerLog));
+                        currentValue *= val <= 0 ? 0 : Math.Log10(val);
+                    }
+                    else
+                    {
+                        double d;
+
+                        if (double.TryParse(compParts[i], out d))
+                            currentValue *= d;
+                    }
+                }
+
+                finalValue += currentValue;
+            }
+
+            return finalValue;
         }
 
         /// <summary>
@@ -1552,7 +1886,7 @@ namespace SPLConqueror_GUI
                 expressionParts[i] = String.Copy(originalFunction.getExpressionTree()[i]);
 
             // Adjusting variables
-            if (filterVariablesCheckbox.Checked)
+            if (filterVariablesCheckbox.Checked || filterRegexCheckBox.Checked)
                 expressionParts = filterVariables(expressionParts);
 
             // Get new maximal abstract constant
@@ -1720,7 +2054,6 @@ namespace SPLConqueror_GUI
                 {
                     // If there is a log10 in the expression, calculate the inner value of the
                     // logarithm first.
-
                     switch (prt) {
 
                     case "[":
@@ -1835,10 +2168,18 @@ namespace SPLConqueror_GUI
             // Check if there are no measurements for the current settings
             if (neededConfigurations.Count == 0)
             {
+                overviewPerformanceIlPanel.Scene = new ILScene();
+                overviewMeasurementIlPanel.Scene = new ILScene();
+                overviewAbsoluteDifferenceIlPanel.Scene = new ILScene();
+                overviewRelativeDifferenceIlPanel.Scene = new ILScene();
                 bothGraphsIlPanel.Scene = new ILScene();
                 measurementsOnlyIlPanel.Scene = new ILScene();
                 absoluteDifferenceIlPanel.Scene = new ILScene();
                 relativeDifferenceIlPanel.Scene = new ILScene();
+                overviewPerformanceIlPanel.Refresh();
+                overviewMeasurementIlPanel.Refresh();
+                overviewAbsoluteDifferenceIlPanel.Refresh();
+                overviewRelativeDifferenceIlPanel.Refresh();
                 bothGraphsIlPanel.Refresh();
                 measurementsOnlyIlPanel.Refresh();
                 absoluteDifferenceIlPanel.Refresh();
@@ -1863,7 +2204,9 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.SelectedIndex = 0;
             }
 
-            ILPlotCube bothGraphsCube, measurementsOnlyCube, absoluteDifferenceCube, relativeDifferenceCube;
+            ILPlotCube bothGraphsCube, measurementsOnlyCube, absoluteDifferenceCube,
+                relativeDifferenceCube, overviewPerformanceCube, overviewMeasurementsCube,
+                overviewAbsoluteDifferenceCube, overviewRelativeDifferenceCube; 
             NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
 
             // Decide if there has to be a 2D or 3D shape
@@ -1874,6 +2217,10 @@ namespace SPLConqueror_GUI
                 measurementsOnlyCube = new ILPlotCube(twoDMode: true);
                 absoluteDifferenceCube = new ILPlotCube(twoDMode: true);
                 relativeDifferenceCube = new ILPlotCube(twoDMode: true);
+                overviewPerformanceCube = new ILPlotCube(twoDMode: true);
+                overviewMeasurementsCube = new ILPlotCube(twoDMode: true);
+                overviewAbsoluteDifferenceCube = new ILPlotCube(twoDMode: true);
+                overviewRelativeDifferenceCube = new ILPlotCube(twoDMode: true);
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 bothGraphsCube.Axes.YAxis.Label.Text = correspondingValuesLabel;
@@ -1883,6 +2230,14 @@ namespace SPLConqueror_GUI
                 absoluteDifferenceCube.Axes.YAxis.Label.Text = absoluteDifferenceLabel;
                 relativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 relativeDifferenceCube.Axes.YAxis.Label.Text = relativeDifferenceLabel;
+                overviewPerformanceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewPerformanceCube.Axes.YAxis.Label.Text = performanceAxisLabel;
+                overviewMeasurementsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewMeasurementsCube.Axes.YAxis.Label.Text = measuredValueLabel;
+                overviewAbsoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewAbsoluteDifferenceCube.Axes.YAxis.Label.Text = absoluteDifferenceLabel;
+                overviewRelativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewRelativeDifferenceCube.Axes.YAxis.Label.Text = relativeDifferenceLabel;
 
                 // Add all values into the array
                 ILArray<float> XY = ILMath.zeros<float>(0, 0);
@@ -1920,6 +2275,12 @@ namespace SPLConqueror_GUI
                             });
                             absoluteDifferenceCube.Add(new ILLinePlot(absoluteDifferences));
                             relativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
+                            overviewMeasurementsCube.Add(new ILLinePlot(XY)
+                            {
+                                ColorOverride = measurementColor
+                            });
+                            overviewAbsoluteDifferenceCube.Add(new ILLinePlot(absoluteDifferences));
+                            overviewRelativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
 
                             XY = ILMath.zeros<float>(0, 0);
                             absoluteDifferences = ILMath.zeros<float>(0, 0);
@@ -1935,9 +2296,9 @@ namespace SPLConqueror_GUI
                         absoluteDifferences[0, pos] = (float)value;
                         absoluteDifferences[1, pos] = ILMath.abs((float)d - calculatedPerformances[1, values.IndexOf(value)]);
                         relativeDifferences[0, pos] = (float)value;
-
-                        if (XY[1, pos] == 0)
-                            relativeDifferences[1, pos] = absoluteDifferences[1, pos] == 0 ? 0 : 100;
+                        
+                        if (ILMath.abs(XY[1, pos]) < 1)
+                            relativeDifferences[1, pos] = absoluteDifferences[1, pos] == XY[1, pos] ? 0 : 100;
                         else
                             relativeDifferences[1, pos] = absoluteDifferences[1, pos] >= 1 ? absoluteDifferences[1, pos]/XY[1, pos] * 100 : 0;
 
@@ -1979,6 +2340,22 @@ namespace SPLConqueror_GUI
                 absoluteDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
                 relativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
                 relativeDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
+
+                overviewPerformanceCube.Add(new ILLinePlot(calculatedPerformances)
+                {
+                    Line =
+                    {
+                        Color = calculatedColor
+                    }
+                });
+                overviewMeasurementsCube.Add(new ILLinePlot(XY)
+                {
+                    ColorOverride = measurementColor
+                });
+                overviewAbsoluteDifferenceCube.Add(new ILLinePlot(absoluteDifferences));
+                overviewAbsoluteDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
+                overviewRelativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
+                overviewRelativeDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
             }
             else
             {
@@ -1988,6 +2365,10 @@ namespace SPLConqueror_GUI
                 measurementsOnlyCube = new ILPlotCube(twoDMode: false);
                 absoluteDifferenceCube = new ILPlotCube(twoDMode: false);
                 relativeDifferenceCube = new ILPlotCube(twoDMode: false);
+                overviewPerformanceCube = new ILPlotCube(twoDMode: false);
+                overviewMeasurementsCube = new ILPlotCube(twoDMode: false);
+                overviewAbsoluteDifferenceCube = new ILPlotCube(twoDMode: false);
+                overviewRelativeDifferenceCube = new ILPlotCube(twoDMode: false);
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 bothGraphsCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
@@ -2001,6 +2382,18 @@ namespace SPLConqueror_GUI
                 relativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 relativeDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
                 relativeDifferenceCube.Axes.ZAxis.Label.Text = relativeDifferenceLabel;
+                overviewPerformanceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewPerformanceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
+                overviewPerformanceCube.Axes.ZAxis.Label.Text = performanceAxisLabel;
+                overviewMeasurementsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewMeasurementsCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
+                overviewMeasurementsCube.Axes.ZAxis.Label.Text = measuredValueLabel;
+                overviewAbsoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewAbsoluteDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
+                overviewAbsoluteDifferenceCube.Axes.ZAxis.Label.Text = absoluteDifferenceLabel;
+                overviewRelativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
+                overviewRelativeDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
+                overviewRelativeDifferenceCube.Axes.ZAxis.Label.Text = relativeDifferenceLabel;
 
                 X = Array.ConvertAll(chosenOptions.Item1.getAllValues().ToArray(), x => (float)x);
                 Y = Array.ConvertAll(chosenOptions.Item2.getAllValues().ToArray(), y => (float)y);
@@ -2093,18 +2486,91 @@ namespace SPLConqueror_GUI
                         ColorMode = ILSurface.ColorModes.Solid
                     }
                 );
-
                 absoluteDifferenceCube.Add(new ILSurface(absoluteDifferences));
-                absoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3,3,3)));
+                absoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 relativeDifferenceCube.Add(new ILSurface(relativeDifferences));
                 relativeDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
+                overviewPerformanceCube.Add(new ILSurface(calculatedPerformances));
+                overviewMeasurementsCube.Add(new ILSurface(A)
+                {
+                    ColorMode = ILSurface.ColorModes.Solid
+                });
+                overviewAbsoluteDifferenceCube.Add(new ILSurface(absoluteDifferences));
+                overviewAbsoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
+                overviewRelativeDifferenceCube.Add(new ILSurface(relativeDifferences));
+                overviewRelativeDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
+
+                // Adding events for a synchronized rotation of the overview cubes
+                overviewPerformanceCube.MouseMove += (s, e) =>
+                {
+                    ILPlotCube cube = overviewPerformanceIlPanel.GetCurrentScene().First<ILPlotCube>();
+                    Matrix4 matrix = cube.Rotation;
+
+                    overviewMeasurementsCube.Rotation = matrix;
+                    overviewAbsoluteDifferenceCube.Rotation = matrix;
+                    overviewRelativeDifferenceCube.Rotation = matrix;
+
+                    overviewMeasurementIlPanel.Refresh();
+                    overviewAbsoluteDifferenceIlPanel.Refresh();
+                    overviewRelativeDifferenceIlPanel.Refresh();
+                };
+
+                overviewMeasurementsCube.MouseMove += (s, e) =>
+                {
+                    ILPlotCube cube = overviewMeasurementIlPanel.GetCurrentScene().First<ILPlotCube>();
+                    Matrix4 matrix = cube.Rotation;
+
+                    overviewPerformanceCube.Rotation = matrix;
+                    overviewAbsoluteDifferenceCube.Rotation = matrix;
+                    overviewRelativeDifferenceCube.Rotation = matrix;
+
+                    overviewPerformanceIlPanel.Refresh();
+                    overviewAbsoluteDifferenceIlPanel.Refresh();
+                    overviewRelativeDifferenceIlPanel.Refresh();
+                };
+
+                overviewAbsoluteDifferenceCube.MouseMove += (s, e) =>
+                {
+                    ILPlotCube cube = overviewAbsoluteDifferenceIlPanel.GetCurrentScene().First<ILPlotCube>();
+                    Matrix4 matrix = cube.Rotation;
+
+                    overviewPerformanceCube.Rotation = matrix;
+                    overviewMeasurementsCube.Rotation = matrix;
+                    overviewRelativeDifferenceCube.Rotation = matrix;
+
+                    overviewPerformanceIlPanel.Refresh();
+                    overviewMeasurementIlPanel.Refresh();
+                    overviewRelativeDifferenceIlPanel.Refresh();
+                };
+
+                overviewRelativeDifferenceCube.MouseMove += (s, e) =>
+                {
+                    ILPlotCube cube = overviewRelativeDifferenceIlPanel.GetCurrentScene().First<ILPlotCube>();
+                    Matrix4 matrix = cube.Rotation;
+
+                    overviewPerformanceCube.Rotation = matrix;
+                    overviewMeasurementsCube.Rotation = matrix;
+                    overviewAbsoluteDifferenceCube.Rotation = matrix;
+
+                    overviewPerformanceIlPanel.Refresh();
+                    overviewMeasurementIlPanel.Refresh();
+                    overviewAbsoluteDifferenceIlPanel.Refresh();
+                };
             }
 
+            overviewPerformanceIlPanel.Scene = new ILScene { overviewPerformanceCube };
+            overviewMeasurementIlPanel.Scene = new ILScene { overviewMeasurementsCube };
+            overviewAbsoluteDifferenceIlPanel.Scene = new ILScene { overviewAbsoluteDifferenceCube };
+            overviewRelativeDifferenceIlPanel.Scene = new ILScene { overviewRelativeDifferenceCube };
             bothGraphsIlPanel.Scene = new ILScene { bothGraphsCube };
             measurementsOnlyIlPanel.Scene = new ILScene { measurementsOnlyCube };
             absoluteDifferenceIlPanel.Scene = new ILScene { absoluteDifferenceCube };
             relativeDifferenceIlPanel.Scene = new ILScene { relativeDifferenceCube };
 
+            overviewPerformanceIlPanel.Refresh();
+            overviewMeasurementIlPanel.Refresh();
+            overviewAbsoluteDifferenceIlPanel.Refresh();
+            overviewRelativeDifferenceIlPanel.Refresh();
             bothGraphsIlPanel.Refresh();
             measurementsOnlyIlPanel.Refresh();
             absoluteDifferenceIlPanel.Refresh();
@@ -2120,6 +2586,7 @@ namespace SPLConqueror_GUI
         /// </summary>
         private void updateMeasurementPanel()
         {
+            overviewPanel.Visible = false;
             bothGraphsPanel.Visible = false;
             measurementsOnlyPanel.Visible = false;
             absoluteDifferencePanel.Visible = false;
@@ -2127,6 +2594,9 @@ namespace SPLConqueror_GUI
             
             switch (measurementViewCombobox.SelectedItem.ToString())
             {
+                case comboboxOverviewOption:
+                    overviewPanel.Visible = true;
+                    break;
                 case comboboxBothOption:
                     bothGraphsPanel.Visible = true;
                     break;
@@ -2159,12 +2629,12 @@ namespace SPLConqueror_GUI
             if (function == null)
                 throw new ArgumentNullException("Parameter function may not be null!");
 
-            string[] expressionParts = function.Split('+');
+            List<string> expressionParts = getComponents(function);
             string tabs = "";
 
             textbox.Clear();
 
-            for (int i = 0; i < expressionParts.Length; i++)
+            for (int i = 0; i < expressionParts.Count; i++)
             {
                 string[] partComponents = expressionParts[i].Split(' ');
                 int pos = 0;
@@ -2201,15 +2671,18 @@ namespace SPLConqueror_GUI
                             addingComponent = addingComponent + "\n" + tabs;
                     }
 
-                    textbox.AppendText(addingComponent);
-                    textbox.SelectionBackColor = Color.White;
-                    textbox.AppendText(" ");
+                    if (addingComponent != "")
+                    {
+                        textbox.AppendText(addingComponent);
+                        textbox.SelectionBackColor = Color.White;
+                        textbox.AppendText(" ");
+                    }
 
                     pos++;
                 }
                 
-                if (i < expressionParts.Length - 1)
-                    textbox.AppendText("\n" + tabs + "+");
+                if (i < expressionParts.Count - 1)
+                    textbox.AppendText("\n" + tabs + "+ ");
             }
         }
 
@@ -2630,11 +3103,11 @@ namespace SPLConqueror_GUI
                 throw new ArgumentNullException("Parameter exp must not be null!");
 
             string result = "";
-            string[] expParts = exp.Split('+');
+            List<string> expParts = getComponents(exp);
             Dictionary<string, int> counting = new Dictionary<string, int>();
             bool greaterThanOne = false;
 
-            for (int i = 0; i < expParts.Length; i++)
+            for (int i = 0; i < expParts.Count; i++)
                 expParts[i] = expParts[i].Trim();
 
             foreach (string section in expParts)
@@ -2648,8 +3121,18 @@ namespace SPLConqueror_GUI
 
                     if (sectionParts[i] == "log10(")
                     {
-                        while (sectionParts[i] != ")")
+                        int bracketsCount = 1;
+
+                        while (bracketsCount > 0)
+                        {
                             i++;
+
+                            if (sectionParts[i] == "log10(")
+                                bracketsCount++;
+
+                            if (sectionParts[i] == ")")
+                                bracketsCount--;
+                        }
                     }
                     else if (!double.TryParse(sectionParts[i], out d) && !isOperator(sectionParts[i]))
                     {
@@ -2743,8 +3226,18 @@ namespace SPLConqueror_GUI
                     {
                         if (parts[i] == "log10(")
                         {
-                            while (parts[i] != ")")
+                            int bracketsCount = 1;
+
+                            while (bracketsCount > 0)
+                            {
                                 i++;
+
+                                if (parts[i] == "log10(")
+                                    bracketsCount++;
+
+                                if (parts[i] == ")")
+                                    bracketsCount--;
+                            }
                         }
                         else
                         {
@@ -2789,7 +3282,7 @@ namespace SPLConqueror_GUI
                     result = max + " * ( " + factorizedRest + " )"; 
 
                 if (others.Count > 0)
-                    result = result + " + " + factorizeExpression(String.Join("+", others));
+                    result = result + " + " + factorizeExpression(String.Join(" + ", others));
 
             }
             else
@@ -2805,7 +3298,125 @@ namespace SPLConqueror_GUI
         /// <returns>A sorted expression</returns>
         private string sortExpression(string exp)
         {
-            return exp == null ? null : String.Join("+", exp.Split('+').OrderBy(x => x.Split(' ').Length));
+            return String.Join(" + ", getComponents(exp).OrderBy(x => x.Trim().Split(' ').Length).ToList());
+        }
+
+        /// <summary>
+        /// This class represents a little panel for the setting of the numeric option.
+        /// </summary>
+        private class NumericPanel : Panel
+        {
+            public NumericOption option;
+            public NumericUpDown upDown;
+
+            private Label label = new System.Windows.Forms.Label();
+
+            /// <summary>
+            /// Constructor of this class.
+            /// </summary>
+            /// <param name="opt">NumericOption with information for the componentsy</param>
+            public NumericPanel(NumericOption opt, double currValue)
+            {
+                if (opt == null)
+                    throw new ArgumentNullException("Parameter option must not be null!");
+
+                option = opt;
+                upDown = new OwnNumericUpDown(option.getAllValues(), currValue);
+                upDown.MouseWheel += UpDown_MouseWheel;
+
+                initializePanel(option);
+            }
+
+            private void UpDown_MouseWheel(object sender, MouseEventArgs e)
+            {
+                ((HandledMouseEventArgs)e).Handled = true;
+            }
+
+            /// <summary>
+            /// Initializes this panel with the specified NumericOption.
+            /// </summary>
+            /// <param name="option">NumericOption with information for the components</param>
+            private void initializePanel(NumericOption option)
+            {
+                // Configuring this panel
+                Controls.Add(upDown);
+                Controls.Add(label);
+                Location = new System.Drawing.Point(0, 0);
+                Name = "panel1";
+                Size = new System.Drawing.Size(300, 37);
+                TabIndex = 1;
+
+                // Configuring the label
+                label.AutoSize = true;
+                label.Location = new System.Drawing.Point(12, 9);
+                label.Name = "label";
+                label.Size = new System.Drawing.Size(35, 13);
+                label.TabIndex = 0;
+                label.Text = option.Name;
+
+                // Configuring the NumericUpDown
+                upDown.Location = new System.Drawing.Point(216, 7);
+                upDown.Name = "upDown";
+                upDown.Size = new System.Drawing.Size(75, 20);
+                upDown.TabIndex = 1;
+            }
+        }
+
+        /// <summary>
+        /// This class is a modified NumericUpDown such that it only displays the values it is given.
+        /// </summary>
+        private class OwnNumericUpDown : NumericUpDown
+        {
+            private List<double> values;
+
+            /// <summary>
+            /// Constructor of this class.
+            /// 
+            /// Sets all necessary properties.
+            /// </summary>
+            /// <param name="l">List of all displayed values</param>
+            /// <param name="currValue">Current value that is to be shown</param>
+            public OwnNumericUpDown(List<double> l, double currValue)
+            {
+                if (l == null)
+                    throw new ArgumentNullException("Parameter l must not be null!");
+
+                if (!l.Contains(currValue))
+                    throw new Exception("The list l does not contain the current value!");
+
+                this.Minimum = (decimal)l.Min();
+                this.Maximum = (decimal)l.Max();
+
+                this.Value = (decimal)currValue;
+
+                values = l;
+            }
+
+            /// <summary>
+            /// Overrides the method such that only legal values of the option are allowed.
+            /// 
+            /// If the maximum is already selected, there will be no increase.
+            /// </summary>
+            public override void UpButton()
+            {
+                if (this.Value != Maximum)
+                    this.Value = (decimal)values[values.IndexOf((double)this.Value) + 1];
+
+                UpdateEditText();
+            }
+
+            /// <summary>
+            /// Overrides the method such that only legal values of the option are allowed.
+            /// 
+            /// If the minimum is already selected, there will be no decrease.
+            /// </summary>
+            public override void DownButton()
+            {
+                if (this.Value != Minimum)
+                    this.Value = (decimal)values[values.IndexOf((double)this.Value) - 1];
+
+                UpdateEditText();
+            }
         }
 
         /// <summary>
