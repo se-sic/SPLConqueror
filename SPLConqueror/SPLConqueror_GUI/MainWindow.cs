@@ -1850,7 +1850,6 @@ namespace SPLConqueror_GUI
                         }
 
                         // log(x) == 0 if x <= 0
-                        // TODO: Schauen, ob das passt
                         string[] innerLog = new string[i - currPos - 1];
                         Array.Copy(compParts, currPos + 1, innerLog, 0, i - currPos - 1);
 
@@ -2113,6 +2112,12 @@ namespace SPLConqueror_GUI
             // Check if measurements are loaded
             if (!measurementsLoaded)
             {
+                overviewPanel.Visible = false;
+                bothGraphsPanel.Visible = false;
+                measurementsOnlyPanel.Visible = false;
+                absoluteDifferencePanel.Visible = false;
+                relativeDifferencePanel.Visible = false;
+
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
@@ -2123,6 +2128,12 @@ namespace SPLConqueror_GUI
             // Check if a graph has been calculated before
             if (configurationForCalculation == null)
             {
+                overviewPanel.Visible = false;
+                bothGraphsPanel.Visible = false;
+                measurementsOnlyPanel.Visible = false;
+                absoluteDifferencePanel.Visible = false;
+                relativeDifferencePanel.Visible = false;
+
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
@@ -2133,6 +2144,12 @@ namespace SPLConqueror_GUI
             // Check if the current configuration is possible
             if (!sat.checkConfigurationSAT(configurationForCalculation.BinaryOptions.Keys.ToList(), currentModel, true))
             {
+                overviewPanel.Visible = false;
+                bothGraphsPanel.Visible = false;
+                measurementsOnlyPanel.Visible = false;
+                absoluteDifferencePanel.Visible = false;
+                relativeDifferencePanel.Visible = false;
+
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
@@ -2184,6 +2201,12 @@ namespace SPLConqueror_GUI
                 measurementsOnlyIlPanel.Refresh();
                 absoluteDifferenceIlPanel.Refresh();
                 relativeDifferenceIlPanel.Refresh();
+
+                overviewPanel.Visible = false;
+                bothGraphsPanel.Visible = false;
+                measurementsOnlyPanel.Visible = false;
+                absoluteDifferencePanel.Visible = false;
+                relativeDifferencePanel.Visible = false;
 
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
@@ -2324,7 +2347,7 @@ namespace SPLConqueror_GUI
                 {
                     ColorOverride = measurementColor
                 });
-                bothGraphsCube.Add(new ILLinePlot(calculatedPerformances)
+                bothGraphsCube.Add(new ILLinePlot(drawnPerformances)
                 {
                     Line =
                     {
@@ -2341,12 +2364,9 @@ namespace SPLConqueror_GUI
                 relativeDifferenceCube.Add(new ILLinePlot(relativeDifferences));
                 relativeDifferenceCube.Add(new ILLinePlot(ILMath.zeros<float>(1, 1)));
 
-                overviewPerformanceCube.Add(new ILLinePlot(calculatedPerformances)
+                overviewPerformanceCube.Add(new ILLinePlot(drawnPerformances)
                 {
-                    Line =
-                    {
-                        Color = calculatedColor
-                    }
+                    ColorOverride = calculatedColor
                 });
                 overviewMeasurementsCube.Add(new ILLinePlot(XY)
                 {
@@ -2486,9 +2506,15 @@ namespace SPLConqueror_GUI
                         ColorMode = ILSurface.ColorModes.Solid
                     }
                 );
-                absoluteDifferenceCube.Add(new ILSurface(absoluteDifferences));
+                absoluteDifferenceCube.Add(new ILSurface(absoluteDifferences)
+                {
+                    Children = { new ILColorbar() }
+                });
                 absoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
-                relativeDifferenceCube.Add(new ILSurface(relativeDifferences));
+                relativeDifferenceCube.Add(new ILSurface(relativeDifferences)
+                {
+                    Children = { new ILColorbar() }
+                });
                 relativeDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 overviewPerformanceCube.Add(new ILSurface(calculatedPerformances));
                 overviewMeasurementsCube.Add(new ILSurface(A)
@@ -2747,12 +2773,13 @@ namespace SPLConqueror_GUI
                 else if (currentModel.getBinaryOption(polishAdjusted[i]) != null)
                     polishAdjusted[i] = "1.0";
             }
-
+            
             // Define plot cube
             ILPlotCube cube = new ILPlotCube(twoDMode: true);
             cube.Axes.XAxis.Label.Text = option.Name;
             cube.Axes.YAxis.Label.Text = performanceAxisLabel;
 
+            // Calculate values for the measurements
             ILArray<float> XY = Array.ConvertAll(option.getAllValues().ToArray(), x => (float) x);
             XY = XY.T;
 
@@ -2776,6 +2803,18 @@ namespace SPLConqueror_GUI
                 cube.Add(point);
             }
 
+            calculatedPerformances = ILMath.zeros<float>(0, 0);
+
+            for (int i = 0; i < XY.Size[0]; i++)
+                for (int j = 0; j < XY.Size[1]; j++)
+                    calculatedPerformances[i, j] = XY[i, j];
+
+            // Calculated values for the plot
+            XY = ILMath.linspace<float>(option.Min_value, option.Max_value, 50);
+
+            XY["0;:"] = XY;
+            XY["1;:"] = calculateFunction(polishAdjusted, new string[] { "XY" }, new ILArray<float>[] { XY });
+
             // Adding a lineplot to the cube
             ILLinePlot linePlot = new ILLinePlot(XY)
             {
@@ -2793,7 +2832,6 @@ namespace SPLConqueror_GUI
                 };
 
             // Saving the coordinates/values of the points for the measurements
-            calculatedPerformances = XY;
             drawnPerformances = XY;
         }
 
@@ -2852,7 +2890,7 @@ namespace SPLConqueror_GUI
             cube.Axes.XAxis.Label.Text = firstOption.Name;
             cube.Axes.YAxis.Label.Text = secondOption.Name;
             cube.Axes.ZAxis.Label.Text = performanceAxisLabel;
-
+            
             // Calculating the surface
             X = Array.ConvertAll(firstOption.getAllValues().ToArray(), x => (float)x);
             Y = Array.ConvertAll(secondOption.getAllValues().ToArray(), y => (float)y);
@@ -2877,7 +2915,7 @@ namespace SPLConqueror_GUI
                 for (int j = 0; j < A.Size[1]; j++)
                     for (int k = 0; k < A.Size[2]; k++)
                         calculatedPerformances[i, j, k] = A[i, j, k];
-
+            
             // Calculating the points on the surface
             X = X.T;
             Y = Y.T;
@@ -2962,6 +3000,35 @@ namespace SPLConqueror_GUI
             };
 
             return point;
+        }
+
+        private float evaluateExpression(string[] exp, string[] opt, float[] val)
+        {
+            if (exp == null)
+                throw new ArgumentNullException("Parameter exp must not be null!");
+            if (opt == null)
+                throw new ArgumentNullException("Parameter opt must not be null!");
+
+            string[] expParts = new string[exp.Length];
+            exp.CopyTo(expParts, 0);
+
+            for (int i = 0; i < expParts.Length; i++)
+            {
+                bool foundVar = false;
+                for (int j = 0; j < opt.Length && !foundVar; j++)
+                {
+                    if (expParts[i] == opt[j])
+                    {
+                        expParts[i] = val[j].ToString().Replace(',', '.');
+                        foundVar = true;
+                    }
+                }
+            }
+
+            float result;
+            float.TryParse(calculateFunctionExpression(expParts), out result);
+
+            return result;
         }
 
         /// <summary>
