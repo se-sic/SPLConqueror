@@ -265,6 +265,8 @@ namespace MachineLearning.Learning.Regression
                     minimalErrorModel = newModel;
                     bestCandidate = candidate;
                 }
+                else
+                    candidate.Constant = 1;
             }
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
@@ -379,7 +381,7 @@ namespace MachineLearning.Learning.Regression
                                 goto nextRound;
                     }
 
-                    Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature(feature, basicFeature, basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
                 nextRound:
@@ -389,7 +391,7 @@ namespace MachineLearning.Learning.Regression
                 //if basic feature represents a numeric option and quadratic function support is activated, then we add a feature representing a quadratic functions of this feature
                 if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumOptions.Count > 0)
                 {
-                    Feature newCandidate = new Feature(basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature(basicFeature, basicFeature, basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
@@ -399,7 +401,7 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
-                        newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                        newCandidate = new Feature(feature, newCandidate, basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
@@ -408,7 +410,7 @@ namespace MachineLearning.Learning.Regression
                 //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
                 if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0)
                 {
-                    Feature newCandidate = new Feature("log10(" + basicFeature.ToString() + ")", basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature("log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
@@ -418,12 +420,14 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
-                        newCandidate = new Feature(feature.ToString() + " * log10(" + basicFeature.ToString() + ")", basicFeature.getVariabilityModel());
+                        newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
                 }
             }
+            foreach (Feature f in listOfCandidates)
+                f.Constant = 1;
             return listOfCandidates;
         }
 
@@ -459,7 +463,7 @@ namespace MachineLearning.Learning.Regression
                     Feature newCandidate = null;
                     foreach (var feature in combination)
                     {
-                        newCandidate = newCandidate == null ? new Feature(feature.ToString(), feature.getVariabilityModel()) : new Feature(newCandidate.ToString() + '*' + feature.ToString(), feature.getVariabilityModel());
+                        newCandidate = newCandidate == null ? new Feature(feature.getPureString(), feature.getVariabilityModel()) : new Feature(newCandidate.getPureString() + '*' + feature.getPureString(), feature.getVariabilityModel());
                     }
                     if (newCandidate != null)
                     {
@@ -973,7 +977,7 @@ namespace MachineLearning.Learning.Regression
                 return resultList;
             foreach (Feature subset in oldList)
             {
-                resultList.Add(new Feature(subset.ToString(), subset.getVariabilityModel()));
+                resultList.Add(new Feature(subset.getPureString(), subset.getVariabilityModel()));
             }
             return resultList;
         }
