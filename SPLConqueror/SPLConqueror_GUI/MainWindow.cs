@@ -89,6 +89,102 @@ namespace SPLConqueror_GUI
         public MainWindow()
         {
             InitializeComponent();
+
+            initializeHelp();
+        }
+
+        private void initializeHelp()
+        {
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Function:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("The currently loaded expression will be displayed here. The constants will be"
+                + " a color from green to red.The color depends on the value of the maximum constant in this"
+                + " expression.With the 'Load' - Button you are able to load in your expression AND your"
+                + " variability model which have to be compatible with each other. The 'Load Expression Only'"
+                + "- Button allows you to load in an expression only, but you won't be able to generate any"
+                + " graphs.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Constant configuration:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("All constants of the loaded expression can be configured here. By checking"
+                + " the first checkbox you are able to determine the amount of digits after a comma. By checking"
+                + " the second checkbox you can filter the constants of the expression such that only a certain"
+                + " percentage of constants will be shown depending on the value of the slider next to the"
+                + " checkbox. If the slider is on the far left, there will be no filtering. A slider with a"
+                + " maximum value will only show the component with the maximum constant of the current"
+                + " expression.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Variable configuration:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("You are able to filter certain variables out of the expression. If the"
+                + " checkbox is checked, the filtering is activated. By using the combobox you can choose which"
+                + " filtering strategy you want to use. The 'Free filtering' - Option every variable is"
+                + " selectable and all checked variables will be thrown out of the expression. The 'Configuration"
+                + " filtering' - Option helps you to filter only valid (partial)configurations. All selectable"
+                + " variables appear white, while unselectable variables appear gray. The other option for"
+                + " filtering is by using the regex filtering below. Every expression in the regex will be used"
+                + " for the filtering of the adjusted expression. These expression have to be separated by using"
+                + " \"|\", \";\" or \",\".\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Constraints:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("All constraints which are used in the loaded variability model will be"
+                + " shown here.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Adjusted function:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("After configurating theoriginal expression, the adjusted expression will be"
+                + " shown here in a simplyfied form. Like before all constants will get a color from green to red."
+                + " By switching between the radio buttons below you can determine if the adjusted expression"
+                + " should be in a factorized form. The factorization priority of each variable can be set by"
+                + " using the 'Factorization Settings' - Button. All priorities can be reset with the 'Reset'"
+                + " - Buton next to it.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Evaluation configuration:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("This configuration depends on the amount of numeric options in the adjusted"
+                + " expression. If there are no numeric options in the expression, you will not be able to"
+                + " calculate any graph. But you can calculate the performce of the current configuration. All"
+                + " variables in the adjusted expression (only binary options) will be handled as selected"
+                + " options and will get the value 1. If there is at least one numeric option in the expression,"
+                + " you are able to calculate a graph. You can choose which numeric options will be displayed in"
+                + " the graph. All other numeric options will be set on their default value. You are able to set"
+                + " this value by using the panels below. All numeric options will be shown and you can choose"
+                + " which value this option should have. By clicking on the 'Generate Function' - Button you will"
+                + " generate the graph of the adjusted function. If there are any problems with your input, a red"
+                + " text will show you what is wrong.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Function Graph:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("If a graph was calculated, the result will be shown here. By hovering over"
+                + " the black points in the graph a green text will display the values of this point.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Interactions and Influences:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("This will display all interactions which occur in the adjusted expression."
+                + " Below the textbox a pie chart will show the influences of each option in the adjusted"
+                + " expression. The values in the pie chart depend on the selected option on the right.\n\n");
+
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Bold);
+            helpTextBox.AppendText("Difference with other measurements:\n");
+            helpTextBox.SelectionFont = new Font(helpTextBox.Font, FontStyle.Regular);
+            helpTextBox.AppendText("You are able to load in your own measurements and compare it with the"
+                + " calculated graph. To do that you need measurements which are compatible with the loaded"
+                + " variability model and a calculated graph which used a valid configuration. The graph of"
+                + " the measurements is displayed green, while the calculated graph will appear the same way"
+                + " as calculated. If there are no measurements for the current configuration, no graph will"
+                + " be shown for these settings. The first combobox will let you choose what exactly you want"
+                + " to see. You can display an overview, both graphs, the measurements only or the certain"
+                + " differences between the graphs. Using the second combobox you can choose which measurement"
+                + " value should be shown in the graph.");
         }
 
         /// <summary>

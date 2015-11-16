@@ -29,17 +29,17 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend8 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend9 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend10 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
             this.numericDefaultPanel = new System.Windows.Forms.Panel();
@@ -602,20 +602,20 @@
             // 
             // rangeChart
             // 
-            chartArea1.AxisX.Interval = 1D;
-            chartArea1.AxisX.IsLabelAutoFit = false;
-            chartArea1.AxisX.LabelStyle.Angle = -45;
-            chartArea1.Name = "ChartArea1";
-            this.rangeChart.ChartAreas.Add(chartArea1);
-            legend1.Enabled = false;
-            legend1.Name = "Legend1";
-            this.rangeChart.Legends.Add(legend1);
+            chartArea6.AxisX.Interval = 1D;
+            chartArea6.AxisX.IsLabelAutoFit = false;
+            chartArea6.AxisX.LabelStyle.Angle = -45;
+            chartArea6.Name = "ChartArea1";
+            this.rangeChart.ChartAreas.Add(chartArea6);
+            legend6.Enabled = false;
+            legend6.Name = "Legend1";
+            this.rangeChart.Legends.Add(legend6);
             this.rangeChart.Location = new System.Drawing.Point(0, 380);
             this.rangeChart.Name = "rangeChart";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.rangeChart.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.rangeChart.Series.Add(series2);
             this.rangeChart.Size = new System.Drawing.Size(490, 336);
             this.rangeChart.TabIndex = 9;
             this.rangeChart.Text = "chart1";
@@ -644,14 +644,14 @@
             // 
             // maxOccuranceChart
             // 
-            chartArea2.AxisX.Interval = 1D;
-            chartArea2.AxisX.IsLabelAutoFit = false;
-            chartArea2.AxisX.LabelStyle.Angle = -45;
-            chartArea2.Name = "ChartArea1";
-            this.maxOccuranceChart.ChartAreas.Add(chartArea2);
-            legend2.Enabled = false;
-            legend2.Name = "Legend1";
-            this.maxOccuranceChart.Legends.Add(legend2);
+            chartArea7.AxisX.Interval = 1D;
+            chartArea7.AxisX.IsLabelAutoFit = false;
+            chartArea7.AxisX.LabelStyle.Angle = -45;
+            chartArea7.Name = "ChartArea1";
+            this.maxOccuranceChart.ChartAreas.Add(chartArea7);
+            legend7.Enabled = false;
+            legend7.Name = "Legend1";
+            this.maxOccuranceChart.Legends.Add(legend7);
             this.maxOccuranceChart.Location = new System.Drawing.Point(0, 380);
             this.maxOccuranceChart.Name = "maxOccuranceChart";
             this.maxOccuranceChart.Size = new System.Drawing.Size(490, 336);
@@ -660,14 +660,14 @@
             // 
             // maxChart
             // 
-            chartArea3.AxisX.Interval = 1D;
-            chartArea3.AxisX.IsLabelAutoFit = false;
-            chartArea3.AxisX.LabelStyle.Angle = -45;
-            chartArea3.Name = "ChartArea1";
-            this.maxChart.ChartAreas.Add(chartArea3);
-            legend3.Enabled = false;
-            legend3.Name = "Legend1";
-            this.maxChart.Legends.Add(legend3);
+            chartArea8.AxisX.Interval = 1D;
+            chartArea8.AxisX.IsLabelAutoFit = false;
+            chartArea8.AxisX.LabelStyle.Angle = -45;
+            chartArea8.Name = "ChartArea1";
+            this.maxChart.ChartAreas.Add(chartArea8);
+            legend8.Enabled = false;
+            legend8.Name = "Legend1";
+            this.maxChart.Legends.Add(legend8);
             this.maxChart.Location = new System.Drawing.Point(0, 380);
             this.maxChart.Name = "maxChart";
             this.maxChart.Size = new System.Drawing.Size(490, 336);
@@ -686,14 +686,14 @@
             // 
             // constantChart
             // 
-            chartArea4.AxisX.Interval = 1D;
-            chartArea4.AxisX.IsLabelAutoFit = false;
-            chartArea4.AxisX.LabelStyle.Angle = -45;
-            chartArea4.Name = "ChartArea1";
-            this.constantChart.ChartAreas.Add(chartArea4);
-            legend4.Enabled = false;
-            legend4.Name = "Legend1";
-            this.constantChart.Legends.Add(legend4);
+            chartArea9.AxisX.Interval = 1D;
+            chartArea9.AxisX.IsLabelAutoFit = false;
+            chartArea9.AxisX.LabelStyle.Angle = -45;
+            chartArea9.Name = "ChartArea1";
+            this.constantChart.ChartAreas.Add(chartArea9);
+            legend9.Enabled = false;
+            legend9.Name = "Legend1";
+            this.constantChart.Legends.Add(legend9);
             this.constantChart.Location = new System.Drawing.Point(0, 380);
             this.constantChart.Name = "constantChart";
             this.constantChart.Size = new System.Drawing.Size(490, 336);
@@ -714,14 +714,14 @@
             // 
             // influenceChart
             // 
-            chartArea5.AxisX.Interval = 1D;
-            chartArea5.AxisX.IsLabelAutoFit = false;
-            chartArea5.AxisX.LabelStyle.Angle = -45;
-            chartArea5.Name = "ChartArea1";
-            this.influenceChart.ChartAreas.Add(chartArea5);
-            legend5.Enabled = false;
-            legend5.Name = "Legend1";
-            this.influenceChart.Legends.Add(legend5);
+            chartArea10.AxisX.Interval = 1D;
+            chartArea10.AxisX.IsLabelAutoFit = false;
+            chartArea10.AxisX.LabelStyle.Angle = -45;
+            chartArea10.Name = "ChartArea1";
+            this.influenceChart.ChartAreas.Add(chartArea10);
+            legend10.Enabled = false;
+            legend10.Name = "Legend1";
+            this.influenceChart.Legends.Add(legend10);
             this.influenceChart.Location = new System.Drawing.Point(0, 380);
             this.influenceChart.Name = "influenceChart";
             this.influenceChart.Size = new System.Drawing.Size(490, 336);
@@ -1056,9 +1056,9 @@
             this.helpTextBox.Location = new System.Drawing.Point(0, 0);
             this.helpTextBox.Name = "helpTextBox";
             this.helpTextBox.ReadOnly = true;
-            this.helpTextBox.Size = new System.Drawing.Size(656, 678);
+            this.helpTextBox.Size = new System.Drawing.Size(656, 716);
             this.helpTextBox.TabIndex = 0;
-            this.helpTextBox.Text = resources.GetString("helpTextBox.Text");
+            this.helpTextBox.Text = "";
             // 
             // constraintTextbox
             // 
