@@ -67,6 +67,7 @@
     <Compile Include="ConfigurationPrinter.cs" />
     <Compile Include="ConfigurationReader.cs" />
     <Compile Include="ErrorLogger.cs" />
+    <Compile Include="Feature.cs" />
     <Compile Include="GlobalState.cs" />
     <Compile Include="InfluenceModel.cs" />
     <Compile Include="InfoLogger.cs" />

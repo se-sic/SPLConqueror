@@ -21,17 +21,17 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
         /// </summary>
-        public bool bagging = true;
+        public bool bagging = false;
 
         /// <summary>
         /// Specifies how often an influence model is learned based on a subset of the measurement data
         /// </summary>
-        public int baggingNumbers = 50;
+        public int baggingNumbers = 100;
 
         /// <summary>
         /// Specifies the percentage of data taken from the test set to be used in one learning run
         /// </summary>
-        public int baggingTestDataFraction = 70;
+        public int baggingTestDataFraction = 50;
 
         /// <summary>
         /// Features existing in the model can be removed during the learning procedure if removal leads to a better model.  

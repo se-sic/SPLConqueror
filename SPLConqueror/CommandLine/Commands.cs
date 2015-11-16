@@ -384,7 +384,18 @@ namespace MachineLearning
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
+                        GlobalState.logInfo.log("Average model: \n" + exp.metaModel.printModelAsFunction());
+                        double relativeError = 0;
+                        if (GlobalState.evalutionSet.Configurations.Count > 0)
+                        {
+                            relativeError = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evalutionSet.Configurations, ML_Settings.LossFunction.RELATIVE);
+                        }
+                        else
+                        {
+                            relativeError = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE);
+                        }
 
+                        GlobalState.logInfo.log("Error :" + relativeError);
                     }
                     break;
 
