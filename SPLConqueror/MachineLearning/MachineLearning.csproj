@@ -81,7 +81,6 @@
   <ItemGroup>
     <Compile Include="Learning\LearningInfo.cs" />
     <Compile Include="Learning\ML_Settings.cs" />
-    <Compile Include="Learning\Regression\Feature.cs" />
     <Compile Include="Learning\Regression\FeatureSubsetSelection.cs" />
     <Compile Include="Learning\Regression\LearningTest.cs" />
     <Compile Include="Learning\Regression\Learning.cs" />

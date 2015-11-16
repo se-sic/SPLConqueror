@@ -602,7 +602,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="c">The configuration for which the estimation should be performed.</param>
         /// <returns>The estimated value.</returns>
-        private double estimate(List<Feature> currentModel, Configuration c)
+        private static double estimate(List<Feature> currentModel, Configuration c)
         {
             double prediction = 0;
             for (int i = 0; i < currentModel.Count; i++)
@@ -1004,5 +1004,68 @@ namespace MachineLearning.Learning.Regression
         #endregion
 
 
+        /// <summary>
+        /// The function computes the error of a given influence model for a list of configurations. As the error metric, it uses the given loss function
+        /// </summary>
+        /// <param name="influenceModel">The influence model containing the already learned influences.</param>
+        /// <param name="configs">The configurations for which predictions should be made. The configurations must contain the measured/true value to compute the error.</param>
+        /// <param name="loss">The loss functions used to compute the error.</param>
+        /// <returns>The error of the model for the given configurations.</returns>
+        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss)
+        {
+            double error_sum = 0;
+            int skips = 0;
+            List<Feature> currentModel = influenceModel.getListOfFeatures();
+            foreach (Configuration c in configs)
+            {
+                double estimatedValue = estimate(currentModel, c);
+                double realValue = 0;
+                try
+                {
+                    if (!c.nfpValues.Keys.Contains(GlobalState.currentNFP))
+                    {
+                        skips++;
+                        continue;
+                    }
+                    realValue = c.GetNFPValue(GlobalState.currentNFP);
+                }
+                catch (ArgumentException argEx)
+                {
+                    GlobalState.logError.log(argEx.Message);
+                    realValue = c.GetNFPValue();
+                }
+                //How to handle near-zero values???
+                //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
+                //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
+
+                if (realValue < 1)
+                {//((2(true-est) / true+est) - 1 ) * 100
+                    //continue;
+                    skips++;
+                    continue;
+                }
+
+                double error = 0;
+                switch (loss)
+                {
+                    case ML_Settings.LossFunction.RELATIVE:
+                        if (realValue < 1)
+                        {
+                            error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
+                        }
+                        else
+                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                        break;
+                    case ML_Settings.LossFunction.LEASTSQUARES:
+                        error = Math.Pow(realValue - estimatedValue, 2);
+                        break;
+                    case ML_Settings.LossFunction.ABSOLUTE:
+                        error = Math.Abs(realValue - estimatedValue);
+                        break;
+                }
+                error_sum += error;
+            }
+            return error_sum / (configs.Count - skips);
+        }
     }
 }
