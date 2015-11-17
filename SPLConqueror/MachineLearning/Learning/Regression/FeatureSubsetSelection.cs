@@ -12,6 +12,9 @@ using MachineLearning.Learning;
 using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
 using MachineLearning.Solver;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -33,10 +36,16 @@ namespace MachineLearning.Learning.Regression
         protected List<Configuration> learningSet = new List<Configuration>();
         protected List<Configuration> validationSet = new List<Configuration>();
         protected ILArray<double> Y_learning, Y_validation = ILMath.empty();
-        protected Dictionary<Feature, ILArray<double>> DM_columns = new Dictionary<Feature, ILArray<double>>();
+        protected ConcurrentDictionary<Feature, ILArray<double>> DM_columns = new ConcurrentDictionary<Feature, ILArray<double>>();
 
         //Optimization: Remember candidates with no or only a tiny improvement to test them not in every round, int = nb of remaining rounds to ignore this feature
         private Dictionary<Feature, int> badFeatures = new Dictionary<Feature, int>();
+
+        private BlockingCollection<WorkItem> _taskQ = new BlockingCollection<WorkItem>();
+        // The event to know that all threads are done
+        ManualResetEvent eventX = new ManualResetEvent(false);
+        private static int iCount = 0;
+        readonly object Lock = new Object();
 
         public ObservableCollection<LearningRound> LearningHistory
         {
@@ -62,7 +71,7 @@ namespace MachineLearning.Learning.Regression
             validationSet = new List<Configuration>();
             Y_validation = ILMath.empty();
             Y_learning = ILMath.empty();
-            DM_columns = new Dictionary<Feature, ILArray<double>>();
+            DM_columns = new ConcurrentDictionary<Feature, ILArray<double>>();
             badFeatures = new Dictionary<Feature, int>();
         }
 
@@ -108,6 +117,88 @@ namespace MachineLearning.Learning.Regression
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
         }
+
+        #region parallelization
+        class ModelFit
+        {
+            public List<Feature> newModel = new List<Feature>();
+            public bool complete = true;
+            public double error = Double.MaxValue;
+        }
+        
+
+        class WorkItem
+        {
+            public readonly TaskCompletionSource<object> TaskSource;
+            public readonly Action Action;
+            public readonly CancellationToken? CancelToken;
+
+
+            public WorkItem(
+              TaskCompletionSource<object> taskSource,
+              Action action,
+              CancellationToken? cancelToken)
+            {
+                TaskSource = taskSource;
+                Action = action;
+                CancelToken = cancelToken;
+            }
+        }
+        private void createThreadPool(int coreCount)
+        {
+            for (int i = 0; i < coreCount; i++)
+            {
+                Task.Factory.StartNew(Consume);
+            }
+        }
+
+        public void Dispose() { _taskQ.CompleteAdding(); }
+
+        public Task EnqueueTask(Action action)
+        {
+            return EnqueueTask(action, null);
+        }
+
+        public Task EnqueueTask(Action action, CancellationToken? cancelToken)
+        {
+            var tcs = new TaskCompletionSource<object>();
+            _taskQ.Add(new WorkItem(tcs, action, cancelToken));
+            return tcs.Task;
+        }
+
+        void Consume()
+        {
+            foreach (WorkItem workItem in _taskQ.GetConsumingEnumerable())
+                if (workItem.CancelToken.HasValue &&
+                    workItem.CancelToken.Value.IsCancellationRequested)
+                {
+                    workItem.TaskSource.SetCanceled();
+                }
+                else
+                    try
+                    {
+                        workItem.Action();
+                        workItem.TaskSource.SetResult(null);   // Indicate completion
+                        Interlocked.Decrement(ref iCount);
+                        if (iCount == 0)
+                        {
+                            eventX.Set();
+                        }
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        if (ex.CancellationToken == workItem.CancelToken)
+                            workItem.TaskSource.SetCanceled();
+                        else
+                            workItem.TaskSource.SetException(ex);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        workItem.TaskSource.SetException(ex);
+                    }
+        }
+        #endregion
 
         /// <summary>
         /// If we know the shape of a function or we know the existence of an interaction, we can use this knowledge to learn for exact those functions.
@@ -238,36 +329,69 @@ namespace MachineLearning.Learning.Regression
                 return performForwardStep(currentModel);
             }
 
-            Dictionary<Feature, double> errorOfFeature = new Dictionary<Feature, double>();
+            ConcurrentDictionary<Feature, double> errorOfFeature = new ConcurrentDictionary<Feature, double>();
+            ConcurrentDictionary<Feature, List<Feature>> errorOfFeatureWithModel = new ConcurrentDictionary<Feature, List<Feature>>();
             Feature bestCandidate = null;
-
+            
+            List<Task> tasks = new List<Task>();
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
             {
+                Feature threadCandidate = new Feature(candidate.getPureString(),candidate.getVariabilityModel());
                 if (MLsettings.ignoreBadFeatures && this.badFeatures.Keys.Contains(candidate) && this.badFeatures[candidate] > 0)
                 {
                     this.badFeatures[candidate]--;
                     continue;
                 }
-                if (errorOfFeature.Keys.Contains(candidate))
-                    continue;
-                List<Feature> newModel = copyCombination(currentModel.FeatureSet);
-                newModel.Add(candidate);
-                if (!fitModel(newModel))
-                    continue;
-                double temp = 0;
-                double errorOfModel = computeModelError(newModel, out temp);
-                errorOfFeature.Add(candidate, temp);
-
-                if (errorOfModel < minimalRoundError)
+                if (errorOfFeature.Keys.Contains(threadCandidate))
                 {
-                    minimalRoundError = errorOfModel;
-                    minimalErrorModel = newModel;
+                    continue;
+                }
+                    
+                List<Feature> newModel = copyCombination(currentModel.FeatureSet);
+                newModel.Add(threadCandidate);
+                if (this.MLsettings.parallelization)
+                {
+                    //Task task = EnqueueTask(() => Console.WriteLine("Hallo"));
+                    // Func<List<Feature>,ModelFit> toDo = i => evaluateCandidate(i);
+                    // Task<ModelFit> task = EnqueueTask(toDo, newModel);
+                    Task task = Task.Factory.StartNew(() =>
+                    {
+                        ModelFit fi = evaluateCandidate(newModel);
+                        errorOfFeature.GetOrAdd(threadCandidate, fi.error);
+                        errorOfFeatureWithModel.GetOrAdd(threadCandidate,fi.newModel);
+                    }
+                    );
+                    tasks.Add(task);
+                }
+                else
+                {
+                    if (!fitModel(newModel))
+                        continue;
+                    double temp = 0;
+                    double errorOfModel = computeModelError(newModel, out temp);
+                    errorOfFeature.GetOrAdd(candidate, errorOfModel);
+                    errorOfFeatureWithModel.GetOrAdd(candidate, newModel);
+                }
+            }
+            if (this.MLsettings.parallelization)
+                Task.WaitAll(tasks.ToArray());
+
+            foreach (Feature candidate in errorOfFeature.Keys)
+            {
+
+                if (errorOfFeature[candidate] < minimalRoundError)
+                {
+                    minimalRoundError = errorOfFeature[candidate];
                     bestCandidate = candidate;
+                    minimalErrorModel = errorOfFeatureWithModel[candidate];
                 }
                 else
                     candidate.Constant = 1;
             }
+            minimalErrorModel = copyCombination(minimalErrorModel);
+
+            //error computations and logging stuff
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
             if (MLsettings.ignoreBadFeatures)
@@ -288,11 +412,22 @@ namespace MachineLearning.Learning.Regression
             }
         }
 
+
+        private ModelFit evaluateCandidate(List<Feature> model)
+        {
+            ModelFit fit = new ModelFit();
+            fit.complete = fitModel(model);
+            double temp;
+            fit.error = computeModelError(model, out temp);
+            fit.newModel = model;
+            return fit;
+        }
+
         /// <summary>
         /// Optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates
         /// </summary>
         /// <param name="errorOfCandidates">The Dictionary containing all candidate features with their fitted error rate.</param>
-        private void addFeaturesToIgnore(Dictionary<Feature, double> errorOfCandidates)
+        private void addFeaturesToIgnore(ConcurrentDictionary<Feature, double> errorOfCandidates)
         {
             List<KeyValuePair<Feature, double>> myList = errorOfCandidates.ToList();
             myList.Sort((x, y) => x.Value.CompareTo(y.Value));
@@ -947,7 +1082,7 @@ namespace MachineLearning.Learning.Regression
                 {
                     column[r] = 1;
                 }
-                this.DM_columns.Add(feature, column);
+                this.DM_columns.GetOrAdd(feature, column);
                 return;
             }
 
@@ -960,7 +1095,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 i++;
             }
-            this.DM_columns.Add(feature, column);
+            this.DM_columns.GetOrAdd(feature, column);
         }
         #endregion
 
@@ -977,7 +1112,9 @@ namespace MachineLearning.Learning.Regression
                 return resultList;
             foreach (Feature subset in oldList)
             {
-                resultList.Add(new Feature(subset.getPureString(), subset.getVariabilityModel()));
+                Feature temp = new Feature(subset.getPureString(), subset.getVariabilityModel());
+                temp.Constant = subset.Constant;
+                resultList.Add(temp);
             }
             return resultList;
         }

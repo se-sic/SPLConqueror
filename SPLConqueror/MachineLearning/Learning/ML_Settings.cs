@@ -19,9 +19,14 @@ namespace MachineLearning.Learning
         public LossFunction lossFunction = LossFunction.RELATIVE;
 
         /// <summary>
+        /// Turns the parallel execution of model candidates on/off.
+        /// </summary>
+        public bool parallelization = false;
+
+        /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
         /// </summary>
-        public bool bagging = false;
+        public bool bagging = true;
 
         /// <summary>
         /// Specifies how often an influence model is learned based on a subset of the measurement data
@@ -103,7 +108,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Enables an optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates.
         /// </summary>
-        public bool ignoreBadFeatures = true;
+        public bool ignoreBadFeatures = false;
 
         /// <summary>
         /// If true, stop learning if the whole process is running longer than 1 hour and the current round runs longer then 30 minutes.
