@@ -158,7 +158,7 @@ namespace SPLConqueror_Core
 
         public bool Equals(Interaction other)
         {
-            if (this.binaryOptions.Count != other.binaryOptions.Count || this.numericOptions.Count != other.binaryOptions.Count)
+            if (this.binaryOptions.Count != other.binaryOptions.Count || this.numericOptions.Count != other.numericOptions.Count)
                 return false;
             foreach (BinaryOption bin in this.binaryOptions)
             {
