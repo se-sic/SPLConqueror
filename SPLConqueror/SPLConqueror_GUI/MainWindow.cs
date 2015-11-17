@@ -1031,7 +1031,7 @@ namespace SPLConqueror_GUI
                 if (entry.Value.Count > 0)
                 {
                     interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Bold);
-                    interactionTextBox.AppendText("Number of total interactions: " + totalInteractions);
+                    interactionTextBox.AppendText("Number of total interactions: " + totalInteractions + "\n");
                     interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Regular);
                 }
 
@@ -3518,7 +3518,7 @@ namespace SPLConqueror_GUI
                 label.Text = option.Name;
 
                 // Configuring the NumericUpDown
-                upDown.Location = new System.Drawing.Point(216, 7);
+                upDown.Location = new System.Drawing.Point(200, 7);
                 upDown.Name = "upDown";
                 upDown.Size = new System.Drawing.Size(75, 20);
                 upDown.TabIndex = 1;
