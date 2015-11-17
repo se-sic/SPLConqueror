@@ -839,10 +839,13 @@ namespace SPLConqueror_GUI
         /// Calculates and returns all interactions and their degrees of the adjusted function.
         /// </summary>
         /// <returns>Dictionary with all interactions and their degrees of each option</returns>
-        private Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> getInteractions()
+        private SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>> getInteractions()
         {
-            Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> currInteractions =
-                new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
+            SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>> currInteractions =
+                new SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>>();
+
+            //Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> currInteractions =
+                //new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
             
             foreach (string component in getComponents(adjustedMeasurementFunction))
             {
@@ -865,10 +868,10 @@ namespace SPLConqueror_GUI
                 // Calculating all interactions for the list of found options
                 for (int i = 0; i < componentOptions.Count; i++)
                 {
-                    Dictionary<string, List<Tuple<int, int>>> optionInteractions;
+                    SortedDictionary<string, List<Tuple<int, int>>> optionInteractions;
 
                     if (!currInteractions.TryGetValue(componentOptions[i].Name, out optionInteractions))
-                        optionInteractions = new Dictionary<string, List<Tuple<int,int>>>();
+                        optionInteractions = new SortedDictionary<string, List<Tuple<int,int>>>();
 
                     for (int j = 0; j < componentOptions.Count; j++)
                     {
@@ -909,7 +912,7 @@ namespace SPLConqueror_GUI
                     currInteractions.Add(componentOptions[i].Name, optionInteractions);
                 }
             }
-
+            
             return currInteractions;
         }
 
@@ -995,7 +998,7 @@ namespace SPLConqueror_GUI
         {
             interactionTextBox.Clear();
 
-            foreach (KeyValuePair<string, Dictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
+            foreach (KeyValuePair<string, SortedDictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
                 int totalInteractions = 0;
 
@@ -1416,7 +1419,7 @@ namespace SPLConqueror_GUI
         /// <param name="e"></param>
         private void chartComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            influenceChart.Visible = false;
+            interactionChart.Visible = false;
             constantChart.Visible = false;
             maxChart.Visible = false;
             maxOccuranceChart.Visible = false;
@@ -1425,7 +1428,7 @@ namespace SPLConqueror_GUI
             switch (chartComboBox.SelectedItem.ToString())
             {
                 case comboboxInteractionsOption:
-                    influenceChart.Visible = true;
+                    interactionChart.Visible = true;
                     chartDescriptionLabel.Text = interactionsInformation;
                     break;
                 case comboboxConstantOption:
@@ -1672,10 +1675,10 @@ namespace SPLConqueror_GUI
             List<string> legalOptions = getLegalOptions();
 
             // Update influence chart
-            influenceChart.Series.Clear();
-            influenceChart.Series.Add("Series1");
+            interactionChart.Series.Clear();
+            interactionChart.Series.Add("Series1");
 
-            foreach (KeyValuePair<string, Dictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
+            foreach (KeyValuePair<string, SortedDictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
                 int value = 0;
 
@@ -1690,7 +1693,7 @@ namespace SPLConqueror_GUI
                     point.SetValueY(value);
                     point.ToolTip = "Number of interactions: #VALY";
 
-                    influenceChart.Series["Series1"].Points.Insert(0, point);
+                    interactionChart.Series["Series1"].Points.Insert(0, point);
                 }
             }
 
@@ -1804,7 +1807,7 @@ namespace SPLConqueror_GUI
                     maxOccuranceChart.Series["Series1"].Points.Insert(0, point2);
                 }
             }
-            
+
             foreach (KeyValuePair<string, Tuple<double, double>> entry in rangeInfluences)
             {
                 System.Windows.Forms.DataVisualization.Charting.DataPoint point1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
@@ -1813,6 +1816,13 @@ namespace SPLConqueror_GUI
 
                 rangeChart.Series[0].Points.Add(point1);
             }
+
+            // Sort data points in charts
+            interactionChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
+            constantChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
+            maxChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
+            maxOccuranceChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
+            rangeChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
         }
 
         /// <summary>
