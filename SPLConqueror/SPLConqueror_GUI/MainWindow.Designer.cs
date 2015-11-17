@@ -29,19 +29,20 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea31 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend31 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea32 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend32 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea33 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend33 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea34 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend34 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea35 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend35 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
             this.numericDefaultPanel = new System.Windows.Forms.Panel();
             this.failureLabel = new System.Windows.Forms.Label();
             this.generateFunctionButton = new System.Windows.Forms.Button();
@@ -87,7 +88,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.constantChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chartComboBox = new System.Windows.Forms.ComboBox();
-            this.influenceChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.interactionChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.interactionTextBox = new System.Windows.Forms.RichTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.overviewPanel = new System.Windows.Forms.Panel();
@@ -123,7 +124,6 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.groupBox4.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -139,7 +139,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.maxOccuranceChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.constantChart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.influenceChart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.interactionChart)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.overviewPanel.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -181,6 +181,16 @@
             this.evaluationFunctionPanel.Name = "evaluationFunctionPanel";
             this.evaluationFunctionPanel.Size = new System.Drawing.Size(301, 250);
             this.evaluationFunctionPanel.TabIndex = 1;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(3, 81);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(205, 13);
+            this.label12.TabIndex = 16;
+            this.label12.Text = "Default values for numeric options:";
             // 
             // numericDefaultPanel
             // 
@@ -622,7 +632,7 @@
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.constantChart);
             this.tabPage2.Controls.Add(this.chartComboBox);
-            this.tabPage2.Controls.Add(this.influenceChart);
+            this.tabPage2.Controls.Add(this.interactionChart);
             this.tabPage2.Controls.Add(this.interactionTextBox);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -634,20 +644,20 @@
             // 
             // rangeChart
             // 
-            chartArea31.AxisX.Interval = 1D;
-            chartArea31.AxisX.IsLabelAutoFit = false;
-            chartArea31.AxisX.LabelStyle.Angle = -45;
-            chartArea31.Name = "ChartArea1";
-            this.rangeChart.ChartAreas.Add(chartArea31);
-            legend31.Enabled = false;
-            legend31.Name = "Legend1";
-            this.rangeChart.Legends.Add(legend31);
+            chartArea1.AxisX.Interval = 1D;
+            chartArea1.AxisX.IsLabelAutoFit = false;
+            chartArea1.AxisX.LabelStyle.Angle = -45;
+            chartArea1.Name = "ChartArea1";
+            this.rangeChart.ChartAreas.Add(chartArea1);
+            legend1.Enabled = false;
+            legend1.Name = "Legend1";
+            this.rangeChart.Legends.Add(legend1);
             this.rangeChart.Location = new System.Drawing.Point(0, 380);
             this.rangeChart.Name = "rangeChart";
-            series7.ChartArea = "ChartArea1";
-            series7.Legend = "Legend1";
-            series7.Name = "Series1";
-            this.rangeChart.Series.Add(series7);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.rangeChart.Series.Add(series1);
             this.rangeChart.Size = new System.Drawing.Size(490, 336);
             this.rangeChart.TabIndex = 9;
             this.rangeChart.Text = "chart1";
@@ -676,14 +686,14 @@
             // 
             // maxOccuranceChart
             // 
-            chartArea32.AxisX.Interval = 1D;
-            chartArea32.AxisX.IsLabelAutoFit = false;
-            chartArea32.AxisX.LabelStyle.Angle = -45;
-            chartArea32.Name = "ChartArea1";
-            this.maxOccuranceChart.ChartAreas.Add(chartArea32);
-            legend32.Enabled = false;
-            legend32.Name = "Legend1";
-            this.maxOccuranceChart.Legends.Add(legend32);
+            chartArea2.AxisX.Interval = 1D;
+            chartArea2.AxisX.IsLabelAutoFit = false;
+            chartArea2.AxisX.LabelStyle.Angle = -45;
+            chartArea2.Name = "ChartArea1";
+            this.maxOccuranceChart.ChartAreas.Add(chartArea2);
+            legend2.Enabled = false;
+            legend2.Name = "Legend1";
+            this.maxOccuranceChart.Legends.Add(legend2);
             this.maxOccuranceChart.Location = new System.Drawing.Point(0, 380);
             this.maxOccuranceChart.Name = "maxOccuranceChart";
             this.maxOccuranceChart.Size = new System.Drawing.Size(490, 336);
@@ -692,14 +702,14 @@
             // 
             // maxChart
             // 
-            chartArea33.AxisX.Interval = 1D;
-            chartArea33.AxisX.IsLabelAutoFit = false;
-            chartArea33.AxisX.LabelStyle.Angle = -45;
-            chartArea33.Name = "ChartArea1";
-            this.maxChart.ChartAreas.Add(chartArea33);
-            legend33.Enabled = false;
-            legend33.Name = "Legend1";
-            this.maxChart.Legends.Add(legend33);
+            chartArea3.AxisX.Interval = 1D;
+            chartArea3.AxisX.IsLabelAutoFit = false;
+            chartArea3.AxisX.LabelStyle.Angle = -45;
+            chartArea3.Name = "ChartArea1";
+            this.maxChart.ChartAreas.Add(chartArea3);
+            legend3.Enabled = false;
+            legend3.Name = "Legend1";
+            this.maxChart.Legends.Add(legend3);
             this.maxChart.Location = new System.Drawing.Point(0, 380);
             this.maxChart.Name = "maxChart";
             this.maxChart.Size = new System.Drawing.Size(490, 336);
@@ -718,16 +728,17 @@
             // 
             // constantChart
             // 
-            chartArea34.AxisX.Interval = 1D;
-            chartArea34.AxisX.IsLabelAutoFit = false;
-            chartArea34.AxisX.LabelStyle.Angle = -45;
-            chartArea34.Name = "ChartArea1";
-            this.constantChart.ChartAreas.Add(chartArea34);
-            legend34.Enabled = false;
-            legend34.Name = "Legend1";
-            this.constantChart.Legends.Add(legend34);
+            chartArea4.AxisX.Interval = 1D;
+            chartArea4.AxisX.IsLabelAutoFit = false;
+            chartArea4.AxisX.LabelStyle.Angle = -45;
+            chartArea4.Name = "ChartArea1";
+            this.constantChart.ChartAreas.Add(chartArea4);
+            legend4.Enabled = false;
+            legend4.Name = "Legend1";
+            this.constantChart.Legends.Add(legend4);
             this.constantChart.Location = new System.Drawing.Point(0, 380);
             this.constantChart.Name = "constantChart";
+            this.constantChart.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.constantChart.Size = new System.Drawing.Size(490, 336);
             this.constantChart.TabIndex = 3;
             this.constantChart.Text = "chart1";
@@ -744,21 +755,21 @@
             this.chartComboBox.TabIndex = 2;
             this.chartComboBox.SelectedIndexChanged += new System.EventHandler(this.chartComboBox_SelectedIndexChanged);
             // 
-            // influenceChart
+            // interactionChart
             // 
-            chartArea35.AxisX.Interval = 1D;
-            chartArea35.AxisX.IsLabelAutoFit = false;
-            chartArea35.AxisX.LabelStyle.Angle = -45;
-            chartArea35.Name = "ChartArea1";
-            this.influenceChart.ChartAreas.Add(chartArea35);
-            legend35.Enabled = false;
-            legend35.Name = "Legend1";
-            this.influenceChart.Legends.Add(legend35);
-            this.influenceChart.Location = new System.Drawing.Point(0, 380);
-            this.influenceChart.Name = "influenceChart";
-            this.influenceChart.Size = new System.Drawing.Size(490, 336);
-            this.influenceChart.TabIndex = 1;
-            this.influenceChart.Text = "chart1";
+            chartArea5.AxisX.Interval = 1D;
+            chartArea5.AxisX.IsLabelAutoFit = false;
+            chartArea5.AxisX.LabelStyle.Angle = -45;
+            chartArea5.Name = "ChartArea1";
+            this.interactionChart.ChartAreas.Add(chartArea5);
+            legend5.Enabled = false;
+            legend5.Name = "Legend1";
+            this.interactionChart.Legends.Add(legend5);
+            this.interactionChart.Location = new System.Drawing.Point(0, 380);
+            this.interactionChart.Name = "interactionChart";
+            this.interactionChart.Size = new System.Drawing.Size(490, 336);
+            this.interactionChart.TabIndex = 1;
+            this.interactionChart.Text = "chart1";
             // 
             // interactionTextBox
             // 
@@ -1153,16 +1164,6 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Constraints";
             // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(3, 81);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(205, 13);
-            this.label12.TabIndex = 16;
-            this.label12.Text = "Default values for numeric options:";
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1201,7 +1202,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.maxOccuranceChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.constantChart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.influenceChart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.interactionChart)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.overviewPanel.ResumeLayout(false);
@@ -1245,7 +1246,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.RichTextBox interactionTextBox;
-        private System.Windows.Forms.DataVisualization.Charting.Chart influenceChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart interactionChart;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataVisualization.Charting.Chart constantChart;
         private System.Windows.Forms.ComboBox chartComboBox;
