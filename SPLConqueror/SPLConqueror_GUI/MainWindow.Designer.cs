@@ -29,17 +29,17 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend8 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend9 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend10 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea31 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend31 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea32 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend32 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea33 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend33 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea34 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend34 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea35 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend35 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
             this.numericDefaultPanel = new System.Windows.Forms.Panel();
@@ -123,6 +123,7 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.groupBox4.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -158,6 +159,7 @@
             // 
             this.groupBox4.Controls.Add(this.evaluationFunctionPanel);
             this.groupBox4.Controls.Add(this.noNumericOptionPanel);
+            this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(1005, 469);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(316, 274);
@@ -167,6 +169,7 @@
             // 
             // evaluationFunctionPanel
             // 
+            this.evaluationFunctionPanel.Controls.Add(this.label12);
             this.evaluationFunctionPanel.Controls.Add(this.numericDefaultPanel);
             this.evaluationFunctionPanel.Controls.Add(this.failureLabel);
             this.evaluationFunctionPanel.Controls.Add(this.generateFunctionButton);
@@ -182,14 +185,16 @@
             // numericDefaultPanel
             // 
             this.numericDefaultPanel.AutoScroll = true;
-            this.numericDefaultPanel.Location = new System.Drawing.Point(0, 76);
+            this.numericDefaultPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.numericDefaultPanel.Location = new System.Drawing.Point(0, 96);
             this.numericDefaultPanel.Name = "numericDefaultPanel";
-            this.numericDefaultPanel.Size = new System.Drawing.Size(301, 174);
+            this.numericDefaultPanel.Size = new System.Drawing.Size(301, 154);
             this.numericDefaultPanel.TabIndex = 15;
             // 
             // failureLabel
             // 
             this.failureLabel.AutoSize = true;
+            this.failureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.failureLabel.ForeColor = System.Drawing.Color.Crimson;
             this.failureLabel.Location = new System.Drawing.Point(3, 60);
             this.failureLabel.Name = "failureLabel";
@@ -201,6 +206,7 @@
             // generateFunctionButton
             // 
             this.generateFunctionButton.Enabled = false;
+            this.generateFunctionButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.generateFunctionButton.Location = new System.Drawing.Point(241, 0);
             this.generateFunctionButton.Name = "generateFunctionButton";
             this.generateFunctionButton.Size = new System.Drawing.Size(60, 54);
@@ -213,6 +219,7 @@
             // 
             this.secondAxisCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.secondAxisCombobox.Enabled = false;
+            this.secondAxisCombobox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.secondAxisCombobox.FormattingEnabled = true;
             this.secondAxisCombobox.Location = new System.Drawing.Point(76, 32);
             this.secondAxisCombobox.Name = "secondAxisCombobox";
@@ -224,6 +231,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(3, 35);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(68, 13);
@@ -233,6 +241,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(3, 4);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(50, 13);
@@ -243,6 +252,7 @@
             // 
             this.firstAxisCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.firstAxisCombobox.Enabled = false;
+            this.firstAxisCombobox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.firstAxisCombobox.Location = new System.Drawing.Point(76, 1);
             this.firstAxisCombobox.Name = "firstAxisCombobox";
             this.firstAxisCombobox.Size = new System.Drawing.Size(159, 21);
@@ -266,12 +276,13 @@
             this.calculationResultLabel.AutoSize = true;
             this.calculationResultLabel.Location = new System.Drawing.Point(-3, 68);
             this.calculationResultLabel.Name = "calculationResultLabel";
-            this.calculationResultLabel.Size = new System.Drawing.Size(121, 13);
+            this.calculationResultLabel.Size = new System.Drawing.Size(145, 13);
             this.calculationResultLabel.TabIndex = 3;
             this.calculationResultLabel.Text = "Please press the button.";
             // 
             // calculatePerformanceButton
             // 
+            this.calculatePerformanceButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.calculatePerformanceButton.Location = new System.Drawing.Point(218, 42);
             this.calculatePerformanceButton.Name = "calculatePerformanceButton";
             this.calculatePerformanceButton.Size = new System.Drawing.Size(80, 23);
@@ -283,6 +294,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(-3, 47);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(122, 13);
@@ -309,6 +321,7 @@
             this.groupBox3.Controls.Add(this.variableTreeView);
             this.groupBox3.Controls.Add(this.variableListBox);
             this.groupBox3.Controls.Add(this.filterVariablesCheckbox);
+            this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(10, 415);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(316, 203);
@@ -319,6 +332,7 @@
             // regexTextbox
             // 
             this.regexTextbox.Enabled = false;
+            this.regexTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.regexTextbox.Location = new System.Drawing.Point(6, 177);
             this.regexTextbox.Name = "regexTextbox";
             this.regexTextbox.Size = new System.Drawing.Size(301, 20);
@@ -328,19 +342,22 @@
             // filterRegexCheckBox
             // 
             this.filterRegexCheckBox.AutoSize = true;
+            this.filterRegexCheckBox.BackColor = System.Drawing.SystemColors.Control;
             this.filterRegexCheckBox.Enabled = false;
+            this.filterRegexCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.filterRegexCheckBox.Location = new System.Drawing.Point(9, 157);
             this.filterRegexCheckBox.Name = "filterRegexCheckBox";
             this.filterRegexCheckBox.Size = new System.Drawing.Size(172, 17);
             this.filterRegexCheckBox.TabIndex = 4;
             this.filterRegexCheckBox.Text = "Search for variables containing";
-            this.filterRegexCheckBox.UseVisualStyleBackColor = true;
+            this.filterRegexCheckBox.UseVisualStyleBackColor = false;
             this.filterRegexCheckBox.CheckedChanged += new System.EventHandler(this.filterRegexCheckBox_CheckedChanged);
             // 
             // filterOptionCombobox
             // 
             this.filterOptionCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.filterOptionCombobox.Enabled = false;
+            this.filterOptionCombobox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.filterOptionCombobox.FormattingEnabled = true;
             this.filterOptionCombobox.Location = new System.Drawing.Point(170, 15);
             this.filterOptionCombobox.Name = "filterOptionCombobox";
@@ -352,6 +369,7 @@
             // 
             this.variableTreeView.CheckBoxes = true;
             this.variableTreeView.Enabled = false;
+            this.variableTreeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.variableTreeView.Location = new System.Drawing.Point(6, 42);
             this.variableTreeView.Name = "variableTreeView";
             this.variableTreeView.Size = new System.Drawing.Size(301, 109);
@@ -362,6 +380,7 @@
             // 
             this.variableListBox.CheckOnClick = true;
             this.variableListBox.Enabled = false;
+            this.variableListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.variableListBox.FormattingEnabled = true;
             this.variableListBox.Location = new System.Drawing.Point(6, 42);
             this.variableListBox.Name = "variableListBox";
@@ -374,6 +393,7 @@
             // 
             this.filterVariablesCheckbox.AutoSize = true;
             this.filterVariablesCheckbox.Enabled = false;
+            this.filterVariablesCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.filterVariablesCheckbox.Location = new System.Drawing.Point(9, 19);
             this.filterVariablesCheckbox.Name = "filterVariablesCheckbox";
             this.filterVariablesCheckbox.Size = new System.Drawing.Size(93, 17);
@@ -388,6 +408,7 @@
             this.groupBox2.Controls.Add(this.constantDecimalCheckBox);
             this.groupBox2.Controls.Add(this.constantsDigitsUpDown);
             this.groupBox2.Controls.Add(this.constantFilteringCheckbox);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(12, 318);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(316, 91);
@@ -409,6 +430,7 @@
             // 
             this.constantDecimalCheckBox.AutoSize = true;
             this.constantDecimalCheckBox.Enabled = false;
+            this.constantDecimalCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.constantDecimalCheckBox.Location = new System.Drawing.Point(9, 19);
             this.constantDecimalCheckBox.Name = "constantDecimalCheckBox";
             this.constantDecimalCheckBox.Size = new System.Drawing.Size(163, 17);
@@ -420,6 +442,7 @@
             // constantsDigitsUpDown
             // 
             this.constantsDigitsUpDown.Enabled = false;
+            this.constantsDigitsUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.constantsDigitsUpDown.Location = new System.Drawing.Point(181, 18);
             this.constantsDigitsUpDown.Maximum = new decimal(new int[] {
             0,
@@ -436,6 +459,7 @@
             // 
             this.constantFilteringCheckbox.AutoSize = true;
             this.constantFilteringCheckbox.Enabled = false;
+            this.constantFilteringCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.constantFilteringCheckbox.Location = new System.Drawing.Point(9, 46);
             this.constantFilteringCheckbox.Name = "constantFilteringCheckbox";
             this.constantFilteringCheckbox.Size = new System.Drawing.Size(155, 17);
@@ -450,6 +474,7 @@
             this.groupBox1.Controls.Add(this.loadButton);
             this.groupBox1.Controls.Add(this.originalFunctionTextBox);
             this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 8);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(316, 304);
@@ -459,6 +484,7 @@
             // 
             // loadExpOnlyButton
             // 
+            this.loadExpOnlyButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.loadExpOnlyButton.Location = new System.Drawing.Point(181, 16);
             this.loadExpOnlyButton.Name = "loadExpOnlyButton";
             this.loadExpOnlyButton.Size = new System.Drawing.Size(126, 23);
@@ -469,6 +495,7 @@
             // 
             // loadButton
             // 
+            this.loadButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.loadButton.Location = new System.Drawing.Point(100, 16);
             this.loadButton.Name = "loadButton";
             this.loadButton.Size = new System.Drawing.Size(75, 23);
@@ -480,6 +507,7 @@
             // originalFunctionTextBox
             // 
             this.originalFunctionTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.originalFunctionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.originalFunctionTextBox.Location = new System.Drawing.Point(6, 45);
             this.originalFunctionTextBox.Name = "originalFunctionTextBox";
             this.originalFunctionTextBox.ReadOnly = true;
@@ -490,6 +518,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(6, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 13);
@@ -500,6 +529,7 @@
             // 
             this.factorRadioButton.AutoSize = true;
             this.factorRadioButton.Enabled = false;
+            this.factorRadioButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.factorRadioButton.Location = new System.Drawing.Point(6, 423);
             this.factorRadioButton.Name = "factorRadioButton";
             this.factorRadioButton.Size = new System.Drawing.Size(85, 17);
@@ -513,6 +543,7 @@
             this.normalRadioButton.AutoSize = true;
             this.normalRadioButton.Checked = true;
             this.normalRadioButton.Enabled = false;
+            this.normalRadioButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.normalRadioButton.Location = new System.Drawing.Point(6, 400);
             this.normalRadioButton.Name = "normalRadioButton";
             this.normalRadioButton.Size = new System.Drawing.Size(58, 17);
@@ -525,6 +556,7 @@
             // adjustedTextBox
             // 
             this.adjustedTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.adjustedTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.adjustedTextBox.Location = new System.Drawing.Point(6, 18);
             this.adjustedTextBox.Name = "adjustedTextBox";
             this.adjustedTextBox.ReadOnly = true;
@@ -602,20 +634,20 @@
             // 
             // rangeChart
             // 
-            chartArea6.AxisX.Interval = 1D;
-            chartArea6.AxisX.IsLabelAutoFit = false;
-            chartArea6.AxisX.LabelStyle.Angle = -45;
-            chartArea6.Name = "ChartArea1";
-            this.rangeChart.ChartAreas.Add(chartArea6);
-            legend6.Enabled = false;
-            legend6.Name = "Legend1";
-            this.rangeChart.Legends.Add(legend6);
+            chartArea31.AxisX.Interval = 1D;
+            chartArea31.AxisX.IsLabelAutoFit = false;
+            chartArea31.AxisX.LabelStyle.Angle = -45;
+            chartArea31.Name = "ChartArea1";
+            this.rangeChart.ChartAreas.Add(chartArea31);
+            legend31.Enabled = false;
+            legend31.Name = "Legend1";
+            this.rangeChart.Legends.Add(legend31);
             this.rangeChart.Location = new System.Drawing.Point(0, 380);
             this.rangeChart.Name = "rangeChart";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.rangeChart.Series.Add(series2);
+            series7.ChartArea = "ChartArea1";
+            series7.Legend = "Legend1";
+            series7.Name = "Series1";
+            this.rangeChart.Series.Add(series7);
             this.rangeChart.Size = new System.Drawing.Size(490, 336);
             this.rangeChart.TabIndex = 9;
             this.rangeChart.Text = "chart1";
@@ -644,14 +676,14 @@
             // 
             // maxOccuranceChart
             // 
-            chartArea7.AxisX.Interval = 1D;
-            chartArea7.AxisX.IsLabelAutoFit = false;
-            chartArea7.AxisX.LabelStyle.Angle = -45;
-            chartArea7.Name = "ChartArea1";
-            this.maxOccuranceChart.ChartAreas.Add(chartArea7);
-            legend7.Enabled = false;
-            legend7.Name = "Legend1";
-            this.maxOccuranceChart.Legends.Add(legend7);
+            chartArea32.AxisX.Interval = 1D;
+            chartArea32.AxisX.IsLabelAutoFit = false;
+            chartArea32.AxisX.LabelStyle.Angle = -45;
+            chartArea32.Name = "ChartArea1";
+            this.maxOccuranceChart.ChartAreas.Add(chartArea32);
+            legend32.Enabled = false;
+            legend32.Name = "Legend1";
+            this.maxOccuranceChart.Legends.Add(legend32);
             this.maxOccuranceChart.Location = new System.Drawing.Point(0, 380);
             this.maxOccuranceChart.Name = "maxOccuranceChart";
             this.maxOccuranceChart.Size = new System.Drawing.Size(490, 336);
@@ -660,14 +692,14 @@
             // 
             // maxChart
             // 
-            chartArea8.AxisX.Interval = 1D;
-            chartArea8.AxisX.IsLabelAutoFit = false;
-            chartArea8.AxisX.LabelStyle.Angle = -45;
-            chartArea8.Name = "ChartArea1";
-            this.maxChart.ChartAreas.Add(chartArea8);
-            legend8.Enabled = false;
-            legend8.Name = "Legend1";
-            this.maxChart.Legends.Add(legend8);
+            chartArea33.AxisX.Interval = 1D;
+            chartArea33.AxisX.IsLabelAutoFit = false;
+            chartArea33.AxisX.LabelStyle.Angle = -45;
+            chartArea33.Name = "ChartArea1";
+            this.maxChart.ChartAreas.Add(chartArea33);
+            legend33.Enabled = false;
+            legend33.Name = "Legend1";
+            this.maxChart.Legends.Add(legend33);
             this.maxChart.Location = new System.Drawing.Point(0, 380);
             this.maxChart.Name = "maxChart";
             this.maxChart.Size = new System.Drawing.Size(490, 336);
@@ -686,14 +718,14 @@
             // 
             // constantChart
             // 
-            chartArea9.AxisX.Interval = 1D;
-            chartArea9.AxisX.IsLabelAutoFit = false;
-            chartArea9.AxisX.LabelStyle.Angle = -45;
-            chartArea9.Name = "ChartArea1";
-            this.constantChart.ChartAreas.Add(chartArea9);
-            legend9.Enabled = false;
-            legend9.Name = "Legend1";
-            this.constantChart.Legends.Add(legend9);
+            chartArea34.AxisX.Interval = 1D;
+            chartArea34.AxisX.IsLabelAutoFit = false;
+            chartArea34.AxisX.LabelStyle.Angle = -45;
+            chartArea34.Name = "ChartArea1";
+            this.constantChart.ChartAreas.Add(chartArea34);
+            legend34.Enabled = false;
+            legend34.Name = "Legend1";
+            this.constantChart.Legends.Add(legend34);
             this.constantChart.Location = new System.Drawing.Point(0, 380);
             this.constantChart.Name = "constantChart";
             this.constantChart.Size = new System.Drawing.Size(490, 336);
@@ -714,14 +746,14 @@
             // 
             // influenceChart
             // 
-            chartArea10.AxisX.Interval = 1D;
-            chartArea10.AxisX.IsLabelAutoFit = false;
-            chartArea10.AxisX.LabelStyle.Angle = -45;
-            chartArea10.Name = "ChartArea1";
-            this.influenceChart.ChartAreas.Add(chartArea10);
-            legend10.Enabled = false;
-            legend10.Name = "Legend1";
-            this.influenceChart.Legends.Add(legend10);
+            chartArea35.AxisX.Interval = 1D;
+            chartArea35.AxisX.IsLabelAutoFit = false;
+            chartArea35.AxisX.LabelStyle.Angle = -45;
+            chartArea35.Name = "ChartArea1";
+            this.influenceChart.ChartAreas.Add(chartArea35);
+            legend35.Enabled = false;
+            legend35.Name = "Legend1";
+            this.influenceChart.Legends.Add(legend35);
             this.influenceChart.Location = new System.Drawing.Point(0, 380);
             this.influenceChart.Name = "influenceChart";
             this.influenceChart.Size = new System.Drawing.Size(490, 336);
@@ -1063,6 +1095,7 @@
             // constraintTextbox
             // 
             this.constraintTextbox.BackColor = System.Drawing.SystemColors.Window;
+            this.constraintTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.constraintTextbox.Location = new System.Drawing.Point(6, 19);
             this.constraintTextbox.Name = "constraintTextbox";
             this.constraintTextbox.ReadOnly = true;
@@ -1073,6 +1106,7 @@
             // factorizationSettingsButton
             // 
             this.factorizationSettingsButton.Enabled = false;
+            this.factorizationSettingsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.factorizationSettingsButton.Location = new System.Drawing.Point(109, 420);
             this.factorizationSettingsButton.Name = "factorizationSettingsButton";
             this.factorizationSettingsButton.Size = new System.Drawing.Size(120, 23);
@@ -1088,6 +1122,7 @@
             this.groupBox5.Controls.Add(this.factorizationSettingsButton);
             this.groupBox5.Controls.Add(this.normalRadioButton);
             this.groupBox5.Controls.Add(this.factorRadioButton);
+            this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox5.Location = new System.Drawing.Point(1005, 8);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(316, 455);
@@ -1098,6 +1133,7 @@
             // resetFactorizationButton
             // 
             this.resetFactorizationButton.Enabled = false;
+            this.resetFactorizationButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.resetFactorizationButton.Location = new System.Drawing.Point(235, 420);
             this.resetFactorizationButton.Name = "resetFactorizationButton";
             this.resetFactorizationButton.Size = new System.Drawing.Size(72, 23);
@@ -1109,12 +1145,23 @@
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.constraintTextbox);
+            this.groupBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox6.Location = new System.Drawing.Point(10, 624);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(316, 119);
             this.groupBox6.TabIndex = 20;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Constraints";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(3, 81);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(205, 13);
+            this.label12.TabIndex = 16;
+            this.label12.Text = "Default values for numeric options:";
             // 
             // MainWindow
             // 
@@ -1260,5 +1307,6 @@
         private ILNumerics.Drawing.ILPanel overviewAbsoluteDifferenceIlPanel;
         private ILNumerics.Drawing.ILPanel overviewMeasurementIlPanel;
         private ILNumerics.Drawing.ILPanel overviewPerformanceIlPanel;
+        private System.Windows.Forms.Label label12;
     }
 }
