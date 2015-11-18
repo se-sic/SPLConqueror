@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
@@ -40,70 +41,70 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.evaluationGroupBox = new System.Windows.Forms.GroupBox();
             this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
-            this.label12 = new System.Windows.Forms.Label();
+            this.defaultNumericOptionLabel = new System.Windows.Forms.Label();
             this.numericDefaultPanel = new System.Windows.Forms.Panel();
             this.failureLabel = new System.Windows.Forms.Label();
             this.generateFunctionButton = new System.Windows.Forms.Button();
             this.secondAxisCombobox = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.secondAxisLabel = new System.Windows.Forms.Label();
+            this.firstAxisLabel = new System.Windows.Forms.Label();
             this.firstAxisCombobox = new System.Windows.Forms.ComboBox();
             this.noNumericOptionPanel = new System.Windows.Forms.Panel();
             this.calculationResultLabel = new System.Windows.Forms.Label();
             this.calculatePerformanceButton = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.calculatedPerformanceLabel = new System.Windows.Forms.Label();
+            this.noNumericOptionsLabel = new System.Windows.Forms.Label();
+            this.variableConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.regexTextbox = new System.Windows.Forms.TextBox();
             this.filterRegexCheckBox = new System.Windows.Forms.CheckBox();
             this.filterOptionCombobox = new System.Windows.Forms.ComboBox();
             this.variableTreeView = new System.Windows.Forms.TreeView();
             this.variableListBox = new System.Windows.Forms.CheckedListBox();
             this.filterVariablesCheckbox = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.constantConfigurationGroupBox = new System.Windows.Forms.GroupBox();
             this.constantRelativeValueSlider = new System.Windows.Forms.TrackBar();
             this.constantDecimalCheckBox = new System.Windows.Forms.CheckBox();
             this.constantsDigitsUpDown = new System.Windows.Forms.NumericUpDown();
             this.constantFilteringCheckbox = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.functionGroupBox = new System.Windows.Forms.GroupBox();
             this.loadExpOnlyButton = new System.Windows.Forms.Button();
             this.loadButton = new System.Windows.Forms.Button();
             this.originalFunctionTextBox = new System.Windows.Forms.RichTextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.originalFunctionLabel = new System.Windows.Forms.Label();
             this.factorRadioButton = new System.Windows.Forms.RadioButton();
             this.normalRadioButton = new System.Windows.Forms.RadioButton();
             this.adjustedTextBox = new System.Windows.Forms.RichTextBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.functionGraphTabPage = new System.Windows.Forms.TabPage();
             this.pointPositionLabel = new System.Windows.Forms.Label();
             this.ilFunctionPanel = new ILNumerics.Drawing.ILPanel();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.interactionsInfluencesTabPage = new System.Windows.Forms.TabPage();
             this.rangeChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.label8 = new System.Windows.Forms.Label();
+            this.interactionsLabel = new System.Windows.Forms.Label();
             this.chartDescriptionLabel = new System.Windows.Forms.Label();
             this.maxOccuranceChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.maxChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.label5 = new System.Windows.Forms.Label();
+            this.pieOptionLabel = new System.Windows.Forms.Label();
             this.constantChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chartComboBox = new System.Windows.Forms.ComboBox();
             this.interactionChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.interactionTextBox = new System.Windows.Forms.RichTextBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.measurementsTabPage = new System.Windows.Forms.TabPage();
             this.overviewPanel = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
+            this.overviewRelativeDifferencePanel = new System.Windows.Forms.Panel();
             this.overviewRelativeDifferenceIlPanel = new ILNumerics.Drawing.ILPanel();
-            this.panel3 = new System.Windows.Forms.Panel();
+            this.overviewAbsoluteDifferencePanel = new System.Windows.Forms.Panel();
             this.overviewAbsoluteDifferenceIlPanel = new ILNumerics.Drawing.ILPanel();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.overviewMeasurementPanel = new System.Windows.Forms.Panel();
             this.overviewMeasurementIlPanel = new ILNumerics.Drawing.ILPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.overviewPerformancePanel = new System.Windows.Forms.Panel();
             this.overviewPerformanceIlPanel = new ILNumerics.Drawing.ILPanel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.relativeDifferenceLabel = new System.Windows.Forms.Label();
+            this.absoluteDifferenceLabel = new System.Windows.Forms.Label();
+            this.measurementsLabel = new System.Windows.Forms.Label();
+            this.calculatedPerformancesLabel = new System.Windows.Forms.Label();
             this.relativeDifferencePanel = new System.Windows.Forms.Panel();
             this.relativeDifferenceIlPanel = new ILNumerics.Drawing.ILPanel();
             this.measurementPointLabel = new System.Windows.Forms.Label();
@@ -117,80 +118,81 @@
             this.bothGraphsIlPanel = new ILNumerics.Drawing.ILPanel();
             this.nfpValueCombobox = new System.Windows.Forms.ComboBox();
             this.loadMeasurementButton = new System.Windows.Forms.Button();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.helpTabPage = new System.Windows.Forms.TabPage();
             this.helpTextBox = new System.Windows.Forms.RichTextBox();
             this.constraintTextbox = new System.Windows.Forms.RichTextBox();
             this.factorizationSettingsButton = new System.Windows.Forms.Button();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.adjustedFunctionGroupBox = new System.Windows.Forms.GroupBox();
             this.resetFactorizationButton = new System.Windows.Forms.Button();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.groupBox4.SuspendLayout();
+            this.constraintsGroupBox = new System.Windows.Forms.GroupBox();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.evaluationGroupBox.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.variableConfigurationGroupBox.SuspendLayout();
+            this.constantConfigurationGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.constantRelativeValueSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.constantsDigitsUpDown)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.functionGroupBox.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.functionGraphTabPage.SuspendLayout();
+            this.interactionsInfluencesTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rangeChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxOccuranceChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.constantChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.interactionChart)).BeginInit();
-            this.tabPage3.SuspendLayout();
+            this.measurementsTabPage.SuspendLayout();
             this.overviewPanel.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.overviewRelativeDifferencePanel.SuspendLayout();
+            this.overviewAbsoluteDifferencePanel.SuspendLayout();
+            this.overviewMeasurementPanel.SuspendLayout();
+            this.overviewPerformancePanel.SuspendLayout();
             this.relativeDifferencePanel.SuspendLayout();
             this.absoluteDifferencePanel.SuspendLayout();
             this.measurementsOnlyPanel.SuspendLayout();
             this.bothGraphsPanel.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.groupBox6.SuspendLayout();
+            this.helpTabPage.SuspendLayout();
+            this.adjustedFunctionGroupBox.SuspendLayout();
+            this.constraintsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox4
+            // evaluationGroupBox
             // 
-            this.groupBox4.Controls.Add(this.evaluationFunctionPanel);
-            this.groupBox4.Controls.Add(this.noNumericOptionPanel);
-            this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox4.Location = new System.Drawing.Point(1005, 469);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(316, 274);
-            this.groupBox4.TabIndex = 17;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Evaluation configuration";
+            this.evaluationGroupBox.Controls.Add(this.evaluationFunctionPanel);
+            this.evaluationGroupBox.Controls.Add(this.noNumericOptionPanel);
+            this.evaluationGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.evaluationGroupBox.Location = new System.Drawing.Point(1005, 469);
+            this.evaluationGroupBox.Name = "evaluationGroupBox";
+            this.evaluationGroupBox.Size = new System.Drawing.Size(316, 274);
+            this.evaluationGroupBox.TabIndex = 17;
+            this.evaluationGroupBox.TabStop = false;
+            this.evaluationGroupBox.Text = "Evaluation configuration";
             // 
             // evaluationFunctionPanel
             // 
-            this.evaluationFunctionPanel.Controls.Add(this.label12);
+            this.evaluationFunctionPanel.Controls.Add(this.defaultNumericOptionLabel);
             this.evaluationFunctionPanel.Controls.Add(this.numericDefaultPanel);
             this.evaluationFunctionPanel.Controls.Add(this.failureLabel);
             this.evaluationFunctionPanel.Controls.Add(this.generateFunctionButton);
             this.evaluationFunctionPanel.Controls.Add(this.secondAxisCombobox);
-            this.evaluationFunctionPanel.Controls.Add(this.label4);
-            this.evaluationFunctionPanel.Controls.Add(this.label3);
+            this.evaluationFunctionPanel.Controls.Add(this.secondAxisLabel);
+            this.evaluationFunctionPanel.Controls.Add(this.firstAxisLabel);
             this.evaluationFunctionPanel.Controls.Add(this.firstAxisCombobox);
             this.evaluationFunctionPanel.Location = new System.Drawing.Point(6, 18);
             this.evaluationFunctionPanel.Name = "evaluationFunctionPanel";
             this.evaluationFunctionPanel.Size = new System.Drawing.Size(301, 250);
             this.evaluationFunctionPanel.TabIndex = 1;
             // 
-            // label12
+            // defaultNumericOptionLabel
             // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(3, 81);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(205, 13);
-            this.label12.TabIndex = 16;
-            this.label12.Text = "Default values for numeric options:";
+            this.defaultNumericOptionLabel.AutoSize = true;
+            this.defaultNumericOptionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.defaultNumericOptionLabel.Location = new System.Drawing.Point(3, 81);
+            this.defaultNumericOptionLabel.Name = "defaultNumericOptionLabel";
+            this.defaultNumericOptionLabel.Size = new System.Drawing.Size(205, 13);
+            this.defaultNumericOptionLabel.TabIndex = 16;
+            this.defaultNumericOptionLabel.Text = "Default values for numeric options:";
             // 
             // numericDefaultPanel
             // 
@@ -222,6 +224,7 @@
             this.generateFunctionButton.Size = new System.Drawing.Size(60, 54);
             this.generateFunctionButton.TabIndex = 13;
             this.generateFunctionButton.Text = "Generate       Function";
+            this.toolTip.SetToolTip(this.generateFunctionButton, "Generates the function graph");
             this.generateFunctionButton.UseVisualStyleBackColor = true;
             this.generateFunctionButton.Click += new System.EventHandler(this.generateFunctionButton_Click);
             // 
@@ -238,25 +241,25 @@
             this.secondAxisCombobox.TabIndex = 12;
             this.secondAxisCombobox.SelectedIndexChanged += new System.EventHandler(this.secondAxisCombobox_SelectedIndexChanged);
             // 
-            // label4
+            // secondAxisLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(3, 35);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(68, 13);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Second axis:";
+            this.secondAxisLabel.AutoSize = true;
+            this.secondAxisLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.secondAxisLabel.Location = new System.Drawing.Point(3, 35);
+            this.secondAxisLabel.Name = "secondAxisLabel";
+            this.secondAxisLabel.Size = new System.Drawing.Size(68, 13);
+            this.secondAxisLabel.TabIndex = 11;
+            this.secondAxisLabel.Text = "Second axis:";
             // 
-            // label3
+            // firstAxisLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(3, 4);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(50, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "First axis:";
+            this.firstAxisLabel.AutoSize = true;
+            this.firstAxisLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.firstAxisLabel.Location = new System.Drawing.Point(3, 4);
+            this.firstAxisLabel.Name = "firstAxisLabel";
+            this.firstAxisLabel.Size = new System.Drawing.Size(50, 13);
+            this.firstAxisLabel.TabIndex = 10;
+            this.firstAxisLabel.Text = "First axis:";
             // 
             // firstAxisCombobox
             // 
@@ -274,8 +277,8 @@
             // 
             this.noNumericOptionPanel.Controls.Add(this.calculationResultLabel);
             this.noNumericOptionPanel.Controls.Add(this.calculatePerformanceButton);
-            this.noNumericOptionPanel.Controls.Add(this.label7);
-            this.noNumericOptionPanel.Controls.Add(this.label6);
+            this.noNumericOptionPanel.Controls.Add(this.calculatedPerformanceLabel);
+            this.noNumericOptionPanel.Controls.Add(this.noNumericOptionsLabel);
             this.noNumericOptionPanel.Location = new System.Drawing.Point(6, 18);
             this.noNumericOptionPanel.Name = "noNumericOptionPanel";
             this.noNumericOptionPanel.Size = new System.Drawing.Size(301, 104);
@@ -301,43 +304,43 @@
             this.calculatePerformanceButton.UseVisualStyleBackColor = true;
             this.calculatePerformanceButton.Click += new System.EventHandler(this.calculatePerformanceButton_Click);
             // 
-            // label7
+            // calculatedPerformanceLabel
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(-3, 47);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(122, 13);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "Calculated performance:";
+            this.calculatedPerformanceLabel.AutoSize = true;
+            this.calculatedPerformanceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.calculatedPerformanceLabel.Location = new System.Drawing.Point(-3, 47);
+            this.calculatedPerformanceLabel.Name = "calculatedPerformanceLabel";
+            this.calculatedPerformanceLabel.Size = new System.Drawing.Size(122, 13);
+            this.calculatedPerformanceLabel.TabIndex = 1;
+            this.calculatedPerformanceLabel.Text = "Calculated performance:";
             // 
-            // label6
+            // noNumericOptionsLabel
             // 
-            this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(0, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(301, 104);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Currently, there are no numeric options to choose. Now you can calculate the valu" +
+            this.noNumericOptionsLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.noNumericOptionsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.noNumericOptionsLabel.ForeColor = System.Drawing.Color.Red;
+            this.noNumericOptionsLabel.Location = new System.Drawing.Point(0, 0);
+            this.noNumericOptionsLabel.Name = "noNumericOptionsLabel";
+            this.noNumericOptionsLabel.Size = new System.Drawing.Size(301, 104);
+            this.noNumericOptionsLabel.TabIndex = 0;
+            this.noNumericOptionsLabel.Text = "Currently, there are no numeric options to choose. Now you can calculate the valu" +
     "e with your current settings.";
             // 
-            // groupBox3
+            // variableConfigurationGroupBox
             // 
-            this.groupBox3.Controls.Add(this.regexTextbox);
-            this.groupBox3.Controls.Add(this.filterRegexCheckBox);
-            this.groupBox3.Controls.Add(this.filterOptionCombobox);
-            this.groupBox3.Controls.Add(this.variableTreeView);
-            this.groupBox3.Controls.Add(this.variableListBox);
-            this.groupBox3.Controls.Add(this.filterVariablesCheckbox);
-            this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(10, 415);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(316, 203);
-            this.groupBox3.TabIndex = 16;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Variable configuration";
+            this.variableConfigurationGroupBox.Controls.Add(this.regexTextbox);
+            this.variableConfigurationGroupBox.Controls.Add(this.filterRegexCheckBox);
+            this.variableConfigurationGroupBox.Controls.Add(this.filterOptionCombobox);
+            this.variableConfigurationGroupBox.Controls.Add(this.variableTreeView);
+            this.variableConfigurationGroupBox.Controls.Add(this.variableListBox);
+            this.variableConfigurationGroupBox.Controls.Add(this.filterVariablesCheckbox);
+            this.variableConfigurationGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.variableConfigurationGroupBox.Location = new System.Drawing.Point(10, 415);
+            this.variableConfigurationGroupBox.Name = "variableConfigurationGroupBox";
+            this.variableConfigurationGroupBox.Size = new System.Drawing.Size(316, 203);
+            this.variableConfigurationGroupBox.TabIndex = 16;
+            this.variableConfigurationGroupBox.TabStop = false;
+            this.variableConfigurationGroupBox.Text = "Variable configuration";
             // 
             // regexTextbox
             // 
@@ -412,19 +415,19 @@
             this.filterVariablesCheckbox.UseVisualStyleBackColor = true;
             this.filterVariablesCheckbox.CheckedChanged += new System.EventHandler(this.filterVariablesCheckbox_CheckedChanged);
             // 
-            // groupBox2
+            // constantConfigurationGroupBox
             // 
-            this.groupBox2.Controls.Add(this.constantRelativeValueSlider);
-            this.groupBox2.Controls.Add(this.constantDecimalCheckBox);
-            this.groupBox2.Controls.Add(this.constantsDigitsUpDown);
-            this.groupBox2.Controls.Add(this.constantFilteringCheckbox);
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(12, 318);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(316, 91);
-            this.groupBox2.TabIndex = 15;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Constant configuration";
+            this.constantConfigurationGroupBox.Controls.Add(this.constantRelativeValueSlider);
+            this.constantConfigurationGroupBox.Controls.Add(this.constantDecimalCheckBox);
+            this.constantConfigurationGroupBox.Controls.Add(this.constantsDigitsUpDown);
+            this.constantConfigurationGroupBox.Controls.Add(this.constantFilteringCheckbox);
+            this.constantConfigurationGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.constantConfigurationGroupBox.Location = new System.Drawing.Point(12, 318);
+            this.constantConfigurationGroupBox.Name = "constantConfigurationGroupBox";
+            this.constantConfigurationGroupBox.Size = new System.Drawing.Size(316, 91);
+            this.constantConfigurationGroupBox.TabIndex = 15;
+            this.constantConfigurationGroupBox.TabStop = false;
+            this.constantConfigurationGroupBox.Text = "Constant configuration";
             // 
             // constantRelativeValueSlider
             // 
@@ -478,19 +481,19 @@
             this.constantFilteringCheckbox.UseVisualStyleBackColor = true;
             this.constantFilteringCheckbox.CheckedChanged += new System.EventHandler(this.constantFilteringCheckbox_CheckedChanged);
             // 
-            // groupBox1
+            // functionGroupBox
             // 
-            this.groupBox1.Controls.Add(this.loadExpOnlyButton);
-            this.groupBox1.Controls.Add(this.loadButton);
-            this.groupBox1.Controls.Add(this.originalFunctionTextBox);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(12, 8);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(316, 304);
-            this.groupBox1.TabIndex = 14;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Function";
+            this.functionGroupBox.Controls.Add(this.loadExpOnlyButton);
+            this.functionGroupBox.Controls.Add(this.loadButton);
+            this.functionGroupBox.Controls.Add(this.originalFunctionTextBox);
+            this.functionGroupBox.Controls.Add(this.originalFunctionLabel);
+            this.functionGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.functionGroupBox.Location = new System.Drawing.Point(12, 8);
+            this.functionGroupBox.Name = "functionGroupBox";
+            this.functionGroupBox.Size = new System.Drawing.Size(316, 304);
+            this.functionGroupBox.TabIndex = 14;
+            this.functionGroupBox.TabStop = false;
+            this.functionGroupBox.Text = "Function";
             // 
             // loadExpOnlyButton
             // 
@@ -500,6 +503,7 @@
             this.loadExpOnlyButton.Size = new System.Drawing.Size(126, 23);
             this.loadExpOnlyButton.TabIndex = 9;
             this.loadExpOnlyButton.Text = "Load Expression Only";
+            this.toolTip.SetToolTip(this.loadExpOnlyButton, "Loads only the expression");
             this.loadExpOnlyButton.UseVisualStyleBackColor = true;
             this.loadExpOnlyButton.Click += new System.EventHandler(this.loadExpOnlyButton_Click);
             // 
@@ -511,6 +515,7 @@
             this.loadButton.Size = new System.Drawing.Size(75, 23);
             this.loadButton.TabIndex = 6;
             this.loadButton.Text = "Load";
+            this.toolTip.SetToolTip(this.loadButton, "Loads the expression and the model");
             this.loadButton.UseVisualStyleBackColor = true;
             this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
             // 
@@ -525,15 +530,15 @@
             this.originalFunctionTextBox.TabIndex = 1;
             this.originalFunctionTextBox.Text = "";
             // 
-            // label1
+            // originalFunctionLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(6, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Original function:";
+            this.originalFunctionLabel.AutoSize = true;
+            this.originalFunctionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.originalFunctionLabel.Location = new System.Drawing.Point(6, 21);
+            this.originalFunctionLabel.Name = "originalFunctionLabel";
+            this.originalFunctionLabel.Size = new System.Drawing.Size(86, 13);
+            this.originalFunctionLabel.TabIndex = 0;
+            this.originalFunctionLabel.Text = "Original function:";
             // 
             // factorRadioButton
             // 
@@ -574,29 +579,29 @@
             this.adjustedTextBox.TabIndex = 5;
             this.adjustedTextBox.Text = "";
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage5);
-            this.tabControl1.Location = new System.Drawing.Point(332, 1);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(664, 742);
-            this.tabControl1.TabIndex = 18;
+            this.tabControl.Controls.Add(this.functionGraphTabPage);
+            this.tabControl.Controls.Add(this.interactionsInfluencesTabPage);
+            this.tabControl.Controls.Add(this.measurementsTabPage);
+            this.tabControl.Controls.Add(this.helpTabPage);
+            this.tabControl.Location = new System.Drawing.Point(332, 1);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(664, 742);
+            this.tabControl.TabIndex = 18;
             // 
-            // tabPage1
+            // functionGraphTabPage
             // 
-            this.tabPage1.Controls.Add(this.pointPositionLabel);
-            this.tabPage1.Controls.Add(this.ilFunctionPanel);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(656, 716);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Function Graph";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.functionGraphTabPage.Controls.Add(this.pointPositionLabel);
+            this.functionGraphTabPage.Controls.Add(this.ilFunctionPanel);
+            this.functionGraphTabPage.Location = new System.Drawing.Point(4, 22);
+            this.functionGraphTabPage.Name = "functionGraphTabPage";
+            this.functionGraphTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.functionGraphTabPage.Size = new System.Drawing.Size(656, 716);
+            this.functionGraphTabPage.TabIndex = 0;
+            this.functionGraphTabPage.Text = "Function Graph";
+            this.functionGraphTabPage.UseVisualStyleBackColor = true;
             // 
             // pointPositionLabel
             // 
@@ -622,25 +627,25 @@
             this.ilFunctionPanel.Size = new System.Drawing.Size(650, 710);
             this.ilFunctionPanel.TabIndex = 0;
             // 
-            // tabPage2
+            // interactionsInfluencesTabPage
             // 
-            this.tabPage2.Controls.Add(this.rangeChart);
-            this.tabPage2.Controls.Add(this.label8);
-            this.tabPage2.Controls.Add(this.chartDescriptionLabel);
-            this.tabPage2.Controls.Add(this.maxOccuranceChart);
-            this.tabPage2.Controls.Add(this.maxChart);
-            this.tabPage2.Controls.Add(this.label5);
-            this.tabPage2.Controls.Add(this.constantChart);
-            this.tabPage2.Controls.Add(this.chartComboBox);
-            this.tabPage2.Controls.Add(this.interactionChart);
-            this.tabPage2.Controls.Add(this.interactionTextBox);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(656, 716);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Interactions and Influences";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.interactionsInfluencesTabPage.Controls.Add(this.rangeChart);
+            this.interactionsInfluencesTabPage.Controls.Add(this.interactionsLabel);
+            this.interactionsInfluencesTabPage.Controls.Add(this.chartDescriptionLabel);
+            this.interactionsInfluencesTabPage.Controls.Add(this.maxOccuranceChart);
+            this.interactionsInfluencesTabPage.Controls.Add(this.maxChart);
+            this.interactionsInfluencesTabPage.Controls.Add(this.pieOptionLabel);
+            this.interactionsInfluencesTabPage.Controls.Add(this.constantChart);
+            this.interactionsInfluencesTabPage.Controls.Add(this.chartComboBox);
+            this.interactionsInfluencesTabPage.Controls.Add(this.interactionChart);
+            this.interactionsInfluencesTabPage.Controls.Add(this.interactionTextBox);
+            this.interactionsInfluencesTabPage.Location = new System.Drawing.Point(4, 22);
+            this.interactionsInfluencesTabPage.Name = "interactionsInfluencesTabPage";
+            this.interactionsInfluencesTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.interactionsInfluencesTabPage.Size = new System.Drawing.Size(656, 716);
+            this.interactionsInfluencesTabPage.TabIndex = 1;
+            this.interactionsInfluencesTabPage.Text = "Interactions and Influences";
+            this.interactionsInfluencesTabPage.UseVisualStyleBackColor = true;
             // 
             // rangeChart
             // 
@@ -663,15 +668,15 @@
             this.rangeChart.Text = "chart1";
             this.rangeChart.Visible = false;
             // 
-            // label8
+            // interactionsLabel
             // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(-2, 6);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(78, 13);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "Interactions:";
+            this.interactionsLabel.AutoSize = true;
+            this.interactionsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.interactionsLabel.Location = new System.Drawing.Point(-2, 6);
+            this.interactionsLabel.Name = "interactionsLabel";
+            this.interactionsLabel.Size = new System.Drawing.Size(78, 13);
+            this.interactionsLabel.TabIndex = 8;
+            this.interactionsLabel.Text = "Interactions:";
             // 
             // chartDescriptionLabel
             // 
@@ -716,15 +721,15 @@
             this.maxChart.TabIndex = 5;
             this.maxChart.Text = "chart1";
             // 
-            // label5
+            // pieOptionLabel
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(499, 419);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(68, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Pie option:";
+            this.pieOptionLabel.AutoSize = true;
+            this.pieOptionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pieOptionLabel.Location = new System.Drawing.Point(499, 419);
+            this.pieOptionLabel.Name = "pieOptionLabel";
+            this.pieOptionLabel.Size = new System.Drawing.Size(68, 13);
+            this.pieOptionLabel.TabIndex = 4;
+            this.pieOptionLabel.Text = "Pie option:";
             // 
             // constantChart
             // 
@@ -781,49 +786,49 @@
             this.interactionTextBox.TabIndex = 0;
             this.interactionTextBox.Text = "";
             // 
-            // tabPage3
+            // measurementsTabPage
             // 
-            this.tabPage3.Controls.Add(this.overviewPanel);
-            this.tabPage3.Controls.Add(this.relativeDifferencePanel);
-            this.tabPage3.Controls.Add(this.measurementPointLabel);
-            this.tabPage3.Controls.Add(this.absoluteDifferencePanel);
-            this.tabPage3.Controls.Add(this.measurementsOnlyPanel);
-            this.tabPage3.Controls.Add(this.measurementViewCombobox);
-            this.tabPage3.Controls.Add(this.measurementErrorLabel);
-            this.tabPage3.Controls.Add(this.bothGraphsPanel);
-            this.tabPage3.Controls.Add(this.nfpValueCombobox);
-            this.tabPage3.Controls.Add(this.loadMeasurementButton);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(656, 716);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Difference with other measurements";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.measurementsTabPage.Controls.Add(this.overviewPanel);
+            this.measurementsTabPage.Controls.Add(this.relativeDifferencePanel);
+            this.measurementsTabPage.Controls.Add(this.measurementPointLabel);
+            this.measurementsTabPage.Controls.Add(this.absoluteDifferencePanel);
+            this.measurementsTabPage.Controls.Add(this.measurementsOnlyPanel);
+            this.measurementsTabPage.Controls.Add(this.measurementViewCombobox);
+            this.measurementsTabPage.Controls.Add(this.measurementErrorLabel);
+            this.measurementsTabPage.Controls.Add(this.bothGraphsPanel);
+            this.measurementsTabPage.Controls.Add(this.nfpValueCombobox);
+            this.measurementsTabPage.Controls.Add(this.loadMeasurementButton);
+            this.measurementsTabPage.Location = new System.Drawing.Point(4, 22);
+            this.measurementsTabPage.Name = "measurementsTabPage";
+            this.measurementsTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.measurementsTabPage.Size = new System.Drawing.Size(656, 716);
+            this.measurementsTabPage.TabIndex = 2;
+            this.measurementsTabPage.Text = "Difference with other measurements";
+            this.measurementsTabPage.UseVisualStyleBackColor = true;
             // 
             // overviewPanel
             // 
-            this.overviewPanel.Controls.Add(this.panel4);
-            this.overviewPanel.Controls.Add(this.panel3);
-            this.overviewPanel.Controls.Add(this.panel2);
-            this.overviewPanel.Controls.Add(this.panel1);
-            this.overviewPanel.Controls.Add(this.label11);
-            this.overviewPanel.Controls.Add(this.label10);
-            this.overviewPanel.Controls.Add(this.label9);
-            this.overviewPanel.Controls.Add(this.label2);
+            this.overviewPanel.Controls.Add(this.overviewRelativeDifferencePanel);
+            this.overviewPanel.Controls.Add(this.overviewAbsoluteDifferencePanel);
+            this.overviewPanel.Controls.Add(this.overviewMeasurementPanel);
+            this.overviewPanel.Controls.Add(this.overviewPerformancePanel);
+            this.overviewPanel.Controls.Add(this.relativeDifferenceLabel);
+            this.overviewPanel.Controls.Add(this.absoluteDifferenceLabel);
+            this.overviewPanel.Controls.Add(this.measurementsLabel);
+            this.overviewPanel.Controls.Add(this.calculatedPerformancesLabel);
             this.overviewPanel.Location = new System.Drawing.Point(0, 30);
             this.overviewPanel.Name = "overviewPanel";
             this.overviewPanel.Size = new System.Drawing.Size(656, 665);
             this.overviewPanel.TabIndex = 8;
             this.overviewPanel.Visible = false;
             // 
-            // panel4
+            // overviewRelativeDifferencePanel
             // 
-            this.panel4.Controls.Add(this.overviewRelativeDifferenceIlPanel);
-            this.panel4.Location = new System.Drawing.Point(354, 335);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(294, 276);
-            this.panel4.TabIndex = 7;
+            this.overviewRelativeDifferencePanel.Controls.Add(this.overviewRelativeDifferenceIlPanel);
+            this.overviewRelativeDifferencePanel.Location = new System.Drawing.Point(354, 335);
+            this.overviewRelativeDifferencePanel.Name = "overviewRelativeDifferencePanel";
+            this.overviewRelativeDifferencePanel.Size = new System.Drawing.Size(294, 276);
+            this.overviewRelativeDifferencePanel.TabIndex = 7;
             // 
             // overviewRelativeDifferenceIlPanel
             // 
@@ -838,13 +843,13 @@
             this.overviewRelativeDifferenceIlPanel.Size = new System.Drawing.Size(294, 276);
             this.overviewRelativeDifferenceIlPanel.TabIndex = 0;
             // 
-            // panel3
+            // overviewAbsoluteDifferencePanel
             // 
-            this.panel3.Controls.Add(this.overviewAbsoluteDifferenceIlPanel);
-            this.panel3.Location = new System.Drawing.Point(9, 335);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(294, 276);
-            this.panel3.TabIndex = 6;
+            this.overviewAbsoluteDifferencePanel.Controls.Add(this.overviewAbsoluteDifferenceIlPanel);
+            this.overviewAbsoluteDifferencePanel.Location = new System.Drawing.Point(9, 335);
+            this.overviewAbsoluteDifferencePanel.Name = "overviewAbsoluteDifferencePanel";
+            this.overviewAbsoluteDifferencePanel.Size = new System.Drawing.Size(294, 276);
+            this.overviewAbsoluteDifferencePanel.TabIndex = 6;
             // 
             // overviewAbsoluteDifferenceIlPanel
             // 
@@ -859,13 +864,13 @@
             this.overviewAbsoluteDifferenceIlPanel.Size = new System.Drawing.Size(294, 276);
             this.overviewAbsoluteDifferenceIlPanel.TabIndex = 0;
             // 
-            // panel2
+            // overviewMeasurementPanel
             // 
-            this.panel2.Controls.Add(this.overviewMeasurementIlPanel);
-            this.panel2.Location = new System.Drawing.Point(354, 33);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(294, 276);
-            this.panel2.TabIndex = 5;
+            this.overviewMeasurementPanel.Controls.Add(this.overviewMeasurementIlPanel);
+            this.overviewMeasurementPanel.Location = new System.Drawing.Point(354, 33);
+            this.overviewMeasurementPanel.Name = "overviewMeasurementPanel";
+            this.overviewMeasurementPanel.Size = new System.Drawing.Size(294, 276);
+            this.overviewMeasurementPanel.TabIndex = 5;
             // 
             // overviewMeasurementIlPanel
             // 
@@ -880,13 +885,13 @@
             this.overviewMeasurementIlPanel.Size = new System.Drawing.Size(294, 276);
             this.overviewMeasurementIlPanel.TabIndex = 0;
             // 
-            // panel1
+            // overviewPerformancePanel
             // 
-            this.panel1.Controls.Add(this.overviewPerformanceIlPanel);
-            this.panel1.Location = new System.Drawing.Point(9, 33);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(294, 276);
-            this.panel1.TabIndex = 4;
+            this.overviewPerformancePanel.Controls.Add(this.overviewPerformanceIlPanel);
+            this.overviewPerformancePanel.Location = new System.Drawing.Point(9, 33);
+            this.overviewPerformancePanel.Name = "overviewPerformancePanel";
+            this.overviewPerformancePanel.Size = new System.Drawing.Size(294, 276);
+            this.overviewPerformancePanel.TabIndex = 4;
             // 
             // overviewPerformanceIlPanel
             // 
@@ -901,45 +906,45 @@
             this.overviewPerformanceIlPanel.Size = new System.Drawing.Size(294, 276);
             this.overviewPerformanceIlPanel.TabIndex = 0;
             // 
-            // label11
+            // relativeDifferenceLabel
             // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(351, 319);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(117, 13);
-            this.label11.TabIndex = 3;
-            this.label11.Text = "Relative Difference";
+            this.relativeDifferenceLabel.AutoSize = true;
+            this.relativeDifferenceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.relativeDifferenceLabel.Location = new System.Drawing.Point(351, 319);
+            this.relativeDifferenceLabel.Name = "relativeDifferenceLabel";
+            this.relativeDifferenceLabel.Size = new System.Drawing.Size(117, 13);
+            this.relativeDifferenceLabel.TabIndex = 3;
+            this.relativeDifferenceLabel.Text = "Relative Difference";
             // 
-            // label10
+            // absoluteDifferenceLabel
             // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(6, 319);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(119, 13);
-            this.label10.TabIndex = 2;
-            this.label10.Text = "Absolute Difference";
+            this.absoluteDifferenceLabel.AutoSize = true;
+            this.absoluteDifferenceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.absoluteDifferenceLabel.Location = new System.Drawing.Point(6, 319);
+            this.absoluteDifferenceLabel.Name = "absoluteDifferenceLabel";
+            this.absoluteDifferenceLabel.Size = new System.Drawing.Size(119, 13);
+            this.absoluteDifferenceLabel.TabIndex = 2;
+            this.absoluteDifferenceLabel.Text = "Absolute Difference";
             // 
-            // label9
+            // measurementsLabel
             // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(351, 13);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(88, 13);
-            this.label9.TabIndex = 1;
-            this.label9.Text = "Measurements";
+            this.measurementsLabel.AutoSize = true;
+            this.measurementsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.measurementsLabel.Location = new System.Drawing.Point(351, 13);
+            this.measurementsLabel.Name = "measurementsLabel";
+            this.measurementsLabel.Size = new System.Drawing.Size(88, 13);
+            this.measurementsLabel.TabIndex = 1;
+            this.measurementsLabel.Text = "Measurements";
             // 
-            // label2
+            // calculatedPerformancesLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(6, 13);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(148, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Calculated Performances";
+            this.calculatedPerformancesLabel.AutoSize = true;
+            this.calculatedPerformancesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.calculatedPerformancesLabel.Location = new System.Drawing.Point(6, 13);
+            this.calculatedPerformancesLabel.Name = "calculatedPerformancesLabel";
+            this.calculatedPerformancesLabel.Size = new System.Drawing.Size(148, 13);
+            this.calculatedPerformancesLabel.TabIndex = 0;
+            this.calculatedPerformancesLabel.Text = "Calculated Performances";
             // 
             // relativeDifferencePanel
             // 
@@ -1027,6 +1032,7 @@
             this.measurementViewCombobox.Name = "measurementViewCombobox";
             this.measurementViewCombobox.Size = new System.Drawing.Size(123, 21);
             this.measurementViewCombobox.TabIndex = 4;
+            this.toolTip.SetToolTip(this.measurementViewCombobox, "Selected view of measurements");
             this.measurementViewCombobox.SelectedIndexChanged += new System.EventHandler(this.measurementViewCombobox_SelectedIndexChanged);
             // 
             // measurementErrorLabel
@@ -1070,6 +1076,7 @@
             this.nfpValueCombobox.Name = "nfpValueCombobox";
             this.nfpValueCombobox.Size = new System.Drawing.Size(137, 21);
             this.nfpValueCombobox.TabIndex = 1;
+            this.toolTip.SetToolTip(this.nfpValueCombobox, "Selected shown measurement value");
             this.nfpValueCombobox.SelectedIndexChanged += new System.EventHandler(this.nfpValueCombobox_SelectedIndexChanged);
             // 
             // loadMeasurementButton
@@ -1079,19 +1086,20 @@
             this.loadMeasurementButton.Size = new System.Drawing.Size(118, 23);
             this.loadMeasurementButton.TabIndex = 0;
             this.loadMeasurementButton.Text = "Load measurements";
+            this.toolTip.SetToolTip(this.loadMeasurementButton, "Loads valid measurements");
             this.loadMeasurementButton.UseVisualStyleBackColor = true;
             this.loadMeasurementButton.Click += new System.EventHandler(this.loadMeasurementButton_Click);
             // 
-            // tabPage5
+            // helpTabPage
             // 
-            this.tabPage5.Controls.Add(this.helpTextBox);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(656, 716);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Help";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.helpTabPage.Controls.Add(this.helpTextBox);
+            this.helpTabPage.Location = new System.Drawing.Point(4, 22);
+            this.helpTabPage.Name = "helpTabPage";
+            this.helpTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.helpTabPage.Size = new System.Drawing.Size(656, 716);
+            this.helpTabPage.TabIndex = 4;
+            this.helpTabPage.Text = "Help";
+            this.helpTabPage.UseVisualStyleBackColor = true;
             // 
             // helpTextBox
             // 
@@ -1123,23 +1131,24 @@
             this.factorizationSettingsButton.Size = new System.Drawing.Size(120, 23);
             this.factorizationSettingsButton.TabIndex = 11;
             this.factorizationSettingsButton.Text = "Factorization Settings";
+            this.toolTip.SetToolTip(this.factorizationSettingsButton, "Set your own factorization priorities");
             this.factorizationSettingsButton.UseVisualStyleBackColor = true;
             this.factorizationSettingsButton.Click += new System.EventHandler(this.factorizationSettingsButton_Click);
             // 
-            // groupBox5
+            // adjustedFunctionGroupBox
             // 
-            this.groupBox5.Controls.Add(this.resetFactorizationButton);
-            this.groupBox5.Controls.Add(this.adjustedTextBox);
-            this.groupBox5.Controls.Add(this.factorizationSettingsButton);
-            this.groupBox5.Controls.Add(this.normalRadioButton);
-            this.groupBox5.Controls.Add(this.factorRadioButton);
-            this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox5.Location = new System.Drawing.Point(1005, 8);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(316, 455);
-            this.groupBox5.TabIndex = 19;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Adjusted function";
+            this.adjustedFunctionGroupBox.Controls.Add(this.resetFactorizationButton);
+            this.adjustedFunctionGroupBox.Controls.Add(this.adjustedTextBox);
+            this.adjustedFunctionGroupBox.Controls.Add(this.factorizationSettingsButton);
+            this.adjustedFunctionGroupBox.Controls.Add(this.normalRadioButton);
+            this.adjustedFunctionGroupBox.Controls.Add(this.factorRadioButton);
+            this.adjustedFunctionGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.adjustedFunctionGroupBox.Location = new System.Drawing.Point(1005, 8);
+            this.adjustedFunctionGroupBox.Name = "adjustedFunctionGroupBox";
+            this.adjustedFunctionGroupBox.Size = new System.Drawing.Size(316, 455);
+            this.adjustedFunctionGroupBox.TabIndex = 19;
+            this.adjustedFunctionGroupBox.TabStop = false;
+            this.adjustedFunctionGroupBox.Text = "Adjusted function";
             // 
             // resetFactorizationButton
             // 
@@ -1150,107 +1159,108 @@
             this.resetFactorizationButton.Size = new System.Drawing.Size(72, 23);
             this.resetFactorizationButton.TabIndex = 12;
             this.resetFactorizationButton.Text = "Reset";
+            this.toolTip.SetToolTip(this.resetFactorizationButton, "Resets the factorization priorities");
             this.resetFactorizationButton.UseVisualStyleBackColor = true;
             this.resetFactorizationButton.Click += new System.EventHandler(this.resetFactorizationButton_Click);
             // 
-            // groupBox6
+            // constraintsGroupBox
             // 
-            this.groupBox6.Controls.Add(this.constraintTextbox);
-            this.groupBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox6.Location = new System.Drawing.Point(10, 624);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(316, 119);
-            this.groupBox6.TabIndex = 20;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Constraints";
+            this.constraintsGroupBox.Controls.Add(this.constraintTextbox);
+            this.constraintsGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.constraintsGroupBox.Location = new System.Drawing.Point(10, 624);
+            this.constraintsGroupBox.Name = "constraintsGroupBox";
+            this.constraintsGroupBox.Size = new System.Drawing.Size(316, 119);
+            this.constraintsGroupBox.TabIndex = 20;
+            this.constraintsGroupBox.TabStop = false;
+            this.constraintsGroupBox.Text = "Constraints";
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1325, 746);
-            this.Controls.Add(this.groupBox6);
-            this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.constraintsGroupBox);
+            this.Controls.Add(this.adjustedFunctionGroupBox);
+            this.Controls.Add(this.evaluationGroupBox);
+            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.variableConfigurationGroupBox);
+            this.Controls.Add(this.constantConfigurationGroupBox);
+            this.Controls.Add(this.functionGroupBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "MainWindow";
             this.Text = "SPLConqueror";
-            this.groupBox4.ResumeLayout(false);
+            this.evaluationGroupBox.ResumeLayout(false);
             this.evaluationFunctionPanel.ResumeLayout(false);
             this.evaluationFunctionPanel.PerformLayout();
             this.noNumericOptionPanel.ResumeLayout(false);
             this.noNumericOptionPanel.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.variableConfigurationGroupBox.ResumeLayout(false);
+            this.variableConfigurationGroupBox.PerformLayout();
+            this.constantConfigurationGroupBox.ResumeLayout(false);
+            this.constantConfigurationGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.constantRelativeValueSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.constantsDigitsUpDown)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.functionGroupBox.ResumeLayout(false);
+            this.functionGroupBox.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.functionGraphTabPage.ResumeLayout(false);
+            this.functionGraphTabPage.PerformLayout();
+            this.interactionsInfluencesTabPage.ResumeLayout(false);
+            this.interactionsInfluencesTabPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rangeChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxOccuranceChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.constantChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.interactionChart)).EndInit();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
+            this.measurementsTabPage.ResumeLayout(false);
+            this.measurementsTabPage.PerformLayout();
             this.overviewPanel.ResumeLayout(false);
             this.overviewPanel.PerformLayout();
-            this.panel4.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
+            this.overviewRelativeDifferencePanel.ResumeLayout(false);
+            this.overviewAbsoluteDifferencePanel.ResumeLayout(false);
+            this.overviewMeasurementPanel.ResumeLayout(false);
+            this.overviewPerformancePanel.ResumeLayout(false);
             this.relativeDifferencePanel.ResumeLayout(false);
             this.absoluteDifferencePanel.ResumeLayout(false);
             this.measurementsOnlyPanel.ResumeLayout(false);
             this.bothGraphsPanel.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
+            this.helpTabPage.ResumeLayout(false);
+            this.adjustedFunctionGroupBox.ResumeLayout(false);
+            this.adjustedFunctionGroupBox.PerformLayout();
+            this.constraintsGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox evaluationGroupBox;
+        private System.Windows.Forms.GroupBox variableConfigurationGroupBox;
         private System.Windows.Forms.CheckedListBox variableListBox;
         private System.Windows.Forms.CheckBox filterVariablesCheckbox;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox constantConfigurationGroupBox;
         private System.Windows.Forms.TrackBar constantRelativeValueSlider;
         private System.Windows.Forms.CheckBox constantDecimalCheckBox;
         private System.Windows.Forms.NumericUpDown constantsDigitsUpDown;
         private System.Windows.Forms.CheckBox constantFilteringCheckbox;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox functionGroupBox;
         private System.Windows.Forms.Button loadExpOnlyButton;
         private System.Windows.Forms.RadioButton factorRadioButton;
         private System.Windows.Forms.RadioButton normalRadioButton;
         private System.Windows.Forms.Button loadButton;
         private System.Windows.Forms.RichTextBox originalFunctionTextBox;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label originalFunctionLabel;
         private System.Windows.Forms.RichTextBox adjustedTextBox;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage functionGraphTabPage;
+        private System.Windows.Forms.TabPage interactionsInfluencesTabPage;
         private System.Windows.Forms.RichTextBox interactionTextBox;
         private System.Windows.Forms.DataVisualization.Charting.Chart interactionChart;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage measurementsTabPage;
         private System.Windows.Forms.DataVisualization.Charting.Chart constantChart;
         private System.Windows.Forms.ComboBox chartComboBox;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label pieOptionLabel;
         private System.Windows.Forms.Button factorizationSettingsButton;
         private System.Windows.Forms.ComboBox filterOptionCombobox;
         private System.Windows.Forms.TreeView variableTreeView;
@@ -1259,14 +1269,14 @@
         private System.Windows.Forms.Label failureLabel;
         private System.Windows.Forms.Button generateFunctionButton;
         private System.Windows.Forms.ComboBox secondAxisCombobox;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label secondAxisLabel;
+        private System.Windows.Forms.Label firstAxisLabel;
         private System.Windows.Forms.ComboBox firstAxisCombobox;
         private System.Windows.Forms.Panel noNumericOptionPanel;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label noNumericOptionsLabel;
         private System.Windows.Forms.Label calculationResultLabel;
         private System.Windows.Forms.Button calculatePerformanceButton;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label calculatedPerformanceLabel;
         private System.Windows.Forms.DataVisualization.Charting.Chart maxOccuranceChart;
         private System.Windows.Forms.DataVisualization.Charting.Chart maxChart;
         private System.Windows.Forms.Panel bothGraphsPanel;
@@ -1275,7 +1285,7 @@
         private System.Windows.Forms.Label measurementErrorLabel;
         private System.Windows.Forms.Label measurementPointLabel;
         private System.Windows.Forms.RichTextBox constraintTextbox;
-        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TabPage helpTabPage;
         private System.Windows.Forms.ComboBox measurementViewCombobox;
         private System.Windows.Forms.Panel measurementsOnlyPanel;
         private System.Windows.Forms.Panel absoluteDifferencePanel;
@@ -1283,8 +1293,8 @@
         private ILNumerics.Drawing.ILPanel measurementsOnlyIlPanel;
         private System.Windows.Forms.Label pointPositionLabel;
         private ILNumerics.Drawing.ILPanel ilFunctionPanel;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox adjustedFunctionGroupBox;
+        private System.Windows.Forms.GroupBox constraintsGroupBox;
         private System.Windows.Forms.Button resetFactorizationButton;
         private System.Windows.Forms.RichTextBox helpTextBox;
         private System.Windows.Forms.Panel relativeDifferencePanel;
@@ -1292,22 +1302,23 @@
         private System.Windows.Forms.CheckBox filterRegexCheckBox;
         private System.Windows.Forms.TextBox regexTextbox;
         private System.Windows.Forms.Panel numericDefaultPanel;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label interactionsLabel;
         private System.Windows.Forms.Label chartDescriptionLabel;
         private System.Windows.Forms.DataVisualization.Charting.Chart rangeChart;
         private System.Windows.Forms.Panel overviewPanel;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel overviewPerformancePanel;
+        private System.Windows.Forms.Label relativeDifferenceLabel;
+        private System.Windows.Forms.Label absoluteDifferenceLabel;
+        private System.Windows.Forms.Label measurementsLabel;
+        private System.Windows.Forms.Label calculatedPerformancesLabel;
+        private System.Windows.Forms.Panel overviewMeasurementPanel;
+        private System.Windows.Forms.Panel overviewRelativeDifferencePanel;
+        private System.Windows.Forms.Panel overviewAbsoluteDifferencePanel;
         private ILNumerics.Drawing.ILPanel overviewRelativeDifferenceIlPanel;
         private ILNumerics.Drawing.ILPanel overviewAbsoluteDifferenceIlPanel;
         private ILNumerics.Drawing.ILPanel overviewMeasurementIlPanel;
         private ILNumerics.Drawing.ILPanel overviewPerformanceIlPanel;
-        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label defaultNumericOptionLabel;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
