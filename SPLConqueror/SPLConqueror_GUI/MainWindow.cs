@@ -21,37 +21,43 @@ namespace SPLConqueror_GUI
     public partial class MainWindow : Form
     {
         // All string constants for this class
-        private const string bracketTab = "     ";
-        private const string filteringListBox = "Free filtering";
-        private const string filteringTreeView = "Configuration filtering";
-        private const string secondEmptyOption = "---------------";
-        private const string buttonPressRequest = "Please press the button.";
-        private const string performanceAxisLabel = "Calculated Performance";
-        private const string correspondingValuesLabel = "Corresponding values";
-        private const string measuredValueLabel = "Measured Values";
-        private const string absoluteDifferenceLabel = "Absolute Difference";
-        private const string relativeDifferenceLabel = "Relative Difference in %";
-        private const string failureNoModel = "You have to load a model to generate a graph!";
-        private const string failureDoubleOption = "You may not choose the same option twice!";
-        private const string interactionsInformation = "In how many interactions do the possible variables occur?";
-        private const string constantInformation = "What is the abstract influence of each variable?";
-        private const string maxInformation = "What is the maximum abstract influence of each variable?";
-        private const string maxOccuranceInformation = "What is the maximum abstract influence of each variable depended on its usage in the configurations?";
-        private const string rangeInformation = "What is the influence range of each variable?";
-        private const string comboboxInteractionsOption = "Interactions";
-        private const string comboboxConstantOption = "Constants";
-        private const string comboboxMaxOption = "Constants Max";
-        private const string comboboxMaxOccuranceOption = "Constants Max Occurance";
-        private const string comboboxRangeOption = "Variable Range";
-        private const string comboboxOverviewOption = "Overview";
-        private const string comboboxBothOption = "Both Graphs";
-        private const string comboboxMeasurementsOption = "Measurements only";
-        private const string comboboxAbsoluteDifferenceOption = "Absolute Difference";
-        private const string comboboxRelativeDifferenceOption = "Relative Difference";
-        private const string errorNoMeasurmentsLoaded = "Please load some measurements.";
-        private const string errorNoPerformances = "Please calculate a graph first.";
-        private const string errorIllegalConfiguration = "The current configuration is not valid.";
-        private const string errorNoMeasurementsAvailable = "There are no measurements for the current settings.";
+        private const string ABSOLUTE_DIFFERENCE_LABEL = "Absolute Difference";
+        private const string BRACKET_TAB = "     ";
+        private const string BUTTON_PRESS_REQUEST = "Please press the button.";
+        private const string COMBOBOX_INTERACTIONS_OPTION = "Interactions";
+        private const string COMBOBOX_CONSTANT_OPTION = "Constants";
+        private const string COMBOBOX_MAX_OPTION = "Constants Max";
+        private const string COMBOBOX_MAX_OCCURANCE_OPTION = "Constants Max Occurance";
+        private const string COMBOBOX_RANGE_OPTION = "Variable Range";
+        private const string COMBOBOX_OVERVIEW_OPTION = "Overview";
+        private const string COMBOBOX_BOTH_OPTION = "Both Graphs";
+        private const string COMBOBOX_MEASUREMENTS_OPTION = "Measurements only";
+        private const string COMBOBOX_ABSOLUTE_DIFFERENCE_OPTION = "Absolute Difference";
+        private const string COMBOBOX_RELATIVE_DIFFERENCE_OPTION = "Relative Difference";
+        private const string CONSTANT_INFORMATION = "What is the abstract influence of each variable?";
+        private const string CORRESPONDING_VALUES_LABEL = "Corresponding values";
+        private const string DLL_LOCATION = "\\dll\\Microsoft.Solver.Foundation.dll";
+        private const string ERROR_EXP_MODEL_INCOMPATIBLE = "The read expression does not work with the loaded variability model!";
+        private const string ERROR_INVALID_MODEL = "The entered variability model is not valid.";
+        private const string ERROR_INVALID_EXP = "The read expression is in an invalid form.";
+        private const string ERROR_NO_MODEL = "You have to load a model to generate a graph!";
+        private const string ERROR_NO_MODEL_LOADED = "Please load a function with its variability model first!";
+        private const string ERROR_MEASUREMENTS_INCOMPATIBLE = "The file doesn't match with the current variability model!";
+        private const string ERROR_DOUBLE_OPTION = "You may not choose the same option twice!";
+        private const string ERROR_NO_MEASUREMENTS_LOADED = "Please load some measurements.";
+        private const string ERROR_NO_PERFORMANCES = "Please calculate a graph first.";
+        private const string ERROR_ILLEGAL_CONFIGURATION = "The current configuration is not valid.";
+        private const string ERROR_NO_MEASUREMENTS_AVAILABLE = "There are no measurements for the current settings.";
+        private const string FILTERING_LIST_BOX = "Free filtering";
+        private const string FILTERING_TREEE_VIEW = "Configuration filtering";
+        private const string INTERACTION_INFORMATION = "In how many interactions do the possible variables occur?";
+        private const string MAX_INFORMATION = "What is the maximum abstract influence of each variable?";
+        private const string MAX_OCCURANCE_INFORMATION = "What is the maximum abstract influence of each variable depended on its usage in the configurations?";
+        private const string MEASURED_VALUE_LABEL = "Measured Values";
+        private const string PERFORMANCE_AXIS_LABEL = "Calculated Performance";
+        private const string RANGE_INFORMATION = "What is the influence range of each variable?";
+        private const string RELATIVE_DIFFERENCE_LABEL = "Relative Difference in %";
+        private const string SECOND_EMPTY_OPTION = "---------------";
 
         // Colors for the Configuration filtering
         private Color normalColor = Color.White;
@@ -68,10 +74,10 @@ namespace SPLConqueror_GUI
             new Dictionary<ConfigurationOption, double>();
         private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT(
             Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(
-            System.IO.Directory.GetCurrentDirectory()))) + "\\dll\\Microsoft.Solver.Foundation.dll");
+            System.IO.Directory.GetCurrentDirectory()))) + DLL_LOCATION);
         private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator(
                 Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())))
-                + "\\dll\\Microsoft.Solver.Foundation.dll");
+                + DLL_LOCATION);
 
         // Everything for the measurements
         private Configuration configurationForCalculation;
@@ -244,7 +250,7 @@ namespace SPLConqueror_GUI
                 }
                 catch
                 {
-                    MessageBox.Show("The entered variability model is not valid.");
+                    MessageBox.Show(ERROR_INVALID_MODEL);
                     return null;
                 }
             }
@@ -306,7 +312,7 @@ namespace SPLConqueror_GUI
         {
             if (!modelLoaded)
             {
-                MessageBox.Show("Please load a function with its variability model first!");
+                MessageBox.Show(ERROR_NO_MODEL_LOADED);
                 return;
             }
 
@@ -337,7 +343,7 @@ namespace SPLConqueror_GUI
             }
             catch
             {
-                MessageBox.Show("The file doesn't match with the current variability model!");
+                MessageBox.Show(ERROR_MEASUREMENTS_INCOMPATIBLE);
             }
 
             updateMeasurementTab();
@@ -354,7 +360,7 @@ namespace SPLConqueror_GUI
                 throw new ArgumentNullException("Parameter exp may not be null!");
             if (model != null && !checkExpressionCompatibility(exp, model))
             {
-                MessageBox.Show("The read expression does not work with the loaded variability model!");
+                MessageBox.Show(ERROR_EXP_MODEL_INCOMPATIBLE);
                 return;
             }
 
@@ -366,7 +372,7 @@ namespace SPLConqueror_GUI
                 new InfluenceFunction(optExpression);
             } catch
             {
-                MessageBox.Show("The read expression is in an invalid form.");
+                MessageBox.Show(ERROR_INVALID_EXP);
                 return;
             }
             
@@ -463,17 +469,17 @@ namespace SPLConqueror_GUI
             chartDescriptionLabel.Visible = true;
 
             chartComboBox.Enabled = true;
-            chartComboBox.Items.Add(comboboxInteractionsOption);
-            chartComboBox.Items.Add(comboboxConstantOption);
-            chartComboBox.Items.Add(comboboxMaxOption);
-            chartComboBox.Items.Add(comboboxMaxOccuranceOption);
-            chartComboBox.Items.Add(comboboxRangeOption);
+            chartComboBox.Items.Add(COMBOBOX_INTERACTIONS_OPTION);
+            chartComboBox.Items.Add(COMBOBOX_CONSTANT_OPTION);
+            chartComboBox.Items.Add(COMBOBOX_MAX_OPTION);
+            chartComboBox.Items.Add(COMBOBOX_MAX_OCCURANCE_OPTION);
+            chartComboBox.Items.Add(COMBOBOX_RANGE_OPTION);
 
-            measurementViewCombobox.Items.Add(comboboxOverviewOption);
-            measurementViewCombobox.Items.Add(comboboxBothOption);
-            measurementViewCombobox.Items.Add(comboboxMeasurementsOption);
-            measurementViewCombobox.Items.Add(comboboxAbsoluteDifferenceOption);
-            measurementViewCombobox.Items.Add(comboboxRelativeDifferenceOption);
+            measurementViewCombobox.Items.Add(COMBOBOX_OVERVIEW_OPTION);
+            measurementViewCombobox.Items.Add(COMBOBOX_BOTH_OPTION);
+            measurementViewCombobox.Items.Add(COMBOBOX_MEASUREMENTS_OPTION);
+            measurementViewCombobox.Items.Add(COMBOBOX_ABSOLUTE_DIFFERENCE_OPTION);
+            measurementViewCombobox.Items.Add(COMBOBOX_RELATIVE_DIFFERENCE_OPTION);
             measurementViewCombobox.SelectedIndex = 0;
 
             variableTreeView.BeforeCheck += (o, e) => {
@@ -519,7 +525,7 @@ namespace SPLConqueror_GUI
                 numericSettings.Add(option, (float) option.DefaultValue);
 
             // Evaluation configuration
-            calculationResultLabel.Text = buttonPressRequest;
+            calculationResultLabel.Text = BUTTON_PRESS_REQUEST;
             updateEvaluationConfiguration();
 
             // Initializing the numeric default settings panel
@@ -652,8 +658,8 @@ namespace SPLConqueror_GUI
 
             // Initializing combobox
             filterOptionCombobox.Items.Clear();
-            filterOptionCombobox.Items.Add(filteringTreeView);
-            filterOptionCombobox.Items.Add(filteringListBox);
+            filterOptionCombobox.Items.Add(FILTERING_TREEE_VIEW);
+            filterOptionCombobox.Items.Add(FILTERING_LIST_BOX);
             filterOptionCombobox.SelectedIndex = 0;
 
             // Initializing listbox
@@ -933,7 +939,7 @@ namespace SPLConqueror_GUI
             {
                 switch (filterOptionCombobox.SelectedItem.ToString())
                 {
-                    case filteringListBox:
+                    case FILTERING_LIST_BOX:
                         foreach (string s in variableListBox.Items)
                         {
                             if (!variableListBox.CheckedItems.Contains(s))
@@ -941,7 +947,7 @@ namespace SPLConqueror_GUI
                         }
                         break;
 
-                    case filteringTreeView:
+                    case FILTERING_TREEE_VIEW:
                         if (variableTreeView.Nodes.Count > 0)
                         {
                             Stack<TreeNode> stack = new Stack<TreeNode>();
@@ -1225,12 +1231,12 @@ namespace SPLConqueror_GUI
 
             switch (filterOptionCombobox.SelectedItem.ToString())
             {
-                case filteringListBox:
+                case FILTERING_LIST_BOX:
                     variableListBox.Visible = true;
                     variableListBox.Enabled = true;
                     break;
 
-                case filteringTreeView:
+                case FILTERING_TREEE_VIEW:
                     variableTreeView.Visible = true;
                     variableTreeView.Enabled = true;
                     break;
@@ -1427,25 +1433,25 @@ namespace SPLConqueror_GUI
 
             switch (chartComboBox.SelectedItem.ToString())
             {
-                case comboboxInteractionsOption:
+                case COMBOBOX_INTERACTIONS_OPTION:
                     interactionChart.Visible = true;
-                    chartDescriptionLabel.Text = interactionsInformation;
+                    chartDescriptionLabel.Text = INTERACTION_INFORMATION;
                     break;
-                case comboboxConstantOption:
+                case COMBOBOX_CONSTANT_OPTION:
                     constantChart.Visible = true;
-                    chartDescriptionLabel.Text = constantInformation;
+                    chartDescriptionLabel.Text = CONSTANT_INFORMATION;
                     break;
-                case comboboxMaxOption:
+                case COMBOBOX_MAX_OPTION:
                     maxChart.Visible = true;
-                    chartDescriptionLabel.Text = maxInformation;
+                    chartDescriptionLabel.Text = MAX_INFORMATION;
                     break;
-                case comboboxMaxOccuranceOption:
+                case COMBOBOX_MAX_OCCURANCE_OPTION:
                     maxOccuranceChart.Visible = true;
-                    chartDescriptionLabel.Text = maxOccuranceInformation;
+                    chartDescriptionLabel.Text = MAX_OCCURANCE_INFORMATION;
                     break;
-                case comboboxRangeOption:
+                case COMBOBOX_RANGE_OPTION:
                     rangeChart.Visible = true;
-                    chartDescriptionLabel.Text = rangeInformation;
+                    chartDescriptionLabel.Text = RANGE_INFORMATION;
                     break;
                 default:
                     throw new Exception("This should not happen. An unknown option was selected!");
@@ -1492,10 +1498,10 @@ namespace SPLConqueror_GUI
             {
                 switch (filterOptionCombobox.SelectedItem.ToString())
                 {
-                    case filteringListBox:
+                    case FILTERING_LIST_BOX:
                         variableListBox.Enabled = true;
                         break;
-                    case filteringTreeView:
+                    case FILTERING_TREEE_VIEW:
                         variableTreeView.Enabled = true;
                         break;
                 }
@@ -1615,7 +1621,7 @@ namespace SPLConqueror_GUI
 
                 if (firstAxisCombobox.Items.Count != 0)
                 {
-                    secondAxisCombobox.Items.Add(secondEmptyOption);
+                    secondAxisCombobox.Items.Add(SECOND_EMPTY_OPTION);
 
                     firstAxisCombobox.SelectedIndex = 0;
                     secondAxisCombobox.SelectedIndex = 0;
@@ -1646,10 +1652,10 @@ namespace SPLConqueror_GUI
             else
             {
                 if (!modelLoaded)
-                    failureLabel.Text = failureNoModel;
+                    failureLabel.Text = ERROR_NO_MODEL;
                 else if (firstAxisCombobox.SelectedItem != null
                     && firstAxisCombobox.SelectedItem.Equals(secondAxisCombobox.SelectedItem))
-                    failureLabel.Text = failureDoubleOption;
+                    failureLabel.Text = ERROR_DOUBLE_OPTION;
 
                 failureLabel.Visible = true;
             }
@@ -2227,7 +2233,7 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
-                measurementErrorLabel.Text = errorNoMeasurmentsLoaded;
+                measurementErrorLabel.Text = ERROR_NO_MEASUREMENTS_LOADED;
                 return;
             }
 
@@ -2243,7 +2249,7 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
-                measurementErrorLabel.Text = errorNoPerformances;
+                measurementErrorLabel.Text = ERROR_NO_PERFORMANCES;
                 return;
             }
 
@@ -2259,7 +2265,7 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
-                measurementErrorLabel.Text = errorIllegalConfiguration;
+                measurementErrorLabel.Text = ERROR_ILLEGAL_CONFIGURATION;
                 return;
             }
 
@@ -2317,7 +2323,7 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.Enabled = false;
                 measurementViewCombobox.Enabled = false;
                 measurementErrorLabel.Visible = true;
-                measurementErrorLabel.Text = errorNoMeasurementsAvailable;
+                measurementErrorLabel.Text = ERROR_NO_MEASUREMENTS_AVAILABLE;
                 return;
             }
 
@@ -2352,21 +2358,21 @@ namespace SPLConqueror_GUI
                 overviewRelativeDifferenceCube = new ILPlotCube(twoDMode: true);
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                bothGraphsCube.Axes.YAxis.Label.Text = correspondingValuesLabel;
+                bothGraphsCube.Axes.YAxis.Label.Text = CORRESPONDING_VALUES_LABEL;
                 measurementsOnlyCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                measurementsOnlyCube.Axes.YAxis.Label.Text = measuredValueLabel;
+                measurementsOnlyCube.Axes.YAxis.Label.Text = MEASURED_VALUE_LABEL;
                 absoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                absoluteDifferenceCube.Axes.YAxis.Label.Text = absoluteDifferenceLabel;
+                absoluteDifferenceCube.Axes.YAxis.Label.Text = ABSOLUTE_DIFFERENCE_LABEL;
                 relativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                relativeDifferenceCube.Axes.YAxis.Label.Text = relativeDifferenceLabel;
+                relativeDifferenceCube.Axes.YAxis.Label.Text = RELATIVE_DIFFERENCE_LABEL;
                 overviewPerformanceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                overviewPerformanceCube.Axes.YAxis.Label.Text = performanceAxisLabel;
+                overviewPerformanceCube.Axes.YAxis.Label.Text = PERFORMANCE_AXIS_LABEL;
                 overviewMeasurementsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                overviewMeasurementsCube.Axes.YAxis.Label.Text = measuredValueLabel;
+                overviewMeasurementsCube.Axes.YAxis.Label.Text = MEASURED_VALUE_LABEL;
                 overviewAbsoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                overviewAbsoluteDifferenceCube.Axes.YAxis.Label.Text = absoluteDifferenceLabel;
+                overviewAbsoluteDifferenceCube.Axes.YAxis.Label.Text = ABSOLUTE_DIFFERENCE_LABEL;
                 overviewRelativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
-                overviewRelativeDifferenceCube.Axes.YAxis.Label.Text = relativeDifferenceLabel;
+                overviewRelativeDifferenceCube.Axes.YAxis.Label.Text = RELATIVE_DIFFERENCE_LABEL;
 
                 // Add all values into the array
                 ILArray<float> XY = ILMath.zeros<float>(0, 0);
@@ -2438,7 +2444,7 @@ namespace SPLConqueror_GUI
                         {
                             Vector3 coor = point.GetPosition();
 
-                            measurementPointLabel.Text = chosenOptions.Item1.Name + ": " + coor.X.ToString() + ", " + performanceAxisLabel + ": " + coor.Y.ToString();
+                            measurementPointLabel.Text = chosenOptions.Item1.Name + ": " + coor.X.ToString() + ", " + PERFORMANCE_AXIS_LABEL + ": " + coor.Y.ToString();
                             measurementPointLabel.Visible = true;
                         };
 
@@ -2498,28 +2504,28 @@ namespace SPLConqueror_GUI
 
                 bothGraphsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 bothGraphsCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                bothGraphsCube.Axes.ZAxis.Label.Text = correspondingValuesLabel;
+                bothGraphsCube.Axes.ZAxis.Label.Text = CORRESPONDING_VALUES_LABEL;
                 measurementsOnlyCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 measurementsOnlyCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                measurementsOnlyCube.Axes.ZAxis.Label.Text = measuredValueLabel;
+                measurementsOnlyCube.Axes.ZAxis.Label.Text = MEASURED_VALUE_LABEL;
                 absoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 absoluteDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                absoluteDifferenceCube.Axes.ZAxis.Label.Text = absoluteDifferenceLabel;
+                absoluteDifferenceCube.Axes.ZAxis.Label.Text = ABSOLUTE_DIFFERENCE_LABEL;
                 relativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 relativeDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                relativeDifferenceCube.Axes.ZAxis.Label.Text = relativeDifferenceLabel;
+                relativeDifferenceCube.Axes.ZAxis.Label.Text = RELATIVE_DIFFERENCE_LABEL;
                 overviewPerformanceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 overviewPerformanceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                overviewPerformanceCube.Axes.ZAxis.Label.Text = performanceAxisLabel;
+                overviewPerformanceCube.Axes.ZAxis.Label.Text = PERFORMANCE_AXIS_LABEL;
                 overviewMeasurementsCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 overviewMeasurementsCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                overviewMeasurementsCube.Axes.ZAxis.Label.Text = measuredValueLabel;
+                overviewMeasurementsCube.Axes.ZAxis.Label.Text = MEASURED_VALUE_LABEL;
                 overviewAbsoluteDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 overviewAbsoluteDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                overviewAbsoluteDifferenceCube.Axes.ZAxis.Label.Text = absoluteDifferenceLabel;
+                overviewAbsoluteDifferenceCube.Axes.ZAxis.Label.Text = ABSOLUTE_DIFFERENCE_LABEL;
                 overviewRelativeDifferenceCube.Axes.XAxis.Label.Text = chosenOptions.Item1.Name;
                 overviewRelativeDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
-                overviewRelativeDifferenceCube.Axes.ZAxis.Label.Text = relativeDifferenceLabel;
+                overviewRelativeDifferenceCube.Axes.ZAxis.Label.Text = RELATIVE_DIFFERENCE_LABEL;
 
                 X = Array.ConvertAll(chosenOptions.Item1.getAllValues().ToArray(), x => (float)x);
                 Y = Array.ConvertAll(chosenOptions.Item2.getAllValues().ToArray(), y => (float)y);
@@ -2570,7 +2576,7 @@ namespace SPLConqueror_GUI
                             {
                                 Vector3 coor = point.GetPosition();
 
-                                measurementPointLabel.Text = chosenOptions.Item1.Name + ": " + coor.X.ToString() + ", " + chosenOptions.Item2.Name + ": " + coor.Y.ToString() + ", " + performanceAxisLabel + ": " + coor.Z.ToString();
+                                measurementPointLabel.Text = chosenOptions.Item1.Name + ": " + coor.X.ToString() + ", " + chosenOptions.Item2.Name + ": " + coor.Y.ToString() + ", " + PERFORMANCE_AXIS_LABEL + ": " + coor.Z.ToString();
                                 measurementPointLabel.Visible = true;
                             };
 
@@ -2726,19 +2732,19 @@ namespace SPLConqueror_GUI
             
             switch (measurementViewCombobox.SelectedItem.ToString())
             {
-                case comboboxOverviewOption:
+                case COMBOBOX_OVERVIEW_OPTION:
                     overviewPanel.Visible = true;
                     break;
-                case comboboxBothOption:
+                case COMBOBOX_BOTH_OPTION:
                     bothGraphsPanel.Visible = true;
                     break;
-                case comboboxMeasurementsOption:
+                case COMBOBOX_MEASUREMENTS_OPTION:
                     measurementsOnlyPanel.Visible = true;
                     break;
-                case comboboxAbsoluteDifferenceOption:
+                case COMBOBOX_ABSOLUTE_DIFFERENCE_OPTION:
                     absoluteDifferencePanel.Visible = true;
                     break;
-                case comboboxRelativeDifferenceOption:
+                case COMBOBOX_RELATIVE_DIFFERENCE_OPTION:
                     relativeDifferencePanel.Visible = true;
                     break;
                 default:
@@ -2788,7 +2794,7 @@ namespace SPLConqueror_GUI
                     else if (addingComponent == "(" || addingComponent == "log10(")
                     {
                         // Adds one tab if there is an opening bracket
-                        tabs += bracketTab;
+                        tabs += BRACKET_TAB;
                         addingComponent = tabs + addingComponent;
 
                         if (textbox.Text != "")
@@ -2797,7 +2803,7 @@ namespace SPLConqueror_GUI
                     else if (addingComponent == ")")
                     {
                         // Removes one tab if there is a closing bracket
-                        tabs = tabs.Remove(tabs.Length - bracketTab.Length);
+                        tabs = tabs.Remove(tabs.Length - BRACKET_TAB.Length);
 
                         if (pos < partComponents.Length - 2)
                             addingComponent = addingComponent + "\n" + tabs;
@@ -2828,7 +2834,7 @@ namespace SPLConqueror_GUI
         /// </summary>
         private void updateFunctionPanel()
         {
-            if (secondAxisCombobox.SelectedItem.Equals(secondEmptyOption))
+            if (secondAxisCombobox.SelectedItem.Equals(SECOND_EMPTY_OPTION))
                 draw2DShape();
             else
                 draw3DShape();
@@ -2883,7 +2889,7 @@ namespace SPLConqueror_GUI
             // Define plot cube
             ILPlotCube cube = new ILPlotCube(twoDMode: true);
             cube.Axes.XAxis.Label.Text = option.Name;
-            cube.Axes.YAxis.Label.Text = performanceAxisLabel;
+            cube.Axes.YAxis.Label.Text = PERFORMANCE_AXIS_LABEL;
 
             // Calculate values for the measurements
             ILArray<float> XY = Array.ConvertAll(option.getAllValues().ToArray(), x => (float) x);
@@ -2902,7 +2908,7 @@ namespace SPLConqueror_GUI
                 {
                     Vector3 coor = point.GetPosition();
 
-                    pointPositionLabel.Text = option.Name + ": " + coor.X.ToString() + ", " + performanceAxisLabel + ": " + coor.Y.ToString();
+                    pointPositionLabel.Text = option.Name + ": " + coor.X.ToString() + ", " + PERFORMANCE_AXIS_LABEL + ": " + coor.Y.ToString();
                     pointPositionLabel.Visible = true;
                 };
 
@@ -2995,7 +3001,7 @@ namespace SPLConqueror_GUI
             ILPlotCube cube = new ILPlotCube(twoDMode: false);
             cube.Axes.XAxis.Label.Text = firstOption.Name;
             cube.Axes.YAxis.Label.Text = secondOption.Name;
-            cube.Axes.ZAxis.Label.Text = performanceAxisLabel;
+            cube.Axes.ZAxis.Label.Text = PERFORMANCE_AXIS_LABEL;
             
             // Calculating the surface
             X = Array.ConvertAll(firstOption.getAllValues().ToArray(), x => (float)x);
@@ -3049,7 +3055,7 @@ namespace SPLConqueror_GUI
                 {
                     Vector3 coor = point.GetPosition();
 
-                    pointPositionLabel.Text = firstOption.Name + ": " + coor.X.ToString() + ", " + secondOption.Name + ": " + coor.Y.ToString() + ", " + performanceAxisLabel + ": " + coor.Z.ToString();
+                    pointPositionLabel.Text = firstOption.Name + ": " + coor.X.ToString() + ", " + secondOption.Name + ": " + coor.Y.ToString() + ", " + PERFORMANCE_AXIS_LABEL + ": " + coor.Z.ToString();
                     pointPositionLabel.Visible = true;
                 };
 
