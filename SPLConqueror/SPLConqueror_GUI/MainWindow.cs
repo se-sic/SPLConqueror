@@ -2,17 +2,13 @@
 using ILNumerics;
 using ILNumerics.Drawing;
 using ILNumerics.Drawing.Plotting;
-using MachineLearning;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -1004,14 +1000,46 @@ namespace SPLConqueror_GUI
         {
             interactionTextBox.Clear();
 
-            foreach (KeyValuePair<string, SortedDictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
+            SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>> interactions = getInteractions();
+            Dictionary<string, Color> optionColors = new Dictionary<string, Color>();
+
+            // Calculate colors for options
+            List<string> options = interactions.Keys.ToList();
+            int amountRestOptions = options.Count;
+            int ceiling = (int)Math.Ceiling(Math.Pow(amountRestOptions, 1 / 3.0));
+            int pos = 0;
+
+            for (int green = 1; green <= ceiling; ++green)
+            {
+                for (int blue = 1; blue <= ceiling; ++blue)
+                {
+                    for (int red = 1; red <= ceiling; ++red)
+                    {
+                        if (amountRestOptions-- > 0)
+                        {
+                            int r = (int)(0.5 + red * 255.0 / ceiling);
+                            int g = (int)(0.5 + green * 255.0 / ceiling);
+                            int b = (int)(0.5 + blue * 255.0 / ceiling);
+
+                            optionColors.Add(options[pos], Color.FromArgb(r, g, b));
+                            pos++;
+                        }
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<string, SortedDictionary<string, List<Tuple<int, int>>>> entry in interactions)
             {
                 int totalInteractions = 0;
+                Color entryColor;
+                optionColors.TryGetValue(entry.Key, out entryColor);
 
                 // Appending text to display all interactions
                 interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Bold);
+                interactionTextBox.SelectionBackColor = entryColor;
                 interactionTextBox.AppendText(entry.Key);
                 interactionTextBox.SelectionFont = new Font(interactionTextBox.Font, FontStyle.Regular);
+                interactionTextBox.SelectionBackColor = Color.White;
                 interactionTextBox.AppendText("\ninteracts with: \t");
 
                 if (entry.Value.Count == 0)
@@ -1022,7 +1050,14 @@ namespace SPLConqueror_GUI
 
                     for (int i = 0; i < values.Length; i++)
                     {
-                        interactionTextBox.AppendText("- " + values[i].Key + " (");
+                        Color partnerColor;
+                        optionColors.TryGetValue(values[i].Key, out partnerColor);
+
+                        interactionTextBox.AppendText("- ");
+                        interactionTextBox.SelectionBackColor = partnerColor;
+                        interactionTextBox.AppendText(values[i].Key);
+                        interactionTextBox.SelectionBackColor = Color.White;
+                        interactionTextBox.AppendText(" (");
 
                         for (int j = 0; j < values[i].Value.Count; j++)
                         {
