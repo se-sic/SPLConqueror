@@ -42,7 +42,7 @@ namespace SPLConqueror_GUI
         private const string ERROR_DOUBLE_OPTION = "You may not choose the same option twice!";
         private const string ERROR_NO_MEASUREMENTS_LOADED = "Please load some measurements.";
         private const string ERROR_NO_PERFORMANCES = "Please calculate a graph first.";
-        private const string ERROR_ILLEGAL_CONFIGURATION = "The current configuration is not valid.";
+        private const string ERROR_ILLEGAL_CONFIGURATION = "Invalid configuration. Check your constraints too.";
         private const string ERROR_NO_MEASUREMENTS_AVAILABLE = "There are no measurements for the current settings.";
         private const string FILTERING_LIST_BOX = "Free filtering";
         private const string FILTERING_TREEE_VIEW = "Configuration filtering";
@@ -210,7 +210,7 @@ namespace SPLConqueror_GUI
                 for (int i = 0; i < parts.Length; i++)
                     parts[i] = parts[i].Replace(',', '.');
 
-                if (!isOperator(parts[1]) && parts[0] != "log10(")
+                if (parts.Length > 1 && !isOperator(parts[1]) && parts[0] != "log10(")
                     expression = String.Join(" ", parts, 1, parts.Length - 1);
                 else
                     expression = String.Join(" ", parts, 0, parts.Length);
@@ -541,7 +541,7 @@ namespace SPLConqueror_GUI
 
             int i = 0;
 
-            foreach (NumericOption option in currentModel.NumericOptions)
+            foreach (NumericOption option in originalFunction.participatingNumOptions)
             {
                 float val = 0;
                 numericSettings.TryGetValue(option, out val);
@@ -609,7 +609,7 @@ namespace SPLConqueror_GUI
                 foreach (string constraint in currentModel.BooleanConstraints)
                     constraintTextbox.AppendText(constraint + "\n");
 
-                constraintTextbox.AppendText("\n\n");
+                constraintTextbox.AppendText("\n");
             }
 
             if (currentModel.NonBooleanConstraints.Count != 0)
@@ -621,7 +621,7 @@ namespace SPLConqueror_GUI
                 foreach (NonBooleanConstraint constraint in currentModel.NonBooleanConstraints)
                     constraintTextbox.AppendText(constraint.ToString() + "\n");
 
-                constraintTextbox.AppendText("\n\n");
+                constraintTextbox.AppendText("\n");
             }
 
             if (constraintTextbox.Text == "")
