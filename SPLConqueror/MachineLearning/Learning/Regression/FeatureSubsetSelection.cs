@@ -41,12 +41,6 @@ namespace MachineLearning.Learning.Regression
         //Optimization: Remember candidates with no or only a tiny improvement to test them not in every round, int = nb of remaining rounds to ignore this feature
         private Dictionary<Feature, int> badFeatures = new Dictionary<Feature, int>();
 
-        private BlockingCollection<WorkItem> _taskQ = new BlockingCollection<WorkItem>();
-        // The event to know that all threads are done
-        ManualResetEvent eventX = new ManualResetEvent(false);
-        private static int iCount = 0;
-        readonly object Lock = new Object();
-
         public ObservableCollection<LearningRound> LearningHistory
         {
             get { return learningHistory; }
@@ -127,77 +121,6 @@ namespace MachineLearning.Learning.Regression
         }
         
 
-        class WorkItem
-        {
-            public readonly TaskCompletionSource<object> TaskSource;
-            public readonly Action Action;
-            public readonly CancellationToken? CancelToken;
-
-
-            public WorkItem(
-              TaskCompletionSource<object> taskSource,
-              Action action,
-              CancellationToken? cancelToken)
-            {
-                TaskSource = taskSource;
-                Action = action;
-                CancelToken = cancelToken;
-            }
-        }
-        private void createThreadPool(int coreCount)
-        {
-            for (int i = 0; i < coreCount; i++)
-            {
-                Task.Factory.StartNew(Consume);
-            }
-        }
-
-        public void Dispose() { _taskQ.CompleteAdding(); }
-
-        public Task EnqueueTask(Action action)
-        {
-            return EnqueueTask(action, null);
-        }
-
-        public Task EnqueueTask(Action action, CancellationToken? cancelToken)
-        {
-            var tcs = new TaskCompletionSource<object>();
-            _taskQ.Add(new WorkItem(tcs, action, cancelToken));
-            return tcs.Task;
-        }
-
-        void Consume()
-        {
-            foreach (WorkItem workItem in _taskQ.GetConsumingEnumerable())
-                if (workItem.CancelToken.HasValue &&
-                    workItem.CancelToken.Value.IsCancellationRequested)
-                {
-                    workItem.TaskSource.SetCanceled();
-                }
-                else
-                    try
-                    {
-                        workItem.Action();
-                        workItem.TaskSource.SetResult(null);   // Indicate completion
-                        Interlocked.Decrement(ref iCount);
-                        if (iCount == 0)
-                        {
-                            eventX.Set();
-                        }
-                    }
-                    catch (OperationCanceledException ex)
-                    {
-                        if (ex.CancellationToken == workItem.CancelToken)
-                            workItem.TaskSource.SetCanceled();
-                        else
-                            workItem.TaskSource.SetException(ex);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        workItem.TaskSource.SetException(ex);
-                    }
-        }
         #endregion
 
         /// <summary>
@@ -351,35 +274,35 @@ namespace MachineLearning.Learning.Regression
                 List<Feature> newModel = copyCombination(currentModel.FeatureSet);
                 newModel.Add(threadCandidate);
                 if (this.MLsettings.parallelization)
-                {
-                    //Task task = EnqueueTask(() => Console.WriteLine("Hallo"));
-                    // Func<List<Feature>,ModelFit> toDo = i => evaluateCandidate(i);
-                    // Task<ModelFit> task = EnqueueTask(toDo, newModel);
+                {//Parallel execution of fitting the model for the current candidate
                     Task task = Task.Factory.StartNew(() =>
                     {
                         ModelFit fi = evaluateCandidate(newModel);
-                        errorOfFeature.GetOrAdd(threadCandidate, fi.error);
-                        errorOfFeatureWithModel.GetOrAdd(threadCandidate,fi.newModel);
+                        if (fi.complete)
+                        {
+                            errorOfFeature.GetOrAdd(threadCandidate, fi.error);
+                            errorOfFeatureWithModel.GetOrAdd(threadCandidate, fi.newModel);
+                        }
                     }
                     );
                     tasks.Add(task);
                 }
                 else
-                {
-                    if (!fitModel(newModel))
-                        continue;
-                    double temp = 0;
-                    double errorOfModel = computeModelError(newModel, out temp);
-                    errorOfFeature.GetOrAdd(candidate, errorOfModel);
-                    errorOfFeatureWithModel.GetOrAdd(candidate, newModel);
+                {//Serial execution of the fitting model for the current candidate
+                    ModelFit fi = evaluateCandidate(newModel);
+                    if (fi.complete)
+                    {
+                        errorOfFeature.GetOrAdd(threadCandidate, fi.error);
+                        errorOfFeatureWithModel.GetOrAdd(threadCandidate, fi.newModel);
+                    }
                 }
             }
             if (this.MLsettings.parallelization)
                 Task.WaitAll(tasks.ToArray());
 
+            //Evaluation of the candidates
             foreach (Feature candidate in errorOfFeature.Keys)
             {
-
                 if (errorOfFeature[candidate] < minimalRoundError)
                 {
                     minimalRoundError = errorOfFeature[candidate];
