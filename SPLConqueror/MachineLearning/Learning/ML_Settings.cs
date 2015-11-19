@@ -21,7 +21,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Turns the parallel execution of model candidates on/off.
         /// </summary>
-        public bool parallelization = false;
+        public bool parallelization = true;
 
         /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
