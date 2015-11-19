@@ -70,7 +70,7 @@ namespace MachineLearning
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
-        public Learning.Regression.LearningTest exp = new Learning.Regression.LearningTest();
+        public Learning.Regression.Learning exp = new Learning.Regression.Learning();
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -118,7 +118,7 @@ namespace MachineLearning
 
                         GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
-                        exp = new Learning.Regression.LearningTest(configurations_Learning, configurations_Learning);
+                        exp = new Learning.Regression.Learning(configurations_Learning, configurations_Learning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
@@ -380,7 +380,7 @@ namespace MachineLearning
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // prepare the machine learning 
-                        exp = new Learning.Regression.LearningTest(configurationsLearning, configurationsLearning);
+                        exp = new Learning.Regression.Learning(configurationsLearning, configurationsLearning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
