@@ -1,7 +1,7 @@
-﻿using CommandLine;
-using ILNumerics;
+﻿using ILNumerics;
 using ILNumerics.Drawing;
 using ILNumerics.Drawing.Plotting;
+using MachineLearning;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
