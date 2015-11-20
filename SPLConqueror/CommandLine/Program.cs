@@ -6,7 +6,7 @@ using System.Threading;
 using System.Globalization;
 using System.IO;
 
-namespace CommandLine
+namespace MachineLearning
 {
     class Program
     {

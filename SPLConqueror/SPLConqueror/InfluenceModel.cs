@@ -78,20 +78,53 @@ namespace SPLConqueror_Core
         public void printModelAsFunction(String file)
         {
             StreamWriter sw = new StreamWriter(file);
+            sw.Write(printModelAsFunction());
+            sw.Close();
+        }
+        /// <summary>
+        /// Gives the influence model as a single function (all influence functions will be concatenated)
+        /// </summary>
+        ///  <returns>A String representation of the current influence model. It concatenates all influence functions.</returns>
+        public String printModelAsFunction()
+        {
+            StringBuilder sb = new StringBuilder();
             foreach (BinaryOption binOpt in this.BinaryOptionsInfluence.Keys)
             {
-               sw.WriteLine(this.BinaryOptionsInfluence[binOpt].ToString() + " + ");
+                sb.AppendLine(this.BinaryOptionsInfluence[binOpt].ToString() + " + ");
             }
             foreach (NumericOption numOpt in this.NumericOptionsInfluence.Keys)
             {
-                sw.WriteLine(this.NumericOptionsInfluence[numOpt].ToString() + " + ");
+                sb.AppendLine(this.NumericOptionsInfluence[numOpt].ToString() + " + ");
             }
             foreach (var interaction in this.InteractionInfluence.Keys)
             {
-                sw.WriteLine(this.InteractionInfluence[interaction].ToString() + " + ");
+                sb.AppendLine(this.InteractionInfluence[interaction].ToString() + " + ");
             }
-            sw.Close();
+            return sb.ToString();
         }
-
+        /// <summary>
+        /// The function parses the model and collects all individual influences and the interactions.
+        /// </summary>
+        /// <returns>Returns a list of Features, which represent the influences of individual configuration options or their interactions</returns>
+        public List<Feature> getListOfFeatures()
+        {
+            List<Feature> resultList = new List<Feature>();
+            foreach (BinaryOption binOpt in this.BinaryOptionsInfluence.Keys)
+            {
+                if (this.BinaryOptionsInfluence[binOpt] is Feature)
+                    resultList.Add((Feature)this.BinaryOptionsInfluence[binOpt]);
+            }
+            foreach (NumericOption numOpt in this.NumericOptionsInfluence.Keys)
+            {
+                if (this.NumericOptionsInfluence[numOpt] is Feature)
+                    resultList.Add((Feature)this.NumericOptionsInfluence[numOpt]);
+            }
+            foreach (var interaction in this.InteractionInfluence.Keys)
+            {
+                if (this.InteractionInfluence[interaction] is Feature)
+                    resultList.Add((Feature)this.InteractionInfluence[interaction]);
+            }
+            return resultList;
+        }
     }
 }
