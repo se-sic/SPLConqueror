@@ -10,7 +10,7 @@ using MachineLearning.Learning.LinearProgramming;
 
 namespace MachineLearning.Solver
 {
-    internal class CheckConfigSAT : ICheckConfigSAT
+    public class CheckConfigSAT : ICheckConfigSAT
     {
         private CompositionContainer _container;
         
