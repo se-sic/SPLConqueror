@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SPLConqueror_Core;
-using CommandLine;
+using MachineLearning;
 using MachineLearning;
 using System.Reflection;
 using System.Collections.Specialized;
@@ -168,8 +168,7 @@ namespace PerformancePrediction_GUI
         private void startLearning()
         {
             
-
-            cmd.exp.learning.LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
+            cmd.exp.models[0].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
 
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
         }
@@ -182,7 +181,7 @@ namespace PerformancePrediction_GUI
         {
             termToIndex = new Dictionary<string, int>();
 
-            perfInfGridView.ColumnCount = cmd.exp.mlSettings.numberOfRounds * 2;
+            perfInfGridView.ColumnCount = cmd.exp.info.mlSettings.numberOfRounds * 2;
             perfInfGridView.Columns[0].Name = "Round";
             perfInfGridView.Columns[1].Name = "Learning error";
             perfInfGridView.Columns[2].Name = "Global error";
@@ -190,11 +189,11 @@ namespace PerformancePrediction_GUI
 
         private void UpdateDataGridView(MachineLearning.Learning.Regression.LearningRound lastRound)
         {
-            string[] row = new string[cmd.exp.mlSettings.numberOfRounds * 2];
+            string[] row = new string[cmd.exp.info.mlSettings.numberOfRounds * 2];
             row[0] = lastRound.round.ToString();
             row[1] = lastRound.learningError.ToString();
             double relativeError = 0.0;
-            cmd.exp.learning.computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+            cmd.exp.models[0].computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
             row[2] = relativeError.ToString();
 
 
@@ -251,16 +250,16 @@ namespace PerformancePrediction_GUI
             if (num_BoxBehnken_check.Checked)
             {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
             }
             if (num_CentralComposite_check.Checked)
             {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
             }
             if (num_FullFactorial_check.Checked){
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
             }
             if (num_hyperSampling_check.Checked)
             {
@@ -269,7 +268,7 @@ namespace PerformancePrediction_GUI
                     error();
                     return false;
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
                 numSelected = true;
             }
             if (num_kEx_check.Checked)
@@ -280,7 +279,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
                 numSelected = true;
             }
             if (num_randomSampling_num.Checked)
@@ -291,7 +290,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
                 numSelected = true;
             }
 
@@ -303,7 +302,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim());
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim());
                 numSelected = true;
 
             }
@@ -315,7 +314,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
+                cmd.performOneCommand(MachineLearning.Commands.COMMAND_EXERIMENTALDESIGN + " " + MachineLearning.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
                 numSelected = true;
             }
 
