@@ -32,7 +32,7 @@ namespace MachineLearning.Learning.Regression
             for (int i = 0; i < featureSet.Count; i++)
             {
                 Feature f = featureSet[i];
-                sb.Append(f.Constant + " * " + f.ToString());
+                sb.Append(f.ToString());
                 if (i < featureSet.Count - 1)
                     sb.Append(" + ");
             }

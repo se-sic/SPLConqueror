@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using SPLConqueror_Core;
 
-namespace MachineLearning.Learning.Regression
+namespace SPLConqueror_Core
 {
     public class Feature : InfluenceFunction , IEquatable<Feature>, IComparer<Feature>
     {
@@ -26,7 +26,7 @@ namespace MachineLearning.Learning.Regression
 
         public bool Equals(Feature f)
         {
-            return this.Equals((Object)f);
+            return base.ToString().Equals(f.getPureString());
         }
 
         /// <summary>
@@ -85,17 +85,17 @@ namespace MachineLearning.Learning.Regression
         }
 
         public Feature(Feature original, Feature toAdd, VariabilityModel vm)
-            : base(original.ToString() + " * " + toAdd.ToString(), vm)
+            : base(original.getPureString() + " * " + toAdd.getPureString(), vm)
         {
             hashCode = initHashCode();
         }
 
 
-        internal Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
+        public Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
 
         public override string ToString()
         {
-            return base.ToString();
+            return this.Constant + " * " + base.ToString();
         }
 
         private int initHashCode()
@@ -125,6 +125,11 @@ namespace MachineLearning.Learning.Regression
         public override int GetHashCode()
         {
             return this.name.GetHashCode();
+        }
+
+        public String getPureString()
+        {
+            return base.ToString();
         }
     }
 }
