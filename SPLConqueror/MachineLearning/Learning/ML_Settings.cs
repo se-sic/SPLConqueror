@@ -13,14 +13,39 @@ namespace MachineLearning.Learning
 
         public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
 
+        /// <summary>
+        /// The loss function on which bases features are added to the influence model.
+        /// </summary>
         public LossFunction lossFunction = LossFunction.RELATIVE;
+
+        /// <summary>
+        /// Turns the parallel execution of model candidates on/off.
+        /// </summary>
+        public bool parallelization = true;
+
+        /// <summary>
+        /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
+        /// </summary>
+        public bool bagging = true;
+
+        /// <summary>
+        /// Specifies how often an influence model is learned based on a subset of the measurement data
+        /// </summary>
+        public int baggingNumbers = 100;
+
+        /// <summary>
+        /// Specifies the percentage of data taken from the test set to be used in one learning run
+        /// </summary>
+        public int baggingTestDataFraction = 50;
 
         /// <summary>
         /// Features existing in the model can be removed during the learning procedure if removal leads to a better model.  
         /// </summary>
         public bool useBackward = false;
 
-
+        /// <summary>
+        /// The threshold at which the learning process stops.
+        /// </summary>
         public double abortError = 1;
 
         /// <summary>
@@ -83,7 +108,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Enables an optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates.
         /// </summary>
-        public bool ignoreBadFeatures = true;
+        public bool ignoreBadFeatures = false;
 
         /// <summary>
         /// If true, stop learning if the whole process is running longer than 1 hour and the current round runs longer then 30 minutes.

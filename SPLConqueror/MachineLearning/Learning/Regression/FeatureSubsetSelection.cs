@@ -12,13 +12,16 @@ using MachineLearning.Learning;
 using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
 using MachineLearning.Solver;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MachineLearning.Learning.Regression
 {
     public class FeatureSubsetSelection
     {
         //Information about the state of learning
-        protected InfluenceModel infModel = null;
+        public InfluenceModel infModel = null;
         protected ObservableCollection<LearningRound> learningHistory = new ObservableCollection<LearningRound>();
         protected int hierachyLevel = 1;
         protected DateTime startTime;
@@ -27,12 +30,13 @@ namespace MachineLearning.Learning.Regression
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
         protected ML_Settings MLsettings = null;
         protected List<Feature> bruteForceCandidates = new List<Feature>();
+        public double finalError = 0.0;
 
         //Learning and validation data sets
         protected List<Configuration> learningSet = new List<Configuration>();
         protected List<Configuration> validationSet = new List<Configuration>();
         protected ILArray<double> Y_learning, Y_validation = ILMath.empty();
-        protected Dictionary<Feature, ILArray<double>> DM_columns = new Dictionary<Feature, ILArray<double>>();
+        protected ConcurrentDictionary<Feature, ILArray<double>> DM_columns = new ConcurrentDictionary<Feature, ILArray<double>>();
 
         //Optimization: Remember candidates with no or only a tiny improvement to test them not in every round, int = nb of remaining rounds to ignore this feature
         private Dictionary<Feature, int> badFeatures = new Dictionary<Feature, int>();
@@ -61,7 +65,7 @@ namespace MachineLearning.Learning.Regression
             validationSet = new List<Configuration>();
             Y_validation = ILMath.empty();
             Y_learning = ILMath.empty();
-            DM_columns = new Dictionary<Feature, ILArray<double>>();
+            DM_columns = new ConcurrentDictionary<Feature, ILArray<double>>();
             badFeatures = new Dictionary<Feature, int>();
         }
 
@@ -72,6 +76,25 @@ namespace MachineLearning.Learning.Regression
 
         /// <summary>
         /// Constructor of the learning class. It reads all configuration options and generates candidates for possible influences (i.e., features).
+        /// </summary>
+        /// <param name="infModel">The influence model which will later hold all determined influences and contains the variability model from which we derive all configuration options.</param>
+        public FeatureSubsetSelection(InfluenceModel infModel, ML_Settings settings)
+        {
+            this.infModel = infModel;
+            this.MLsettings = settings;
+            foreach (var opt in infModel.Vm.BinaryOptions)
+            {
+                if (opt == infModel.Vm.Root)
+                    continue;
+                initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+            }
+            this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
+            foreach (var opt in infModel.Vm.NumericOptions)
+                initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+        }
+
+        /// <summary>
+        /// Initialize of the learning class. Required only when the empty constructor was used. It reads all configuration options and generates candidates for possible influences (i.e., features).
         /// </summary>
         /// <param name="infModel">The influence model which will later hold all determined influences and contains the variability model from which we derive all configuration options.</param>
         public void init(InfluenceModel infModel, ML_Settings settings)
@@ -88,6 +111,17 @@ namespace MachineLearning.Learning.Regression
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
         }
+
+        #region parallelization
+        class ModelFit
+        {
+            public List<Feature> newModel = new List<Feature>();
+            public bool complete = true;
+            public double error = Double.MaxValue;
+        }
+        
+
+        #endregion
 
         /// <summary>
         /// If we know the shape of a function or we know the existence of an interaction, we can use this knowledge to learn for exact those functions.
@@ -136,7 +170,9 @@ namespace MachineLearning.Learning.Regression
                 }
             } while (!abortLearning(current, oldRoundError));
             updateInfluenceModel();
+            this.finalError = evaluateError(this.validationSet, out this.finalError);
         }
+
 
         /// <summary>
         /// Based on the given learning round, the method intantiates the influence model.
@@ -216,34 +252,69 @@ namespace MachineLearning.Learning.Regression
                 return performForwardStep(currentModel);
             }
 
-            Dictionary<Feature, double> errorOfFeature = new Dictionary<Feature, double>();
+            ConcurrentDictionary<Feature, double> errorOfFeature = new ConcurrentDictionary<Feature, double>();
+            ConcurrentDictionary<Feature, List<Feature>> errorOfFeatureWithModel = new ConcurrentDictionary<Feature, List<Feature>>();
             Feature bestCandidate = null;
-
+            
+            List<Task> tasks = new List<Task>();
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
             {
+                Feature threadCandidate = new Feature(candidate.getPureString(),candidate.getVariabilityModel());
                 if (MLsettings.ignoreBadFeatures && this.badFeatures.Keys.Contains(candidate) && this.badFeatures[candidate] > 0)
                 {
                     this.badFeatures[candidate]--;
                     continue;
                 }
-                if (errorOfFeature.Keys.Contains(candidate))
-                    continue;
-                List<Feature> newModel = copyCombination(currentModel.FeatureSet);
-                newModel.Add(candidate);
-                if (!fitModel(newModel))
-                    continue;
-                double temp = 0;
-                double errorOfModel = computeModelError(newModel, out temp);
-                errorOfFeature.Add(candidate, temp);
-
-                if (errorOfModel < minimalRoundError)
+                if (errorOfFeature.Keys.Contains(threadCandidate))
                 {
-                    minimalRoundError = errorOfModel;
-                    minimalErrorModel = newModel;
-                    bestCandidate = candidate;
+                    continue;
+                }
+                    
+                List<Feature> newModel = copyCombination(currentModel.FeatureSet);
+                newModel.Add(threadCandidate);
+                if (this.MLsettings.parallelization)
+                {//Parallel execution of fitting the model for the current candidate
+                    Task task = Task.Factory.StartNew(() =>
+                    {
+                        ModelFit fi = evaluateCandidate(newModel);
+                        if (fi.complete)
+                        {
+                            errorOfFeature.GetOrAdd(threadCandidate, fi.error);
+                            errorOfFeatureWithModel.GetOrAdd(threadCandidate, fi.newModel);
+                        }
+                    }
+                    );
+                    tasks.Add(task);
+                }
+                else
+                {//Serial execution of the fitting model for the current candidate
+                    ModelFit fi = evaluateCandidate(newModel);
+                    if (fi.complete)
+                    {
+                        errorOfFeature.GetOrAdd(threadCandidate, fi.error);
+                        errorOfFeatureWithModel.GetOrAdd(threadCandidate, fi.newModel);
+                    }
                 }
             }
+            if (this.MLsettings.parallelization)
+                Task.WaitAll(tasks.ToArray());
+
+            //Evaluation of the candidates
+            foreach (Feature candidate in errorOfFeature.Keys)
+            {
+                if (errorOfFeature[candidate] < minimalRoundError)
+                {
+                    minimalRoundError = errorOfFeature[candidate];
+                    bestCandidate = candidate;
+                    minimalErrorModel = errorOfFeatureWithModel[candidate];
+                }
+                else
+                    candidate.Constant = 1;
+            }
+            minimalErrorModel = copyCombination(minimalErrorModel);
+
+            //error computations and logging stuff
             double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
             if (MLsettings.ignoreBadFeatures)
@@ -264,11 +335,22 @@ namespace MachineLearning.Learning.Regression
             }
         }
 
+
+        private ModelFit evaluateCandidate(List<Feature> model)
+        {
+            ModelFit fit = new ModelFit();
+            fit.complete = fitModel(model);
+            double temp;
+            fit.error = computeModelError(model, out temp);
+            fit.newModel = model;
+            return fit;
+        }
+
         /// <summary>
         /// Optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvment in accuracy relative to all other candidates
         /// </summary>
         /// <param name="errorOfCandidates">The Dictionary containing all candidate features with their fitted error rate.</param>
-        private void addFeaturesToIgnore(Dictionary<Feature, double> errorOfCandidates)
+        private void addFeaturesToIgnore(ConcurrentDictionary<Feature, double> errorOfCandidates)
         {
             List<KeyValuePair<Feature, double>> myList = errorOfCandidates.ToList();
             myList.Sort((x, y) => x.Value.CompareTo(y.Value));
@@ -357,7 +439,7 @@ namespace MachineLearning.Learning.Regression
                                 goto nextRound;
                     }
 
-                    Feature newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature(feature, basicFeature, basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
                 nextRound:
@@ -367,7 +449,7 @@ namespace MachineLearning.Learning.Regression
                 //if basic feature represents a numeric option and quadratic function support is activated, then we add a feature representing a quadratic functions of this feature
                 if (this.MLsettings.quadraticFunctionSupport && basicFeature.participatingNumOptions.Count > 0)
                 {
-                    Feature newCandidate = new Feature(basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature(basicFeature, basicFeature, basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
@@ -377,7 +459,7 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
-                        newCandidate = new Feature(feature.ToString() + " * " + basicFeature.ToString() + " * " + basicFeature.ToString(), basicFeature.getVariabilityModel());
+                        newCandidate = new Feature(feature, newCandidate, basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
@@ -386,7 +468,7 @@ namespace MachineLearning.Learning.Regression
                 //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
                 if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0)
                 {
-                    Feature newCandidate = new Feature("log10(" + basicFeature.ToString() + ")", basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature("log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
@@ -396,12 +478,14 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
-                        newCandidate = new Feature(feature.ToString() + " * log10(" + basicFeature.ToString() + ")", basicFeature.getVariabilityModel());
+                        newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
                 }
             }
+            foreach (Feature f in listOfCandidates)
+                f.Constant = 1;
             return listOfCandidates;
         }
 
@@ -437,7 +521,7 @@ namespace MachineLearning.Learning.Regression
                     Feature newCandidate = null;
                     foreach (var feature in combination)
                     {
-                        newCandidate = newCandidate == null ? new Feature(feature.ToString(), feature.getVariabilityModel()) : new Feature(newCandidate.ToString() + '*' + feature.ToString(), feature.getVariabilityModel());
+                        newCandidate = newCandidate == null ? new Feature(feature.getPureString(), feature.getVariabilityModel()) : new Feature(newCandidate.getPureString() + '*' + feature.getPureString(), feature.getVariabilityModel());
                     }
                     if (newCandidate != null)
                     {
@@ -580,7 +664,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="c">The configuration for which the estimation should be performed.</param>
         /// <returns>The estimated value.</returns>
-        private double estimate(List<Feature> currentModel, Configuration c)
+        private static double estimate(List<Feature> currentModel, Configuration c)
         {
             double prediction = 0;
             for (int i = 0; i < currentModel.Count; i++)
@@ -921,7 +1005,7 @@ namespace MachineLearning.Learning.Regression
                 {
                     column[r] = 1;
                 }
-                this.DM_columns.Add(feature, column);
+                this.DM_columns.GetOrAdd(feature, column);
                 return;
             }
 
@@ -934,7 +1018,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 i++;
             }
-            this.DM_columns.Add(feature, column);
+            this.DM_columns.GetOrAdd(feature, column);
         }
         #endregion
 
@@ -951,7 +1035,9 @@ namespace MachineLearning.Learning.Regression
                 return resultList;
             foreach (Feature subset in oldList)
             {
-                resultList.Add(new Feature(subset.ToString(), subset.getVariabilityModel()));
+                Feature temp = new Feature(subset.getPureString(), subset.getVariabilityModel());
+                temp.Constant = subset.Constant;
+                resultList.Add(temp);
             }
             return resultList;
         }
@@ -982,5 +1068,68 @@ namespace MachineLearning.Learning.Regression
         #endregion
 
 
+        /// <summary>
+        /// The function computes the error of a given influence model for a list of configurations. As the error metric, it uses the given loss function
+        /// </summary>
+        /// <param name="influenceModel">The influence model containing the already learned influences.</param>
+        /// <param name="configs">The configurations for which predictions should be made. The configurations must contain the measured/true value to compute the error.</param>
+        /// <param name="loss">The loss functions used to compute the error.</param>
+        /// <returns>The error of the model for the given configurations.</returns>
+        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss)
+        {
+            double error_sum = 0;
+            int skips = 0;
+            List<Feature> currentModel = influenceModel.getListOfFeatures();
+            foreach (Configuration c in configs)
+            {
+                double estimatedValue = estimate(currentModel, c);
+                double realValue = 0;
+                try
+                {
+                    if (!c.nfpValues.Keys.Contains(GlobalState.currentNFP))
+                    {
+                        skips++;
+                        continue;
+                    }
+                    realValue = c.GetNFPValue(GlobalState.currentNFP);
+                }
+                catch (ArgumentException argEx)
+                {
+                    GlobalState.logError.log(argEx.Message);
+                    realValue = c.GetNFPValue();
+                }
+                //How to handle near-zero values???
+                //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
+                //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
+
+                if (realValue < 1)
+                {//((2(true-est) / true+est) - 1 ) * 100
+                    //continue;
+                    skips++;
+                    continue;
+                }
+
+                double error = 0;
+                switch (loss)
+                {
+                    case ML_Settings.LossFunction.RELATIVE:
+                        if (realValue < 1)
+                        {
+                            error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
+                        }
+                        else
+                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                        break;
+                    case ML_Settings.LossFunction.LEASTSQUARES:
+                        error = Math.Pow(realValue - estimatedValue, 2);
+                        break;
+                    case ML_Settings.LossFunction.ABSOLUTE:
+                        error = Math.Abs(realValue - estimatedValue);
+                        break;
+                }
+                error_sum += error;
+            }
+            return error_sum / (configs.Count - skips);
+        }
     }
 }
