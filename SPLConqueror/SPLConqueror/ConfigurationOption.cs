@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
-    public abstract class ConfigurationOption : IComparable<ConfigurationOption>
+    public abstract class ConfigurationOption : IComparable<ConfigurationOption>, IEquatable<ConfigurationOption>
     {
         private String name = "";
 
@@ -345,5 +345,10 @@ namespace SPLConqueror_Core
             }
         }
 
+
+        public bool Equals(ConfigurationOption other)
+        {
+            return this.name.Equals(other.name);
+        }
     }
 }

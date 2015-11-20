@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
-    public class Interaction
+    public class Interaction : IEquatable<Interaction>
     {
         private List<BinaryOption> binaryOptions = new List<BinaryOption>();
 
@@ -150,6 +150,24 @@ namespace SPLConqueror_Core
             foreach (ConfigurationOption confOpt in this.binNumOptions)
             {
                 if (confOpt is BinaryOption && selectedBinOptions.Contains(confOpt) == false)
+                    return false;
+            }
+            return true;
+        }
+
+
+        public bool Equals(Interaction other)
+        {
+            if (this.binaryOptions.Count != other.binaryOptions.Count || this.numericOptions.Count != other.numericOptions.Count)
+                return false;
+            foreach (BinaryOption bin in this.binaryOptions)
+            {
+                if (!other.binaryOptions.Contains(bin))
+                    return false;
+            }
+            foreach (NumericOption num in this.numericOptions)
+            {
+                if (!other.numericOptions.Contains(num))
                     return false;
             }
             return true;
