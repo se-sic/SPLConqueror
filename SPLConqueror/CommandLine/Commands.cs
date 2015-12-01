@@ -164,12 +164,18 @@ namespace CommandLine
                     break;
                 case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_SAMPLING:
                     exp.clearSampling();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_LEARNING:
                     exp.clear();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
