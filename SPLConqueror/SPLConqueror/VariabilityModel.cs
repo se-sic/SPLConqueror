@@ -381,7 +381,41 @@ namespace SPLConqueror_Core
 
         public void deleteOption(ConfigurationOption toDelete)
         {
-            throw new NotImplementedException();
+            List<ConfigurationOption> list;
+
+            // Removing all children
+            if (parentChildRelationships.TryGetValue(toDelete, out list))
+            {
+                List<ConfigurationOption> children = new List<ConfigurationOption>();
+
+                foreach (ConfigurationOption opt in list)
+                    children.Add(opt);
+
+                foreach (ConfigurationOption child in children)
+                    deleteOption(child);    
+            }
+
+            // Removing option from other options
+            foreach (ConfigurationOption opt in getOptions())
+            {
+                for (int i = opt.Excluded_Options.Count - 1; i >= 0; i--)
+                {
+                    if (opt.Excluded_Options[i].Contains(toDelete))
+                        opt.Excluded_Options.RemoveAt(i);
+                }
+
+                for (int i = opt.Implied_Options.Count - 1; i >= 0; i--)
+                {
+                    if (opt.Implied_Options[i].Contains(toDelete))
+                        opt.Implied_Options.RemoveAt(i);
+                }
+            }
+
+            // Removing option from constraints
+            booleanConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
+            nonBooleanConstraints.RemoveAll(x => x.ToString().Contains(toDelete.ToString()));
+
+            parentChildRelationships.Remove(toDelete);
         }
 
         internal bool hasOption(string name)
