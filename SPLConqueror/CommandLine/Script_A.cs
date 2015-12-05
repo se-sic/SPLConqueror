@@ -6,7 +6,7 @@ using System.IO;
 
 using SPLConqueror_Core;
 
-namespace MachineLearning
+namespace CommandLine
 {
     class Script_A
     {
