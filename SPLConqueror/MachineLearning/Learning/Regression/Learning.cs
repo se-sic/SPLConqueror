@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Diagnostics;
+using MachineLearning.Sampling;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -251,6 +252,8 @@ namespace MachineLearning.Learning.Regression
                 this.testSet.Clear();
             if (this.validationSet != null)
                 this.validationSet.Clear();
+
+            ConfigurationBuilder.parametersOfExpDesigns.Clear();
         }
 
         public void clear()
