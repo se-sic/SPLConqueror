@@ -10,8 +10,9 @@ using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
+using MachineLearning;
 
-namespace MachineLearning
+namespace CommandLine
 {
     public class Commands
     {
@@ -70,7 +71,7 @@ namespace MachineLearning
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
-        public Learning.Regression.Learning exp = new Learning.Regression.Learning();
+        public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -118,7 +119,7 @@ namespace MachineLearning
 
                         GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
-                        exp = new Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
@@ -163,12 +164,18 @@ namespace MachineLearning
                     break;
                 case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_SAMPLING:
                     exp.clearSampling();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_LEARNING:
                     exp.clear();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
@@ -380,7 +387,7 @@ namespace MachineLearning
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // prepare the machine learning 
-                        exp = new Learning.Regression.Learning(configurationsLearning, configurationsLearning);
+                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsLearning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
