@@ -80,6 +80,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EditContraintsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditContraintsDialog.Designer.cs">
+      <DependentUpon>EditContraintsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditOptionDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +106,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EditContraintsDialog.resx">
+      <DependentUpon>EditContraintsDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditOptionDialog.resx">
       <DependentUpon>EditOptionDialog.cs</DependentUpon>
     </EmbeddedResource>

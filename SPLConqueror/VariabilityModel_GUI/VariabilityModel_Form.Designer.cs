@@ -28,110 +28,185 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.buttonEditFeatures = new System.Windows.Forms.Button();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.newModel = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.loadModel = new System.Windows.Forms.Button();
-            this.modelNameBox = new System.Windows.Forms.TextBox();
+            this.components = new System.ComponentModel.Container();
+            this.treeView = new System.Windows.Forms.TreeView();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editConstraintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip.SuspendLayout();
+            this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // buttonEditFeatures
+            // treeView
             // 
-            this.buttonEditFeatures.BackColor = System.Drawing.Color.Transparent;
-            this.buttonEditFeatures.Location = new System.Drawing.Point(23, 502);
-            this.buttonEditFeatures.Name = "buttonEditFeatures";
-            this.buttonEditFeatures.Size = new System.Drawing.Size(89, 20);
-            this.buttonEditFeatures.TabIndex = 65;
-            this.buttonEditFeatures.Text = "Edit Options";
-            this.buttonEditFeatures.UseVisualStyleBackColor = false;
-            this.buttonEditFeatures.Click += new System.EventHandler(this.buttonEditFeatures_Click);
+            this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.treeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeView.Location = new System.Drawing.Point(11, 38);
+            this.treeView.Margin = new System.Windows.Forms.Padding(2);
+            this.treeView.Name = "treeView";
+            this.treeView.Size = new System.Drawing.Size(276, 427);
+            this.treeView.TabIndex = 63;
+            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             // 
-            // treeView1
+            // menuStrip
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeView1.Location = new System.Drawing.Point(23, 11);
-            this.treeView1.Margin = new System.Windows.Forms.Padding(2);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(264, 486);
-            this.treeView1.TabIndex = 63;
-            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
-            this.treeView1.NodeMouseHover += new System.Windows.Forms.TreeNodeMouseHoverEventHandler(this.treeView1_NodeMouseHover);
-            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Size = new System.Drawing.Size(298, 24);
+            this.menuStrip.TabIndex = 72;
+            this.menuStrip.Text = "menuStrip1";
             // 
-            // newModel
+            // fileToolStripMenuItem
             // 
-            this.newModel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.newModel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.newModel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newModel.Location = new System.Drawing.Point(23, 548);
-            this.newModel.Name = "newModel";
-            this.newModel.Size = new System.Drawing.Size(111, 21);
-            this.newModel.TabIndex = 70;
-            this.newModel.Text = "Create Model";
-            this.newModel.UseVisualStyleBackColor = false;
-            this.newModel.Click += new System.EventHandler(this.newModel_Click);
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newModelToolStripMenuItem,
+            this.loadModelToolStripMenuItem,
+            this.saveModelToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
             // 
-            // button1
+            // newModelToolStripMenuItem
             // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(176, 584);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(111, 21);
-            this.button1.TabIndex = 69;
-            this.button1.Text = "Save Model";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.buttonSavePLM_Click);
+            this.newModelToolStripMenuItem.Name = "newModelToolStripMenuItem";
+            this.newModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.newModelToolStripMenuItem.Text = "New Model...";
+            this.newModelToolStripMenuItem.Click += new System.EventHandler(this.newModelToolStripMenuItem_Click);
             // 
-            // loadModel
+            // loadModelToolStripMenuItem
             // 
-            this.loadModel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.loadModel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.loadModel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadModel.Location = new System.Drawing.Point(23, 584);
-            this.loadModel.Name = "loadModel";
-            this.loadModel.Size = new System.Drawing.Size(111, 21);
-            this.loadModel.TabIndex = 68;
-            this.loadModel.Text = "Load Model";
-            this.loadModel.UseVisualStyleBackColor = false;
-            this.loadModel.Click += new System.EventHandler(this.loadModel_Click);
+            this.loadModelToolStripMenuItem.Name = "loadModelToolStripMenuItem";
+            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.loadModelToolStripMenuItem.Text = "Load Model";
+            this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.loadModelToolStripMenuItem_Click);
             // 
-            // modelNameBox
+            // saveModelToolStripMenuItem
             // 
-            this.modelNameBox.Location = new System.Drawing.Point(156, 549);
-            this.modelNameBox.Name = "modelNameBox";
-            this.modelNameBox.Size = new System.Drawing.Size(131, 20);
-            this.modelNameBox.TabIndex = 71;
+            this.saveModelToolStripMenuItem.Name = "saveModelToolStripMenuItem";
+            this.saveModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.saveModelToolStripMenuItem.Text = "Save Model";
+            this.saveModelToolStripMenuItem.Click += new System.EventHandler(this.saveModelToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editOptionsToolStripMenuItem,
+            this.editConstraintsToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // editOptionsToolStripMenuItem
+            // 
+            this.editOptionsToolStripMenuItem.Name = "editOptionsToolStripMenuItem";
+            this.editOptionsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.editOptionsToolStripMenuItem.Text = "Edit Options";
+            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem1_Click);
+            // 
+            // editConstraintsToolStripMenuItem
+            // 
+            this.editConstraintsToolStripMenuItem.Name = "editConstraintsToolStripMenuItem";
+            this.editConstraintsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.editConstraintsToolStripMenuItem.Text = "Edit Constraints";
+            this.editConstraintsToolStripMenuItem.Click += new System.EventHandler(this.editConstraintsToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(24, 20);
+            this.helpToolStripMenuItem.Text = "?";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addFeatureToolStripMenuItem,
+            this.editFeatureToolStripMenuItem,
+            this.removeFeatureToolStripMenuItem});
+            this.contextMenuStrip.Name = "contextMenuStrip1";
+            this.contextMenuStrip.Size = new System.Drawing.Size(160, 70);
+            // 
+            // addFeatureToolStripMenuItem
+            // 
+            this.addFeatureToolStripMenuItem.Name = "addFeatureToolStripMenuItem";
+            this.addFeatureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.addFeatureToolStripMenuItem.Text = "Add Feature";
+            this.addFeatureToolStripMenuItem.Click += new System.EventHandler(this.addFeatureToolStripMenuItem_Click);
+            // 
+            // editFeatureToolStripMenuItem
+            // 
+            this.editFeatureToolStripMenuItem.Name = "editFeatureToolStripMenuItem";
+            this.editFeatureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.editFeatureToolStripMenuItem.Text = "Edit Feature";
+            this.editFeatureToolStripMenuItem.Click += new System.EventHandler(this.editFeatureToolStripMenuItem_Click);
+            // 
+            // removeFeatureToolStripMenuItem
+            // 
+            this.removeFeatureToolStripMenuItem.Name = "removeFeatureToolStripMenuItem";
+            this.removeFeatureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.removeFeatureToolStripMenuItem.Text = "Remove Feature";
+            this.removeFeatureToolStripMenuItem.Click += new System.EventHandler(this.removeFeatureToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(298, 616);
-            this.Controls.Add(this.modelNameBox);
-            this.Controls.Add(this.newModel);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.loadModel);
-            this.Controls.Add(this.buttonEditFeatures);
-            this.Controls.Add(this.treeView1);
+            this.ClientSize = new System.Drawing.Size(298, 476);
+            this.Controls.Add(this.treeView);
+            this.Controls.Add(this.menuStrip);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MainMenuStrip = this.menuStrip;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "VariabilityModel_Form";
+            this.menuStrip.ResumeLayout(false);
+            this.menuStrip.PerformLayout();
+            this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        protected System.Windows.Forms.Button buttonEditFeatures;
-        protected System.Windows.Forms.TreeView treeView1;
-        protected System.Windows.Forms.Button newModel;
-        protected System.Windows.Forms.Button button1;
-        protected System.Windows.Forms.Button loadModel;
-        private System.Windows.Forms.TextBox modelNameBox;
+        protected System.Windows.Forms.TreeView treeView;
+        private System.Windows.Forms.MenuStrip menuStrip;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem addFeatureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editFeatureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeFeatureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editConstraintsToolStripMenuItem;
     }
 }
 
