@@ -1,7 +1,7 @@
-﻿using ILNumerics;
+﻿using CommandLine;
+using ILNumerics;
 using ILNumerics.Drawing;
 using ILNumerics.Drawing.Plotting;
-using MachineLearning;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
@@ -518,7 +518,7 @@ namespace SPLConqueror_GUI
             // Initializing the default settings of the numeric options
             numericSettings.Clear();
 
-            foreach (NumericOption option in originalFunction.participatingNumOptions)
+            foreach (NumericOption option in currentModel.NumericOptions)
                 numericSettings.Add(option, (float) option.DefaultValue);
 
             // Evaluation configuration
@@ -542,7 +542,7 @@ namespace SPLConqueror_GUI
 
             int i = 0;
 
-            foreach (NumericOption option in originalFunction.participatingNumOptions)
+            foreach (NumericOption option in currentModel.NumericOptions)
             {
                 float val = 0;
                 numericSettings.TryGetValue(option, out val);
@@ -695,7 +695,10 @@ namespace SPLConqueror_GUI
             
             setChildrenChecked(e.Node);
             updateTreeView();
-            updateEvaluationConfiguration();
+
+            if (currentModel.getOption(e.Node.Text) is NumericOption)
+                updateEvaluationConfiguration();
+
             updateAdjustedFunction();
             updateInteractionsTab();
 
@@ -1295,7 +1298,9 @@ namespace SPLConqueror_GUI
         /// <param name="e">Event</param>
         private void variableListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            updateEvaluationConfiguration();
+            if (currentModel.getOption(variableListBox.SelectedItem.ToString()) is NumericOption)
+                updateEvaluationConfiguration();
+
             updateAdjustedFunction();
             updateInteractionsTab();
         }
@@ -2478,6 +2483,7 @@ namespace SPLConqueror_GUI
                     else
                     {
                         // Calculate all values for the corresponding line plots.
+                        // TODO: Falls NFP nicht gibt
                         c.nfpValues.TryGetValue(prop, out d);
                         XY[0, pos] = (float)value;
                         XY[1, pos] = (float)d;
