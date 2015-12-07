@@ -155,12 +155,16 @@ namespace MachineLearning.Learning.Regression
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
             double oldRoundError = Double.MaxValue;
+            double oldRoundRelativeError = Double.MaxValue;
             do
             {
                 oldRoundError = current.validationError;
+                oldRoundRelativeError = current.validationError_relative;
                 current = performForwardStep(current);
                 if (current == null)
                     return;
+                current.bestCandidateScore = oldRoundRelativeError - current.validationError_relative;
+                current.bestCandidatePenalizedScore = current.bestCandidateScore / (Math.Max(1, MLsettings.candidateSizePenalty * current.bestCandidateSize));
                 learningHistory.Add(current);
 
                 if (this.MLsettings.useBackward)
@@ -330,6 +334,9 @@ namespace MachineLearning.Learning.Regression
                 LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
                 newRound.learningError_relative = relativeErrorTrain;
                 newRound.validationError_relative = relativeErrorEval;
+                newRound.elapsedTime = DateTime.Now - startTime;
+                newRound.bestCandidate = bestCandidate;
+                newRound.bestCandidateSize = bestCandidate.getNumberOfParticipatingOptions();
                 return newRound;
 
             }
@@ -803,6 +810,8 @@ namespace MachineLearning.Learning.Regression
             if (current.round >= this.MLsettings.numberOfRounds)
                 return true;
             TimeSpan diff = DateTime.Now - this.startTime;
+            if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
+                return true;
             if (MLsettings.stopOnLongRound && current.round > 30 && diff.Minutes > 60)
                 return true;
             if (abortDueError(current))
