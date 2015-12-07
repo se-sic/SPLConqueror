@@ -41,6 +41,7 @@ namespace SPLConqueror_GUI
         private const string ERROR_MEASUREMENTS_INCOMPATIBLE = "The file doesn't match with the current variability model!";
         private const string ERROR_DOUBLE_OPTION = "You may not choose the same option twice!";
         private const string ERROR_NO_MEASUREMENTS_LOADED = "Please load some measurements.";
+        private const string ERROR_NO_MEASUREMENTS_NFP = "There are no measurements for this nfp value.";
         private const string ERROR_NO_PERFORMANCES = "Please calculate a graph first.";
         private const string ERROR_ILLEGAL_CONFIGURATION = "Invalid configuration. Check your constraints too.";
         private const string ERROR_NO_MEASUREMENTS_AVAILABLE = "There are no measurements for the current settings.";
@@ -1146,6 +1147,7 @@ namespace SPLConqueror_GUI
                     bins.Add(opt);
             }
 
+            // TODO: Auf Antwort von Alex warten, bzgl. nicht-existierender Werte
             foreach (KeyValuePair<NumericOption, float> entry in numericSettings.ToList())
             {
                 if (chosenOptions.Item1 != entry.Key && chosenOptions.Item2 != entry.Key)
@@ -2381,10 +2383,6 @@ namespace SPLConqueror_GUI
                 return;
             }
 
-            measurementErrorLabel.Visible = false;
-            measurementViewCombobox.Enabled = true;
-            nfpValueCombobox.Enabled = true;
-
             if (nfpValueCombobox.Items.Count == 0)
             {
                 foreach (KeyValuePair<string, NFProperty> entry in GlobalState.nfProperties.ToList())
@@ -2393,10 +2391,48 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.SelectedIndex = 0;
             }
 
+            NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
+
+            // Check if at least one configuration contains the current nfp value
+            if(neededConfigurations.All(x => !x.nfpValues.Keys.Contains(prop)))
+            {
+                overviewPerformanceIlPanel.Scene = new ILScene();
+                overviewMeasurementIlPanel.Scene = new ILScene();
+                overviewAbsoluteDifferenceIlPanel.Scene = new ILScene();
+                overviewRelativeDifferenceIlPanel.Scene = new ILScene();
+                bothGraphsIlPanel.Scene = new ILScene();
+                measurementsOnlyIlPanel.Scene = new ILScene();
+                absoluteDifferenceIlPanel.Scene = new ILScene();
+                relativeDifferenceIlPanel.Scene = new ILScene();
+                overviewPerformanceIlPanel.Refresh();
+                overviewMeasurementIlPanel.Refresh();
+                overviewAbsoluteDifferenceIlPanel.Refresh();
+                overviewRelativeDifferenceIlPanel.Refresh();
+                bothGraphsIlPanel.Refresh();
+                measurementsOnlyIlPanel.Refresh();
+                absoluteDifferenceIlPanel.Refresh();
+                relativeDifferenceIlPanel.Refresh();
+
+                overviewPanel.Visible = false;
+                bothGraphsPanel.Visible = false;
+                measurementsOnlyPanel.Visible = false;
+                absoluteDifferencePanel.Visible = false;
+                relativeDifferencePanel.Visible = false;
+
+                nfpValueCombobox.Enabled = true;
+                measurementViewCombobox.Enabled = false;
+                measurementErrorLabel.Visible = true;
+                measurementErrorLabel.Text = ERROR_NO_MEASUREMENTS_NFP;
+                return;
+            }
+
+            measurementErrorLabel.Visible = false;
+            measurementViewCombobox.Enabled = true;
+            nfpValueCombobox.Enabled = true;
+
             ILPlotCube bothGraphsCube, measurementsOnlyCube, absoluteDifferenceCube,
                 relativeDifferenceCube, overviewPerformanceCube, overviewMeasurementsCube,
                 overviewAbsoluteDifferenceCube, overviewRelativeDifferenceCube; 
-            NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
 
             // Decide if there has to be a 2D or 3D shape
             if (chosenOptions.Item2 == null)
@@ -2451,7 +2487,7 @@ namespace SPLConqueror_GUI
                             c = neededConfigurations[j];
                     }
 
-                    if (c == null)
+                    if (c == null || !c.nfpValues.TryGetValue(prop, out d))
                     {
                         // If there are no measurements for this specific setting, the line plots
                         // have to be drawn up to this point.
@@ -2483,8 +2519,6 @@ namespace SPLConqueror_GUI
                     else
                     {
                         // Calculate all values for the corresponding line plots.
-                        // TODO: Falls NFP nicht gibt
-                        c.nfpValues.TryGetValue(prop, out d);
                         XY[0, pos] = (float)value;
                         XY[1, pos] = (float)d;
                         absoluteDifferences[0, pos] = (float)value;
@@ -2625,11 +2659,10 @@ namespace SPLConqueror_GUI
                                 c = neededConfigurations[k];
                         }
 
-                        if (c == null)
+                        if (c == null || !c.nfpValues.TryGetValue(prop, out d1))
                             measurements[i, j, 0] = float.NegativeInfinity;
                         else
                         {
-                            c.nfpValues.TryGetValue(prop, out d1);
                             measurements[i, j, 0] = (float)d1;
 
                             ILPoints point = createPoint(measurements[i, j, 1], measurements[i, j, 2], measurements[i, j, 0], measurementPointLabel);
@@ -2698,6 +2731,7 @@ namespace SPLConqueror_GUI
                 {
                     ColorMode = ILSurface.ColorModes.Solid
                 });
+                overviewMeasurementsCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 overviewAbsoluteDifferenceCube.Add(new ILSurface(absoluteDifferences));
                 overviewAbsoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 overviewRelativeDifferenceCube.Add(new ILSurface(relativeDifferences));
