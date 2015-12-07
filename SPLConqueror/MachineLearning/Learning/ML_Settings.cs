@@ -75,6 +75,10 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool learn_logFunction = false;
 
+        public bool learn_asymFunction = false;
+
+        public bool learn_ratioFunction = false;
+
         /// <summary>
         /// Defines the number of rounds the learning process have to be performed. 
         /// </summary>
@@ -134,7 +138,7 @@ namespace MachineLearning.Learning
                 string[] nameAndValue = settingArray[i].Split(new char[] { ':' }, 2);
                 if (!mls.setSetting(nameAndValue[0], nameAndValue[1]))
                 {
-                    GlobalState.logError.log("MlSetting " + nameAndValue[0] + " not found!");
+                    GlobalState.logError.logLine("MlSetting " + nameAndValue[0] + " not found!");
                 }
 
             }
@@ -152,7 +156,7 @@ namespace MachineLearning.Learning
             ML_Settings mls = new ML_Settings();
             if (System.IO.File.Exists(settingLocation) == false)
             {
-                GlobalState.logError.log("Could not load ML settings file! File (" + settingLocation + ") does not exit.");
+                GlobalState.logError.logLine("Could not load ML settings file! File (" + settingLocation + ") does not exit.");
                 return mls;
             }
             System.IO.StreamReader file = new System.IO.StreamReader(settingLocation);
@@ -162,7 +166,7 @@ namespace MachineLearning.Learning
                 string[] nameAndValue = line.Split(new char[] { ' ' }, 2);
                 if (!mls.setSetting(nameAndValue[0], nameAndValue[1]))
                 {
-                    GlobalState.logError.log("MlSetting " + nameAndValue[0] + " not found!");
+                    GlobalState.logError.logLine("MlSetting " + nameAndValue[0] + " not found!");
                 }
             }
             file.Close();

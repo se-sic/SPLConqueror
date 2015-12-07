@@ -23,12 +23,14 @@ namespace PerformancePrediction_GUI
         }
 
 
-        public override void log(string msg)
+        public override void logLine(string msg)
         {
             outerFrame.LogBox.Invoke((MethodInvoker)(() => this.outerFrame.LogBox.AppendText(msg + System.Environment.NewLine)));
-
-            //outerFrame.LogBox.AppendText(msg + System.Environment.NewLine);
         }
 
+        public override void log(string msg)
+        {
+            outerFrame.LogBox.Invoke((MethodInvoker)(() => this.outerFrame.LogBox.AppendText(msg)));
+        }
     }
 }
