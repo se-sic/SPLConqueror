@@ -93,6 +93,52 @@ namespace SPLConqueror_Core
             return false;
         }
 
+        public bool configIsValid(Dictionary<NumericOption,double> config)
+        {
+            if (!configHasOptionsOfConstraint(config))
+                return true;
+
+
+            double left = leftHandSide.eval(config);
+            double right = rightHandSide.eval(config);
+
+            switch (comparator)
+            {
+                case ">=":
+                    {
+                        if (left >= right)
+                            return true;
+                        break;
+                    }
+                case "<=":
+                    {
+                        if (left <= right)
+                            return true;
+                        break;
+                    }
+                case "=":
+                    {
+                        if (left == right)
+                            return true;
+                        break;
+                    }
+                case ">":
+                    {
+                        if (left > right)
+                            return true;
+                        break;
+                    }
+                case "<":
+                    {
+                        if (left < right)
+                            return true;
+                        break;
+                    }
+            }
+
+            return false;
+        }
+
         private bool configHasOptionsOfConstraint(Configuration config)
         {
             foreach(BinaryOption bo in leftHandSide.participatingBoolOptions.Union(rightHandSide.participatingBoolOptions))
@@ -110,6 +156,15 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        private bool configHasOptionsOfConstraint(Dictionary<NumericOption,double> config)
+        {
+            foreach (NumericOption no in leftHandSide.participatingNumOptions.Union(rightHandSide.participatingNumOptions))
+            {
+                if (!config.ContainsKey(no))
+                    return false;
+            }
+            return true;
+        }
 
         public override string ToString()
         {

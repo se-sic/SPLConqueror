@@ -483,6 +483,55 @@ namespace MachineLearning.Learning.Regression
                             listOfCandidates.Add(newCandidate);
                     }
                 }
+
+                if (this.MLsettings.learn_asymFunction && basicFeature.participatingNumOptions.Count > 0)
+                {
+                    Feature newCandidate = new Feature("1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
+
+                    if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
+                    {
+                        if (!currentModel.Contains(newCandidate))
+                            listOfCandidates.Add(newCandidate);
+                    }
+
+                    foreach (var feature in currentModel)
+                    {
+                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                            continue;
+                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                            continue;
+                        newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
+                        if (newCandidate.participatingBoolOptions.Count == 0 && newCandidate.participatingNumOptions.All(x => x.Min_value > 0))
+                        {
+                            if (!currentModel.Contains(newCandidate))
+                                listOfCandidates.Add(newCandidate);
+                        }
+                    }
+                }
+
+                if (this.MLsettings.learn_ratioFunction && basicFeature.participatingNumOptions.Count > 0)
+                {
+                    Feature newCandidate = null;
+                    foreach (var feature in currentModel)
+                    {
+                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                            continue;
+                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                            continue;
+
+                        if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
+                        {
+                            if (feature.participatingBoolOptions.Count == 0 && feature.participatingNumOptions.All(x => x.Min_value > 0))
+                            {
+                                newCandidate = new Feature(feature.getPureString() + " / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
+                            }
+
+                        }
+
+                        if (newCandidate != null && !currentModel.Contains(newCandidate))
+                            listOfCandidates.Add(newCandidate);
+                    }
+                }
             }
             foreach (Feature f in listOfCandidates)
                 f.Constant = 1;
@@ -705,7 +754,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
                 //How to handle near-zero values???
@@ -868,7 +917,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null || this.MLsettings == null)
             {
-                GlobalState.logError.log("Error: you need to specify a learning and validation set.");
+                GlobalState.logError.logLine("Error: you need to specify a learning and validation set.");
                 return false;
             }
             return true;
@@ -896,7 +945,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     val = measurements[i].GetNFPValue();
                 }
                 temparryLearn[i] = val;
@@ -951,7 +1000,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     val = measurements[i].GetNFPValue();
                 }
                 tempArrayValid[i] = val;
@@ -1095,7 +1144,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
                 //How to handle near-zero values???

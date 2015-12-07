@@ -120,7 +120,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             if (this.selectedConfigurations.Count > 1000)
             {
-                GlobalState.logInfo.log("Found more than 1000 numeric configurations. Use only 1000.");
+                GlobalState.logInfo.logLine("Found more than 1000 numeric configurations. Use only 1000.");
                 return;
             }
                 
