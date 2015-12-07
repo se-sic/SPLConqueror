@@ -109,6 +109,7 @@ namespace SPLConqueror_Core
 
             expression = expression.Replace("+", " + ");
             expression = expression.Replace("*", " * ");
+            expression = expression.Replace("/", " / ");
 
             expression = expression.Replace("(", " ( ");
             expression = expression.Replace(")", " ) ");
@@ -332,6 +333,15 @@ namespace SPLConqueror_Core
                         double leftHandSide = stack.Pop();
                         stack.Push(leftHandSide * rightHandSide);
                     }
+                    if (curr.Equals("/"))
+                    {
+                        double rightHandSide = stack.Pop();
+                        double leftHandSide = stack.Pop();
+                        if (leftHandSide == 0.0 || rightHandSide == 0.0)
+                            stack.Push(0.0);
+                        else
+                            stack.Push(leftHandSide / rightHandSide);
+                    }
                     // TODO log(0) == ????
                     if (curr.Equals("]"))
                     {
@@ -390,6 +400,15 @@ namespace SPLConqueror_Core
                         double rightHandSide = stack.Pop();
                         double leftHandSide = stack.Pop();
                         stack.Push(leftHandSide * rightHandSide);
+                    }
+                    if (curr.Equals("/"))
+                    {
+                        double rightHandSide = stack.Pop();
+                        double leftHandSide = stack.Pop();
+                        if (leftHandSide == 0.0 || rightHandSide == 0.0)
+                            stack.Push(0.0);
+                        else
+                            stack.Push(leftHandSide / rightHandSide);
                     }
                     if (curr.Equals("]"))
                     {
@@ -485,6 +504,9 @@ namespace SPLConqueror_Core
             if (thisToken.Equals("*") && otherToken.Equals("+"))
                 return true;
 
+            if (thisToken.Equals("/") && otherToken.Equals("+"))
+                return true;
+
             return false;
         }
 
@@ -557,6 +579,9 @@ namespace SPLConqueror_Core
             if(token.Equals("*"))
                 return true;
 
+            if (token.Equals("/"))
+                return true;
+
             return false;
         }
 
@@ -570,6 +595,9 @@ namespace SPLConqueror_Core
                 return true;
 
             if (token.Equals("*"))
+                return true;
+
+            if (token.Equals("/"))
                 return true;
 
             if (token.Equals("]"))
