@@ -130,6 +130,7 @@
             this.nbConstraintTextBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nbConstraintTextBox.Location = new System.Drawing.Point(13, 168);
             this.nbConstraintTextBox.Name = "nbConstraintTextBox";
+            this.nbConstraintTextBox.ReadOnly = true;
             this.nbConstraintTextBox.Size = new System.Drawing.Size(272, 23);
             this.nbConstraintTextBox.TabIndex = 52;
             // 
@@ -457,6 +458,7 @@
             this.boolConstraintTextBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.boolConstraintTextBox.Location = new System.Drawing.Point(13, 84);
             this.boolConstraintTextBox.Name = "boolConstraintTextBox";
+            this.boolConstraintTextBox.ReadOnly = true;
             this.boolConstraintTextBox.Size = new System.Drawing.Size(251, 23);
             this.boolConstraintTextBox.TabIndex = 6;
             // 
