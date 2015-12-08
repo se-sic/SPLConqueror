@@ -223,8 +223,9 @@ namespace VariabilitModel_GUI
                 boolImplButton.Enabled = false;
             }
 
-            boolAddConstraintButton.Enabled = boolConstraintList.Count > 1
-                && (boolConstraintList.Count - offset) % 2 == 1;
+            boolAddConstraintButton.Enabled = boolConstraintList.Count >= 1
+                && (boolConstraintList.Count - offset) % 2 == 1
+                && boolConstraintList[boolConstraintList.Count - 1] != "!";
             boolRemoveButton.Enabled = boolConstraintTextBox.Text.Length > 0;
             boolDeleteConstraintButton.Enabled = boolConstraintListBox.Items.Count > 0;
         }
@@ -706,7 +707,8 @@ namespace VariabilitModel_GUI
             
             nbAddConstraintButton.Enabled = nbConstraintList.Any(isSeparator)
                 && (nbConstraintList.Count - offset) % 2 == 1
-                && !nbConstraintList[nbConstraintList.Count - 1].EndsWith(".");
+                && !nbConstraintList[nbConstraintList.Count - 1].EndsWith(".")
+                && nbConstraintList[nbConstraintList.Count - 1] != "-";
             nbRemoveButton.Enabled = nbConstraintTextBox.Text.Length > 0;
             nbDeleteConstraintButton.Enabled = nbConstraintListBox.Items.Count > 0;
         }
