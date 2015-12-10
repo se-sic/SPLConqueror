@@ -35,8 +35,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         private static Dictionary<string, string> parameter = new Dictionary<string, string>();
 
-        private static Dictionary<NumericOption, int> optionToIndex = new Dictionary<NumericOption, int>();
-        private static Dictionary<NumericOption, List<double>> optionToValues = new Dictionary<NumericOption, List<double>>();
+        private Dictionary<NumericOption, int> optionToIndex = new Dictionary<NumericOption, int>();
+        private Dictionary<NumericOption, List<double>> optionToValues = new Dictionary<NumericOption, List<double>>();
 
 
         static KExchangeAlgorithm()
