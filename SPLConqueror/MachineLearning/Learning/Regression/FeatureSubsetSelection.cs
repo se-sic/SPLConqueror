@@ -154,13 +154,15 @@ namespace MachineLearning.Learning.Regression
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
-            double oldRoundError = Double.MaxValue;
+            double oldRoundRelativeError = Double.MaxValue;
             do
             {
-                oldRoundError = current.validationError;
+                oldRoundRelativeError = current.validationError_relative;
                 current = performForwardStep(current);
                 if (current == null)
                     return;
+                current.bestCandidateScore = oldRoundRelativeError - current.validationError_relative;
+                current.bestCandidatePenalizedScore = current.bestCandidateScore / (Math.Max(1, MLsettings.candidateSizePenalty * current.bestCandidateSize));
                 learningHistory.Add(current);
 
                 if (this.MLsettings.useBackward)
@@ -168,7 +170,7 @@ namespace MachineLearning.Learning.Regression
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
                 }
-            } while (!abortLearning(current, oldRoundError));
+            } while (!abortLearning(current, oldRoundRelativeError));
             updateInfluenceModel();
             this.finalError = evaluateError(this.validationSet, out this.finalError);
         }
@@ -330,6 +332,9 @@ namespace MachineLearning.Learning.Regression
                 LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
                 newRound.learningError_relative = relativeErrorTrain;
                 newRound.validationError_relative = relativeErrorEval;
+                newRound.elapsedTime = DateTime.Now - startTime;
+                newRound.bestCandidate = bestCandidate;
+                newRound.bestCandidateSize = bestCandidate.getNumberOfParticipatingOptions();
                 return newRound;
 
             }
@@ -872,17 +877,20 @@ namespace MachineLearning.Learning.Regression
         /// This methods checks whether the learning procedure should be aborted. For this decision, it uses parameters of ML settings, such as the number of rounds.
         /// </summary>
         /// <param name="current">The current state of learning (i.e., the current model).</param>
+        /// <param name="oldRoundRelativeError">The relative validation error for the previous round.</param>
         /// <returns>True if we abort learning, false otherwise</returns>
-        protected bool abortLearning(LearningRound current, double oldRoundError)
+        protected bool abortLearning(LearningRound current, double oldRoundRelativeError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
                 return true;
             TimeSpan diff = DateTime.Now - this.startTime;
+            if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
+                return true;
             if (MLsettings.stopOnLongRound && current.round > 30 && diff.Minutes > 60)
                 return true;
             if (abortDueError(current))
                 return true;
-            if (current.validationError + minimalRequiredImprovement(current) > oldRoundError)
+            if (current.validationError_relative + minimalRequiredImprovement(current) > oldRoundRelativeError)
             {
                 if (this.MLsettings.withHierarchy)
                 {
