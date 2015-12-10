@@ -532,6 +532,32 @@ namespace MachineLearning.Learning.Regression
                             listOfCandidates.Add(newCandidate);
                     }
                 }
+
+                // learn mirrowed function
+                if (this.MLsettings.learn_mirrowedFunction && basicFeature.participatingNumOptions.Count > 0)
+                {
+                    
+                    Feature newCandidate = new Feature("(" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
+                    if (!currentModel.Contains(newCandidate))
+                        listOfCandidates.Add(newCandidate);
+
+                    foreach (var feature in currentModel)
+                    {
+                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                            continue;
+                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                            continue;
+
+                   
+                        newCandidate = new Feature(feature.getPureString() + "* (" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
+                       
+
+                        if (newCandidate != null && !currentModel.Contains(newCandidate))
+                            listOfCandidates.Add(newCandidate);
+                    }
+                }
+
+
             }
             foreach (Feature f in listOfCandidates)
                 f.Constant = 1;
