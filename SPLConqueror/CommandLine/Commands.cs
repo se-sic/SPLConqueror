@@ -334,10 +334,13 @@ namespace CommandLine
                                 }
                             }
                         }*/
+
+                        var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+
                         string[] para = task.Split(new char[] { ' ' });
                         // TODO very error prone..
                         ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2], GlobalState.optionOrder);
-                        printer.print(this.exp.testSet);
+                        printer.print(configs);
 
                         break;
                     }

@@ -31,7 +31,7 @@ namespace SPLConqueror_Core
         public InfluenceFunction(string expression, VariabilityModel varModel)
         {
             this.varModel = varModel; 
-            parseExpressionToPolnishNotation(expression);
+            parseExpressionToPolishNotation(expression);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SPLConqueror_Core
         public InfluenceFunction(String expression){
 
             this.varModel = extractFeatureModelFromExpression(createWellFormedExpression(expression));
-            parseExpressionToPolnishNotation(expression);
+            parseExpressionToPolishNotation(expression);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SPLConqueror_Core
             numOption = option;
             if (option.Name != "n" && expression.Split(' ').Contains("n"))
                 expression = expression.Replace("n", option.Name);
-            parseExpressionToPolnishNotation(expression);
+            parseExpressionToPolishNotation(expression);
         }
 
         protected InfluenceFunction()
@@ -67,7 +67,7 @@ namespace SPLConqueror_Core
         {
             VariabilityModel varModel = new VariabilityModel("TEMP");
 
-            string[] parts = expression.Split(new char[] { '+', '*', '[', ']' });
+            string[] parts = expression.Split(new char[] { '+','-', '*', '[', ']' });
 
             double value = 0.0;
             for (int i = 0; i < parts.Length;i++)
@@ -90,7 +90,7 @@ namespace SPLConqueror_Core
 
         /**
          * 
-         * add a whitespace before and after each special character (+,*,[,],....)
+         * Adds a whitespace before and after each special character (+,*,[,],....)
          * besides, it replaces each two pair of whitespaces with a single whitespace
          * 
          * 
@@ -108,6 +108,7 @@ namespace SPLConqueror_Core
             expression = expression.Replace("\t", " ");
 
             expression = expression.Replace("+", " + ");
+            expression = expression.Replace("-", " - ");
             expression = expression.Replace("*", " * ");
             expression = expression.Replace("/", " / ");
 
@@ -121,6 +122,8 @@ namespace SPLConqueror_Core
             {
                 expression = expression.Replace("  ", " ");
             }
+
+            expression = expression.Replace("+ - ", "+ -");
 
             return expression;
         }
@@ -225,7 +228,7 @@ namespace SPLConqueror_Core
         }
 
 
-        private void parseExpressionToPolnishNotation(String expression)
+        private void parseExpressionToPolishNotation(String expression)
         {
             Queue<string> queue = new Queue<string>();
             Stack<string> stack = new Stack<string>();
@@ -282,8 +285,8 @@ namespace SPLConqueror_Core
                 }
                 // token is number or a feature which has a value
                 // features existing in the function but not in the feature model, have to be accepted too
-               tokenIsAFeatureOrNumber(token, this.varModel);
-               queue.Enqueue(token);
+               if(tokenIsAFeatureOrNumber(token, this.varModel))
+                   queue.Enqueue(token);
                
             }
 
@@ -326,6 +329,14 @@ namespace SPLConqueror_Core
                             stack.Push(rightHandSide);
                         double leftHandSide = stack.Pop();
                         stack.Push(leftHandSide + rightHandSide);
+                    }
+                    if (curr.Equals("-"))
+                    {
+                        double rightHandSide = stack.Pop();
+                        if (stack.Count == 0)
+                            stack.Push(rightHandSide);
+                        double leftHandSide = stack.Pop();
+                        stack.Push(leftHandSide - rightHandSide);
                     }
                     if (curr.Equals("*"))
                     {
@@ -395,6 +406,16 @@ namespace SPLConqueror_Core
                         double leftHandSide = stack.Pop();
                         stack.Push(leftHandSide + rightHandSide);
                     }
+                    if (curr.Equals("-"))
+                    {
+                        if (stack.Count < 2)
+                            Console.WriteLine("Error. Possible reason: name of numeric option does not match the name in the stepsize XML-tag");
+
+                        double rightHandSide = stack.Pop();
+                        double leftHandSide = stack.Pop();
+                        stack.Push(leftHandSide - rightHandSide);
+                    }
+
                     if (curr.Equals("*"))
                     {
                         double rightHandSide = stack.Pop();
@@ -507,6 +528,12 @@ namespace SPLConqueror_Core
             if (thisToken.Equals("/") && otherToken.Equals("+"))
                 return true;
 
+            if (thisToken.Equals("*") && otherToken.Equals("-"))
+                return true;
+
+            if (thisToken.Equals("/") && otherToken.Equals("-"))
+                return true;
+
             return false;
         }
 
@@ -576,6 +603,9 @@ namespace SPLConqueror_Core
             if(token.Equals("+"))
                 return true;
 
+            if (token.Equals("-"))
+                return true;
+
             if(token.Equals("*"))
                 return true;
 
@@ -591,19 +621,10 @@ namespace SPLConqueror_Core
 
             // schöner machen 
 
-            if (token.Equals("+"))
-                return true;
-
-            if (token.Equals("*"))
-                return true;
-
-            if (token.Equals("/"))
-                return true;
-
             if (token.Equals("]"))
                 return true;
 
-            return false;
+            return isOperator(token);
         }
 
         public VariabilityModel getVariabilityModel()
