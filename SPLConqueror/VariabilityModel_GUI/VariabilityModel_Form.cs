@@ -121,6 +121,7 @@ namespace VariabilitModel_GUI
             GlobalState.varModel = new VariabilityModel(result.Item2);
             this.saveModelToolStripMenuItem.Enabled = true;
             this.editToolStripMenuItem.Enabled = true;
+            this.Text = TITLE + ": " + result.Item2;
 
             InitTreeView();
         }
