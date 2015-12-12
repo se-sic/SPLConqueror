@@ -161,15 +161,20 @@ namespace VariabilitModel_GUI
 
             if (result.Item1 == DialogResult.OK)
             {
-                List<ConfigurationOption> list;
+                currentOption.Parent.Children.Remove(currentOption);
 
+                /*
+                List<ConfigurationOption> list;
+                
                 GlobalState.varModel.parentChildRelationships.TryGetValue(currentOption.Parent, out list);
                 list.Remove(currentOption);
 
                 GlobalState.varModel.parentChildRelationships.TryGetValue(result.Item2, out list);
                 list.Add(currentOption);
+                */
 
                 currentOption.Parent = result.Item2;
+                currentOption.Parent.Children.Add(currentOption);
             }
         }
 
@@ -1171,6 +1176,7 @@ namespace VariabilitModel_GUI
 
                 options.Remove(opt);
 
+                /*
                 List<ConfigurationOption> children;
                 GlobalState.varModel.parentChildRelationships.TryGetValue(opt, out children);
 
@@ -1178,7 +1184,10 @@ namespace VariabilitModel_GUI
                 {
                     foreach (ConfigurationOption child in children)
                         optionsToRemove.Add(child);
-                }
+                }*/
+
+                foreach (ConfigurationOption child in opt.Children)
+                    optionsToRemove.Add(child);
 
                 optionsToRemove.Remove(opt);
             }
