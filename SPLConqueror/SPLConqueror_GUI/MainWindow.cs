@@ -723,11 +723,14 @@ namespace SPLConqueror_GUI
             List<ConfigurationOption> allChildren;
 
             // Creating all nodes of the children
+            /*
             if (currentModel.parentChildRelationships.TryGetValue(val, out allChildren))
             {
                 foreach (ConfigurationOption child in allChildren)
                     functionChildren.Add(insertIntoTreeView(child));
-            }
+            }*/
+            foreach (ConfigurationOption child in val.Children)
+                functionChildren.Add(insertIntoTreeView(child));
 
             // Creating this node and setting the correct state of this node
             TreeNode current = new TreeNode(val.Name, functionChildren.ToArray());

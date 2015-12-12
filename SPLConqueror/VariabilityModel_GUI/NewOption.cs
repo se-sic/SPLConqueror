@@ -320,6 +320,7 @@ namespace VariabilitModel_GUI
 
             newOption.Parent = GlobalState.varModel.getOption(this.parentComboBox.Text);
 
+            /*
             List<ConfigurationOption> list;
             
             if (GlobalState.varModel.parentChildRelationships.TryGetValue(newOption.Parent, out list))
@@ -330,7 +331,9 @@ namespace VariabilitModel_GUI
                 list.Add(newOption);
 
                 GlobalState.varModel.parentChildRelationships.Add(newOption.Parent, list);
-            }
+            }*/
+
+            newOption.Parent.Children.Add(newOption);
 
             this.Dispose();
             GlobalState.varModel.addConfigurationOption(newOption);
