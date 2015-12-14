@@ -720,15 +720,8 @@ namespace SPLConqueror_GUI
                 throw new ArgumentException("Parameter val must not be null!");
 
             List<TreeNode> functionChildren = new List<TreeNode>();
-            List<ConfigurationOption> allChildren;
 
             // Creating all nodes of the children
-            /*
-            if (currentModel.parentChildRelationships.TryGetValue(val, out allChildren))
-            {
-                foreach (ConfigurationOption child in allChildren)
-                    functionChildren.Add(insertIntoTreeView(child));
-            }*/
             foreach (ConfigurationOption child in val.Children)
                 functionChildren.Add(insertIntoTreeView(child));
 
