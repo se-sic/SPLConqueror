@@ -133,6 +133,7 @@ namespace MachineLearning.Sampling
                 {
                     Configuration c = new Configuration(binConfig);
                     result.Add(c);
+                    continue;
                 }
                 foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
                 {

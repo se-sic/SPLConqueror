@@ -377,26 +377,15 @@ namespace MachineLearning.Learning.Regression
             ILArray<double> DM = createDataMatrix(newModel);
             if (DM.Size.NumberOfElements == 0)
                 return false;
-            //   ILArray<double> DMT = DM.T;
-            ILArray<double> temparray = null;
-
-            double[,] fixSVDwithACCORD;
-            //var exp = toSystemMatrix<double>(DM.T);
-            // fixSVDwithACCORD = (double[,])exp;
-            fixSVDwithACCORD = ((double[,])toSystemMatrix<double>(DM.T)).PseudoInverse();
-            temparray = fixSVDwithACCORD;
 
             ILArray<double> constants;
-            if (temparray.IsEmpty)
-                constants = ILMath.multiply(DM, Y_learning.T);
-            else
-                constants = ILMath.multiply(temparray, Y_learning.T);
+            constants = ILMath.linsolve(DM.T, Y_learning);
             double[] fittedConstant = constants.ToArray<double>();
             for (int i = 0; i < constants.Length; i++)
             {
                 newModel[i].Constant = fittedConstant[i];
-                //constants.GetValue(i);
             }
+
             //the fitting found no further influence
             if (newModel[constants.Length - 1].Constant == 0)
                 return false;
@@ -985,7 +974,7 @@ namespace MachineLearning.Learning.Regression
                 temparryLearn[i] = val;
             }
             Y_learning = temparryLearn;
-            Y_learning = Y_learning.T;
+            //Y_learning = Y_learning.T;
 
             //Now, we genrate for each inidividual option the data column. We also remove options from the initial feature set that occur in all or no variants of the learning set
             List<Feature> featuresToRemove = new List<Feature>();
