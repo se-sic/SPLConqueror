@@ -28,6 +28,7 @@ namespace SPLConqueror_Core
           //  set { binaryOptions = value; }
         }
 
+        public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
         //public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
         
         String name = "empty";
@@ -151,7 +152,7 @@ namespace SPLConqueror_Core
             }
             catch (Exception e)
             {
-                GlobalState.logError.log(e.Message);
+                GlobalState.logError.logLine(e.Message);
                 return false;
             }
             return true;
@@ -245,7 +246,7 @@ namespace SPLConqueror_Core
             foreach (XmlElement numOptNode in xmlNode.ChildNodes)
             {
                 if (!addConfigurationOption(NumericOption.loadFromXML(numOptNode, this)))
-                    GlobalState.logError.log("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
+                    GlobalState.logError.logLine("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
             }
         }
 
@@ -254,7 +255,7 @@ namespace SPLConqueror_Core
             foreach (XmlElement binOptNode in xmlNode.ChildNodes)
             {
                 if (!addConfigurationOption(BinaryOption.loadFromXML(binOptNode, this)))
-                    GlobalState.logError.log("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
+                    GlobalState.logError.logLine("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
             }
         }
 
