@@ -13,13 +13,29 @@ namespace MachineLearning.Learning.Regression
         public double learningError_relative = Double.MaxValue;
         public double validationError_relative = Double.MaxValue;
         private List<Feature> featureSet = new List<Feature>();
-
         public List<Feature> FeatureSet
         {
             get { return featureSet; }
             set { featureSet = value; }
         }
         public int round = 0;
+
+        public TimeSpan elapsedTime = new TimeSpan(0);
+        public double modelComplexity {
+            get {
+                const double complexityPower = 1.21;
+                double complexity = 0;
+                foreach (var feature in featureSet)
+                {
+                    complexity += Math.Pow(feature.getNumberOfParticipatingOptions(), complexityPower);
+                }
+                return complexity;
+            }
+        }
+        public Feature bestCandidate = null;
+        public int bestCandidateSize = 0;
+        public double bestCandidateScore = 0;
+        public double bestCandidatePenalizedScore = 0;
 
         /// <summary>
         /// TODO: Prints the information learned in a round.
@@ -42,6 +58,13 @@ namespace MachineLearning.Learning.Regression
             sb.Append(learningError_relative+";");
             sb.Append(validationError + ";");
             sb.Append(validationError_relative + ";");
+            sb.Append(elapsedTime.TotalSeconds + ";");
+            sb.Append(modelComplexity + ";");
+            sb.Append(bestCandidate + ";");
+            sb.Append(bestCandidateSize + ";");
+            sb.Append(bestCandidateScore + ";");
+            sb.Append(bestCandidatePenalizedScore + ";");
+            //sb.Append(string.Format("{0};", ));
 
             return sb.ToString();
         }

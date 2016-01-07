@@ -219,7 +219,7 @@ namespace PerformancePrediction_GUI
 
         private void error()
         {
-            GlobalState.logInfo.log(ERROR + "\n");
+            GlobalState.logInfo.logLine(ERROR + "\n");
 
         }
 

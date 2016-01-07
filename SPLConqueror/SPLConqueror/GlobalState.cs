@@ -157,7 +157,7 @@ namespace SPLConqueror_Core
                         if (similarOnes.Count == 0)
                         {
 
-                            logError.log("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
+                            logError.logLine("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
 
                         }
                        // logError.log("Did not find a measured value for the configuration: " + config.ToString());

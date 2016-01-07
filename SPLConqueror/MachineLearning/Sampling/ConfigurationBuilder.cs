@@ -64,6 +64,7 @@ namespace MachineLearning.Sampling
                         else
                             design = new CentralCompositeInscribedDesign(vm.NumericOptions);
                         design.computeDesign(parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE]);
+                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
                         numericConfigs.AddRange(design.SelectedConfigurations);
                         break;
 
@@ -100,6 +101,7 @@ namespace MachineLearning.Sampling
                         else
                             design = new KExchangeAlgorithm(vm.NumericOptions);
                         design.computeDesign(parametersOfExpDesigns[SamplingStrategies.KEXCHANGE]);
+                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
                         numericConfigs.AddRange(design.SelectedConfigurations);
                         break;
 
@@ -109,6 +111,7 @@ namespace MachineLearning.Sampling
                         else
                             design = new PlackettBurmanDesign(vm.NumericOptions);
                         design.computeDesign(parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN]);
+                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
                         numericConfigs.AddRange(design.SelectedConfigurations);
                         break;
 
@@ -118,6 +121,7 @@ namespace MachineLearning.Sampling
                         else
                             design = new RandomSampling(vm.NumericOptions);
                         design.computeDesign(parametersOfExpDesigns[SamplingStrategies.RANDOM]);
+                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
                         numericConfigs.AddRange(design.SelectedConfigurations);
                         break;
                 }
@@ -129,6 +133,7 @@ namespace MachineLearning.Sampling
                 {
                     Configuration c = new Configuration(binConfig);
                     result.Add(c);
+                    continue;
                 }
                 foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
                 {
@@ -138,6 +143,23 @@ namespace MachineLearning.Sampling
             }
 
             return result.Distinct().ToList();
+        }
+
+        public static void printSelectetedConfigurations_expDesign(List<Dictionary<NumericOption, double>> configurations)
+        {
+            GlobalState.varModel.NumericOptions.ForEach(x => GlobalState.logInfo.log(x.Name+" | "));
+            GlobalState.logInfo.log("\n");
+            foreach (Dictionary<NumericOption, double> configuration in configurations)
+            {
+                GlobalState.varModel.NumericOptions.ForEach(x =>
+                {
+                    if (configuration.ContainsKey(x))
+                        GlobalState.logInfo.log(configuration[x] + " | ");
+                    else
+                        GlobalState.logInfo.log("\t | ");
+                });
+                GlobalState.logInfo.log("\n");
+            }
         }
     }
 }

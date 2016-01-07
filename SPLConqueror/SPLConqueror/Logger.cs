@@ -44,8 +44,9 @@ namespace SPLConqueror_Core
             }
         }
 
-
         public abstract void log(String msg);
+
+        public abstract void logLine(String msg);
 
         public void close()
         {
