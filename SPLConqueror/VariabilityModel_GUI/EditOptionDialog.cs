@@ -136,6 +136,31 @@ namespace VariabilitModel_GUI
             Tuple<DialogResult, string> result = RenameDialog();
 
             if (result.Item1 == DialogResult.OK) {
+                List<string> editedBooleanConstraints = new List<string>();
+                List<NonBooleanConstraint> editedNonBooleanConstraints = new List<NonBooleanConstraint>();
+
+                foreach (string boolConst in GlobalState.varModel.BooleanConstraints)
+                {
+                    string[] constParts = boolConst.Split(' ');
+
+                    for (int i = 0; i < constParts.Length; i++)
+                        constParts[i] = constParts[i] == currentOption.Name ? result.Item2 : constParts[i];
+
+                    editedBooleanConstraints.Add(String.Join(" ", constParts));
+                }
+
+                foreach (NonBooleanConstraint nbConst in GlobalState.varModel.NonBooleanConstraints)
+                {
+                    string[] constParts = nbConst.ToString().Split(' ');
+
+                    for (int i = 0; i < constParts.Length; i++)
+                        constParts[i] = constParts[i] == currentOption.Name ? result.Item2 : constParts[i];
+
+                    editedNonBooleanConstraints.Add(new NonBooleanConstraint(String.Join(" ", constParts), GlobalState.varModel));
+                }
+
+                GlobalState.varModel.BooleanConstraints = editedBooleanConstraints;
+                GlobalState.varModel.NonBooleanConstraints = editedNonBooleanConstraints;
                 currentOption.Name = result.Item2;
 
                 selectOptionComboBox.Items.Clear();
@@ -246,18 +271,6 @@ namespace VariabilitModel_GUI
         }
 
         /// <summary>
-        /// Invokes if the text of the corresponding text box has been changed.
-        /// 
-        /// ATTENTION: This will be open for an extension if needed.
-        /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">Event</param>
-        private void featureDescriptionTextBox_TextChanged(object sender, EventArgs e)
-        {
-            // TODO: EXTENSION
-        }
-
-        /// <summary>
         /// Invokes if the number of selected items in the list check box for excluded
         /// combinations has changed.
         /// 
@@ -303,8 +316,6 @@ namespace VariabilitModel_GUI
         private void excludesAddButton_Click(object sender, EventArgs e)
         {
             List<ConfigurationOption> excludeCombination = new List<ConfigurationOption>();
-
-            // TODO: Testen obs funst
 
             foreach (ConfigurationOption opt in excludesCheckedListBox.CheckedItems)
                 excludeCombination.Add(opt);
@@ -364,8 +375,6 @@ namespace VariabilitModel_GUI
         private void requiresAddButton_Click(object sender, EventArgs e)
         {
             List<ConfigurationOption> requireCombination = new List<ConfigurationOption>();
-
-            // TODO: Testen obs funst
 
             foreach (ConfigurationOption opt in requiresCheckedListBox.CheckedItems)
                 requireCombination.Add(opt);
