@@ -34,6 +34,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         private double epsilon = 1E-5;
 
         private static Dictionary<string, string> parameter = new Dictionary<string, string>();
+
+        private Dictionary<NumericOption, int> optionToIndex = new Dictionary<NumericOption, int>();
+        private Dictionary<NumericOption, List<double>> optionToValues = new Dictionary<NumericOption, List<double>>();
+
+
         static KExchangeAlgorithm()
         {
             parameter.Add("sampleSize", "int");
@@ -82,22 +87,29 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
           
             // set number of possible levels for each VariableFeature
             numberOfLevels = new Dictionary<NumericOption, int>();
-            foreach (NumericOption vf in options)
+            foreach (NumericOption numOption in options)
             {
-                int posLevels = vf.getAllValues().Count;
+                optionToIndex.Add(numOption, optionToIndex.Count);
+
+                List<double> allValuesOfOption = numOption.getAllValues();
+                optionToValues.Add(numOption, allValuesOfOption);
+
+                int posLevels = allValuesOfOption.Count;
 
                 if (!rescale || posLevels <= 4) // include all levels if # <= 4
                 {
-                    numberOfLevels.Add(vf, posLevels);
+                    numberOfLevels.Add(numOption, posLevels);
                 }
                 else
                 {
-                    numberOfLevels.Add(vf, Convert.ToInt32(4 + Math.Round(Math.Sqrt(posLevels) / 2.0))); // rescale
+                    numberOfLevels.Add(numOption, Convert.ToInt32(4 + Math.Round(Math.Sqrt(posLevels) / 2.0))); // rescale
                 }
             }
 
             // get full factorial design
             double[,] fullFactorial = getFullFactorial(numberOfLevels);
+
+            fullFactorial = filterByNonBooleanconstraints(fullFactorial);
 
             // create initial random design
             Random rnd = new Random(1);
@@ -195,6 +207,41 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             this.selectedConfigurations = configs;
 
             return true;
+        }
+
+        private double[,] filterByNonBooleanconstraints(double[,] fullFactorial)
+        {
+            List<double[]> filteredConfigurations = new List<double[]>();
+
+            for (int i = 0; i < fullFactorial.GetLength(0); i++)
+            {
+                double[] row = fullFactorial.GetRow<double>(i);
+                Dictionary<NumericOption,double> config = new Dictionary<NumericOption,double>();
+                
+                foreach(KeyValuePair<NumericOption, int> option in optionToIndex)
+                {
+                    config.Add(option.Key, optionToValues[option.Key][(int)row[(int)option.Value]]);
+                }
+                if (GlobalState.varModel.NonBooleanConstraints.TrueForAll(x => x.configIsValid(config)))
+                {
+                    filteredConfigurations.Add(row);
+                }
+            }
+
+            if (filteredConfigurations.Count == 0)
+                return new double[0, 0];
+
+            double[,] filteredAsArray = new double[filteredConfigurations.Count, filteredConfigurations[0].Length];
+
+            for (int i = 0; i < filteredConfigurations.Count; i++)
+            {
+                for (int j = 0; j < filteredConfigurations[0].Length; j++)
+                {
+                    filteredAsArray[i, j] = filteredConfigurations[i][j]; 
+                }
+            }
+
+            return filteredAsArray;
         }
 
         // generate all possible run configurations - plagiarized from FullFactorialDesign

@@ -154,13 +154,15 @@ namespace MachineLearning.Learning.Regression
             LearningRound current = new LearningRound();
             if (this.strictlyMandatoryFeatures.Count > 0)
                 current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
-            double oldRoundError = Double.MaxValue;
+            double oldRoundRelativeError = Double.MaxValue;
             do
             {
-                oldRoundError = current.validationError;
+                oldRoundRelativeError = current.validationError_relative;
                 current = performForwardStep(current);
                 if (current == null)
                     return;
+                current.bestCandidateScore = oldRoundRelativeError - current.validationError_relative;
+                current.bestCandidatePenalizedScore = current.bestCandidateScore / (Math.Max(1, MLsettings.candidateSizePenalty * current.bestCandidateSize));
                 learningHistory.Add(current);
 
                 if (this.MLsettings.useBackward)
@@ -168,7 +170,7 @@ namespace MachineLearning.Learning.Regression
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
                 }
-            } while (!abortLearning(current, oldRoundError));
+            } while (!abortLearning(current, oldRoundRelativeError));
             updateInfluenceModel();
             this.finalError = evaluateError(this.validationSet, out this.finalError);
         }
@@ -330,6 +332,9 @@ namespace MachineLearning.Learning.Regression
                 LearningRound newRound = new LearningRound(minimalErrorModel, computeLearningError(minimalErrorModel, out relativeErrorTrain), computeValidationError(minimalErrorModel, out relativeErrorEval), currentModel.round + 1);
                 newRound.learningError_relative = relativeErrorTrain;
                 newRound.validationError_relative = relativeErrorEval;
+                newRound.elapsedTime = DateTime.Now - startTime;
+                newRound.bestCandidate = bestCandidate;
+                newRound.bestCandidateSize = bestCandidate.getNumberOfParticipatingOptions();
                 return newRound;
 
             }
@@ -372,26 +377,15 @@ namespace MachineLearning.Learning.Regression
             ILArray<double> DM = createDataMatrix(newModel);
             if (DM.Size.NumberOfElements == 0)
                 return false;
-            //   ILArray<double> DMT = DM.T;
-            ILArray<double> temparray = null;
-
-            double[,] fixSVDwithACCORD;
-            //var exp = toSystemMatrix<double>(DM.T);
-            // fixSVDwithACCORD = (double[,])exp;
-            fixSVDwithACCORD = ((double[,])toSystemMatrix<double>(DM.T)).PseudoInverse();
-            temparray = fixSVDwithACCORD;
 
             ILArray<double> constants;
-            if (temparray.IsEmpty)
-                constants = ILMath.multiply(DM, Y_learning.T);
-            else
-                constants = ILMath.multiply(temparray, Y_learning.T);
+            constants = ILMath.linsolve(DM.T, Y_learning);
             double[] fittedConstant = constants.ToArray<double>();
             for (int i = 0; i < constants.Length; i++)
             {
                 newModel[i].Constant = fittedConstant[i];
-                //constants.GetValue(i);
             }
+
             //the fitting found no further influence
             if (newModel[constants.Length - 1].Constant == 0)
                 return false;
@@ -483,6 +477,81 @@ namespace MachineLearning.Learning.Regression
                             listOfCandidates.Add(newCandidate);
                     }
                 }
+
+                if (this.MLsettings.learn_asymFunction && basicFeature.participatingNumOptions.Count > 0)
+                {
+                    Feature newCandidate = new Feature("1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
+
+                    if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
+                    {
+                        if (!currentModel.Contains(newCandidate))
+                            listOfCandidates.Add(newCandidate);
+                    }
+
+                    foreach (var feature in currentModel)
+                    {
+                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                            continue;
+                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                            continue;
+                        newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
+                        if (newCandidate.participatingBoolOptions.Count == 0 && newCandidate.participatingNumOptions.All(x => x.Min_value > 0))
+                        {
+                            if (!currentModel.Contains(newCandidate))
+                                listOfCandidates.Add(newCandidate);
+                        }
+                    }
+                }
+
+                if (this.MLsettings.learn_ratioFunction && basicFeature.participatingNumOptions.Count > 0)
+                {
+                    Feature newCandidate = null;
+                    foreach (var feature in currentModel)
+                    {
+                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                            continue;
+                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                            continue;
+
+                        if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
+                        {
+                            if (feature.participatingBoolOptions.Count == 0 && feature.participatingNumOptions.All(x => x.Min_value > 0))
+                            {
+                                newCandidate = new Feature(feature.getPureString() + " / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
+                            }
+
+                        }
+
+                        if (newCandidate != null && !currentModel.Contains(newCandidate))
+                            listOfCandidates.Add(newCandidate);
+                    }
+                }
+
+                // learn mirrowed function
+                if (this.MLsettings.learn_mirrowedFunction && basicFeature.participatingNumOptions.Count > 0)
+                {
+                    
+                    Feature newCandidate = new Feature("(" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
+                    if (!currentModel.Contains(newCandidate))
+                        listOfCandidates.Add(newCandidate);
+
+                    foreach (var feature in currentModel)
+                    {
+                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                            continue;
+                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                            continue;
+
+                   
+                        newCandidate = new Feature(feature.getPureString() + "* (" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
+                       
+
+                        if (newCandidate != null && !currentModel.Contains(newCandidate))
+                            listOfCandidates.Add(newCandidate);
+                    }
+                }
+
+
             }
             foreach (Feature f in listOfCandidates)
                 f.Constant = 1;
@@ -705,7 +774,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
                 //How to handle near-zero values???
@@ -797,17 +866,20 @@ namespace MachineLearning.Learning.Regression
         /// This methods checks whether the learning procedure should be aborted. For this decision, it uses parameters of ML settings, such as the number of rounds.
         /// </summary>
         /// <param name="current">The current state of learning (i.e., the current model).</param>
+        /// <param name="oldRoundRelativeError">The relative validation error for the previous round.</param>
         /// <returns>True if we abort learning, false otherwise</returns>
-        protected bool abortLearning(LearningRound current, double oldRoundError)
+        protected bool abortLearning(LearningRound current, double oldRoundRelativeError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
                 return true;
             TimeSpan diff = DateTime.Now - this.startTime;
+            if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
+                return true;
             if (MLsettings.stopOnLongRound && current.round > 30 && diff.Minutes > 60)
                 return true;
             if (abortDueError(current))
                 return true;
-            if (current.validationError + minimalRequiredImprovement(current) > oldRoundError)
+            if (current.validationError_relative + minimalRequiredImprovement(current) > oldRoundRelativeError)
             {
                 if (this.MLsettings.withHierarchy)
                 {
@@ -868,7 +940,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (this.learningSet.Count == 0 || this.validationSet.Count == 0 || this.infModel == null || this.MLsettings == null)
             {
-                GlobalState.logError.log("Error: you need to specify a learning and validation set.");
+                GlobalState.logError.logLine("Error: you need to specify a learning and validation set.");
                 return false;
             }
             return true;
@@ -896,13 +968,13 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     val = measurements[i].GetNFPValue();
                 }
                 temparryLearn[i] = val;
             }
             Y_learning = temparryLearn;
-            Y_learning = Y_learning.T;
+            //Y_learning = Y_learning.T;
 
             //Now, we genrate for each inidividual option the data column. We also remove options from the initial feature set that occur in all or no variants of the learning set
             List<Feature> featuresToRemove = new List<Feature>();
@@ -951,7 +1023,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     val = measurements[i].GetNFPValue();
                 }
                 tempArrayValid[i] = val;
@@ -1095,7 +1167,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 catch (ArgumentException argEx)
                 {
-                    GlobalState.logError.log(argEx.Message);
+                    GlobalState.logError.logLine(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
                 //How to handle near-zero values???

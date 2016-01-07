@@ -18,10 +18,18 @@ namespace SPLConqueror_Core
         /// Logs the error depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at file
         /// </summary>
         /// <param name="msg">The error message to be printed or logged</param>
-        public override void log(String msg)
+        public override void logLine(String msg)
         {
             if (!msg.EndsWith(System.Environment.NewLine))
                 msg += System.Environment.NewLine;
+            if (writer != null)
+                writer.Write(msg);
+            else
+                Console.Write(msg);
+        }
+
+        public override void log(String msg)
+        {
             if (writer != null)
                 writer.Write(msg);
             else

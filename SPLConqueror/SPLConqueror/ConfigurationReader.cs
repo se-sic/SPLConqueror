@@ -205,7 +205,7 @@ namespace SPLConqueror_Core
                 {
                     if (configurations.Contains(c))
                     {
-                        GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + c.ToString());
+                        GlobalState.logError.logLine("Mutiple definition of one configuration in the configurations file:  " + c.ToString());
                     }
                     else
                     {
@@ -229,7 +229,7 @@ namespace SPLConqueror_Core
                         bOpt = model.getBinaryOption(currOption);
 
                         if (bOpt == null)
-                            GlobalState.logError.log("No Binary option found with name: " + currOption);
+                            GlobalState.logError.logLine("No Binary option found with name: " + currOption);
                         binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
                     }
                 }
@@ -255,7 +255,7 @@ namespace SPLConqueror_Core
                             continue;
                         NumericOption varFeat = model.getNumericOption(numOptionsKeyValue[0]);
                         if (varFeat == null)
-                            GlobalState.logError.log("No numeric option found with name: " + numOptionsKeyValue[0]);
+                            GlobalState.logError.logLine("No numeric option found with name: " + numOptionsKeyValue[0]);
                         double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
 
                         numericOptions.Add(varFeat, varFeatValue);
@@ -272,7 +272,7 @@ namespace SPLConqueror_Core
                     configurations.Add(config);
                 //}
             }
-            GlobalState.logInfo.log("Configs with too large deviation: " + configsWithTooLargeDeviation);
+            GlobalState.logInfo.logLine("Configs with too large deviation: " + configsWithTooLargeDeviation);
             return configurations.ToList();
         }
 

@@ -85,23 +85,17 @@ namespace SPLConqueror_Core
 
         private bool print_order(List<Configuration> configurations)
         {
-
-            StringBuilder sb = new StringBuilder();
-
+            StreamWriter outfile = new StreamWriter(file);
             foreach (Configuration c in configurations)
             {
-                sb.Append(prefix + " ");
-                sb.Append("\""+c.ToString(order) + "\"");
-                sb.Append(c.OutputString(order) + " ");
-                sb.Append(postfix + " " + System.Environment.NewLine);
+                outfile.Write(prefix + " ");
+                outfile.Write("\"" + c.ToString(order) + "\"");
+                outfile.Write(c.OutputString(order) + " ");
+                outfile.Write(postfix + " " + System.Environment.NewLine);
 
+                outfile.Flush();
             }
-
-            StreamWriter outfile = new StreamWriter(file);
-            outfile.Write(sb.ToString());
-
             return true;
-
         }
 
         private List<ConfigurationOption> enrichWithAllOptions(List<ConfigurationOption> optionOrder)
@@ -121,8 +115,5 @@ namespace SPLConqueror_Core
             }
             return optionOrder;
         }
-
-
-
     }
 }
