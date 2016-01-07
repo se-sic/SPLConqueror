@@ -10,8 +10,9 @@ using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
+using MachineLearning;
 
-namespace MachineLearning
+namespace CommandLine
 {
     public class Commands
     {
@@ -70,7 +71,7 @@ namespace MachineLearning
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
-        public Learning.Regression.Learning exp = new Learning.Regression.Learning();
+        public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
@@ -79,7 +80,7 @@ namespace MachineLearning
         /// <returns>Returns an empty string if the command could be performed by the method. If the command could not be performed by the method, the original command is returned.</returns>
         public string performOneCommand(string line)
         {
-            GlobalState.logInfo.log(COMMAND + line);
+            GlobalState.logInfo.logLine(COMMAND + line);
 
 
             // remove comment part of the line (the comment starts with an #)
@@ -112,13 +113,13 @@ namespace MachineLearning
 
                         if (configurations_Learning.Count == 0)
                         {
-                            GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
+                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
                             break;
                         }
 
-                        GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
+                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
-                        exp = new Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
@@ -158,21 +159,27 @@ namespace MachineLearning
                 case COMMAND_EVALUATION_SET:
                     {
                         GlobalState.evalutionSet.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
-                        GlobalState.logInfo.log("Evaluation set loaded.");
+                        GlobalState.logInfo.logLine("Evaluation set loaded.");
                     }
                     break;
                 case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_SAMPLING:
                     exp.clearSampling();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_LEARNING:
                     exp.clear();
+                    toSample.Clear();
+                    toSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
-                    GlobalState.logInfo.log(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
+                    GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
 
                     break;
                 case COMMAND_SAMPLE_ALLBINARY:
@@ -192,7 +199,7 @@ namespace MachineLearning
                     }
                 case COMMAND_ANALYZE_LEARNING:
                     {//TODO: Analyzation is not supported in the case of bagging
-                        GlobalState.logInfo.log("Models:");
+                        GlobalState.logInfo.logLine("Models:");
                         if (this.mlSettings.bagging)
                         {
                             for (int i = 0; i < this.exp.models.Count; i++)
@@ -200,7 +207,7 @@ namespace MachineLearning
                                 FeatureSubsetSelection learnedModel = exp.models[i];
                                 if (learnedModel == null)
                                 {
-                                    GlobalState.logError.log("Error... learning was not performed!");
+                                    GlobalState.logError.logLine("Error... learning was not performed!");
                                     break;
                                 }
                                 foreach (LearningRound lr in learnedModel.LearningHistory)
@@ -215,7 +222,7 @@ namespace MachineLearning
                                         double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
                                     }
 
-                                    GlobalState.logInfo.log(lr.ToString() + relativeError);
+                                    GlobalState.logInfo.logLine(lr.ToString() + relativeError);
                                 }
                             }
                         }
@@ -224,7 +231,7 @@ namespace MachineLearning
                             FeatureSubsetSelection learnedModel = exp.models[0];
                             if (learnedModel == null)
                             {
-                                GlobalState.logError.log("Error... learning was not performed!");
+                                GlobalState.logError.logLine("Error... learning was not performed!");
                                 break;
                             }
                             foreach (LearningRound lr in learnedModel.LearningHistory)
@@ -239,7 +246,7 @@ namespace MachineLearning
                                     double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
                                 }
 
-                                GlobalState.logInfo.log(lr.ToString() + relativeError);
+                                GlobalState.logInfo.logLine(lr.ToString() + relativeError);
                             }
                         }
                        
@@ -257,7 +264,7 @@ namespace MachineLearning
                 case COMMAND_VARIABILITYMODEL:
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     if (GlobalState.varModel == null)
-                        GlobalState.logError.log("No variability model found at " + task);
+                        GlobalState.logError.logLine("No variability model found at " + task);
                     break;
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
@@ -306,7 +313,7 @@ namespace MachineLearning
                     break;
 
                 case COMMAND_PRINT_MLSETTINGS:
-                    GlobalState.logInfo.log(this.mlSettings.ToString());
+                    GlobalState.logInfo.logLine(this.mlSettings.ToString());
                     break;
 
                 case COMMAND_PRINT_CONFIGURATIONS:
@@ -327,10 +334,13 @@ namespace MachineLearning
                                 }
                             }
                         }*/
+
+                        var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+
                         string[] para = task.Split(new char[] { ' ' });
                         // TODO very error prone..
                         ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2], GlobalState.optionOrder);
-                        printer.print(this.exp.testSet);
+                        printer.print(configs);
 
                         break;
                     }
@@ -366,7 +376,7 @@ namespace MachineLearning
 
                         if (configurationsLearning.Count == 0)
                         {
-                            GlobalState.logInfo.log("The learning set is empty! Cannot start learning!");
+                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
                             break;
                         }
 
@@ -376,15 +386,15 @@ namespace MachineLearning
                         }
                         
                         
-                        GlobalState.logInfo.log("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // prepare the machine learning 
-                        exp = new Learning.Regression.Learning(configurationsLearning, configurationsLearning);
+                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsLearning);
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
-                        GlobalState.logInfo.log("Average model: \n" + exp.metaModel.printModelAsFunction());
+                        GlobalState.logInfo.logLine("Average model: \n" + exp.metaModel.printModelAsFunction());
                         double relativeError = 0;
                         if (GlobalState.evalutionSet.Configurations.Count > 0)
                         {
@@ -395,7 +405,7 @@ namespace MachineLearning
                             relativeError = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE);
                         }
 
-                        GlobalState.logInfo.log("Error :" + relativeError);
+                        GlobalState.logInfo.logLine("Error :" + relativeError);
                     }
                     break;
 
@@ -654,7 +664,7 @@ namespace MachineLearning
                     ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.FULLFACTORIAL, parameter);
                     break;
                 case "featureInteraction":
-                    GlobalState.logError.log("not implemented yet");
+                    GlobalState.logError.logLine("not implemented yet");
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:

@@ -434,7 +434,11 @@ namespace SPLConqueror_Core
                 if (c.GetType().Equals(typeof(BinaryOption)))
                 {
                     if (this.BinaryOptions.ContainsKey((BinaryOption)c))
-                        sb.Append(c.OutputString + " ");
+                    {
+                        String outPutString = c.OutputString;
+                        if(outPutString!="noOutput")
+                            sb.Append(c.OutputString + " ");
+                    }
                 }
                 else
                 {

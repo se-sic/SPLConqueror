@@ -10,7 +10,7 @@ using MachineLearning.Learning.LinearProgramming;
 
 namespace MachineLearning.Solver
 {
-    internal class CheckConfigSAT : ICheckConfigSAT
+    public class CheckConfigSAT : ICheckConfigSAT
     {
         private CompositionContainer _container;
         
@@ -60,7 +60,7 @@ namespace MachineLearning.Solver
             }
             catch (CompositionException compositionException)
             {
-                GlobalState.logError.log(compositionException.ToString());
+                GlobalState.logError.logLine(compositionException.ToString());
                 //Console.WriteLine(compositionException.ToString());
             }
         }
