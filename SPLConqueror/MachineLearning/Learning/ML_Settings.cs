@@ -121,8 +121,12 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool stopOnLongRound = true;
 
-        public double candidateSizePenalty = 0;
-
+        /// <summary>
+        /// If true, the candidate score (which is an average reduction of the 
+        /// prediction error the candidate induces) is made dependent on its size.
+        /// See FeatureSubsetSelection.learn() for scroe calculation.
+        /// </summary>
+        public bool candidateSizePenalty = true;
 
         /// <summary>
         /// Defines the time limit for the learning process. If 0, no time limit. Format: HH:MM:SS

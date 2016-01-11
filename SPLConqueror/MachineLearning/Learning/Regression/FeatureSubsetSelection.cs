@@ -162,7 +162,7 @@ namespace MachineLearning.Learning.Regression
                 if (current == null)
                     return;
                 current.bestCandidateScore = oldRoundRelativeError - current.validationError_relative;
-                current.bestCandidatePenalizedScore = current.bestCandidateScore / (Math.Max(1, MLsettings.candidateSizePenalty * current.bestCandidateSize));
+                current.bestCandidatePenalizedScore = current.bestCandidateScore / current.bestCandidateSize;
                 learningHistory.Add(current);
 
                 if (this.MLsettings.useBackward)
@@ -890,7 +890,18 @@ namespace MachineLearning.Learning.Regression
                 return true;
             if (abortDueError(current))
                 return true;
-            if (current.validationError_relative + minimalRequiredImprovement(current) > oldRoundRelativeError)
+            
+            var currentBestCandidateScore = 0.0;
+            if (MLsettings.candidateSizePenalty)
+            {
+                currentBestCandidateScore = current.bestCandidatePenalizedScore;
+            }
+            else
+            {
+                currentBestCandidateScore = current.bestCandidateScore;
+            }
+            //if (minimalRequiredImprovement(current) + current.validationError_relative > oldRoundRelativeError)
+            if (MLsettings.minImprovementPerRound > currentBestCandidateScore)
             {
                 if (this.MLsettings.withHierarchy)
                 {
@@ -900,24 +911,8 @@ namespace MachineLearning.Learning.Regression
                 else
                     return true;
             }
-            return false;
-        }
 
-        /// <summary>
-        /// Calculates the required minimum improvement per round based on the user configuration 
-        /// settings.  If the improvement is less than required the learning will be aborted by the
-        /// abortLearnin() method.
-        /// </summary>
-        /// <returns>The required minimum improvement per round.</returns>
-        double minimalRequiredImprovement(LearningRound currentLearningRound)
-        {
-            double minimalRequiredImprovment = MLsettings.minImprovementPerRound;
-            if (MLsettings.candidateSizePenalty > 0)
-            {
-                int largestFeatureSize = currentLearningRound.FeatureSet.OrderBy(x => x.getNumberOfParticipatingOptions()).ToList().Last().getNumberOfParticipatingOptions();
-                minimalRequiredImprovment = MLsettings.minImprovementPerRound * MLsettings.candidateSizePenalty * largestFeatureSize;
-            }
-            return minimalRequiredImprovment;
+            return false;
         }
 
         /// <summary>
