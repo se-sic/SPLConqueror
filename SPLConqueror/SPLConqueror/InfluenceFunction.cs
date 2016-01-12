@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SPLConqueror_Core
 {
@@ -124,7 +125,15 @@ namespace SPLConqueror_Core
             }
 
             expression = expression.Replace("+ - ", "+ -");
+            expression = removeWhitespacesExponentialPart(expression);
 
+            return expression;
+        }
+
+        private string removeWhitespacesExponentialPart(String expression)
+        {
+            Regex r = new Regex(@"([0-9])E\s(\+|-)\s([0-9])", RegexOptions.None);
+            expression = r.Replace(expression, @"$1E$2$3");
             return expression;
         }
 
@@ -227,6 +236,7 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        
 
         private void parseExpressionToPolishNotation(String expression)
         {
@@ -234,6 +244,9 @@ namespace SPLConqueror_Core
             Stack<string> stack = new Stack<string>();
 
             expression = createWellFormedExpression(expression).Trim();
+           
+
+
             this.wellFormedExpression = expression;
             string[] expr = expression.Split(' ');
 
