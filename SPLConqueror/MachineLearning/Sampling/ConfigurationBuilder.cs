@@ -14,7 +14,7 @@ namespace MachineLearning.Sampling
         public static int binaryThreshold = 0;
         public static int binaryModulu = 0;
         public static Dictionary<SamplingStrategies, List<NumericOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<NumericOption>>();
-        public static Dictionary<SamplingStrategies, Dictionary<String, String>> parametersOfExpDesigns = new Dictionary<SamplingStrategies, Dictionary<string, string>>();
+        public static Dictionary<SamplingStrategies, List<Dictionary<String, String>>> parametersOfExpDesigns = new Dictionary<SamplingStrategies, List<Dictionary<string, string>>>();
 
         public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> strategies)
         {
@@ -54,8 +54,12 @@ namespace MachineLearning.Sampling
                             design = new BoxBehnkenDesign(optionsToConsider[SamplingStrategies.BOXBEHNKEN]);
                         else
                             design = new BoxBehnkenDesign(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.BOXBEHNKEN]);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.BOXBEHNKEN])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }
                         break;
 
                     case SamplingStrategies.CENTRALCOMPOSITE:
@@ -63,9 +67,12 @@ namespace MachineLearning.Sampling
                             design = new CentralCompositeInscribedDesign(optionsToConsider[SamplingStrategies.CENTRALCOMPOSITE]);
                         else
                             design = new CentralCompositeInscribedDesign(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE]);
-                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }   
                         break;
 
                     case SamplingStrategies.FULLFACTORIAL:
@@ -73,8 +80,13 @@ namespace MachineLearning.Sampling
                             design = new FullFactorialDesign(optionsToConsider[SamplingStrategies.FULLFACTORIAL]);
                         else
                             design = new FullFactorialDesign(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.FULLFACTORIAL]);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.FULLFACTORIAL])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }   
+
                         break;
 
                     case SamplingStrategies.HYPERSAMPLING:
@@ -82,8 +94,11 @@ namespace MachineLearning.Sampling
                             design = new HyperSampling(optionsToConsider[SamplingStrategies.HYPERSAMPLING]);
                         else
                             design = new HyperSampling(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.HYPERSAMPLING]);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.HYPERSAMPLING])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }   
                         break;
 
                     case SamplingStrategies.ONEFACTORATATIME:
@@ -91,8 +106,12 @@ namespace MachineLearning.Sampling
                             design = new OneFactorAtATime(optionsToConsider[SamplingStrategies.ONEFACTORATATIME]);
                         else
                             design = new OneFactorAtATime(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.ONEFACTORATATIME]);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.ONEFACTORATATIME])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }
                         break;
 
                     case SamplingStrategies.KEXCHANGE:
@@ -100,9 +119,12 @@ namespace MachineLearning.Sampling
                             design = new KExchangeAlgorithm(optionsToConsider[SamplingStrategies.KEXCHANGE]);
                         else
                             design = new KExchangeAlgorithm(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.KEXCHANGE]);
-                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.KEXCHANGE])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }
                         break;
 
                     case SamplingStrategies.PLACKETTBURMAN:
@@ -110,9 +132,12 @@ namespace MachineLearning.Sampling
                             design = new PlackettBurmanDesign(optionsToConsider[SamplingStrategies.PLACKETTBURMAN]);
                         else
                             design = new PlackettBurmanDesign(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN]);
-                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }    
                         break;
 
                     case SamplingStrategies.RANDOM:
@@ -120,9 +145,12 @@ namespace MachineLearning.Sampling
                             design = new RandomSampling(optionsToConsider[SamplingStrategies.RANDOM]);
                         else
                             design = new RandomSampling(vm.NumericOptions);
-                        design.computeDesign(parametersOfExpDesigns[SamplingStrategies.RANDOM]);
-                        printSelectetedConfigurations_expDesign(design.SelectedConfigurations);
-                        numericConfigs.AddRange(design.SelectedConfigurations);
+
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.RANDOM])
+                        {
+                            design.computeDesign(expDesignParamSet);
+                            numericConfigs.AddRange(design.SelectedConfigurations);
+                        }    
                         break;
                 }
             }
