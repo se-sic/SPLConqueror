@@ -882,13 +882,17 @@ namespace MachineLearning.Learning.Regression
         protected bool abortLearning(LearningRound current, double oldRoundRelativeError)
         {
             if (current.round >= this.MLsettings.numberOfRounds)
+                current.terminationReason = "numberOfRounds";
                 return true;
             TimeSpan diff = DateTime.Now - this.startTime;
             if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
+                current.terminationReason = "learnTimeLimit";
                 return true;
             if (MLsettings.stopOnLongRound && current.round > 30 && diff.Minutes > 60)
+                current.terminationReason = "stopOnLongRound";
                 return true;
             if (abortDueError(current))
+                current.terminationReason = "abortError";
                 return true;
             
             var currentBestCandidateScore = 0.0;
@@ -907,9 +911,11 @@ namespace MachineLearning.Learning.Regression
                 {
                     hierachyLevel++;
                     return false;
-                }
-                else
+                } else
+                {
+                    current.terminationReason = "minImprovementPerRound";
                     return true;
+                }
             }
 
             return false;
