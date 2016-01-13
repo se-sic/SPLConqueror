@@ -33,9 +33,11 @@ namespace MachineLearning.Learning.Regression
             }
         }
         public Feature bestCandidate = null;
-        public int bestCandidateSize = 0;
-        public double bestCandidateScore = 0;
-        public double bestCandidatePenalizedScore = 0;
+        public int bestCandidateSize = 1;
+        public double bestCandidateErrorScore = 0;
+        public double bestCandidatePenalizedErrorScore = 0;
+        public double bestCandidateInfluenceScore = 0;
+        public double bestCandidatePenalizedInfluenceScore = 0;
         public string terminationReason = null;
 
         /// <summary>
@@ -63,8 +65,10 @@ namespace MachineLearning.Learning.Regression
             sb.Append(modelComplexity + ";");
             sb.Append(bestCandidate + ";");
             sb.Append(bestCandidateSize + ";");
-            sb.Append(bestCandidateScore + ";");
-            sb.Append(bestCandidatePenalizedScore + ";");
+            sb.Append(bestCandidateErrorScore + ";");
+            sb.Append(bestCandidatePenalizedErrorScore + ";");
+            sb.Append(bestCandidateInfluenceScore + ";");
+            sb.Append(bestCandidatePenalizedInfluenceScore + ";");
             //sb.Append(string.Format("{0};", ));
 
             return sb.ToString();
