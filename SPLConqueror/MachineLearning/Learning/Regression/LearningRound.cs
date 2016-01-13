@@ -36,6 +36,7 @@ namespace MachineLearning.Learning.Regression
         public int bestCandidateSize = 0;
         public double bestCandidateScore = 0;
         public double bestCandidatePenalizedScore = 0;
+        public string terminationReason = null;
 
         /// <summary>
         /// TODO: Prints the information learned in a round.
