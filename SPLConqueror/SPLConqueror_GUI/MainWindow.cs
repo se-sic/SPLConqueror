@@ -2209,48 +2209,8 @@ namespace SPLConqueror_GUI
                             stack.Push(Tuple.Create<string, string>(first.Item1 + " " + prt + " " + second.Item1, prt));
                     }
                 }
-                else if (prt.Equals("[") || prt.Equals("]"))
-                {
-                    // If there is a log10 in the expression, calculate the inner value of the
-                    // logarithm first.
-                    switch (prt) {
-
-                    case "[":
-                                bool done = false;
-                    int pos = i;
-                    int counter = 0;
-
-                    while (!done)
-                    {
-                        pos++;
-
-                        switch (expParts[pos])
-                        {
-                            case "[":
-                                counter++;
-                                break;
-                            case "]":
-                                if (counter == 0)
-                                    done = true;
-                                else
-                                    counter--;
-                                break;
-                        }
-                    }
-
-                    string[] innerLog = new string[pos - i - 1];
-                    Array.Copy(expParts, i + 1, innerLog, 0, pos - i - 1);
-
-                    string result = calculateFunctionExpression(innerLog);
-
-                    stack.Push(Tuple.Create<string, string>("log10( " + result + " )", "log10"));
-
-                    i = pos;
-                    break;
-                        case "]":
-                            throw new Exception("The inner notation consists of ']' in unexpected places.");
-                    }
-                }
+                else if (prt.Equals("]"))
+                    stack.Push(Tuple.Create<string, string>("log10( " + stack.Pop().Item1 + " )", "log10"));
                 else
                 {
                     // Otherwise it is a variable or a number                    
@@ -3248,50 +3208,15 @@ namespace SPLConqueror_GUI
                         stack.Push(stack.Pop() * stack.Pop());
                         done = true;
                         break;
-                    case "[":
-                        switch (prt)
-                        {
-                            case "[":
-                                bool innerDone = false;
-                                int pos = i;
-                                int counter = 0;
+                    case "]":
+                        ILArray<float> calcResult = stack.Pop();
+                        ILArray<float> logResult = ILMath.zeros<float>(1, 1);
 
-                                while (!innerDone)
-                                {
-                                    pos++;
+                        for (int j = 0; j < calcResult.Size[0]; j++)
+                            for (int k = 0; k < calcResult.Size[1]; k++)
+                                logResult[j, k] = calcResult[j, k] <= 0 ? ILMath.zeros<float>(1) : ILMath.log10(calcResult[j, k]);
 
-                                    switch (expParts[pos])
-                                    {
-                                        case "[":
-                                            counter++;
-                                            break;
-                                        case "]":
-                                            if (counter == 0)
-                                                innerDone = true;
-                                            else
-                                                counter--;
-                                            break;
-                                    }
-                                }
-
-                                string[] innerLog = new string[pos - i - 1];
-                                Array.Copy(expParts, i + 1, innerLog, 0, pos - i - 1);
-
-                                ILArray<float> calcResult = calculateFunction(innerLog, optNames, vars);
-                                ILArray<float> logResult = ILMath.zeros<float>(1, 1);
-
-                                // Be careful! Here: log(x) = 0 for all x <= 0
-                                for (int j = 0; j < calcResult.Size[0]; j++)
-                                    for (int k = 0; k < calcResult.Size[1]; k++)
-                                        logResult[j, k] = calcResult[j, k] <= 0 ? ILMath.zeros<float>(1) : ILMath.log10(calcResult[j, k]);
-
-                                stack.Push(logResult);
-
-                                i = pos;
-                                break;
-                            case "]":
-                                throw new Exception("The inner notation consists of ']' in unexpected places.");
-                        }
+                        stack.Push(logResult);
                         done = true;
                         break;
                 }
@@ -3331,7 +3256,7 @@ namespace SPLConqueror_GUI
         /// <returns>True if the token is an operator else false.</returns>
         private bool isOperator(string token)
         {
-            return token.Equals("+") || token.Equals("*") || token.Equals("[") || token.Equals("]");
+            return token.Equals("+") || token.Equals("*") || token.Equals("]");
         }
 
         /// <summary>
