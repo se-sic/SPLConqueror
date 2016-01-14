@@ -254,7 +254,7 @@ namespace SPLConqueror_Core
         /// </summary>
         internal void init()
         {
-            this.parent = vm.getBinaryOption(parentName);
+            //this.parent = vm.getBinaryOption(parentName);
             foreach (var name in this.children_names)
             {
                 ConfigurationOption c = vm.getBinaryOption(name);
@@ -338,6 +338,8 @@ namespace SPLConqueror_Core
 
         public void updateChildren()
         {
+            this.children = new List<ConfigurationOption>();
+
             foreach(ConfigurationOption other in vm.getOptions())
             {
                 if(other.parent != null && other.parent.Equals(this) && !this.children.Contains(other))
