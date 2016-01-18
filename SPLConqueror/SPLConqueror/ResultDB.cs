@@ -9,6 +9,7 @@ namespace SPLConqueror_Core
     {
 
         private List<Configuration> configurations = new List<Configuration>();
+        public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
 
         public List<Configuration> Configurations
         {
