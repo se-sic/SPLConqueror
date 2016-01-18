@@ -28,6 +28,9 @@ namespace SPLConqueror_Core
           //  set { binaryOptions = value; }
         }
 
+        public Dictionary<int, ConfigurationOption> optionToIndex = new Dictionary<int, ConfigurationOption>();
+        public Dictionary<ConfigurationOption, int> indexToOption = new Dictionary<ConfigurationOption, int>();
+    
         public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
         //public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
         
@@ -307,6 +310,11 @@ namespace SPLConqueror_Core
                 this.binaryOptions.Add((BinaryOption)option);
             else
                 this.numericOptions.Add((NumericOption)option);
+
+            // create Index 
+            optionToIndex.Add(optionToIndex.Count, option);
+            indexToOption.Add(option, indexToOption.Count);
+
 
             return true;
         }
