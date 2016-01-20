@@ -4,10 +4,6 @@
 
     <div class="jumbotron">
         <h1>Welcome to SPLConqueror!</h1>
-        <p class="lead" style="height: 26px">Current status:</p>
-        <p class="lead" style="height: 28px">
-            <asp:Label ID="status" runat="server"></asp:Label>
-        </p>
     </div>
 
     <div class="row">
