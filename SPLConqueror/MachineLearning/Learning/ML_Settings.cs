@@ -21,7 +21,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Turns the parallel execution of model candidates on/off.
         /// </summary>
-        public bool parallelization = false;
+        public bool parallelization = true;
 
         /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
@@ -121,13 +121,23 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool stopOnLongRound = true;
 
-        public double candidateSizePenalty = 0;
-
+        /// <summary>
+        /// If true, the candidate score (which is an average reduction of the 
+        /// prediction error the candidate induces) is made dependent on its size.
+        /// See FeatureSubsetSelection.learn() for scroe calculation.
+        /// </summary>
+        public bool candidateSizePenalty = true;
 
         /// <summary>
         /// Defines the time limit for the learning process. If 0, no time limit. Format: HH:MM:SS
         /// </summary>
         public TimeSpan learnTimeLimit = new TimeSpan(0);
+
+        public enum ScoreMeasure {RELERROR, INFLUENCE};
+        /// <summary>
+        /// Defines which mesure is used to select the best candidate and to compute the score of a candidate. See ScoreMeasure enum for the available measures.
+        /// </summary>
+        public ScoreMeasure scoreMeasure = ScoreMeasure.RELERROR;
 
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
@@ -292,6 +302,18 @@ namespace MachineLearning.Learning
                 {
                     return false;
                 }
+            }
+            if (fi.FieldType.FullName.Equals("MachineLearning.Learning.ML_Settings+ScoreMeasure"))
+            {
+                ScoreMeasure parsedValue;
+                try {
+                    parsedValue = (ScoreMeasure) Enum.Parse(typeof(ScoreMeasure), value.ToUpperInvariant());
+                }
+                catch (ArgumentException) {
+                    return false;
+                }
+                fi.SetValue(this, parsedValue);
+                return true;
             }
 
 
