@@ -210,6 +210,7 @@ namespace CommandLine
                                     GlobalState.logError.logLine("Error... learning was not performed!");
                                     break;
                                 }
+                                GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
                                 foreach (LearningRound lr in learnedModel.LearningHistory)
                                 {
                                     double relativeError = 0;
@@ -234,6 +235,7 @@ namespace CommandLine
                                 GlobalState.logError.logLine("Error... learning was not performed!");
                                 break;
                             }
+                            GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
                             foreach (LearningRound lr in learnedModel.LearningHistory)
                             {
                                 double relativeError = 0;
