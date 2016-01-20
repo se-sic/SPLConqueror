@@ -210,6 +210,7 @@ namespace CommandLine
                                     GlobalState.logError.logLine("Error... learning was not performed!");
                                     break;
                                 }
+                                GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
                                 foreach (LearningRound lr in learnedModel.LearningHistory)
                                 {
                                     double relativeError = 0;
@@ -234,6 +235,7 @@ namespace CommandLine
                                 GlobalState.logError.logLine("Error... learning was not performed!");
                                 break;
                             }
+                            GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
                             foreach (LearningRound lr in learnedModel.LearningHistory)
                             {
                                 double relativeError = 0;
@@ -635,7 +637,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.BOXBEHNKEN);
                         this.exp.info.numericSamplings_Learning = "BOXBEHNKEN";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BOXBEHNKEN, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BOXBEHNKEN))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BOXBEHNKEN, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BOXBEHNKEN].Add(parameter);
                     break;
                 case COMMAND_EXPDESIGN_CENTRALCOMPOSITE:
                     if (parameter.ContainsKey("validation"))
@@ -648,7 +654,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.CENTRALCOMPOSITE);
                         this.exp.info.numericSamplings_Learning = "CENTRALCOMPOSITE";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.CENTRALCOMPOSITE, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.CENTRALCOMPOSITE))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.CENTRALCOMPOSITE, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE].Add(parameter);
                     break;
                 case COMMAND_EXPDESIGN_FULLFACTORIAL:
                     if (parameter.ContainsKey("validation"))
@@ -661,7 +671,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.FULLFACTORIAL);
                         this.exp.info.numericSamplings_Learning = "FULLFACTORIAL";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.FULLFACTORIAL, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.FULLFACTORIAL))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.FULLFACTORIAL, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.FULLFACTORIAL].Add(parameter);
                     break;
                 case "featureInteraction":
                     GlobalState.logError.logLine("not implemented yet");
@@ -678,7 +692,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.HYPERSAMPLING);
                         this.exp.info.numericSamplings_Learning = "HYPERSAMPLING";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.HYPERSAMPLING, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.HYPERSAMPLING))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.HYPERSAMPLING, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.HYPERSAMPLING].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
@@ -692,7 +710,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.ONEFACTORATATIME);
                         this.exp.info.numericSamplings_Learning = "ONEFACTORATATIME";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.ONEFACTORATATIME, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.ONEFACTORATATIME))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.ONEFACTORATATIME, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.ONEFACTORATATIME].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_KEXCHANGE:
@@ -706,7 +728,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.KEXCHANGE);
                         this.exp.info.numericSamplings_Learning = "KEXCHANGE";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.KEXCHANGE, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.KEXCHANGE))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.KEXCHANGE, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.KEXCHANGE].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
@@ -720,7 +746,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.PLACKETTBURMAN);
                         this.exp.info.numericSamplings_Learning = "PLACKETTBURMAN";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.PLACKETTBURMAN, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.PLACKETTBURMAN))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.PLACKETTBURMAN, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_RANDOM:
@@ -734,7 +764,11 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.RANDOM);
                         this.exp.info.numericSamplings_Learning = "RANDOM";
                     }
-                    ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.RANDOM, parameter);
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.RANDOM))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.RANDOM, new List<Dictionary<string, string>>());
+                    }
+                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.RANDOM].Add(parameter);
                     break;
 
                 default:
