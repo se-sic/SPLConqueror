@@ -3357,7 +3357,7 @@ namespace SPLConqueror_GUI
             foreach (Tuple<string, string> section in expParts)
             {
                 string[] sectionParts = section.Item1.Split(' ');
-                List<string> usedOptions = new List<string>();
+                List<string> usedCompOptions = new List<string>();
 
                 for (int i = 0; i < sectionParts.Length; i++)
                 {
@@ -3380,7 +3380,8 @@ namespace SPLConqueror_GUI
                     }
                     else if (!double.TryParse(sectionParts[i], out d) && !isOperator(sectionParts[i]))
                     {
-                        if (!usedOptions.Contains(sectionParts[i]))
+                        if (!usedCompOptions.Contains(sectionParts[i])
+                            && (i <= 0 || sectionParts[i] != "/"))
                         {
                             if (counting.ContainsKey(sectionParts[i]))
                             {
@@ -3390,7 +3391,7 @@ namespace SPLConqueror_GUI
                             else
                                 counting.Add(sectionParts[i], 1);
 
-                            usedOptions.Add(sectionParts[i]);
+                            usedCompOptions.Add(sectionParts[i]);
                         }
                     }
                 }
@@ -3483,7 +3484,7 @@ namespace SPLConqueror_GUI
                         }
                         else
                         {
-                            containsExactVar = parts[i].Equals(max);
+                            containsExactVar = parts[i].Equals(max) && (i == 0 || parts[i] != "/");
                             varPos = i;
                         }
                     }
@@ -3494,8 +3495,15 @@ namespace SPLConqueror_GUI
                             varRest.Add(Tuple.Create<string, string>("1.0", "+"));
                         else if (varPos == 0)
                         {
-                            parts[0] = "";
-                            parts[1] = "";
+                            if (parts[1] == "/")
+                                // TODO: Fragen, ob so passt
+                                parts[0] = "1.0";
+                            else
+                            {
+                                parts[0] = "";
+                                parts[1] = "";
+                            }
+
                             varRest.Add(Tuple.Create<string, string>(String.Join(" ", parts).Trim(), prt.Item2));
                         }
                         else
