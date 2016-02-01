@@ -85,14 +85,15 @@ namespace PerformancePrediction_GUI
             {
                 this.nfpSelection.Items.Add(item);
             }
-            this.nfpSelection.SelectedItem = this.nfpSelection.Items[0];
-            this.nfpSelection.SetItemChecked(0,true);
+            if (nfpSelection.Items.Count == 0)
+                this.nfpSelection.Items.Add(GlobalState.currentNFP);
+            else
+            {
+                this.nfpSelection.SelectedItem = this.nfpSelection.Items[0];
+                this.nfpSelection.SetItemChecked(0, true);
 
-            GlobalState.currentNFP = GlobalState.nfProperties[(string)this.nfpSelection.SelectedItem];
-           
-
-         
-
+                GlobalState.currentNFP = GlobalState.nfProperties[(string)this.nfpSelection.SelectedItem];
+            }
         }
 
         private void readVarModel_Click(object sender, EventArgs e)
@@ -167,7 +168,6 @@ namespace PerformancePrediction_GUI
 
         private void startLearning()
         {
-            
             cmd.exp.models[0].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
 
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
@@ -246,6 +246,11 @@ namespace PerformancePrediction_GUI
             if (this.negOW.Checked){
                 binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
+            }
+            if (this.binWholePop.Checked)
+            {
+                binarySelected = true;
+                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
             }
             if (num_BoxBehnken_check.Checked)
             {
