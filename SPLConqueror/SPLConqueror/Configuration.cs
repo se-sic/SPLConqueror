@@ -34,6 +34,8 @@ namespace SPLConqueror_Core
 
         private string identifier;
 
+        private double[] optionValues;
+
 
         /// <summary>
         /// Creates a configuration with the given set an binary and numeric features selected. Binary features existing in the variablity model and not in the given set of binary options are assumed to have
@@ -49,6 +51,8 @@ namespace SPLConqueror_Core
                 numericOptions = numericSelection;
             nfpValues = measuremements;
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
+
+            createIndex();
         }
 
         /// <summary>
@@ -63,12 +67,30 @@ namespace SPLConqueror_Core
             if (numericSelection != null)
                 numericOptions = numericSelection;
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
+
+            createIndex();
         }
 
+
+        private void createIndex()
+        {
+            optionValues = new double[GlobalState.varModel.indexToOption.Count];
+
+            foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
+            {
+                if (option.Value is NumericOption)
+                    optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                else
+                    if (binaryOptions.ContainsKey(option.Value as BinaryOption))
+                        optionValues[option.Key] = 1.0;
+            }
+        }
 
         public void update()
         {
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
+
+            createIndex();
         }
 
         /// <summary>
@@ -82,6 +104,8 @@ namespace SPLConqueror_Core
                 binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
             }
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
+
+            createIndex();
         }
 
         /// <summary>
@@ -99,6 +123,8 @@ namespace SPLConqueror_Core
                 numericOptions = numConf;
 
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
+
+            createIndex();
         }
 
 
@@ -206,13 +232,21 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Compares one configuration with an other configuration. The identifiers of the configurations are used in the comparison. 
+        /// Compares one configuration with an other configuration. 
         /// </summary>
         /// <param name="other">Configuration to compare</param>
         /// <returns>States whether the two configurations desribes the same configuration option selection.</returns>
         public bool Equals(Configuration other)
         {
-            return this.identifier.Replace("root%;%", "").Equals(other.identifier.Replace("root%;%", ""));
+            if (other == null)
+                return false;
+
+            for (int i = 0; i < optionValues.Count(); i++)
+            {
+                if (!(this.optionValues[i] == other.optionValues[i]))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>

@@ -226,39 +226,39 @@ namespace SPLConqueror_Core
                         case "StartupEnd":
                             //todo
                             break;
-                        default:
-                            NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
-                            double measuredValue = 0;
+                    default:
+                        NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
+                        double measuredValue = 0;
                             //-1 means that measurement failed... 3rd values strongly devigates in C.'s measurements, hence we use it only in case we have no other measurements
-                            if (readMultipleMeasurements)
+                        if (readMultipleMeasurements)
+                        {
+                            //if (property.Name != "run-real")
+                            //    continue;
+                            String[] m = childNode.InnerText.ToString().Split(',');
+                            double val1 = 0;
+                            if (!Double.TryParse(m[0], out val1))
+                                break;
+                            if (m.Length > 1)
                             {
-                                //if (property.Name != "run-real")
-                                //    continue;
-                                String[] m = childNode.InnerText.ToString().Split(',');
-                                double val1 = 0;
-                                if(!Double.TryParse(m[0], out val1))
-                                    break;
-                                if (m.Length > 1)
+                                List<double> values = new List<double>();
+                                double avg = 0;
+                                foreach (var i in m)
                                 {
-                                    List<double> values = new List<double>();
-                                    double avg = 0;
-                                    foreach (var i in m)
+                                    double d = Convert.ToDouble(i);
+                                    if (d != -1)
                                     {
-                                        double d = Convert.ToDouble(i);
-                                        if (d != -1)
-                                        {
-                                            values.Add(d);
-                                            avg += d;
-                                        }
+                                        values.Add(d);
+                                        avg += d;
                                     }
-                                    if (values.Count == 0)
-                                    {
-                                        configsWithTooLargeDeviation++;
-                                        c = null;
-                                        break;
-                                    }
-                                    avg = avg / values.Count;
-                                   /* foreach (var d in values)
+                                }
+                                if (values.Count == 0)
+                                {
+                                    configsWithTooLargeDeviation++;
+                                    c = null;
+                                    break;
+                                }
+                                avg = avg / values.Count;
+                                /* foreach (var d in values)
                                     {
                                         if ((d / avg) * 100 > 10)
                                         {
@@ -267,8 +267,8 @@ namespace SPLConqueror_Core
                                             break;
                                         }
                                     }*/
-                                    measuredValue = avg;
-                                    /*double val2 = Convert.ToDouble(m[1]);
+                                measuredValue = avg;
+                                /*double val2 = Convert.ToDouble(m[1]);
                                     if (val1 == -1)
                                         measuredValue = val2;
                                     else if (val1 == -1 && val2 == -1)
@@ -277,12 +277,25 @@ namespace SPLConqueror_Core
                                         measuredValue = val1;
                                     else
                                         measuredValue = (val1 + val2) / 2;*/
+                            } else
+                                measuredValue = val1;
+                        } else
+                            measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
+
+                            // Save the largest measured value.
+                            double currentMaxMeasuredValue;
+                            if (GlobalState.allMeasurements.maxMeasuredValue.TryGetValue(property, out currentMaxMeasuredValue))
+                            {
+                                if (Math.Abs(measuredValue) > Math.Abs(currentMaxMeasuredValue))
+                                {
+                                    GlobalState.allMeasurements.maxMeasuredValue[property] = measuredValue;
                                 }
-                                else
-                                    measuredValue = val1;
+                            } else
+                            {
+                                GlobalState.allMeasurements.maxMeasuredValue.Add(property, measuredValue);
                             }
-                            else
-                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
+
+                            // Add measured value to the configuration.
                             if (alternativeFormat && c != null)
                             {
                                 c.setMeasuredValue(property, measuredValue);

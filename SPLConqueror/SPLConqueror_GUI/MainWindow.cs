@@ -41,11 +41,12 @@ namespace SPLConqueror_GUI
         private const string ERROR_MEASUREMENTS_INCOMPATIBLE = "The file doesn't match with the current variability model!";
         private const string ERROR_DOUBLE_OPTION = "You may not choose the same option twice!";
         private const string ERROR_NO_MEASUREMENTS_LOADED = "Please load some measurements.";
+        private const string ERROR_NO_MEASUREMENTS_NFP = "There are no measurements for this nfp value.";
         private const string ERROR_NO_PERFORMANCES = "Please calculate a graph first.";
         private const string ERROR_ILLEGAL_CONFIGURATION = "Invalid configuration. Check your constraints too.";
         private const string ERROR_NO_MEASUREMENTS_AVAILABLE = "There are no measurements for the current settings.";
         private const string FILTERING_LIST_BOX = "Free filtering";
-        private const string FILTERING_TREEE_VIEW = "Configuration filtering";
+        private const string FILTERING_TREE_VIEW = "Configuration filtering";
         private const string INTERACTION_INFORMATION = "In how many interactions do the possible variables occur?";
         private const string MAX_INFORMATION = "What is the maximum abstract influence of each variable?";
         private const string MAX_OCCURANCE_INFORMATION = "What is the maximum abstract influence of each variable depended on its usage in the configurations?";
@@ -76,14 +77,14 @@ namespace SPLConqueror_GUI
                 + DLL_LOCATION);
 
         // Everything for the measurements
+        private bool measurementsLoaded = false;
+        private string adjustedMeasurementFunction;
         private Configuration configurationForCalculation;
         private Tuple<NumericOption, NumericOption> chosenOptions;
         private ILArray<float> drawnPerformances;
         private ILArray<float> calculatedPerformances;
-        private bool measurementsLoaded = false;
         private Color calculatedColor = Color.Red;
         private Color measurementColor = Color.Green;
-        private string adjustedMeasurementFunction;
 
         /// <summary>
         /// Constructor of this class.
@@ -222,7 +223,7 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Opens a dialog to load the desired variability model.
         /// 
-        /// If the user enters an inavlid XML-file that is not a variability model, an error message will be shown.
+        /// If the user enters an invalid XML-file that is not a variability model, an error message will be shown.
         /// </summary>
         /// <returns>The loaded variability model of the previously loaded expression</returns>
         private VariabilityModel loadVariabilityModel()
@@ -260,8 +261,8 @@ namespace SPLConqueror_GUI
         /// Two windows will be opened to load the expression and afterwards the corresponding
         /// variability model.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void loadButton_Click(object sender, EventArgs e)
         {
             string expression = loadExpression();
@@ -280,11 +281,10 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Invokes if the loadExpOnlyButton has been pressed.
         /// 
-        /// One window will be opened to load the expression. By doing this action, the user
-        /// will not be able to generate a function.
+        /// One window will be opened to load the expression.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void loadExpOnlyButton_Click(object sender, EventArgs e)
         {
             string expression = loadExpression();
@@ -302,8 +302,8 @@ namespace SPLConqueror_GUI
         /// appropriate form or does not fit with the current variability model, an error message
         /// will be displayed.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void loadMeasurementButton_Click(object sender, EventArgs e)
         {
             if (!modelLoaded)
@@ -449,7 +449,7 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Initializes all comonents that need to be initialized only once the programm started.
+        /// Initializes all components that need to be initialized only once the programm started.
         /// </summary>
         private void initializeOnce()
         {
@@ -464,6 +464,7 @@ namespace SPLConqueror_GUI
             factorRadioButton.Enabled = true;
             chartDescriptionLabel.Visible = true;
 
+            // ChartComboBox
             chartComboBox.Enabled = true;
             chartComboBox.Items.Add(COMBOBOX_INTERACTIONS_OPTION);
             chartComboBox.Items.Add(COMBOBOX_CONSTANT_OPTION);
@@ -471,6 +472,7 @@ namespace SPLConqueror_GUI
             chartComboBox.Items.Add(COMBOBOX_MAX_OCCURANCE_OPTION);
             chartComboBox.Items.Add(COMBOBOX_RANGE_OPTION);
 
+            // MeasurementViewCombobox
             measurementViewCombobox.Items.Add(COMBOBOX_OVERVIEW_OPTION);
             measurementViewCombobox.Items.Add(COMBOBOX_BOTH_OPTION);
             measurementViewCombobox.Items.Add(COMBOBOX_MEASUREMENTS_OPTION);
@@ -478,11 +480,11 @@ namespace SPLConqueror_GUI
             measurementViewCombobox.Items.Add(COMBOBOX_RELATIVE_DIFFERENCE_OPTION);
             measurementViewCombobox.SelectedIndex = 0;
 
+            // Adding events to the variableTreeView
             variableTreeView.BeforeCheck += (o, e) => {
                 if (e.Node.BackColor == deactivatedColor)
                     e.Cancel = true;
             };
-
             variableTreeView.AfterCheck += ownAfterCheck;
         }
 
@@ -517,7 +519,7 @@ namespace SPLConqueror_GUI
             // Initializing the default settings of the numeric options
             numericSettings.Clear();
 
-            foreach (NumericOption option in originalFunction.participatingNumOptions)
+            foreach (NumericOption option in currentModel.NumericOptions)
                 numericSettings.Add(option, (float) option.DefaultValue);
 
             // Evaluation configuration
@@ -533,7 +535,7 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Initializes the panel conatining all numeric panels.
+        /// Initializes the panel containing all numeric panels.
         /// </summary>
         private void initializeNumericPanels()
         {
@@ -541,7 +543,7 @@ namespace SPLConqueror_GUI
 
             int i = 0;
 
-            foreach (NumericOption option in originalFunction.participatingNumOptions)
+            foreach (NumericOption option in currentModel.NumericOptions)
             {
                 float val = 0;
                 numericSettings.TryGetValue(option, out val);
@@ -594,7 +596,7 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Initializes the constraintTextbox with the current constraints.
+        /// Initializes the constraint view with the current constraints.
         /// </summary>
         private void initializeConstraintView()
         {
@@ -629,7 +631,7 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Initializes all possible options to configurate the adjusted function.
+        /// Initializes all options to configurate the adjusted function.
         /// </summary>
         private void initializeFunctionConfiguration()
         {
@@ -654,7 +656,7 @@ namespace SPLConqueror_GUI
 
             // Initializing combobox
             filterOptionCombobox.Items.Clear();
-            filterOptionCombobox.Items.Add(FILTERING_TREEE_VIEW);
+            filterOptionCombobox.Items.Add(FILTERING_TREE_VIEW);
             filterOptionCombobox.Items.Add(FILTERING_LIST_BOX);
             filterOptionCombobox.SelectedIndex = 0;
 
@@ -686,15 +688,18 @@ namespace SPLConqueror_GUI
         /// 
         /// While working through this method, this handler will be deactivated. 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void ownAfterCheck(object sender, TreeViewEventArgs e)
         {
             variableTreeView.AfterCheck -= ownAfterCheck;
             
             setChildrenChecked(e.Node);
             updateTreeView();
-            updateEvaluationConfiguration();
+
+            if (currentModel.getOption(e.Node.Text) is NumericOption)
+                updateEvaluationConfiguration();
+
             updateAdjustedFunction();
             updateInteractionsTab();
 
@@ -704,7 +709,7 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Creates a tree node out of the specified option.
         /// 
-        /// While doing that all children of this option (according to the variability model) will be
+        /// While doing that, all children of this option (according to the variability model) will be
         /// added as children of this node.
         /// </summary>
         /// <param name="val">Option that is about to be inserted into the tree view. Must not be null.</param>
@@ -715,17 +720,16 @@ namespace SPLConqueror_GUI
                 throw new ArgumentException("Parameter val must not be null!");
 
             List<TreeNode> functionChildren = new List<TreeNode>();
-            List<ConfigurationOption> allChildren;
 
-            if (currentModel.parentChildRelationships.TryGetValue(val, out allChildren))
-            {
-                foreach (ConfigurationOption child in allChildren)
-                    functionChildren.Add(insertIntoTreeView(child));
-            }
+            // Creating all nodes of the children
+            foreach (ConfigurationOption child in val.Children)
+                functionChildren.Add(insertIntoTreeView(child));
 
+            // Creating this node and setting the correct state of this node
             TreeNode current = new TreeNode(val.Name, functionChildren.ToArray());
 
-            if (currentModel.BinaryOptions.Contains(val) && !((BinaryOption)val).Optional && !((BinaryOption)val).hasAlternatives())
+            if (currentModel.BinaryOptions.Contains(val) && !((BinaryOption)val).Optional
+                && !((BinaryOption)val).hasAlternatives())
             {
                 current.Checked = true;
                 current.BackColor = deactivatedColor;
@@ -761,7 +765,7 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Calculates the maximum amount of digits used in the constants of the currently
-        /// loaded InfluenceFunction.
+        /// loaded original function.
         /// </summary>
         /// <returns>Maximum amount of used digits</returns>
         private decimal getMaxDigits()
@@ -787,10 +791,10 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Calculates and returns the components of the specified expression.
         /// 
-        /// The outer additions will be seen as separator of the components.
+        /// The outer additions (+) will be seen as separator of the components.
         /// </summary>
         /// <param name="exp">Specified expression. Must not be null.</param>
-        /// <returns></returns>
+        /// <returns>List of components</returns>
         private List<string> getComponents(string exp)
         {
             if (exp == null)
@@ -799,8 +803,7 @@ namespace SPLConqueror_GUI
             string[] currExpression = exp.Split(' ');
             List<string> components = new List<string>();
             List<string> componentParts = new List<string>();
-
-            // Calculate all necessary components of the expression
+            
             for (int i = 0; i < currExpression.Length; i++)
             {
                 if (currExpression[i] == "log10(")
@@ -826,7 +829,8 @@ namespace SPLConqueror_GUI
                     if (i == currExpression.Length - 1)
                         componentParts.Add(currExpression[i]);
                     
-                    components.Add(String.Join(" ", componentParts));
+                    if (componentParts.Count > 0)
+                        components.Add(String.Join(" ", componentParts));
 
                     componentParts.Clear();
                 }
@@ -840,7 +844,7 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Calculates and returns all interactions and their degrees of the adjusted function.
         /// </summary>
-        /// <returns>Dictionary with all interactions and their degrees of each option</returns>
+        /// <returns>Sorted Dictionary with all interactions and their degrees of each option</returns>
         private SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>> getInteractions()
         {
             SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>> currInteractions =
@@ -943,7 +947,7 @@ namespace SPLConqueror_GUI
                         }
                         break;
 
-                    case FILTERING_TREEE_VIEW:
+                    case FILTERING_TREE_VIEW:
                         if (variableTreeView.Nodes.Count > 0)
                         {
                             Stack<TreeNode> stack = new Stack<TreeNode>();
@@ -1116,13 +1120,13 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Invokes if the corresponding button (generaterFunctionButton) has been pressed.
+        /// Invokes if the corresponding button (generateFunctionButton) has been pressed.
         /// 
         /// By clicking on the button the ilFunctionPanel will draw the adjusted function.
         /// Additionally, all information about the created function will be saved.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void generateFunctionButton_Click(object sender, EventArgs e)
         {
             chosenOptions = Tuple.Create(currentModel.getNumericOption(firstAxisCombobox.SelectedItem.ToString()),
@@ -1139,6 +1143,7 @@ namespace SPLConqueror_GUI
                     bins.Add(opt);
             }
 
+            // TODO: Auf Antwort von Alex warten, bzgl. nicht-existierender Werte
             foreach (KeyValuePair<NumericOption, float> entry in numericSettings.ToList())
             {
                 if (chosenOptions.Item1 != entry.Key && chosenOptions.Item2 != entry.Key)
@@ -1155,13 +1160,13 @@ namespace SPLConqueror_GUI
         /// Invokes if the status of the specified checkbox changes.
         /// 
         /// If the checkbox is selected, the corresponding NumericUpDown-element will be activated
-        /// and the constants of the Influence_Function can be adjusted. If the amount of digits
-        /// have been changed in a previous adjustment, it will be considered.
+        /// and the constants of the InfluenceFunction can be adjusted. If the amount of digits
+        /// have been changed in a previous adjustment, this will be considered.
         /// If the checkbox is deselected, the corresponding NumericUpDown-element will be deactivated
         /// and the adjusted function will get the original constants.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void constantDecimalCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             constantsDigitsUpDown.Enabled = constantDecimalCheckBox.Checked;
@@ -1171,12 +1176,12 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Invokes if the value has changed.
+        /// Invokes if the value of the corresponding NumericUpDown-element has changed.
         /// 
-        /// The counter handles the amount of digits of the constant values in the Influence_Function.
+        /// The counter handles the amount of digits of the constant values in the adjusted function.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void constantsDigitsUpDown_ValueChanged(object sender, EventArgs e)
         {
             updateAdjustedFunction();
@@ -1186,11 +1191,10 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Invokes if the mouse wheel is used on the constantsDigitsUpDown.
         /// 
-        /// This method prevents that the mousewheel is used such that it will not
-        /// throw an InvalidRangeException.
+        /// This method deactivates the mouse wheel for this component.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void constantsDigitsUpDown_MouseWheel(object sender, MouseEventArgs e)
         {
             ((HandledMouseEventArgs)e).Handled = true;
@@ -1205,8 +1209,8 @@ namespace SPLConqueror_GUI
         /// If the checkbox is deselected, the corresponding trackbar will be deactivated
         /// and there will be no filtering of the constants.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void constantFilteringCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             constantRelativeValueSlider.Enabled = constantFilteringCheckbox.Checked;
@@ -1222,8 +1226,8 @@ namespace SPLConqueror_GUI
         /// If the trackbar is at the minimum value, there will be no filtering.
         /// If the trackbar is at the maximum value, only the biggest abstract will be shown.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void constantRelativeValueSlider_Scroll(object sender, EventArgs e)
         {
             updateAdjustedFunction();
@@ -1238,8 +1242,8 @@ namespace SPLConqueror_GUI
         /// If the checkbox is deselected, the filtering will be deactivated and all variables will be
         /// used in the Influence_Function. 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void filterVariablesCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             updateVariableConfiguration();
@@ -1252,11 +1256,11 @@ namespace SPLConqueror_GUI
         /// Invokes if the index of the specified combobox changed.
         /// 
         /// It will deactivate all other views and will make them invisible to the user. Only the selected
-        /// view will be shown and enabled. After choosing a new index the adjusted function and configuration
+        /// view will be shown and enabled. After choosing a new index, the adjusted function and configuration
         /// options will be updated.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void filterOptionCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             variableListBox.Visible = false;
@@ -1271,7 +1275,7 @@ namespace SPLConqueror_GUI
                     variableListBox.Enabled = true;
                     break;
 
-                case FILTERING_TREEE_VIEW:
+                case FILTERING_TREE_VIEW:
                     variableTreeView.Visible = true;
                     variableTreeView.Enabled = true;
                     break;
@@ -1288,22 +1292,22 @@ namespace SPLConqueror_GUI
         /// All selected variables will be shown in the Influence_Function.
         /// If a variable is not selected, it will not appear in the well-formed function and gets the value 0.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void variableListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            updateEvaluationConfiguration();
+            if (currentModel.getOption(variableListBox.SelectedItem.ToString()) is NumericOption)
+                updateEvaluationConfiguration();
+
             updateAdjustedFunction();
             updateInteractionsTab();
         }
 
         /// <summary>
         /// Invokes if the first axis has changed.
-        /// 
-        /// If both axes are the same, the generateFunction-button will be disabled.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void firstAxisCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateGenerateButton();
@@ -1311,11 +1315,9 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Invokes if the second axis has changed.
-        /// 
-        /// If both axes are the same, the generateFunction-button will be disabled.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void secondAxisCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateGenerateButton();
@@ -1325,11 +1327,11 @@ namespace SPLConqueror_GUI
         /// Invokes if the calculatePerformanceButton has been pressed.
         /// 
         /// This will calculate the performance of the function if there are no numeric
-        /// options in the function itself. All currently available binary options
+        /// options in the adjusted function. All currently available binary options
         /// will be set to 1.0.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void calculatePerformanceButton_Click(object sender, EventArgs e)
         {
             string[] expressionParts = new string[adjustedExpressionTree.Length];
@@ -1358,8 +1360,8 @@ namespace SPLConqueror_GUI
         /// written in the textbox, the filtering will occur with the current text. If the checkbox is
         /// deselected, the regex textbox will be disabled and there will be no regex filtering.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void filterRegexCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             updateVariableConfiguration();
@@ -1374,8 +1376,8 @@ namespace SPLConqueror_GUI
         /// If the regex filtering is activated, all strings in the textbox will be used as
         /// search material of legal variables.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void regexTextbox_TextChanged(object sender, EventArgs e)
         {
             updateEvaluationConfiguration();
@@ -1389,8 +1391,8 @@ namespace SPLConqueror_GUI
         /// If checked, the adjustedTextbox will display the adjusted function without any
         /// special form.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void normalRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             factorizationSettingsButton.Enabled = false;
@@ -1405,8 +1407,8 @@ namespace SPLConqueror_GUI
         /// If checked, the adjustedTextbox will display the adjusted function with
         /// factorization of the variables.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void factorRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             factorizationSettingsButton.Enabled = true;
@@ -1422,8 +1424,8 @@ namespace SPLConqueror_GUI
         /// the factorization options. After closing the window, the adjusted function will
         /// be updated.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void factorizationSettingsButton_Click(object sender, EventArgs e)
         {
             Form form = new FactorizationSettings(factorizationPriorities);
@@ -1438,8 +1440,8 @@ namespace SPLConqueror_GUI
         /// All factorization priorities will be reset back to the value 1. After that, the
         /// adjusted function will be updated.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void resetFactorizationButton_Click(object sender, EventArgs e)
         {
             foreach (KeyValuePair<ConfigurationOption, double> pair in factorizationPriorities.ToList())
@@ -1456,8 +1458,8 @@ namespace SPLConqueror_GUI
         /// 
         /// Depending on the selected option, the corresponding chart will be shown.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void chartComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             interactionChart.Visible = false;
@@ -1498,8 +1500,8 @@ namespace SPLConqueror_GUI
         /// 
         /// It will change the presence of the loaded measurements depending on the selected index.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void measurementViewCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateMeasurementPanel();
@@ -1508,10 +1510,10 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Invokes if another element of the corresponding combobox (nfpValueCombobox) was selected.
         /// 
-        /// It will switch the NFProperty that will be read from the measurements
+        /// It will switch the NFProperty that will be read from the loaded measurements.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
         private void nfpValueCombobox_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateMeasurementTab();
@@ -1519,6 +1521,9 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Updates the variable configuration.
+        /// 
+        /// Activates or deactivates all configuration options if the filterVariablesCheckbox
+        /// is checked.
         /// </summary>
         private void updateVariableConfiguration()
         {
@@ -1536,7 +1541,7 @@ namespace SPLConqueror_GUI
                     case FILTERING_LIST_BOX:
                         variableListBox.Enabled = true;
                         break;
-                    case FILTERING_TREEE_VIEW:
+                    case FILTERING_TREE_VIEW:
                         variableTreeView.Enabled = true;
                         break;
                 }
@@ -1635,6 +1640,10 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Updates the evaluation configuration.
+        /// 
+        /// It will update the choosable axis options such that only numeric options
+        /// in the adjusted function are selectable. If there are none or there is no
+        /// loaded model, an alternative panel (original groupbox panel) will be displayed.
         /// </summary>
         private void updateEvaluationConfiguration()
         {
@@ -1672,7 +1681,8 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Configurates the label for the error message of the function configuration.
+        /// Configurates the label for the error message of the function configuration
+        /// if needed.
         /// 
         /// If the generationButton is enabled, the label will be set invisible.
         /// Otherwise the label is visible and displays a helpful message.
@@ -1710,6 +1720,8 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Updates the charts of the interactions tab.
+        /// 
+        /// All charts will be recalculated.
         /// </summary>
         private void updateCharts()
         {
@@ -1961,6 +1973,7 @@ namespace SPLConqueror_GUI
         /// Evaluates the specified expression.
         /// 
         /// This only works if the expression does not contain any configuration options anymore.
+        /// Furthermore, the expression has to be in infix notation.
         /// </summary>
         /// <param name="exp">Specified expression with no configuration options. Must not be null.</param>
         /// <returns>Evaluated value</returns>
@@ -2021,8 +2034,8 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Updates the adjusted function.
         /// 
-        /// This is done by looking which options have been selected and by adjusting the
-        /// original Influence_Function.
+        /// This is done by observing which options have been selected and by adjusting the
+        /// original function.
         /// </summary>
         private void updateAdjustedFunction()
         {
@@ -2196,48 +2209,8 @@ namespace SPLConqueror_GUI
                             stack.Push(Tuple.Create<string, string>(first.Item1 + " " + prt + " " + second.Item1, prt));
                     }
                 }
-                else if (prt.Equals("[") || prt.Equals("]"))
-                {
-                    // If there is a log10 in the expression, calculate the inner value of the
-                    // logarithm first.
-                    switch (prt) {
-
-                    case "[":
-                                bool done = false;
-                    int pos = i;
-                    int counter = 0;
-
-                    while (!done)
-                    {
-                        pos++;
-
-                        switch (expParts[pos])
-                        {
-                            case "[":
-                                counter++;
-                                break;
-                            case "]":
-                                if (counter == 0)
-                                    done = true;
-                                else
-                                    counter--;
-                                break;
-                        }
-                    }
-
-                    string[] innerLog = new string[pos - i - 1];
-                    Array.Copy(expParts, i + 1, innerLog, 0, pos - i - 1);
-
-                    string result = calculateFunctionExpression(innerLog);
-
-                    stack.Push(Tuple.Create<string, string>("log10( " + result + " )", "log10"));
-
-                    i = pos;
-                    break;
-                        case "]":
-                            throw new Exception("The inner notation consists of ']' in unexpected places.");
-                    }
-                }
+                else if (prt.Equals("]"))
+                    stack.Push(Tuple.Create<string, string>("log10( " + stack.Pop().Item1 + " )", "log10"));
                 else
                 {
                     // Otherwise it is a variable or a number                    
@@ -2253,6 +2226,10 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Updates the measurement tab of the application.
+        /// 
+        /// The method will check, if the preconditions are fulfilled (for example: Are there any
+        /// loaded measurements?). Is not, an error message will be displayed. Is all preconditions
+        /// are fulfilled, each IlPanel in the measurment tab will be recalculated and redrawn.
         /// </summary>
         private void updateMeasurementTab()
         {
@@ -2362,10 +2339,6 @@ namespace SPLConqueror_GUI
                 return;
             }
 
-            measurementErrorLabel.Visible = false;
-            measurementViewCombobox.Enabled = true;
-            nfpValueCombobox.Enabled = true;
-
             if (nfpValueCombobox.Items.Count == 0)
             {
                 foreach (KeyValuePair<string, NFProperty> entry in GlobalState.nfProperties.ToList())
@@ -2374,10 +2347,48 @@ namespace SPLConqueror_GUI
                 nfpValueCombobox.SelectedIndex = 0;
             }
 
+            NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
+
+            // Check if at least one configuration contains the current nfp value
+            if(neededConfigurations.All(x => !x.nfpValues.Keys.Contains(prop)))
+            {
+                overviewPerformanceIlPanel.Scene = new ILScene();
+                overviewMeasurementIlPanel.Scene = new ILScene();
+                overviewAbsoluteDifferenceIlPanel.Scene = new ILScene();
+                overviewRelativeDifferenceIlPanel.Scene = new ILScene();
+                bothGraphsIlPanel.Scene = new ILScene();
+                measurementsOnlyIlPanel.Scene = new ILScene();
+                absoluteDifferenceIlPanel.Scene = new ILScene();
+                relativeDifferenceIlPanel.Scene = new ILScene();
+                overviewPerformanceIlPanel.Refresh();
+                overviewMeasurementIlPanel.Refresh();
+                overviewAbsoluteDifferenceIlPanel.Refresh();
+                overviewRelativeDifferenceIlPanel.Refresh();
+                bothGraphsIlPanel.Refresh();
+                measurementsOnlyIlPanel.Refresh();
+                absoluteDifferenceIlPanel.Refresh();
+                relativeDifferenceIlPanel.Refresh();
+
+                overviewPanel.Visible = false;
+                bothGraphsPanel.Visible = false;
+                measurementsOnlyPanel.Visible = false;
+                absoluteDifferencePanel.Visible = false;
+                relativeDifferencePanel.Visible = false;
+
+                nfpValueCombobox.Enabled = true;
+                measurementViewCombobox.Enabled = false;
+                measurementErrorLabel.Visible = true;
+                measurementErrorLabel.Text = ERROR_NO_MEASUREMENTS_NFP;
+                return;
+            }
+
+            measurementErrorLabel.Visible = false;
+            measurementViewCombobox.Enabled = true;
+            nfpValueCombobox.Enabled = true;
+
             ILPlotCube bothGraphsCube, measurementsOnlyCube, absoluteDifferenceCube,
                 relativeDifferenceCube, overviewPerformanceCube, overviewMeasurementsCube,
                 overviewAbsoluteDifferenceCube, overviewRelativeDifferenceCube; 
-            NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
 
             // Decide if there has to be a 2D or 3D shape
             if (chosenOptions.Item2 == null)
@@ -2423,6 +2434,7 @@ namespace SPLConqueror_GUI
                     Configuration c = null;
                     double d;
 
+                    // Get the measurement for the current settings
                     for (int j = 0; j < neededConfigurations.Count && c == null; j++)
                     {
                         neededConfigurations[j].NumericOptions.TryGetValue(chosenOptions.Item1, out d);
@@ -2431,8 +2443,10 @@ namespace SPLConqueror_GUI
                             c = neededConfigurations[j];
                     }
 
-                    if (c == null)
+                    if (c == null || !c.nfpValues.TryGetValue(prop, out d))
                     {
+                        // If there are no measurements for this specific setting, the line plots
+                        // have to be drawn up to this point.
                         if (XY.Size[0] > 0)
                         {
                             bothGraphsCube.Add(new ILLinePlot(XY)
@@ -2460,7 +2474,7 @@ namespace SPLConqueror_GUI
                     }
                     else
                     {
-                        c.nfpValues.TryGetValue(prop, out d);
+                        // Calculate all values for the corresponding line plots.
                         XY[0, pos] = (float)value;
                         XY[1, pos] = (float)d;
                         absoluteDifferences[0, pos] = (float)value;
@@ -2490,6 +2504,7 @@ namespace SPLConqueror_GUI
                     }
                 }
 
+                // Insert all remaining line plot parts into the corresponding cubes.
                 bothGraphsCube.Add(new ILLinePlot(XY)
                 {
                     ColorOverride = measurementColor
@@ -2526,8 +2541,9 @@ namespace SPLConqueror_GUI
             }
             else
             {
-                ILArray<float> A, X, Y, absoluteDifferences, relativeDifferences;
+                ILArray<float> measurements, X, Y, absoluteDifferences, relativeDifferences;
 
+                // Define all plot cubes
                 bothGraphsCube = new ILPlotCube(twoDMode: false);
                 measurementsOnlyCube = new ILPlotCube(twoDMode: false);
                 absoluteDifferenceCube = new ILPlotCube(twoDMode: false);
@@ -2562,25 +2578,27 @@ namespace SPLConqueror_GUI
                 overviewRelativeDifferenceCube.Axes.YAxis.Label.Text = chosenOptions.Item2.Name;
                 overviewRelativeDifferenceCube.Axes.ZAxis.Label.Text = RELATIVE_DIFFERENCE_LABEL;
 
+                // Initialize and fill all arrays
                 X = Array.ConvertAll(chosenOptions.Item1.getAllValues().ToArray(), x => (float)x);
                 Y = Array.ConvertAll(chosenOptions.Item2.getAllValues().ToArray(), y => (float)y);
 
                 ILArray<float> XMat = 1;
                 ILArray<float> YMat = ILMath.meshgrid(Y, X, XMat);
 
-                A = ILMath.zeros<float>(X.Length, Y.Length, 3);
+                measurements = ILMath.zeros<float>(X.Length, Y.Length, 3);
                 absoluteDifferences = ILMath.zeros<float>(X.Length, Y.Length, 3);
                 relativeDifferences = ILMath.zeros<float>(X.Length, Y.Length, 3);
-
-                // Fill array with values
-                A[":;:;1"] = XMat;
-                A[":;:;2"] = YMat;
+                
+                measurements[":;:;1"] = XMat;
+                measurements[":;:;2"] = YMat;
                 
                 List<double> valuesX = chosenOptions.Item1.getAllValues();
                 List<double> valuesY = chosenOptions.Item2.getAllValues();
                 valuesX.Sort();
                 valuesY.Sort();
 
+                // Read every possible measurement value. If there is none, the corresponding value will
+                /// be set to negative infinity.
                 for (int i = 0; i < valuesX.Count; i++)
                 {
                     for(int j = 0; j < valuesY.Count; j++)
@@ -2597,14 +2615,13 @@ namespace SPLConqueror_GUI
                                 c = neededConfigurations[k];
                         }
 
-                        if (c == null)
-                            A[i, j, 0] = float.NegativeInfinity;
+                        if (c == null || !c.nfpValues.TryGetValue(prop, out d1))
+                            measurements[i, j, 0] = float.NegativeInfinity;
                         else
                         {
-                            c.nfpValues.TryGetValue(prop, out d1);
-                            A[i, j, 0] = (float)d1;
+                            measurements[i, j, 0] = (float)d1;
 
-                            ILPoints point = createPoint(A[i, j, 1], A[i, j, 2], A[i, j, 0], measurementPointLabel);
+                            ILPoints point = createPoint(measurements[i, j, 1], measurements[i, j, 2], measurements[i, j, 0], measurementPointLabel);
 
                             // Adding events to the point to display its coordinates on the screen
                             point.MouseMove += (s, a) =>
@@ -2621,34 +2638,36 @@ namespace SPLConqueror_GUI
                     }
                 }
 
-                for (int i = 0; i < A.Size[0]; i++)
+                // Calculate all absolute and relative differences.
+                for (int i = 0; i < measurements.Size[0]; i++)
                 {
-                    for (int j = 0; j < A.Size[1]; j++)
+                    for (int j = 0; j < measurements.Size[1]; j++)
                     {
-                        absoluteDifferences[i, j, 0] = A[i, j, 0] == float.NegativeInfinity
-                            ? float.NegativeInfinity : Math.Abs(A[i, j, 0].GetArrayForRead()[0] - calculatedPerformances[i, j, 0].GetArrayForRead()[0]);
-                        absoluteDifferences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
-                        absoluteDifferences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
+                        absoluteDifferences[i, j, 0] = measurements[i, j, 0] == float.NegativeInfinity
+                            ? float.NegativeInfinity : Math.Abs(measurements[i, j, 0].GetArrayForRead()[0] - calculatedPerformances[i, j, 0].GetArrayForRead()[0]);
+                        absoluteDifferences[i, j, 1] = measurements[i, j, 1].GetArrayForRead()[0];
+                        absoluteDifferences[i, j, 2] = measurements[i, j, 2].GetArrayForRead()[0];
 
-                        if (A[i, j, 0] == float.NegativeInfinity)
+                        if (measurements[i, j, 0] == float.NegativeInfinity)
                             relativeDifferences[i, j, 0] = float.NegativeInfinity;
-                        else if (A[i, j, 0] == 0)
+                        else if (measurements[i, j, 0] == 0)
                             relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] == 0 ? 0 : 100;
                         else
-                            relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] >= 1 ? absoluteDifferences[i, j, 0] / A[i, j, 0] * 100 : 0;
+                            relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] >= 1 ? absoluteDifferences[i, j, 0] / measurements[i, j, 0] * 100 : 0;
                         
-                        relativeDifferences[i, j, 1] = A[i, j, 1].GetArrayForRead()[0];
-                        relativeDifferences[i, j, 2] = A[i, j, 2].GetArrayForRead()[0];
+                        relativeDifferences[i, j, 1] = measurements[i, j, 1].GetArrayForRead()[0];
+                        relativeDifferences[i, j, 2] = measurements[i, j, 2].GetArrayForRead()[0];
                     }
                 }
 
-                bothGraphsCube.Add(new ILSurface(A)
+                // Insert all information into the cubes
+                bothGraphsCube.Add(new ILSurface(measurements)
                     {
                         ColorMode = ILSurface.ColorModes.Solid
                     }
                 );
                 bothGraphsCube.Add(new ILSurface(calculatedPerformances));
-                measurementsOnlyCube.Add(new ILSurface(A)
+                measurementsOnlyCube.Add(new ILSurface(measurements)
                     {
                         ColorMode = ILSurface.ColorModes.Solid
                     }
@@ -2664,10 +2683,11 @@ namespace SPLConqueror_GUI
                 });
                 relativeDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 overviewPerformanceCube.Add(new ILSurface(calculatedPerformances));
-                overviewMeasurementsCube.Add(new ILSurface(A)
+                overviewMeasurementsCube.Add(new ILSurface(measurements)
                 {
                     ColorMode = ILSurface.ColorModes.Solid
                 });
+                overviewMeasurementsCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 overviewAbsoluteDifferenceCube.Add(new ILSurface(absoluteDifferences));
                 overviewAbsoluteDifferenceCube.Add(new ILSurface(ILMath.zeros<float>(3, 3, 3)));
                 overviewRelativeDifferenceCube.Add(new ILSurface(relativeDifferences));
@@ -2755,7 +2775,7 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Updates which IlPanel for the measurement is visible.
         /// 
-        /// This is depending on the selected item in the corresponding combo box (measurementViewCombobox).
+        /// This is depending on the selected item in the corresponding combobox (measurementViewCombobox).
         /// </summary>
         private void updateMeasurementPanel()
         {
@@ -2788,7 +2808,7 @@ namespace SPLConqueror_GUI
         }
 
         /// <summary>
-        /// Clears the specified RichTextBox and appends the specified function in a wellformed way.
+        /// Clears the specified RichTextBox and appends the specified function in a well-formed way.
         /// 
         /// The color of the constants are dependent on the maximum abstract constant of the
         /// expression.
@@ -3149,35 +3169,6 @@ namespace SPLConqueror_GUI
             return point;
         }
 
-        private float evaluateExpression(string[] exp, string[] opt, float[] val)
-        {
-            if (exp == null)
-                throw new ArgumentNullException("Parameter exp must not be null!");
-            if (opt == null)
-                throw new ArgumentNullException("Parameter opt must not be null!");
-
-            string[] expParts = new string[exp.Length];
-            exp.CopyTo(expParts, 0);
-
-            for (int i = 0; i < expParts.Length; i++)
-            {
-                bool foundVar = false;
-                for (int j = 0; j < opt.Length && !foundVar; j++)
-                {
-                    if (expParts[i] == opt[j])
-                    {
-                        expParts[i] = val[j].ToString().Replace(',', '.');
-                        foundVar = true;
-                    }
-                }
-            }
-
-            float result;
-            float.TryParse(calculateFunctionExpression(expParts), out result);
-
-            return result;
-        }
-
         /// <summary>
         /// Calculates the function for the ILFunctionPanel.
         /// 
@@ -3217,50 +3208,15 @@ namespace SPLConqueror_GUI
                         stack.Push(stack.Pop() * stack.Pop());
                         done = true;
                         break;
-                    case "[":
-                        switch (prt)
-                        {
-                            case "[":
-                                bool innerDone = false;
-                                int pos = i;
-                                int counter = 0;
+                    case "]":
+                        ILArray<float> calcResult = stack.Pop();
+                        ILArray<float> logResult = ILMath.zeros<float>(1, 1);
 
-                                while (!innerDone)
-                                {
-                                    pos++;
+                        for (int j = 0; j < calcResult.Size[0]; j++)
+                            for (int k = 0; k < calcResult.Size[1]; k++)
+                                logResult[j, k] = calcResult[j, k] <= 0 ? ILMath.zeros<float>(1) : ILMath.log10(calcResult[j, k]);
 
-                                    switch (expParts[pos])
-                                    {
-                                        case "[":
-                                            counter++;
-                                            break;
-                                        case "]":
-                                            if (counter == 0)
-                                                innerDone = true;
-                                            else
-                                                counter--;
-                                            break;
-                                    }
-                                }
-
-                                string[] innerLog = new string[pos - i - 1];
-                                Array.Copy(expParts, i + 1, innerLog, 0, pos - i - 1);
-
-                                ILArray<float> calcResult = calculateFunction(innerLog, optNames, vars);
-                                ILArray<float> logResult = ILMath.zeros<float>(1, 1);
-
-                                // Be careful! Here: log(0) = 0
-                                for (int j = 0; j < calcResult.Size[0]; j++)
-                                    for (int k = 0; k < calcResult.Size[1]; k++)
-                                        logResult[j, k] = calcResult[j, k] <= 0 ? ILMath.zeros<float>(1) : ILMath.log10(calcResult[j, k]);
-
-                                stack.Push(logResult);
-
-                                i = pos;
-                                break;
-                            case "]":
-                                throw new Exception("The inner notation consists of ']' in unexpected places.");
-                        }
+                        stack.Push(logResult);
                         done = true;
                         break;
                 }
@@ -3300,7 +3256,7 @@ namespace SPLConqueror_GUI
         /// <returns>True if the token is an operator else false.</returns>
         private bool isOperator(string token)
         {
-            return token.Equals("+") || token.Equals("*") || token.Equals("[") || token.Equals("]");
+            return token.Equals("+") || token.Equals("*") || token.Equals("]");
         }
 
         /// <summary>

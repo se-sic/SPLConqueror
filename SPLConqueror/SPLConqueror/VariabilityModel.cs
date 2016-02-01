@@ -28,7 +28,11 @@ namespace SPLConqueror_Core
           //  set { binaryOptions = value; }
         }
 
+        public Dictionary<int, ConfigurationOption> optionToIndex = new Dictionary<int, ConfigurationOption>();
+        public Dictionary<ConfigurationOption, int> indexToOption = new Dictionary<ConfigurationOption, int>();
+    
         public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
+        //public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
         
         String name = "empty";
 
@@ -217,6 +221,9 @@ namespace SPLConqueror_Core
                 binOpt.init();
             foreach (var numOpt in numericOptions)
                 numOpt.init();
+
+            foreach (var opt in getOptions())
+                opt.updateChildren();
         }
 
         private void loadBooleanConstraints(XmlElement xmlNode)
@@ -241,7 +248,7 @@ namespace SPLConqueror_Core
         {
             foreach (XmlElement numOptNode in xmlNode.ChildNodes)
             {
-                if (addConfigurationOption(NumericOption.loadFromXML(numOptNode, this)) == false)
+                if (!addConfigurationOption(NumericOption.loadFromXML(numOptNode, this)))
                     GlobalState.logError.logLine("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
             }
         }
@@ -250,7 +257,7 @@ namespace SPLConqueror_Core
         {
             foreach (XmlElement binOptNode in xmlNode.ChildNodes)
             {
-                if (addConfigurationOption(BinaryOption.loadFromXML(binOptNode, this)) == false)
+                if (!addConfigurationOption(BinaryOption.loadFromXML(binOptNode, this)))
                     GlobalState.logError.logLine("Could not add option to the variability model. Possible reasons: invalid name, option already exists.");
             }
         }
@@ -289,6 +296,7 @@ namespace SPLConqueror_Core
             if (option.Parent == null)
                 option.Parent = this.root;
             
+            /*
             if(parentChildRelationships.ContainsKey(option.Parent))
                 parentChildRelationships[option.Parent].Add(option);
             else
@@ -296,12 +304,17 @@ namespace SPLConqueror_Core
                 List<ConfigurationOption> children = new List<ConfigurationOption>();
                 children.Add(option);
                 parentChildRelationships.Add(option.Parent, children);
-            }
+            }*/
    
             if (option is BinaryOption)
                 this.binaryOptions.Add((BinaryOption)option);
             else
                 this.numericOptions.Add((NumericOption)option);
+
+            // create Index 
+            optionToIndex.Add(optionToIndex.Count, option);
+            indexToOption.Add(option, indexToOption.Count);
+
 
             return true;
         }
@@ -381,7 +394,43 @@ namespace SPLConqueror_Core
 
         public void deleteOption(ConfigurationOption toDelete)
         {
-            throw new NotImplementedException();
+            List<ConfigurationOption> list;
+
+            // Removing all children
+            /*
+            if (parentChildRelationships.TryGetValue(toDelete, out list))
+            {
+                List<ConfigurationOption> children = new List<ConfigurationOption>();
+
+                foreach (ConfigurationOption opt in list)
+                    children.Add(opt);
+
+                foreach (ConfigurationOption child in children)
+                    deleteOption(child);    
+            }*/
+
+            // Removing option from other options
+            foreach (ConfigurationOption opt in getOptions())
+            {
+                for (int i = opt.Excluded_Options.Count - 1; i >= 0; i--)
+                {
+                    if (opt.Excluded_Options[i].Contains(toDelete))
+                        opt.Excluded_Options.RemoveAt(i);
+                }
+
+                for (int i = opt.Implied_Options.Count - 1; i >= 0; i--)
+                {
+                    if (opt.Implied_Options[i].Contains(toDelete))
+                        opt.Implied_Options.RemoveAt(i);
+                }
+            }
+
+            // Removing option from constraints
+            booleanConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
+            nonBooleanConstraints.RemoveAll(x => x.ToString().Contains(toDelete.ToString()));
+
+            toDelete.Parent.Children.Remove(toDelete);
+            //parentChildRelationships.Remove(toDelete);
         }
 
         internal bool hasOption(string name)
