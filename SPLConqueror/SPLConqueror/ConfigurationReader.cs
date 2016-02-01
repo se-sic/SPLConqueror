@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace SPLConqueror_Core
 {
@@ -41,9 +42,102 @@ namespace SPLConqueror_Core
         /// <returns></returns>
         public static List<Configuration> readConfigurations(string file, VariabilityModel model)
         {
-            XmlDocument dat = new System.Xml.XmlDocument();
-            dat.Load(file);
-            return readConfigurations(dat, model);
+            if (file.EndsWith("xml"))
+            {
+                XmlDocument dat = new System.Xml.XmlDocument();
+                dat.Load(file);
+                return readConfigurations(dat, model);
+            }
+            // assuming csv format
+            return readCSV(file, model);
+        }
+
+        //Two formats are possible: with header and 0,1s for binary selection or no header and giving the names of config options per per line (this excludex numeric options)
+        private static List<Configuration> readCSV(string file, VariabilityModel model)
+        {
+            StreamReader sr = new StreamReader(file);
+            String line1, line2;
+            if (!sr.EndOfStream)
+                line1 = sr.ReadLine();
+            else return null;
+            if (!sr.EndOfStream)
+                line2 = sr.ReadLine();
+            else
+                return null;
+            sr.Close();
+            var l1 = line1.Split(';');
+            var l2 = line2.Split(';');
+            if (l1.Length < 2 || l2.Length < 2)
+                return null;
+            int d = 0;
+            if (int.TryParse(l2[0], out d))
+                return readCSVHeaderFormat(file, model);
+            else
+                return readCSVBinaryOptFormat(file, model);
+           
+        }
+
+        private static List<Configuration> readCSVBinaryOptFormat(string file, VariabilityModel model)
+        {
+            List<Configuration> result = new List<Configuration>();
+            StreamReader sr = new StreamReader(file);
+            while (!sr.EndOfStream)
+            {
+                var line = sr.ReadLine().Split(';');
+                List<BinaryOption> temp = new List<BinaryOption>();
+                for(int i = 0; i < line.Length-1;i++) {
+                    BinaryOption b = model.getBinaryOption(line[i]);
+                    temp.Add(b);
+                }
+                double value = Double.Parse(line[line.Length-1].Replace(',','.'));
+                var c = new Configuration(temp);
+                c.setMeasuredValue(GlobalState.currentNFP, value);
+                result.Add(c);
+            }
+            sr.Close();
+            return result;
+        }
+
+        private static List<Configuration> readCSVHeaderFormat(string file, VariabilityModel model)
+        {
+            List<Configuration> result = new List<Configuration>();
+            StreamReader sr = new StreamReader(file);
+            var header = sr.ReadLine().Split(';');
+            Dictionary<int,BinaryOption> binOptions = new Dictionary<int,BinaryOption>();
+            Dictionary<int,NumericOption> numOptions = new Dictionary<int,NumericOption>();
+            for(int i = 0; i < header.Length;i++){
+                var opt = model.getOption(header[i]);
+                if(opt == null)
+                    continue;
+                if (opt is NumericOption)
+                    numOptions.Add(i,(NumericOption)opt);
+                else
+                    binOptions.Add(i,(BinaryOption)opt);
+            }
+            while (!sr.EndOfStream)
+            {
+                var line = sr.ReadLine().Split(';');
+                Dictionary<NumericOption,double> numConf = new Dictionary<NumericOption,double>();
+                List<BinaryOption> temp = new List<BinaryOption>();
+                for (int i = 0; i < line.Length - 1; i++)
+                {
+                    double confVal = Double.Parse(line[i].Replace(',', '.'));
+                    if(binOptions.Keys.Contains(i) && confVal == 1)
+                    {
+                        temp.Add(binOptions[i]);
+                    }
+                    else if (numOptions.Keys.Contains(i))
+                    {
+                        numConf.Add(numOptions[i],confVal);
+                    }
+                }
+                double value = Double.Parse(line[line.Length - 1].Replace(',', '.'));
+                var c = new Configuration(temp,numConf);
+                c.setMeasuredValue(GlobalState.currentNFP, value);
+                result.Add(c);
+            }
+            sr.Close();
+            return result;
         }
         
         /// <summary>
