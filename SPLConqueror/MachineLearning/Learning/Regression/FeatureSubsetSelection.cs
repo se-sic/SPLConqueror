@@ -310,18 +310,23 @@ namespace MachineLearning.Learning.Regression
                 {
                     var candidateError = errorOfFeature[candidate];
                     var candidateScore = previousRound.learningError_relative - candidateError;
-                    if (MLsettings.candidateSizePenalty)
+                    if (candidateScore > 0)
                     {
-                        candidateScore /= candidate.getNumberOfDistinctParticipatingOptions();
+                        if (MLsettings.candidateSizePenalty)
+                        {
+                            candidateScore /= candidate.getNumberOfDistinctParticipatingOptions();
+                        }
+                        if (candidateScore > maximalRoundScore)
+                        {
+                            maximalRoundScore = candidateScore;
+                            minimalRoundError = errorOfFeature[candidate];
+                            bestCandidate = candidate;
+                            bestModel = errorOfFeatureWithModel[candidate];
+                        } else
+                        {
+                            candidate.Constant = 1;                        
+                        }
                     }
-                    if (candidateScore > maximalRoundScore)
-                    {
-                        maximalRoundScore = candidateScore;
-                        minimalRoundError = errorOfFeature[candidate];
-                        bestCandidate = candidate;
-                        bestModel = errorOfFeatureWithModel[candidate];
-                    } else
-                        candidate.Constant = 1;
                 }
             } else if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.INFLUENCE)
             {
@@ -341,7 +346,6 @@ namespace MachineLearning.Learning.Regression
             }
 
             //error computations and logging stuff
-            double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
             if (MLsettings.ignoreBadFeatures)
             {
@@ -355,7 +359,7 @@ namespace MachineLearning.Learning.Regression
             {
                 bestModel = copyCombination(bestModel);
                 LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel, out relativeErrorEval), previousRound.round + 1);
-                newRound.learningError_relative = relativeErrorTrain;
+                newRound.learningError_relative = minimalRoundError;
                 newRound.validationError_relative = relativeErrorEval;
                 newRound.elapsedTime = DateTime.Now - startTime;
                 newRound.bestCandidate = bestCandidate;
@@ -929,12 +933,17 @@ namespace MachineLearning.Learning.Regression
         /// <returns>True if we abort learning, false otherwise</returns>
         protected bool abortLearning(LearningRound current, LearningRound previous)
         {
+            TimeSpan diff = DateTime.Now - this.startTime;
+            if (MLsettings.outputRoundsToStdout)
+            {
+                //GlobalState.logInfo.logToStdout(current.round.ToString() + ";" + diff.ToString());
+                GlobalState.logInfo.logToStdout(current.ToString());
+            }
             if (current.round >= this.MLsettings.numberOfRounds)
             {
                 current.terminationReason = "numberOfRounds";
                 return true;
             }
-            TimeSpan diff = DateTime.Now - this.startTime;
             if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
             {
                 current.terminationReason = "learnTimeLimit";
