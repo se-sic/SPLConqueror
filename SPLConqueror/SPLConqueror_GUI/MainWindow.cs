@@ -778,7 +778,9 @@ namespace SPLConqueror_GUI
 
                 if (double.TryParse(prt, out i))
                 {
-                    int j = prt.Split(new char[] {'.', ',' })[1].Length;
+                    string[] splitNumber = prt.Split(new char[] { '.', ',' });
+
+                    int j = splitNumber.Length > 1 ? splitNumber[1].Length : 0;
 
                     if (maxDigits < j)
                         maxDigits = j;
@@ -791,17 +793,21 @@ namespace SPLConqueror_GUI
         /// <summary>
         /// Calculates and returns the components of the specified expression.
         /// 
-        /// The outer additions (+) will be seen as separator of the components.
+        /// The outer additions (+) and subtractions (-) will be seen as separators
+        /// of the components. Each component gets an operator '+' or '-' depending
+        /// on the operator in front of this component. The first component will receive
+        /// a '+'.
         /// </summary>
         /// <param name="exp">Specified expression. Must not be null.</param>
-        /// <returns>List of components</returns>
-        private List<string> getComponents(string exp)
+        /// <returns>List of components with their previous operations</returns>
+        private List<Tuple<string, string>> getComponents(string exp)
         {
             if (exp == null)
                 throw new ArgumentNullException("Parameter exp must nor be null!");
 
             string[] currExpression = exp.Split(' ');
-            List<string> components = new List<string>();
+            string currSign = "+";
+            List<Tuple<string, string>> components = new List<Tuple<string, string>>();
             List<string> componentParts = new List<string>();
             
             for (int i = 0; i < currExpression.Length; i++)
@@ -824,15 +830,20 @@ namespace SPLConqueror_GUI
 
                     componentParts.Add(currExpression[i]);
                 }
-                else if (currExpression[i] == "+" || i == currExpression.Length - 1)
+                else if (currExpression[i] == "+" || currExpression[i] == "-" || i == currExpression.Length - 1)
                 {
                     if (i == currExpression.Length - 1)
                         componentParts.Add(currExpression[i]);
                     
                     if (componentParts.Count > 0)
-                        components.Add(String.Join(" ", componentParts));
+                        components.Add(Tuple.Create<string, string>(String.Join(" ", componentParts), currSign));
 
                     componentParts.Clear();
+
+                    if (currExpression[i] == "-")
+                        currSign = "-";
+                    else
+                        currSign = "+";
                 }
                 else
                     componentParts.Add(currExpression[i]);
@@ -853,14 +864,14 @@ namespace SPLConqueror_GUI
             //Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> currInteractions =
                 //new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
             
-            foreach (string component in getComponents(adjustedMeasurementFunction))
+            foreach (Tuple<string, string> component in getComponents(adjustedMeasurementFunction))
             {
                 // Getting a list of all options in a component. Presuming that there is no
                 // addition in logarithms (due to the learned function) 
                 List<ConfigurationOption> componentOptions = new List<ConfigurationOption>();
                 int degree = 0;
 
-                foreach (string part in component.Split(' '))
+                foreach (string part in component.Item1.Split(' '))
                 {
                     ConfigurationOption option = currentModel.getOption(part);
                 
@@ -1094,12 +1105,12 @@ namespace SPLConqueror_GUI
         {
             List<double> constants = new List<double>();
 
-            foreach (string part in getComponents(exp))
+            foreach (Tuple<string,string> part in getComponents(exp))
             {
                 bool valid = true;
                 List<double> nums = new List<double>();
 
-                foreach (string prt in part.Split(' '))
+                foreach (string prt in part.Item1.Split(' '))
                 {
                     double i = 0.0;
 
@@ -1142,8 +1153,7 @@ namespace SPLConqueror_GUI
                 if (opt != null)
                     bins.Add(opt);
             }
-
-            // TODO: Auf Antwort von Alex warten, bzgl. nicht-existierender Werte
+            
             foreach (KeyValuePair<NumericOption, float> entry in numericSettings.ToList())
             {
                 if (chosenOptions.Item1 != entry.Key && chosenOptions.Item2 != entry.Key)
@@ -1755,18 +1765,18 @@ namespace SPLConqueror_GUI
             Dictionary<string, double> constantMaxInfluences = new Dictionary<string, double>();
             
             // Calculate the constant influences
-            foreach (string component in getComponents(adjustedMeasurementFunction))
+            foreach (Tuple<string, string> component in getComponents(adjustedMeasurementFunction))
             {
                 double constant = 1.0;
                 double currConstantRange = 0;
                 List<string> variables = new List<string>();
 
-                foreach (string part in component.Split(' '))
+                foreach (string part in component.Item1.Split(' '))
                 {
                     double num = 0.0;
                     bool isConstant = double.TryParse(part, out num);
 
-                    constant = isConstant ? num : constant;
+                    constant = isConstant ? num : (component.Item2 == "-" ? -constant : constant);
 
                     if (!isConstant && part != "" && !isOperator(part))
                         variables.Add(part);
@@ -1899,11 +1909,11 @@ namespace SPLConqueror_GUI
             foreach (string option in optionList)
             {
                 List<string> expressions = new List<string>();
-                List<string> neededComponents = new List<string>();
+                string generalExpression = "";
                 
-                foreach (string comp in getComponents(String.Join(" ", currExpression)))
+                foreach (Tuple<string, string> comp in getComponents(String.Join(" ", currExpression)))
                 {
-                    string[] splitComponent = comp.Split(' ');
+                    string[] splitComponent = comp.Item1.Split(' ');
                     bool componentAdded = false;
 
                     for (int i = 0; i < splitComponent.Length && !componentAdded; i++)
@@ -1911,12 +1921,17 @@ namespace SPLConqueror_GUI
                         if (splitComponent[i] == option)
                         {
                             componentAdded = true;
-                            neededComponents.Add(comp);
+
+                            // TODO: Testen
+                            if (generalExpression.Count() == 0)
+                                generalExpression += "0";
+
+                            generalExpression += " " + comp.Item2 + " " + String.Join(" ", comp.Item1);
                         }
                     }
                 }
 
-                expressions.Add(String.Join(" + ", neededComponents));
+                expressions.Add(generalExpression);
 
                 // Calculate all possible combinations of expressions
                 foreach (string innerOption in optionList)
@@ -1982,14 +1997,14 @@ namespace SPLConqueror_GUI
             if (exp == null)
                 throw new ArgumentNullException("Parameter exp must not be null!");
 
-            List<string> components = getComponents(exp);
+            List<Tuple<string, string>> components = getComponents(exp);
             double finalValue = 0.0;
             
             // Components only contain multiplication or logarithm
-            foreach (string comp in components)
+            foreach (Tuple<string, string> comp in components)
             {
                 double currentValue = 1.0;
-                string[] compParts = comp.Split(' ');
+                string[] compParts = comp.Item1.Split(' ');
 
                 for (int i = 0; i < compParts.Length && currentValue != 0; i++)
                 {
@@ -2025,7 +2040,7 @@ namespace SPLConqueror_GUI
                     }
                 }
 
-                finalValue += currentValue;
+                finalValue = finalValue + (comp.Item2 == "-" ? -currentValue : currentValue);
             }
 
             return finalValue;
@@ -2140,7 +2155,7 @@ namespace SPLConqueror_GUI
                 string prt = expParts[i];
 
                 // Check if prt is an operator
-                if (prt.Equals("+") || prt.Equals("*"))
+                if (prt.Equals("+") || prt.Equals("-") || prt.Equals("*") || prt.Equals("/"))
                 {
                     Tuple<string, string> second = stack.Pop();
                     Tuple<string, string> first = stack.Pop();
@@ -2166,6 +2181,16 @@ namespace SPLConqueror_GUI
                                 else
                                     simple = Tuple.Create<string, string>(first.Item1 + " + " + second.Item1, "+");
                                 break;
+                            case "-":
+                                if (firstSuccess && numFst == 0.0)
+                                    simple = Tuple.Create(getExpression(getComponents(second.Item1)), second.Item2);
+                                else if (secondSuccess && numSnd == 0.0)
+                                    simple = first;
+                                else if (firstSuccess && secondSuccess)
+                                    simple = Tuple.Create<string, string>((numFst - numSnd).ToString().Replace(',', '.'), null);
+                                else
+                                    simple = Tuple.Create<string, string>(first.Item1 + " - " + second.Item1, "-");
+                                break;
                             case "*":
                                 if (firstSuccess && numFst == 0.0 || secondSuccess && numSnd == 0.0)
                                     simple = Tuple.Create<string, string>("0.0", null);
@@ -2179,11 +2204,30 @@ namespace SPLConqueror_GUI
                                 {
                                     string temp = "";
 
-                                    temp = first.Item2 == "+" ? "( " + first.Item1 + " )" : first.Item1;
+                                    temp = first.Item2 == "+" || first.Item2 == "-" ? "( " + first.Item1 + " )" : first.Item1;
                                     temp = temp + " * ";
-                                    temp = temp + (second.Item2 == "+" ? "( " + second.Item1 + " )" : second.Item1);
+                                    temp = temp + (second.Item2 == "+" || second.Item2 == "-" ? "( " + second.Item1 + " )" : second.Item1);
 
                                     simple = Tuple.Create<string, string>(temp, "*");
+                                }
+                                break;
+                            case "/":
+                                if (firstSuccess && numFst == 0.0 || secondSuccess && numSnd == 0.0)
+                                    // CAREFUL! Here: x/0 = 0
+                                    simple = Tuple.Create<string, string>("0.0", null);
+                                else if (numSnd == 1.0)
+                                    simple = first;
+                                else if (firstSuccess && secondSuccess)
+                                    simple = Tuple.Create<string, string>((numFst / numSnd).ToString().Replace(',', '.'), null);
+                                else
+                                {
+                                    string temp = "";
+
+                                    temp = first.Item2 == "+" || first.Item2 == "-" ? "( " + first.Item1 + " )" : first.Item1;
+                                    temp = temp + " / ";
+                                    temp = temp + (second.Item2 == "+" || second.Item2 == "-" ? "( " + second.Item1 + " )" : second.Item1);
+
+                                    simple = Tuple.Create<string, string>(temp, "/");
                                 }
                                 break;
                             default:
@@ -2195,15 +2239,15 @@ namespace SPLConqueror_GUI
                     }
                     else
                     {
-                        if (prt == "*")
+                        if (prt == "*" || prt == "/")
                         {
                             string temp = "";
 
-                            temp = first.Item2 == "+" ? "( " + first.Item1 + " )" : first.Item1;
-                            temp = temp + " * ";
-                            temp = temp + (second.Item2 == "+" ? "( " + second.Item1 + " )" : second.Item1);
+                            temp = first.Item2 == "+" || first.Item2 == "-" ? "( " + first.Item1 + " )" : first.Item1;
+                            temp = temp + " " + prt + " ";
+                            temp = temp + (second.Item2 == "+" || second.Item2 == "-" ? "( " + second.Item1 + " )" : second.Item1);
 
-                            stack.Push(Tuple.Create<string, string>(temp, "*"));
+                            stack.Push(Tuple.Create<string, string>(temp, prt));
                         }
                         else
                             stack.Push(Tuple.Create<string, string>(first.Item1 + " " + prt + " " + second.Item1, prt));
@@ -2822,14 +2866,14 @@ namespace SPLConqueror_GUI
             if (function == null)
                 throw new ArgumentNullException("Parameter function may not be null!");
 
-            List<string> expressionParts = getComponents(function);
+            List<Tuple<string, string>> expressionParts = getComponents(function);
             string tabs = "";
 
             textbox.Clear();
 
             for (int i = 0; i < expressionParts.Count; i++)
             {
-                string[] partComponents = expressionParts[i].Split(' ');
+                string[] partComponents = expressionParts[i].Item1.Split(' ');
                 int pos = 0;
 
                 foreach (string component in partComponents)
@@ -2875,7 +2919,7 @@ namespace SPLConqueror_GUI
                 }
                 
                 if (i < expressionParts.Count - 1)
-                    textbox.AppendText("\n" + tabs + "+ ");
+                    textbox.AppendText("\n" + tabs + expressionParts[i+1].Item2 + " ");
             }
         }
 
@@ -3201,11 +3245,41 @@ namespace SPLConqueror_GUI
                 switch(prt)
                 {
                     case "+":
-                        stack.Push(stack.Pop() + stack.Pop());
+                        if (i+1 >= expParts.Length || expParts[i + 1] == "+")
+                            stack.Push(stack.Pop() + stack.Pop());
+                        else if (expParts[i + 1] == "-")
+                        {
+                            ILArray<float> secondSumElem = stack.Pop();
+                            ILArray<float> firstSumElem = stack.Pop();
+                            stack.Push(firstSumElem - secondSumElem);
+                        }
+                        done = true;
+                        break;
+                    case "-":
+                        if (i + 1 >= expParts.Length || expParts[i + 1] == "+")
+                        {
+                            ILArray<float> secondDiffElem = stack.Pop();
+                            ILArray<float> firstDiffElem = stack.Pop();
+                            stack.Push(firstDiffElem - secondDiffElem);
+                        }
+                        else if (expParts[i + 1] == "-")
+                            stack.Push(stack.Pop() + stack.Pop());
                         done = true;
                         break;
                     case "*":
                         stack.Push(stack.Pop() * stack.Pop());
+                        done = true;
+                        break;
+                    case "/":
+                        ILArray<float> secondDivElem = stack.Pop();
+                        ILArray<float> firstDivElem = stack.Pop();
+                        ILArray<float> divResult = ILMath.zeros<float>(1, 1);
+
+                        for (int j = 0; j < firstDivElem.Size[0]; j++)
+                            for (int k = 0; k < firstDivElem.Size[1]; k++)
+                                divResult[j, k] = secondDivElem[j, k] == 0 ? ILMath.zeros<float>(1) : (firstDivElem[j, k] / secondDivElem[j, k]);
+
+                        stack.Push(divResult);
                         done = true;
                         break;
                     case "]":
@@ -3256,7 +3330,7 @@ namespace SPLConqueror_GUI
         /// <returns>True if the token is an operator else false.</returns>
         private bool isOperator(string token)
         {
-            return token.Equals("+") || token.Equals("*") || token.Equals("]");
+            return token.Equals("+") || token.Equals("-") || token.Equals("*") || token.Equals("/") || token.Equals("]");
         }
 
         /// <summary>
@@ -3273,17 +3347,17 @@ namespace SPLConqueror_GUI
                 throw new ArgumentNullException("Parameter exp must not be null!");
 
             string result = "";
-            List<string> expParts = getComponents(exp);
+            List<Tuple<string, string>> expParts = getComponents(exp);
             Dictionary<string, int> counting = new Dictionary<string, int>();
             bool greaterThanOne = false;
 
             for (int i = 0; i < expParts.Count; i++)
-                expParts[i] = expParts[i].Trim();
+                expParts[i] = Tuple.Create<string, string>(expParts[i].Item1.Trim(), expParts[i].Item2);
 
-            foreach (string section in expParts)
+            foreach (Tuple<string, string> section in expParts)
             {
-                string[] sectionParts = section.Split(' ');
-                List<string> usedOptions = new List<string>();
+                string[] sectionParts = section.Item1.Split(' ');
+                List<string> usedCompOptions = new List<string>();
 
                 for (int i = 0; i < sectionParts.Length; i++)
                 {
@@ -3306,7 +3380,8 @@ namespace SPLConqueror_GUI
                     }
                     else if (!double.TryParse(sectionParts[i], out d) && !isOperator(sectionParts[i]))
                     {
-                        if (!usedOptions.Contains(sectionParts[i]))
+                        if (!usedCompOptions.Contains(sectionParts[i])
+                            && (i <= 0 || sectionParts[i] != "/"))
                         {
                             if (counting.ContainsKey(sectionParts[i]))
                             {
@@ -3316,7 +3391,7 @@ namespace SPLConqueror_GUI
                             else
                                 counting.Add(sectionParts[i], 1);
 
-                            usedOptions.Add(sectionParts[i]);
+                            usedCompOptions.Add(sectionParts[i]);
                         }
                     }
                 }
@@ -3336,7 +3411,7 @@ namespace SPLConqueror_GUI
                     double val;
 
                     factorizationPriorities.TryGetValue(option, out val);
-                    
+
                     if (possibleOptions.ContainsKey(val))
                     {
                         possibleOptions.TryGetValue(val, out list);
@@ -3353,7 +3428,7 @@ namespace SPLConqueror_GUI
                 // Sort all options
                 foreach (KeyValuePair<double, List<ConfigurationOption>> pair in possibleOptions)
                 {
-                    pair.Value.Sort(delegate(ConfigurationOption x, ConfigurationOption y)
+                    pair.Value.Sort(delegate (ConfigurationOption x, ConfigurationOption y)
                     {
                         int i, j;
                         counting.TryGetValue(x.Name, out i);
@@ -3378,17 +3453,15 @@ namespace SPLConqueror_GUI
                             maxFound = true;
                             max = list[j].Name;
                         }
-
                     }
                 }
 
-                List<string> containsVar = new List<string>();
-                List<string> others = new List<string>();
-                List<string> varRest = new List<string>();
+                List<Tuple<string, string>> others = new List<Tuple<string, string>>();
+                List<Tuple<string, string>> varRest = new List<Tuple<string, string>>();
 
-                foreach (string prt in expParts)
+                foreach (Tuple<string, string> prt in expParts)
                 {
-                    string[] parts = prt.Split(' ');
+                    string[] parts = prt.Item1.Split(' ');
                     int varPos = -1;
                     bool containsExactVar = false;
 
@@ -3411,20 +3484,27 @@ namespace SPLConqueror_GUI
                         }
                         else
                         {
-                            containsExactVar = parts[i].Equals(max);
+                            containsExactVar = parts[i].Equals(max) && (i == 0 || parts[i] != "/");
                             varPos = i;
                         }
                     }
-                    
+
                     if (containsExactVar)
                     {
                         if (prt.Equals(max))
-                            varRest.Add("1.0");
+                            varRest.Add(Tuple.Create<string, string>("1.0", "+"));
                         else if (varPos == 0)
                         {
-                            parts[0] = "";
-                            parts[1] = "";
-                            varRest.Add(String.Join(" ",  parts).Trim());
+                            if (parts[1] == "/")
+                                // TODO: Fragen, ob so passt
+                                parts[0] = "1.0";
+                            else
+                            {
+                                parts[0] = "";
+                                parts[1] = "";
+                            }
+
+                            varRest.Add(Tuple.Create<string, string>(String.Join(" ", parts).Trim(), prt.Item2));
                         }
                         else
                         {
@@ -3436,29 +3516,83 @@ namespace SPLConqueror_GUI
                                     temp = temp + parts[i] + " * ";
                             }
 
-                            varRest.Add(temp.Remove(temp.Length - 3, 3));
+                            varRest.Add(Tuple.Create<string, string>(temp.Remove(temp.Length - 3, 3), prt.Item2));
                         }
                     }
                     else
                         others.Add(prt);
                 }
-
-                string factorizedRest = factorizeExpression(String.Join(" + ", varRest));
+                
+                string factorizedRest = factorizeExpression(getExpression(varRest));
                 string[] splitRest = factorizedRest.Split(' ');
 
-                if (splitRest[2] == "(" && splitRest[splitRest.Length-1] == ")")
+                if (splitRest[2] == "(" && splitRest[splitRest.Length - 1] == ")")
                     result = max + " * " + factorizedRest;
                 else
-                    result = max + " * ( " + factorizedRest + " )"; 
+                    result = max + " * ( " + factorizedRest + " )";
 
                 if (others.Count > 0)
-                    result = result + " + " + factorizeExpression(String.Join(" + ", others));
-
+                    result = result + " + " + factorizeExpression(getExpression(others));
             }
             else
-                result = String.Join(" + ", expParts);
+                return exp;
 
             return result;
+        }
+
+        /// <summary>
+        /// Calculates an appropriate expression for the specified expression parts.
+        /// 
+        /// If there is an negative component at the beginning, the constant in the first
+        /// component will be negated. If there is no constant, an sppropriate constant
+        /// will be added.
+        /// </summary>
+        /// <param name="expParts">Parts of the expression</param>
+        /// <returns>Corresponding expression</returns>
+        public string getExpression(List<Tuple<string, string>> expParts)
+        {
+            bool foundConstant = false;
+            string[] compParts = expParts[0].Item1.Split(' ');
+            string adjustedExp = "";
+
+            for (int j = 0; j < compParts.Length && !foundConstant; j++)
+            {
+                if (compParts[j] == "log10(")
+                {
+                    int bracketCount = 1;
+
+                    while (bracketCount > 0)
+                    {
+                        j++;
+
+                        if (compParts[j] == "log10(")
+                            bracketCount++;
+
+                        if (compParts[j] == ")")
+                            bracketCount--;
+                    }
+                }
+                else if (expParts[0].Item2 == "-")
+                {
+                    double d = 0;
+
+                    if (double.TryParse(compParts[j], out d))
+                    {
+                        compParts[j] = (-d).ToString();
+                        foundConstant = true;
+                    }
+                }
+            }
+
+            if (!foundConstant && expParts[0].Item2 == "-")
+                adjustedExp = " -1.0 * ";
+
+            adjustedExp += String.Join(" ", compParts);
+
+            for (int i = 1; i < expParts.Count; i++)
+                adjustedExp += " " + expParts[i].Item2 + " " + expParts[i].Item1;
+
+            return adjustedExp;
         }
 
         /// <summary>
@@ -3468,7 +3602,9 @@ namespace SPLConqueror_GUI
         /// <returns>A sorted expression</returns>
         private string sortExpression(string exp)
         {
-            return String.Join(" + ", getComponents(exp).OrderBy(x => x.Trim().Split(' ').Length).ToList());
+            List<Tuple<string, string>> sortedComponents = getComponents(exp).OrderBy(x => x.Item1.Trim().Split(' ').Length).ToList();
+            
+            return getExpression(sortedComponents);
         }
 
         /// <summary>

@@ -341,7 +341,10 @@ namespace SPLConqueror_Core
                         if (stack.Count == 0)
                             stack.Push(rightHandSide);
                         double leftHandSide = stack.Pop();
-                        stack.Push(leftHandSide + rightHandSide);
+                        if (counter < expressionArray.Length && expressionArray[counter].Equals("-"))
+                            stack.Push(leftHandSide - rightHandSide);
+                        else
+                            stack.Push(leftHandSide + rightHandSide);
                     }
                     if (curr.Equals("-"))
                     {
@@ -349,7 +352,10 @@ namespace SPLConqueror_Core
                         if (stack.Count == 0)
                             stack.Push(rightHandSide);
                         double leftHandSide = stack.Pop();
-                        stack.Push(leftHandSide - rightHandSide);
+                        if (counter < expressionArray.Length && expressionArray[counter].Equals("-"))
+                            stack.Push(leftHandSide + rightHandSide);
+                        else
+                            stack.Push(leftHandSide - rightHandSide);
                     }
                     if (curr.Equals("*"))
                     {
