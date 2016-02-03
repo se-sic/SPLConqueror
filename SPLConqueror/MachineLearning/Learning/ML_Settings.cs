@@ -140,6 +140,13 @@ namespace MachineLearning.Learning
         public ScoreMeasure scoreMeasure = ScoreMeasure.RELERROR;
 
         /// <summary>
+        /// If true, the info about the rounds is output not only to the 
+        /// log file at the end of the learning, but also to the stdout
+        /// during the learning after each round completion.
+        /// </summary>
+        public bool outputRoundsToStdout = false;
+
+        /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
         /// <param name="settings">All settings to be changed in a string with whitespaces as separator .</param>

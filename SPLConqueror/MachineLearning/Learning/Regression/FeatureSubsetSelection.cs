@@ -929,12 +929,17 @@ namespace MachineLearning.Learning.Regression
         /// <returns>True if we abort learning, false otherwise</returns>
         protected bool abortLearning(LearningRound current, LearningRound previous)
         {
+            TimeSpan diff = DateTime.Now - this.startTime;
+            if (MLsettings.outputRoundsToStdout)
+            {
+                //GlobalState.logInfo.logToStdout(current.round.ToString() + ";" + diff.ToString());
+                GlobalState.logInfo.logToStdout(current.ToString());
+            }
             if (current.round >= this.MLsettings.numberOfRounds)
             {
                 current.terminationReason = "numberOfRounds";
                 return true;
             }
-            TimeSpan diff = DateTime.Now - this.startTime;
             if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
             {
                 current.terminationReason = "learnTimeLimit";
