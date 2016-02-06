@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SPLConqueror_Core
 {
@@ -116,65 +117,85 @@ namespace SPLConqueror_Core
         public static List<Configuration> getMeasuredConfigs(List<Configuration> list)
         {
             List<Configuration> configsWithValues = new List<Configuration>();
-            foreach(var config in list) {
+            List<Task<Tuple<Configuration, Configuration>>> taskList = new List<Task<Tuple<Configuration, Configuration>>>();
+
+            foreach (var config in list)
+            {
                 if (substitutedConfigs.Keys.Contains(config))
                 {
                     configsWithValues.Add(substitutedConfigs[config]);
                     continue;
                 }
-                List<Configuration> similarOnes = new List<Configuration>();
-                int nbCount = config.BinaryOptions.Count;
-                if (config.BinaryOptions.Keys.Contains(varModel.Root))
-                    nbCount--;
-                bool found = false;
-                foreach (var configInGS in GlobalState.allMeasurements.Configurations)
+
+                var task = Task<Tuple<Configuration, Configuration>>.Factory.StartNew(() => getSimilarConfig(config));
+                taskList.Add(task);
+            }
+
+            while (taskList.Count > 0)
+            {
+                int i = Task.WaitAny(taskList.ToArray());
+
+                Task<Tuple<Configuration, Configuration>> task = taskList[i];
+                Tuple<Configuration, Configuration> result = task.Result;
+
+                taskList.Remove(task);
+
+                if (result.Item2 != null)
                 {
-                    if (config.Equals(configInGS))
-                    {
-                        configsWithValues.Add(configInGS);
-                        found = true;
-                        break;
-                    }
-                    else if (takeSimilarConfig)
-                    {
-                        var conf = findSimilarConfigBinary(config, configInGS, nbCount);
-                        if(conf != null)
-                            similarOnes.Add(conf);
-                    }
-                }
-                if (!found) {
-                    if (takeSimilarConfig && similarOnes.Count > 0)
-                    {
-                        Configuration c = findSimilarConfigNumeric(config, similarOnes);
-                        if(c != null) {
-                            substitutedConfigs.Add(config, c);
-                            configsWithValues.Add(c);
-                           // logError.log("Substituted a not found configuration with a similar one.");
-                        }
-                    }
-                    else
-                    {
-                        if (similarOnes.Count == 0)
-                        {
-
-                            logError.logLine("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
-
-                        }
-                       // logError.log("Did not find a measured value for the configuration: " + config.ToString());
-                    }
-                        
+                    substitutedConfigs.Add(result.Item1, result.Item2);
+                    configsWithValues.Add(result.Item2);
+                    // logError.log("Substituted a not found configuration with a similar one.");
                 }
             }
             return configsWithValues;
         }
 
+        private static Tuple<Configuration, Configuration> getSimilarConfig(Configuration config)
+        {
+            Configuration similarConfig = null;
+            List<Configuration> similarOnes = new List<Configuration>();
+            int nbCount = config.BinaryOptions.Count;
+            if (config.BinaryOptions.Keys.Contains(varModel.Root))
+                nbCount--;
+            bool found = false;
+            foreach (var configInGS in GlobalState.allMeasurements.getSimilarConfigs(config))
+            {
+                if (config.Equals(configInGS))
+                {
+                    similarConfig = configInGS;
+                    found = true;
+                    break;
+                }
+                else if (takeSimilarConfig)
+                {
+                    var conf = findSimilarConfigBinary(config, configInGS, nbCount);
+                    if (conf != null)
+                        similarOnes.Add(conf);
+                }
+            }
+            if (!found)
+            {
+                if (takeSimilarConfig && similarOnes.Count > 0)
+                    similarConfig = findSimilarConfigNumeric(config, similarOnes);
+                else
+                {
+                    if (similarOnes.Count == 0)
+                        logError.logLine("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
+
+                    // logError.log("Did not find a measured value for the configuration: " + config.ToString());
+                }
+            }
+
+            return Tuple.Create<Configuration, Configuration>(config, similarConfig);
+        }
+
         private static Configuration findSimilarConfigNumeric(Configuration config, List<Configuration> similarOnes)
         {
-            Dictionary<NumericOption, int> stepInValueRange = new Dictionary<NumericOption, int>();
+            /*Dictionary<NumericOption, int> stepInValueRange = new Dictionary<NumericOption, int>();
             foreach (var numOpt in config.NumericOptions.Keys)
             {
                 stepInValueRange.Add(numOpt, numOpt.getStep(config.NumericOptions[numOpt]));
-            }
+            }*/
             int minDistance = Int32.MaxValue;
             Configuration best = null;
             foreach (var conf in similarOnes)
@@ -184,6 +205,7 @@ namespace SPLConqueror_Core
                 {
                     if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
                         continue;
+                    //distance += Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
                     double valDist = Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
                     distance += numOpt.getStepFast(valDist + numOpt.Min_value);
                     //distance += Math.Abs(stepInValueRange[numOpt] - numOpt.getStep(conf.NumericOptions[numOpt]));
@@ -196,7 +218,41 @@ namespace SPLConqueror_Core
                     best = conf;
                 }
             }
+            /*
+            while (taskList.Count > 0)
+            {
+                int i = Task.WaitAny(taskList.ToArray());
+
+                Task<Tuple<Configuration, int>> task = taskList[i];
+                Tuple<Configuration, int> result = task.Result;
+
+                taskList.Remove(task);
+
+                if (result.Item2 < minDistance)
+                {
+                    minDistance = result.Item2;
+                    best = result.Item1;
+                }
+            }*/
+
             return best;
+        }
+
+        private static Tuple<Configuration, int> calculateDistance(Configuration config, Configuration conf)
+        {
+            int distance = 0;
+            foreach (var numOpt in conf.NumericOptions.Keys)
+            {
+                if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
+                    continue;
+                double valDist = Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
+                distance += numOpt.getStepFast(valDist + numOpt.Min_value);
+                //distance += Math.Abs(stepInValueRange[numOpt] - numOpt.getStep(conf.NumericOptions[numOpt]));
+                if (distance > Int32.MaxValue)
+                    break;
+            }
+
+            return Tuple.Create<Configuration, int>(conf ,distance);
         }
 
         private static Configuration findSimilarConfigBinary(Configuration config, Configuration configInGS, int nbCount)
