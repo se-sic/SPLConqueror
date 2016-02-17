@@ -61,6 +61,9 @@
             this.rangeLabel = new System.Windows.Forms.Label();
             this.currentStepSizeLabel = new System.Windows.Forms.Label();
             this.currentRangeOfValuesLabel = new System.Windows.Forms.Label();
+            this.currentOptionTypeLabel = new System.Windows.Forms.Label();
+            this.optionTypeBinaryRadioButton = new System.Windows.Forms.RadioButton();
+            this.optionTypeNumericRadioButton = new System.Windows.Forms.RadioButton();
             this.constraintsGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
             this.settingsGroupBox.SuspendLayout();
@@ -115,7 +118,7 @@
             this.constraintsGroupBox.Controls.Add(this.excludesCheckedListBox);
             this.constraintsGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.constraintsGroupBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.constraintsGroupBox.Location = new System.Drawing.Point(12, 269);
+            this.constraintsGroupBox.Location = new System.Drawing.Point(12, 300);
             this.constraintsGroupBox.Name = "constraintsGroupBox";
             this.constraintsGroupBox.Size = new System.Drawing.Size(600, 316);
             this.constraintsGroupBox.TabIndex = 50;
@@ -228,6 +231,9 @@
             // 
             // generalGroupBox
             // 
+            this.generalGroupBox.Controls.Add(this.optionTypeNumericRadioButton);
+            this.generalGroupBox.Controls.Add(this.optionTypeBinaryRadioButton);
+            this.generalGroupBox.Controls.Add(this.currentOptionTypeLabel);
             this.generalGroupBox.Controls.Add(this.parentLabel);
             this.generalGroupBox.Controls.Add(this.setParentButton);
             this.generalGroupBox.Controls.Add(this.renameOptionButton);
@@ -238,7 +244,7 @@
             this.generalGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.generalGroupBox.Location = new System.Drawing.Point(12, 12);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(531, 77);
+            this.generalGroupBox.Size = new System.Drawing.Size(531, 108);
             this.generalGroupBox.TabIndex = 52;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General Properties";
@@ -251,7 +257,6 @@
             this.parentLabel.Size = new System.Drawing.Size(40, 15);
             this.parentLabel.TabIndex = 58;
             this.parentLabel.Text = "label1";
-            this.parentLabel.Visible = false;
             // 
             // setParentButton
             // 
@@ -296,7 +301,7 @@
             this.settingsGroupBox.Controls.Add(this.variantGenerationTextBox);
             this.settingsGroupBox.Controls.Add(this.variantGenerationLabel);
             this.settingsGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.settingsGroupBox.Location = new System.Drawing.Point(12, 185);
+            this.settingsGroupBox.Location = new System.Drawing.Point(12, 216);
             this.settingsGroupBox.Name = "settingsGroupBox";
             this.settingsGroupBox.Size = new System.Drawing.Size(600, 78);
             this.settingsGroupBox.TabIndex = 53;
@@ -368,7 +373,7 @@
             this.numericSettingsGroupBox.Controls.Add(this.currentStepSizeLabel);
             this.numericSettingsGroupBox.Controls.Add(this.currentRangeOfValuesLabel);
             this.numericSettingsGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericSettingsGroupBox.Location = new System.Drawing.Point(12, 95);
+            this.numericSettingsGroupBox.Location = new System.Drawing.Point(12, 126);
             this.numericSettingsGroupBox.Name = "numericSettingsGroupBox";
             this.numericSettingsGroupBox.Size = new System.Drawing.Size(531, 84);
             this.numericSettingsGroupBox.TabIndex = 54;
@@ -437,9 +442,43 @@
             this.currentRangeOfValuesLabel.TabIndex = 0;
             this.currentRangeOfValuesLabel.Text = "Current range of values:";
             // 
+            // currentOptionTypeLabel
+            // 
+            this.currentOptionTypeLabel.AutoSize = true;
+            this.currentOptionTypeLabel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.currentOptionTypeLabel.Location = new System.Drawing.Point(10, 81);
+            this.currentOptionTypeLabel.Name = "currentOptionTypeLabel";
+            this.currentOptionTypeLabel.Size = new System.Drawing.Size(115, 15);
+            this.currentOptionTypeLabel.TabIndex = 59;
+            this.currentOptionTypeLabel.Text = "Current option type:";
+            // 
+            // optionTypeBinaryRadioButton
+            // 
+            this.optionTypeBinaryRadioButton.AutoSize = true;
+            this.optionTypeBinaryRadioButton.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.optionTypeBinaryRadioButton.Location = new System.Drawing.Point(148, 79);
+            this.optionTypeBinaryRadioButton.Name = "optionTypeBinaryRadioButton";
+            this.optionTypeBinaryRadioButton.Size = new System.Drawing.Size(61, 19);
+            this.optionTypeBinaryRadioButton.TabIndex = 60;
+            this.optionTypeBinaryRadioButton.TabStop = true;
+            this.optionTypeBinaryRadioButton.Text = "Binary";
+            this.optionTypeBinaryRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // optionTypeNumericRadioButton
+            // 
+            this.optionTypeNumericRadioButton.AutoSize = true;
+            this.optionTypeNumericRadioButton.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.optionTypeNumericRadioButton.Location = new System.Drawing.Point(224, 79);
+            this.optionTypeNumericRadioButton.Name = "optionTypeNumericRadioButton";
+            this.optionTypeNumericRadioButton.Size = new System.Drawing.Size(71, 19);
+            this.optionTypeNumericRadioButton.TabIndex = 61;
+            this.optionTypeNumericRadioButton.TabStop = true;
+            this.optionTypeNumericRadioButton.Text = "Numeric";
+            this.optionTypeNumericRadioButton.UseVisualStyleBackColor = true;
+            // 
             // EditOptionDialog
             // 
-            this.ClientSize = new System.Drawing.Size(619, 590);
+            this.ClientSize = new System.Drawing.Size(619, 624);
             this.Controls.Add(this.numericSettingsGroupBox);
             this.Controls.Add(this.settingsGroupBox);
             this.Controls.Add(this.generalGroupBox);
@@ -495,5 +534,8 @@
         private System.Windows.Forms.Label rangeLabel;
         private System.Windows.Forms.Label currentStepSizeLabel;
         private System.Windows.Forms.Label currentRangeOfValuesLabel;
+        private System.Windows.Forms.RadioButton optionTypeNumericRadioButton;
+        private System.Windows.Forms.RadioButton optionTypeBinaryRadioButton;
+        private System.Windows.Forms.Label currentOptionTypeLabel;
     }
 }

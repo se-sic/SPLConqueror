@@ -19,12 +19,15 @@ namespace VariabilitModel_GUI
         private const string REMOVE_WARNING = "Are you sure about removing this feature?\n"
             + "All children features will be deleted as well.";
 
+        private string currentFilePath = "";
+
         public VariabilityModel_Form()
         {
             InitializeComponent();
 
             this.Text = TITLE;
             this.saveModelToolStripMenuItem.Enabled = false;
+            this.saveModelAsToolStripMenuItem.Enabled = false;
             this.editToolStripMenuItem.Enabled = false;
         }
 
@@ -120,8 +123,11 @@ namespace VariabilitModel_GUI
 
             GlobalState.varModel = new VariabilityModel(result.Item2);
             this.saveModelToolStripMenuItem.Enabled = true;
+            this.saveModelAsToolStripMenuItem.Enabled = true;
             this.editToolStripMenuItem.Enabled = true;
             this.Text = TITLE + ": " + result.Item2;
+
+            currentFilePath = "";
 
             InitTreeView();
         }
@@ -129,11 +135,39 @@ namespace VariabilitModel_GUI
         /// <summary>
         /// Invokes if the 'File -> Save model'-option in the menu strip was clicked.
         /// 
-        /// This will open a dialog to determine where to save the current model.
+        /// This will save the curent model in the saved file path. If the saved path is empty,
+        /// a dialog will open to get the new saving path.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
         private void saveModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentFilePath.Length > 0)
+            {
+                GlobalState.varModel.Path = currentFilePath;
+                GlobalState.varModel.saveXML();
+            }
+            else {
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                if (fbd.ShowDialog() == DialogResult.OK)
+                {
+                    String folder = fbd.SelectedPath;
+                    GlobalState.varModel.Path = folder + Path.DirectorySeparatorChar + GlobalState.varModel.Name + ".xml";
+                    GlobalState.varModel.saveXML();
+
+                    currentFilePath = GlobalState.varModel.Path;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Invokes if the 'File -> Save model as'-option in the menu strip was clicked.
+        /// 
+        /// This will open a dialog to determine where to save the current model.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
+        private void saveModelAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == DialogResult.OK)
@@ -162,7 +196,11 @@ namespace VariabilitModel_GUI
                 System.IO.FileInfo fi = new FileInfo(pfd.FileName);
                 GlobalState.varModel = VariabilityModel.loadFromXML(fi.FullName);
                 this.saveModelToolStripMenuItem.Enabled = true;
+                this.saveModelAsToolStripMenuItem.Enabled = true;
                 this.editToolStripMenuItem.Enabled = true;
+
+                currentFilePath = fi.FullName;
+
                 InitTreeView();
             }
         }
@@ -277,7 +315,7 @@ namespace VariabilitModel_GUI
         {
             DialogResult result = MessageBox.Show(REMOVE_WARNING, "", MessageBoxButtons.YesNo);
 
-            if (DialogResult == DialogResult.Yes)
+            if (result == DialogResult.Yes)
             {
                 TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
                 ConfigurationOption selected = GlobalState.varModel.getOption(tn.Text);
