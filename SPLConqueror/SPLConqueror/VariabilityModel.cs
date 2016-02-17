@@ -30,10 +30,7 @@ namespace SPLConqueror_Core
 
         public Dictionary<int, ConfigurationOption> optionToIndex = new Dictionary<int, ConfigurationOption>();
         public Dictionary<ConfigurationOption, int> indexToOption = new Dictionary<ConfigurationOption, int>();
-    
-        public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
-        //public Dictionary<ConfigurationOption, List<ConfigurationOption>> parentChildRelationships = new Dictionary<ConfigurationOption, List<ConfigurationOption>>();
-        
+
         String name = "empty";
 
         /// <summary>
@@ -295,16 +292,6 @@ namespace SPLConqueror_Core
             //Every option must have a parent
             if (option.Parent == null)
                 option.Parent = this.root;
-            
-            /*
-            if(parentChildRelationships.ContainsKey(option.Parent))
-                parentChildRelationships[option.Parent].Add(option);
-            else
-            {
-                List<ConfigurationOption> children = new List<ConfigurationOption>();
-                children.Add(option);
-                parentChildRelationships.Add(option.Parent, children);
-            }*/
    
             if (option is BinaryOption)
                 this.binaryOptions.Add((BinaryOption)option);
@@ -394,20 +381,14 @@ namespace SPLConqueror_Core
 
         public void deleteOption(ConfigurationOption toDelete)
         {
-            List<ConfigurationOption> list;
-
             // Removing all children
-            /*
-            if (parentChildRelationships.TryGetValue(toDelete, out list))
-            {
-                List<ConfigurationOption> children = new List<ConfigurationOption>();
+            List<ConfigurationOption> children = new List<ConfigurationOption>();
 
-                foreach (ConfigurationOption opt in list)
-                    children.Add(opt);
+            foreach (ConfigurationOption opt in toDelete.Children)
+                children.Add(opt);
 
-                foreach (ConfigurationOption child in children)
-                    deleteOption(child);    
-            }*/
+            foreach (ConfigurationOption child in children)
+                deleteOption(child);
 
             // Removing option from other options
             foreach (ConfigurationOption opt in getOptions())
@@ -430,7 +411,13 @@ namespace SPLConqueror_Core
             nonBooleanConstraints.RemoveAll(x => x.ToString().Contains(toDelete.ToString()));
 
             toDelete.Parent.Children.Remove(toDelete);
-            //parentChildRelationships.Remove(toDelete);
+
+            if (toDelete is BinaryOption)
+                binaryOptions.Remove((BinaryOption)toDelete);
+            else if (toDelete is NumericOption)
+                numericOptions.Remove((NumericOption)toDelete);
+            else
+                throw new Exception("An illegal option was found while deleting.");
         }
 
         internal bool hasOption(string name)
