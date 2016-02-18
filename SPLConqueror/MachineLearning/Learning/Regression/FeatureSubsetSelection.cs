@@ -626,6 +626,8 @@ namespace MachineLearning.Learning.Regression
                 {
                     listOfCombinations = combinationsUpToN(basicFeatures, MLsettings.featureSizeTreshold);
                 }
+
+                // Check feature combinations for validity and create candidates from the valid ones.
                 foreach (var combination in listOfCombinations)
                 {
                     Feature newCandidate = null;
@@ -633,13 +635,33 @@ namespace MachineLearning.Learning.Regression
                     {
                         newCandidate = newCandidate == null ? new Feature(feature.getPureString(), feature.getVariabilityModel()) : new Feature(newCandidate.getPureString() + '*' + feature.getPureString(), feature.getVariabilityModel());
                     }
+
                     if (newCandidate != null)
                     {
-                        var configChecker = new CheckConfigSAT(null);
-                        bool isValid = configChecker.checkConfigurationSAT(newCandidate.participatingBoolOptions.ToList(), newCandidate.getVariabilityModel(), true);
+                        bool isValid = false;
+
+                        // Use a SAT solver to check if the feature combination in the new candidate is vaild.
+                        //var configChecker = new CheckConfigSAT(null);
+                        //isValid = configChecker.checkConfigurationSAT(newCandidate.participatingBoolOptions.ToList(), newCandidate.getVariabilityModel(), true);
+
+                        // Search all configurations for the feature combination of the candidate,
+                        // if none of the configurations contains the feature combination
+                        // the candidate is considered invalid.  If we have a set of all valid configuration,
+                        // then we get the same results as using a SAT solver but much faster.
+                        foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                        {
+                            var candidateBinaryOptions = newCandidate.participatingBoolOptions;
+                            var configBinaryOptions = config.getBinaryOptions(BinaryOption.BinaryValue.Selected);
+                            if (!candidateBinaryOptions.Except(configBinaryOptions).Any())
+                            {
+                                isValid = true;
+                                break;
+                            }
+                        }
+
                         if (isValid)
                         {
-                            bruteForceCandidateRate[newCandidate] = binaryCandidateRate(newCandidate);
+                            //bruteForceCandidateRate[newCandidate] = binaryCandidateRate(newCandidate);
                             bruteForceCandidates.Add(newCandidate);
                         }
                     }
