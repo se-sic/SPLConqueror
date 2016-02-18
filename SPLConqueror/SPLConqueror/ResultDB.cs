@@ -8,7 +8,8 @@ namespace SPLConqueror_Core
     public class ResultDB
     {
         private List<Configuration> configurations = new List<Configuration>();
-        private IDictionary<string, List<Configuration>> configsMapping = new Dictionary<string, List<Configuration>>();
+        private IDictionary<string, IDictionary<string, List<Configuration>>> configsMapping =
+            new Dictionary<string, IDictionary<string, List<Configuration>>>();
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
 
         public List<Configuration> Configurations
@@ -28,31 +29,55 @@ namespace SPLConqueror_Core
 
         private void addToMapping(Configuration config)
         {
-            string bins = calculateConfigBinsVector(config);
+            string currVector = calculateConfigBinVector(config);
+            IDictionary<string, List<Configuration>> numMapping = null;
+            
+            if (!configsMapping.TryGetValue(currVector, out numMapping))
+            {
+                numMapping = new Dictionary<string, List<Configuration>>();
+                configsMapping.Add(currVector, numMapping);
+            }
 
+            currVector = calculateConfigNumVector(config);
             List<Configuration> list = null;
-            configsMapping.TryGetValue(bins, out list);
 
-            if (list == null)
+            if (numMapping.TryGetValue(currVector, out list))
+                list.Add(config);
+            else
             {
                 list = new List<Configuration>();
                 list.Add(config);
-                configsMapping.Add(bins, list);
+                numMapping.Add(currVector, list);
             }
-            else
-                list.Add(config);
         }
 
         public List<Configuration> getSimilarConfigs(Configuration config)
         {
-            List<Configuration> list;
-            configsMapping.TryGetValue(calculateConfigBinsVector(config), out list);
-            return list;
+            IDictionary<string, List<Configuration>> numMapping = null;
+
+            if (configsMapping.TryGetValue(calculateConfigBinVector(config), out numMapping))
+            {
+                List<Configuration> list = null;
+
+                if (numMapping.TryGetValue(calculateConfigNumVector(config), out list))
+                    return list;
+                else
+                {
+                    List<Configuration> result = new List<Configuration>();
+
+                    foreach (var val in numMapping.Values)
+                        result.AddRange(val);
+
+                    return result;
+                }
+            }
+            else
+                return new List<Configuration>();
         }
 
-        private string calculateConfigBinsVector (Configuration config)
+        private string calculateConfigBinVector (Configuration config)
         {
-            string bins = "";
+            string vector = "";
 
             foreach (BinaryOption opt in GlobalState.varModel.BinaryOptions)
             {
@@ -60,12 +85,54 @@ namespace SPLConqueror_Core
                 config.BinaryOptions.TryGetValue(opt, out val);
 
                 if (val == BinaryOption.BinaryValue.Selected)
-                    bins += "1";
+                    vector += "1";
                 else
-                    bins += "0";
+                    vector += "0";
             }
 
-            return bins;
+            return vector;
+        }
+
+        private string calculateConfigNumVector(Configuration config)
+        {
+            string vector = "";
+
+            // Aufteilfaktor: Wohin damit?
+            int a = 3;
+            int amountOfParts = (int)Math.Pow(2, a);
+
+            if (a > 0)
+            {
+                foreach (NumericOption opt in GlobalState.varModel.NumericOptions)
+                {
+                    List<double> elems = opt.getAllValues();
+                    int amountOfElemsInParts = elems.Count >= amountOfParts ? (int)Math.Round((double)elems.Count / amountOfParts, 0) : 1;
+                    List<double> currentElems = null;
+                    bool found = false;
+                    double val = 0;
+
+                    if (!config.NumericOptions.TryGetValue(opt, out val))
+                        val = opt.DefaultValue;
+
+                    for (int i = 0; i < amountOfParts && !found; i++)
+                    {
+                        currentElems = elems.GetRange(i * amountOfElemsInParts, amountOfElemsInParts);
+
+                        if (currentElems.Contains(val))
+                        {
+                            found = true;
+                            String bin = Convert.ToString(i, 2);
+
+                            while (bin.Length < a)
+                                bin = "0" + bin;
+
+                            vector += bin;
+                        }
+                    }
+                }
+            }
+
+            return vector;
         }
 
         private void updateMapping()
