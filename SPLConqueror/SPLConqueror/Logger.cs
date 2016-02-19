@@ -10,6 +10,7 @@ namespace SPLConqueror_Core
     {
 
         protected StreamWriter writer = null;
+        protected static TextWriter stdout = new StreamWriter(Console.OpenStandardOutput());
 
         public Logger()
         {
@@ -47,6 +48,12 @@ namespace SPLConqueror_Core
         public abstract void log(String msg);
 
         public abstract void logLine(String msg);
+
+        public void logToStdout(String msg)
+        {
+            stdout.WriteLine(msg);
+            stdout.Flush();
+        }
 
         public void close()
         {

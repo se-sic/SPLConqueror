@@ -165,11 +165,16 @@ namespace PerformancePrediction_GUI
 
         }
 
+        void initLearning(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Console.WriteLine("foo");
+            if(cmd.exp.models.Count > 0)
+                cmd.exp.models[cmd.exp.models.Count-1].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
+        }
+
         private void startLearning()
         {
-            
-            cmd.exp.models[0].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
-
+            cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
         }
 
@@ -201,7 +206,7 @@ namespace PerformancePrediction_GUI
 
             foreach (Feature f in lastRound.FeatureSet)
             {
-                string name = f.ToString();
+                string name = f.getPureString();
                 if (!termToIndex.ContainsKey(name))
                 {
                     perfInfGridView.Invoke((MethodInvoker)(() => perfInfGridView.Columns[termToIndex.Count + perfInfGrid_definedColumns].Name = name));
