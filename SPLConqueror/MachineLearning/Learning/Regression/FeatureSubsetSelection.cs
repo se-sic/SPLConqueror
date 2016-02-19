@@ -15,6 +15,7 @@ using MachineLearning.Solver;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -29,6 +30,7 @@ namespace MachineLearning.Learning.Regression
         protected List<Feature> strictlyMandatoryFeatures = new List<Feature>();
         protected ML_Settings MLsettings = null;
         protected List<Feature> bruteForceCandidates = new List<Feature>();
+        protected IDictionary<Feature, double> bruteForceCandidateRate = new Dictionary<Feature, double>();
         public double finalError = 0.0;
 
         //Learning and validation data sets
@@ -56,7 +58,6 @@ namespace MachineLearning.Learning.Regression
             infModel = null;
             learningHistory = new ObservableCollection<LearningRound>();
             hierachyLevel = 1;
-            currentRound = null;
             initialFeatures = new List<Feature>();
             strictlyMandatoryFeatures = new List<Feature>();
             MLsettings = null;
@@ -229,14 +230,16 @@ namespace MachineLearning.Learning.Regression
         {
             //Error in this round (depends on crossvalidation)
             double minimalRoundError = Double.MaxValue;
-            double maximalAbsoluteRoundInfluence = 0.0;
+            double maximalWeightedAbsoluteRoundInfluence = 0.0;
+            double maximalRoundScore = Double.MinValue;
+            IDictionary<Feature, double> bfCandidateRate = null;
             List<Feature> bestModel = null;
 
             //Go through each feature of the initial set and combine them with the already present features to build new candidates
             List<Feature> candidates = new List<Feature>();
             if (this.MLsettings.bruteForceCandidates)
             {
-                candidates = generateBruteForceCandidates(previousRound.FeatureSet, initialFeatures);
+                candidates = generateBruteForceCandidates(previousRound.FeatureSet, initialFeatures, out bfCandidateRate);
             }
             else
             {
@@ -300,37 +303,49 @@ namespace MachineLearning.Learning.Regression
             if (this.MLsettings.parallelization)
                 Task.WaitAll(tasks.ToArray());
 
-            //Evaluation of the candidates
-
+            // Evaluation of the candidates
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
                 foreach (Feature candidate in errorOfFeature.Keys)
                 {
-                    if (errorOfFeature[candidate] < minimalRoundError)
+                    var candidateError = errorOfFeature[candidate];
+                    var candidateScore = previousRound.learningError_relative - candidateError;
+                    if (candidateScore > 0)
                     {
-                        minimalRoundError = errorOfFeature[candidate];
-                        bestCandidate = candidate;
-                        bestModel = errorOfFeatureWithModel[candidate];
-                    } else
-                        candidate.Constant = 1;
+                        if (MLsettings.candidateSizePenalty)
+                        {
+                            candidateScore /= candidate.getNumberOfDistinctParticipatingOptions();
+                        }
+                        if (candidateScore > maximalRoundScore)
+                        {
+                            maximalRoundScore = candidateScore;
+                            minimalRoundError = errorOfFeature[candidate];
+                            bestCandidate = candidate;
+                            bestModel = errorOfFeatureWithModel[candidate];
+                        } else
+                        {
+                            candidate.Constant = 1;                        
+                        }
+                    }
                 }
             } else if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.INFLUENCE)
             {
-                foreach (Feature candidate in errorOfFeature.Keys)
-                {
-                    double candidateAbsoluteInfluence = Math.Abs(candidate.Constant);
-                    if (candidateAbsoluteInfluence > maximalAbsoluteRoundInfluence)
-                    {
-                        maximalAbsoluteRoundInfluence = candidateAbsoluteInfluence;
-                        bestCandidate = candidate;
-                        bestModel = errorOfFeatureWithModel[candidate];
-                    } else
-                        candidate.Constant = 1;
-                }
+                throw new NotImplementedException();
+//                foreach (Feature candidate in errorOfFeature.Keys)
+//                {
+//                    double candidateRate = bfCandidateRate[candidate];
+//                    double candidateWeightedAbsoluteInfluence = Math.Abs(candidate.Constant) * candidateRate;
+//                    if (candidateWeightedAbsoluteInfluence > maximalWeightedAbsoluteRoundInfluence)
+//                    {
+//                        maximalWeightedAbsoluteRoundInfluence = candidateWeightedAbsoluteInfluence;
+//                        bestCandidate = candidate;
+//                        bestModel = errorOfFeatureWithModel[candidate];
+//                    } else
+//                        candidate.Constant = 1;
+//                }
             }
 
             //error computations and logging stuff
-            double relativeErrorTrain = 0;
             double relativeErrorEval = 0;
             if (MLsettings.ignoreBadFeatures)
             {
@@ -343,12 +358,13 @@ namespace MachineLearning.Learning.Regression
             else
             {
                 bestModel = copyCombination(bestModel);
-                LearningRound newRound = new LearningRound(bestModel, computeLearningError(bestModel, out relativeErrorTrain), computeValidationError(bestModel, out relativeErrorEval), previousRound.round + 1);
-                newRound.learningError_relative = relativeErrorTrain;
+                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel, out relativeErrorEval), previousRound.round + 1);
+                newRound.learningError_relative = minimalRoundError;
                 newRound.validationError_relative = relativeErrorEval;
                 newRound.elapsedTime = DateTime.Now - startTime;
                 newRound.bestCandidate = bestCandidate;
                 newRound.bestCandidateSize = bestCandidate.getNumberOfParticipatingOptions();
+                newRound.bestCandidateScore = maximalRoundScore;
                 return newRound;
             }
         }
@@ -591,8 +607,9 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="currentModel">The model containing the features found so far. These features are combined with the basic feature.</param>
         /// <param name="basicFeatures">The features for which we generate new candidates.</param>
+        /// <param name = "bfCandidateRate">Maps a set of binary configuration options from the feature to the number of configurations in which these options occure.</param>
         /// <returns>Returns a list of candidates that can be added to the current model.</returns>
-        protected List<Feature> generateBruteForceCandidates(List<Feature> currentModel, List<Feature> basicFeatures)
+        protected List<Feature> generateBruteForceCandidates(List<Feature> currentModel, List<Feature> basicFeatures, out IDictionary<Feature, double> bfCandidateRate)
         {
             // Initialize brute force candidates.
             if (!bruteForceCandidates.Any())
@@ -609,6 +626,8 @@ namespace MachineLearning.Learning.Regression
                 {
                     listOfCombinations = combinationsUpToN(basicFeatures, MLsettings.featureSizeTreshold);
                 }
+
+                // Check feature combinations for validity and create candidates from the valid ones.
                 foreach (var combination in listOfCombinations)
                 {
                     Feature newCandidate = null;
@@ -616,12 +635,33 @@ namespace MachineLearning.Learning.Regression
                     {
                         newCandidate = newCandidate == null ? new Feature(feature.getPureString(), feature.getVariabilityModel()) : new Feature(newCandidate.getPureString() + '*' + feature.getPureString(), feature.getVariabilityModel());
                     }
+
                     if (newCandidate != null)
                     {
-                        var configChecker = new CheckConfigSAT(null);
-                        bool isValid = configChecker.checkConfigurationSAT(newCandidate.participatingBoolOptions.ToList(), newCandidate.getVariabilityModel(), true);
+                        bool isValid = false;
+
+                        // Use a SAT solver to check if the feature combination in the new candidate is vaild.
+                        //var configChecker = new CheckConfigSAT(null);
+                        //isValid = configChecker.checkConfigurationSAT(newCandidate.participatingBoolOptions.ToList(), newCandidate.getVariabilityModel(), true);
+
+                        // Search all configurations for the feature combination of the candidate,
+                        // if none of the configurations contains the feature combination
+                        // the candidate is considered invalid.  If we have a set of all valid configuration,
+                        // then we get the same results as using a SAT solver but much faster.
+                        foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                        {
+                            var candidateBinaryOptions = newCandidate.participatingBoolOptions;
+                            var configBinaryOptions = config.getBinaryOptions(BinaryOption.BinaryValue.Selected);
+                            if (!candidateBinaryOptions.Except(configBinaryOptions).Any())
+                            {
+                                isValid = true;
+                                break;
+                            }
+                        }
+
                         if (isValid)
                         {
+                            //bruteForceCandidateRate[newCandidate] = binaryCandidateRate(newCandidate);
                             bruteForceCandidates.Add(newCandidate);
                         }
                     }
@@ -631,7 +671,28 @@ namespace MachineLearning.Learning.Regression
             // Remove candidates that are already in the model.
             bruteForceCandidates.RemoveAll(currentModel.Contains);
 
+            bfCandidateRate = bruteForceCandidateRate;
             return bruteForceCandidates;
+        }
+
+        /// <summary>
+        /// Count the number of configurations in which the candidate (the set of its binary options) occurs.
+        /// </summary>
+        /// <returns>The candidate incidence.</returns>
+        /// <param name="candidate">Candidate feature.</param>
+        double binaryCandidateRate(Feature candidate)
+        {
+            double counter = 0;
+            foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+            {
+                var candidateBinaryOptions = candidate.participatingBoolOptions;
+                var configBinaryOptions = config.getBinaryOptions(BinaryOption.BinaryValue.Selected);
+                if (!candidateBinaryOptions.Except(configBinaryOptions).Any())
+                {
+                    ++counter;
+                }
+            }
+            return counter/GlobalState.allMeasurements.Configurations.Count();
         }
 
         /// <summary>
@@ -894,12 +955,17 @@ namespace MachineLearning.Learning.Regression
         /// <returns>True if we abort learning, false otherwise</returns>
         protected bool abortLearning(LearningRound current, LearningRound previous)
         {
+            TimeSpan diff = DateTime.Now - this.startTime;
+            if (MLsettings.outputRoundsToStdout)
+            {
+                //GlobalState.logInfo.logToStdout(current.round.ToString() + ";" + diff.ToString());
+                GlobalState.logInfo.logToStdout(current.ToString());
+            }
             if (current.round >= this.MLsettings.numberOfRounds)
             {
                 current.terminationReason = "numberOfRounds";
                 return true;
             }
-            TimeSpan diff = DateTime.Now - this.startTime;
             if (MLsettings.learnTimeLimit.Ticks > 0 && MLsettings.learnTimeLimit <= diff)
             {
                 current.terminationReason = "learnTimeLimit";
@@ -916,20 +982,8 @@ namespace MachineLearning.Learning.Regression
                 return true;
             }
             
-            current.bestCandidateErrorScore = previous.validationError_relative - current.validationError_relative;
-            current.bestCandidatePenalizedErrorScore = current.bestCandidateErrorScore / current.bestCandidateSize;
-            current.bestCandidateInfluenceScore = Math.Abs(current.bestCandidate.Constant / GlobalState.allMeasurements.maxMeasuredValue[GlobalState.currentNFP]) * 100;
-            current.bestCandidatePenalizedInfluenceScore = current.bestCandidateInfluenceScore / current.bestCandidateSize;
-            var score = 0.0;
-            if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
-            {
-                score = MLsettings.candidateSizePenalty ? current.bestCandidatePenalizedErrorScore : current.bestCandidateErrorScore;
-            } else if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.INFLUENCE)
-            {
-                score = MLsettings.candidateSizePenalty ? current.bestCandidatePenalizedInfluenceScore : current.bestCandidateInfluenceScore;
-            }
             //if (minimalRequiredImprovement(current) + current.validationError_relative > oldRoundRelativeError)
-            if (MLsettings.minImprovementPerRound > score)
+            if (MLsettings.minImprovementPerRound > current.bestCandidateScore)
             {
                 if (this.MLsettings.withHierarchy)
                 {
