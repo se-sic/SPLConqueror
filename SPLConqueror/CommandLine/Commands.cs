@@ -391,8 +391,12 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
-                        // prepare the machine learning 
+                        // We have to reuse the list of models because of NotifyCollectionChangedEventHandlers that might be attached to the list of models.  
+                        exp.models.Clear();
+                        var mod = exp.models;
                         exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsLearning);
+                        exp.models = mod;
+
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
