@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Diagnostics;
 using MachineLearning.Sampling;
+using System.Collections.ObjectModel;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -17,7 +18,7 @@ namespace MachineLearning.Learning.Regression
         public ML_Settings mLsettings = null;
         public List<Configuration> testSet, validationSet = null;
         int nbBaggings = 0;
-        public List<FeatureSubsetSelection> models = new List<FeatureSubsetSelection>();
+        public ObservableCollection<FeatureSubsetSelection> models = new ObservableCollection<FeatureSubsetSelection>();
         public InfluenceModel metaModel = null;
         public LearningInfo info = new LearningInfo();
 
