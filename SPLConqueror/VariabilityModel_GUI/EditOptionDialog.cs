@@ -96,6 +96,7 @@ namespace VariabilitModel_GUI
 
             prefixTextBox.Text = currentOption.Prefix;
             postfixTextBox.Text = currentOption.Postfix;
+            outputStringTextBox.Text = currentOption.OutputString;
 
             excludesCheckedListBox.Items.Clear();
             requiresCheckedListBox.Items.Clear();
@@ -243,6 +244,11 @@ namespace VariabilitModel_GUI
 
                 currentOption.Children = new List<ConfigurationOption>();
                 newOption.Parent = currentOption.Parent;
+                newOption.Prefix = currentOption.Prefix;
+                newOption.Postfix = currentOption.Postfix;
+                newOption.OutputString = currentOption.OutputString;
+                newOption.Excluded_Options = currentOption.Excluded_Options;
+                newOption.Implied_Options = currentOption.Implied_Options;
 
                 GlobalState.varModel.deleteOption(currentOption);
                 GlobalState.varModel.addConfigurationOption(newOption);
@@ -278,6 +284,11 @@ namespace VariabilitModel_GUI
 
                 currentOption.Children = new List<ConfigurationOption>();
                 newOption.Parent = currentOption.Parent;
+                newOption.Prefix = currentOption.Prefix;
+                newOption.Postfix = currentOption.Postfix;
+                newOption.OutputString = currentOption.OutputString;
+                newOption.Excluded_Options = currentOption.Excluded_Options;
+                newOption.Implied_Options = currentOption.Implied_Options;
 
                 GlobalState.varModel.deleteOption(currentOption);
                 GlobalState.varModel.addConfigurationOption(newOption);
@@ -359,15 +370,16 @@ namespace VariabilitModel_GUI
         }
 
         /// <summary>
-        /// Invokes if the text of the corresponding text box has been changed.
+        /// Invokes if the text of the output string textbox has changed.
         /// 
-        /// ATTENTION: This will be open for an extension if needed.
+        /// This method will set the output string of the selected option to the text of
+        /// the corresponding textbox.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
-        private void variantGenerationTextBox_TextChanged(object sender, EventArgs e)
+        private void outputStringTextBox_TextChanged(object sender, EventArgs e)
         {
-            // TODO: EXTENSION
+            currentOption.OutputString = outputStringTextBox.Text;
         }
 
         /// <summary>
