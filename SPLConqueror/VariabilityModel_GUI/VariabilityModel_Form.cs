@@ -63,8 +63,6 @@ namespace VariabilitModel_GUI
             }
             this.treeView.Nodes.Add(root);
             this.treeView.ExpandAll();
-
-            //InitCheckedElements(root);
         }
 
         protected void insertSubElements(ConfigurationOption element, TreeNode t, bool bParentChecked)
@@ -74,33 +72,15 @@ namespace VariabilitModel_GUI
             t.Tag = element;
             if (element is SPLConqueror_Core.NumericOption)
                 t.ForeColor = Color.Red;
-            //else
-            //{
-            //    if (element.getCommulatives().Count > 0)
-            //        t.ForeColor = Color.LightBlue;
-            //    else
-            //    {
-            //        if (element.isOptional())
-            //            t.ForeColor = Color.Green;
-            //        //check optional childs if parent already checked
-            //        else if (bParentChecked)
-            //        {
-            //            bChecked = true;
-            //            t.Checked = true;
-            //        }
-            //    }
-            //}
 
             //rekursiv die unterelemente einfügen
             element.updateChildren();
             foreach (ConfigurationOption elem in element.Children)
             {
-
                 TreeNode tn = new TreeNode(elem.Name);
                 insertSubElements(elem, tn, bChecked);
 
                 t.Nodes.Add(tn);
-
             }
         }
 
