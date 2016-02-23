@@ -43,6 +43,9 @@
             this.requiresCheckedListBox = new System.Windows.Forms.CheckedListBox();
             this.excludesCheckedListBox = new System.Windows.Forms.CheckedListBox();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
+            this.optionTypeNumericRadioButton = new System.Windows.Forms.RadioButton();
+            this.optionTypeBinaryRadioButton = new System.Windows.Forms.RadioButton();
+            this.currentOptionTypeLabel = new System.Windows.Forms.Label();
             this.parentLabel = new System.Windows.Forms.Label();
             this.setParentButton = new System.Windows.Forms.Button();
             this.renameOptionButton = new System.Windows.Forms.Button();
@@ -52,8 +55,8 @@
             this.prefixTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.variantGenerationTextBox = new System.Windows.Forms.TextBox();
-            this.variantGenerationLabel = new System.Windows.Forms.Label();
+            this.outputStringTextBox = new System.Windows.Forms.TextBox();
+            this.outputStringLabel = new System.Windows.Forms.Label();
             this.numericSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.changeStepSizeButton = new System.Windows.Forms.Button();
             this.changeRangeButton = new System.Windows.Forms.Button();
@@ -115,7 +118,7 @@
             this.constraintsGroupBox.Controls.Add(this.excludesCheckedListBox);
             this.constraintsGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.constraintsGroupBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.constraintsGroupBox.Location = new System.Drawing.Point(12, 269);
+            this.constraintsGroupBox.Location = new System.Drawing.Point(12, 300);
             this.constraintsGroupBox.Name = "constraintsGroupBox";
             this.constraintsGroupBox.Size = new System.Drawing.Size(600, 316);
             this.constraintsGroupBox.TabIndex = 50;
@@ -228,6 +231,9 @@
             // 
             // generalGroupBox
             // 
+            this.generalGroupBox.Controls.Add(this.optionTypeNumericRadioButton);
+            this.generalGroupBox.Controls.Add(this.optionTypeBinaryRadioButton);
+            this.generalGroupBox.Controls.Add(this.currentOptionTypeLabel);
             this.generalGroupBox.Controls.Add(this.parentLabel);
             this.generalGroupBox.Controls.Add(this.setParentButton);
             this.generalGroupBox.Controls.Add(this.renameOptionButton);
@@ -238,10 +244,44 @@
             this.generalGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.generalGroupBox.Location = new System.Drawing.Point(12, 12);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(531, 77);
+            this.generalGroupBox.Size = new System.Drawing.Size(531, 108);
             this.generalGroupBox.TabIndex = 52;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General Properties";
+            // 
+            // optionTypeNumericRadioButton
+            // 
+            this.optionTypeNumericRadioButton.AutoSize = true;
+            this.optionTypeNumericRadioButton.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.optionTypeNumericRadioButton.Location = new System.Drawing.Point(224, 79);
+            this.optionTypeNumericRadioButton.Name = "optionTypeNumericRadioButton";
+            this.optionTypeNumericRadioButton.Size = new System.Drawing.Size(71, 19);
+            this.optionTypeNumericRadioButton.TabIndex = 61;
+            this.optionTypeNumericRadioButton.TabStop = true;
+            this.optionTypeNumericRadioButton.Text = "Numeric";
+            this.optionTypeNumericRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // optionTypeBinaryRadioButton
+            // 
+            this.optionTypeBinaryRadioButton.AutoSize = true;
+            this.optionTypeBinaryRadioButton.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.optionTypeBinaryRadioButton.Location = new System.Drawing.Point(148, 79);
+            this.optionTypeBinaryRadioButton.Name = "optionTypeBinaryRadioButton";
+            this.optionTypeBinaryRadioButton.Size = new System.Drawing.Size(61, 19);
+            this.optionTypeBinaryRadioButton.TabIndex = 60;
+            this.optionTypeBinaryRadioButton.TabStop = true;
+            this.optionTypeBinaryRadioButton.Text = "Binary";
+            this.optionTypeBinaryRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // currentOptionTypeLabel
+            // 
+            this.currentOptionTypeLabel.AutoSize = true;
+            this.currentOptionTypeLabel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.currentOptionTypeLabel.Location = new System.Drawing.Point(10, 81);
+            this.currentOptionTypeLabel.Name = "currentOptionTypeLabel";
+            this.currentOptionTypeLabel.Size = new System.Drawing.Size(115, 15);
+            this.currentOptionTypeLabel.TabIndex = 59;
+            this.currentOptionTypeLabel.Text = "Current option type:";
             // 
             // parentLabel
             // 
@@ -251,7 +291,6 @@
             this.parentLabel.Size = new System.Drawing.Size(40, 15);
             this.parentLabel.TabIndex = 58;
             this.parentLabel.Text = "label1";
-            this.parentLabel.Visible = false;
             // 
             // setParentButton
             // 
@@ -293,10 +332,10 @@
             this.settingsGroupBox.Controls.Add(this.prefixTextBox);
             this.settingsGroupBox.Controls.Add(this.label6);
             this.settingsGroupBox.Controls.Add(this.label5);
-            this.settingsGroupBox.Controls.Add(this.variantGenerationTextBox);
-            this.settingsGroupBox.Controls.Add(this.variantGenerationLabel);
+            this.settingsGroupBox.Controls.Add(this.outputStringTextBox);
+            this.settingsGroupBox.Controls.Add(this.outputStringLabel);
             this.settingsGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.settingsGroupBox.Location = new System.Drawing.Point(12, 185);
+            this.settingsGroupBox.Location = new System.Drawing.Point(12, 216);
             this.settingsGroupBox.Name = "settingsGroupBox";
             this.settingsGroupBox.Size = new System.Drawing.Size(600, 78);
             this.settingsGroupBox.TabIndex = 53;
@@ -306,7 +345,7 @@
             // postfixTextBox
             // 
             this.postfixTextBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.postfixTextBox.Location = new System.Drawing.Point(271, 16);
+            this.postfixTextBox.Location = new System.Drawing.Point(231, 16);
             this.postfixTextBox.Name = "postfixTextBox";
             this.postfixTextBox.Size = new System.Drawing.Size(100, 23);
             this.postfixTextBox.TabIndex = 28;
@@ -315,7 +354,7 @@
             // prefixTextBox
             // 
             this.prefixTextBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.prefixTextBox.Location = new System.Drawing.Point(79, 16);
+            this.prefixTextBox.Location = new System.Drawing.Point(53, 16);
             this.prefixTextBox.Name = "prefixTextBox";
             this.prefixTextBox.Size = new System.Drawing.Size(100, 23);
             this.prefixTextBox.TabIndex = 27;
@@ -325,7 +364,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(194, 19);
+            this.label6.Location = new System.Drawing.Point(177, 19);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 15);
             this.label6.TabIndex = 26;
@@ -341,23 +380,23 @@
             this.label5.TabIndex = 25;
             this.label5.Text = "Prefix:";
             // 
-            // variantGenerationTextBox
+            // outputStringTextBox
             // 
-            this.variantGenerationTextBox.Location = new System.Drawing.Point(185, 46);
-            this.variantGenerationTextBox.Name = "variantGenerationTextBox";
-            this.variantGenerationTextBox.Size = new System.Drawing.Size(172, 23);
-            this.variantGenerationTextBox.TabIndex = 0;
-            this.variantGenerationTextBox.TextChanged += new System.EventHandler(this.variantGenerationTextBox_TextChanged);
+            this.outputStringTextBox.Location = new System.Drawing.Point(95, 46);
+            this.outputStringTextBox.Name = "outputStringTextBox";
+            this.outputStringTextBox.Size = new System.Drawing.Size(172, 23);
+            this.outputStringTextBox.TabIndex = 0;
+            this.outputStringTextBox.TextChanged += new System.EventHandler(this.outputStringTextBox_TextChanged);
             // 
-            // variantGenerationLabel
+            // outputStringLabel
             // 
-            this.variantGenerationLabel.AutoSize = true;
-            this.variantGenerationLabel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.variantGenerationLabel.Location = new System.Drawing.Point(6, 49);
-            this.variantGenerationLabel.Name = "variantGenerationLabel";
-            this.variantGenerationLabel.Size = new System.Drawing.Size(173, 15);
-            this.variantGenerationLabel.TabIndex = 23;
-            this.variantGenerationLabel.Text = "Variant Generation Parameter:";
+            this.outputStringLabel.AutoSize = true;
+            this.outputStringLabel.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputStringLabel.Location = new System.Drawing.Point(6, 49);
+            this.outputStringLabel.Name = "outputStringLabel";
+            this.outputStringLabel.Size = new System.Drawing.Size(83, 15);
+            this.outputStringLabel.TabIndex = 23;
+            this.outputStringLabel.Text = "Output string:";
             // 
             // numericSettingsGroupBox
             // 
@@ -368,7 +407,7 @@
             this.numericSettingsGroupBox.Controls.Add(this.currentStepSizeLabel);
             this.numericSettingsGroupBox.Controls.Add(this.currentRangeOfValuesLabel);
             this.numericSettingsGroupBox.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericSettingsGroupBox.Location = new System.Drawing.Point(12, 95);
+            this.numericSettingsGroupBox.Location = new System.Drawing.Point(12, 126);
             this.numericSettingsGroupBox.Name = "numericSettingsGroupBox";
             this.numericSettingsGroupBox.Size = new System.Drawing.Size(531, 84);
             this.numericSettingsGroupBox.TabIndex = 54;
@@ -439,7 +478,7 @@
             // 
             // EditOptionDialog
             // 
-            this.ClientSize = new System.Drawing.Size(619, 590);
+            this.ClientSize = new System.Drawing.Size(619, 624);
             this.Controls.Add(this.numericSettingsGroupBox);
             this.Controls.Add(this.settingsGroupBox);
             this.Controls.Add(this.generalGroupBox);
@@ -469,8 +508,8 @@
         private System.Windows.Forms.GroupBox generalGroupBox;
         private System.Windows.Forms.Button renameOptionButton;
         private System.Windows.Forms.GroupBox settingsGroupBox;
-        private System.Windows.Forms.TextBox variantGenerationTextBox;
-        private System.Windows.Forms.Label variantGenerationLabel;
+        private System.Windows.Forms.TextBox outputStringTextBox;
+        private System.Windows.Forms.Label outputStringLabel;
         private System.Windows.Forms.Button setParentButton;
         private System.Windows.Forms.ComboBox selectOptionComboBox;
         private System.Windows.Forms.CheckedListBox excludesCheckedListBox;
@@ -495,5 +534,8 @@
         private System.Windows.Forms.Label rangeLabel;
         private System.Windows.Forms.Label currentStepSizeLabel;
         private System.Windows.Forms.Label currentRangeOfValuesLabel;
+        private System.Windows.Forms.RadioButton optionTypeNumericRadioButton;
+        private System.Windows.Forms.RadioButton optionTypeBinaryRadioButton;
+        private System.Windows.Forms.Label currentOptionTypeLabel;
     }
 }

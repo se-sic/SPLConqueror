@@ -15,12 +15,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.variantGeneratorTextBox = new System.Windows.Forms.TextBox();
+            this.outputStringTextBox = new System.Windows.Forms.TextBox();
             this.optionalCheckBox = new System.Windows.Forms.CheckBox();
             this.parentComboBox = new System.Windows.Forms.ComboBox();
             this.featureNameTextBox = new System.Windows.Forms.TextBox();
             this.featureNameLabel = new System.Windows.Forms.Label();
-            this.variantGenerationLabel = new System.Windows.Forms.Label();
+            this.outputStringLabel = new System.Windows.Forms.Label();
             this.parentLabel = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
             this.addOptionButton = new System.Windows.Forms.Button();
@@ -28,30 +28,30 @@
             this.numericRadioButton = new System.Windows.Forms.RadioButton();
             this.postfixTextBox = new System.Windows.Forms.TextBox();
             this.numericSettingsGroupBox = new System.Windows.Forms.GroupBox();
-            this.prePostCheckBox = new System.Windows.Forms.CheckBox();
             this.stepSizeCheckBox = new System.Windows.Forms.CheckBox();
-            this.postfixLabel = new System.Windows.Forms.Label();
             this.valueRangeLabel = new System.Windows.Forms.Label();
             this.minLabel = new System.Windows.Forms.Label();
             this.maxLabel = new System.Windows.Forms.Label();
             this.minValueTextBox = new System.Windows.Forms.TextBox();
             this.maxValueTextBox = new System.Windows.Forms.TextBox();
             this.stepSizeExampleLabel = new System.Windows.Forms.Label();
-            this.prefixLabel = new System.Windows.Forms.Label();
             this.stepSizeLabel = new System.Windows.Forms.Label();
-            this.prefixTextBox = new System.Windows.Forms.TextBox();
             this.stepSizeTextBox = new System.Windows.Forms.TextBox();
+            this.prePostCheckBox = new System.Windows.Forms.CheckBox();
+            this.postfixLabel = new System.Windows.Forms.Label();
+            this.prefixLabel = new System.Windows.Forms.Label();
+            this.prefixTextBox = new System.Windows.Forms.TextBox();
             this.optionTypeLabel = new System.Windows.Forms.Label();
             this.errorLabel = new System.Windows.Forms.Label();
             this.numericSettingsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // variantGeneratorTextBox
+            // outputStringTextBox
             // 
-            this.variantGeneratorTextBox.Location = new System.Drawing.Point(195, 205);
-            this.variantGeneratorTextBox.Name = "variantGeneratorTextBox";
-            this.variantGeneratorTextBox.Size = new System.Drawing.Size(206, 20);
-            this.variantGeneratorTextBox.TabIndex = 15;
+            this.outputStringTextBox.Location = new System.Drawing.Point(90, 205);
+            this.outputStringTextBox.Name = "outputStringTextBox";
+            this.outputStringTextBox.Size = new System.Drawing.Size(206, 20);
+            this.outputStringTextBox.TabIndex = 15;
             // 
             // optionalCheckBox
             // 
@@ -97,16 +97,16 @@
             this.featureNameLabel.TabIndex = 22;
             this.featureNameLabel.Text = "Feature Name:";
             // 
-            // variantGenerationLabel
+            // outputStringLabel
             // 
-            this.variantGenerationLabel.AutoSize = true;
-            this.variantGenerationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.variantGenerationLabel.Location = new System.Drawing.Point(13, 208);
-            this.variantGenerationLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.variantGenerationLabel.Name = "variantGenerationLabel";
-            this.variantGenerationLabel.Size = new System.Drawing.Size(149, 13);
-            this.variantGenerationLabel.TabIndex = 19;
-            this.variantGenerationLabel.Text = "Variant Generation Parameter:";
+            this.outputStringLabel.AutoSize = true;
+            this.outputStringLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.outputStringLabel.Location = new System.Drawing.Point(13, 208);
+            this.outputStringLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.outputStringLabel.Name = "outputStringLabel";
+            this.outputStringLabel.Size = new System.Drawing.Size(70, 13);
+            this.outputStringLabel.TabIndex = 19;
+            this.outputStringLabel.Text = "Output string:";
             // 
             // parentLabel
             // 
@@ -197,16 +197,6 @@
             this.numericSettingsGroupBox.TabStop = false;
             this.numericSettingsGroupBox.Text = "Numeric Option Settings";
             // 
-            // prePostCheckBox
-            // 
-            this.prePostCheckBox.AutoSize = true;
-            this.prePostCheckBox.Location = new System.Drawing.Point(25, 171);
-            this.prePostCheckBox.Name = "prePostCheckBox";
-            this.prePostCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.prePostCheckBox.TabIndex = 25;
-            this.prePostCheckBox.UseVisualStyleBackColor = true;
-            this.prePostCheckBox.CheckedChanged += new System.EventHandler(this.prePostCheckBox_CheckedChanged);
-            // 
             // stepSizeCheckBox
             // 
             this.stepSizeCheckBox.AutoSize = true;
@@ -216,16 +206,6 @@
             this.stepSizeCheckBox.TabIndex = 24;
             this.stepSizeCheckBox.UseVisualStyleBackColor = true;
             this.stepSizeCheckBox.CheckedChanged += new System.EventHandler(this.stepSizeCheckBox_CheckedChanged);
-            // 
-            // postfixLabel
-            // 
-            this.postfixLabel.AutoSize = true;
-            this.postfixLabel.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.postfixLabel.Location = new System.Drawing.Point(207, 171);
-            this.postfixLabel.Name = "postfixLabel";
-            this.postfixLabel.Size = new System.Drawing.Size(45, 14);
-            this.postfixLabel.TabIndex = 22;
-            this.postfixLabel.Text = "Postfix:";
             // 
             // valueRangeLabel
             // 
@@ -285,16 +265,6 @@
             this.stepSizeExampleLabel.TabIndex = 21;
             this.stepSizeExampleLabel.Text = "(e.g., n + 1 )";
             // 
-            // prefixLabel
-            // 
-            this.prefixLabel.AutoSize = true;
-            this.prefixLabel.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.prefixLabel.Location = new System.Drawing.Point(46, 171);
-            this.prefixLabel.Name = "prefixLabel";
-            this.prefixLabel.Size = new System.Drawing.Size(38, 14);
-            this.prefixLabel.TabIndex = 19;
-            this.prefixLabel.Text = "Prefix:";
-            // 
             // stepSizeLabel
             // 
             this.stepSizeLabel.AutoSize = true;
@@ -305,14 +275,6 @@
             this.stepSizeLabel.TabIndex = 21;
             this.stepSizeLabel.Text = "Step size:";
             // 
-            // prefixTextBox
-            // 
-            this.prefixTextBox.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.prefixTextBox.Location = new System.Drawing.Point(90, 169);
-            this.prefixTextBox.Name = "prefixTextBox";
-            this.prefixTextBox.Size = new System.Drawing.Size(87, 22);
-            this.prefixTextBox.TabIndex = 20;
-            // 
             // stepSizeTextBox
             // 
             this.stepSizeTextBox.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -321,6 +283,44 @@
             this.stepSizeTextBox.Size = new System.Drawing.Size(161, 22);
             this.stepSizeTextBox.TabIndex = 20;
             this.stepSizeTextBox.TextChanged += new System.EventHandler(this.stepSizeTextBox_TextChanged);
+            // 
+            // prePostCheckBox
+            // 
+            this.prePostCheckBox.AutoSize = true;
+            this.prePostCheckBox.Location = new System.Drawing.Point(25, 171);
+            this.prePostCheckBox.Name = "prePostCheckBox";
+            this.prePostCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.prePostCheckBox.TabIndex = 25;
+            this.prePostCheckBox.UseVisualStyleBackColor = true;
+            this.prePostCheckBox.CheckedChanged += new System.EventHandler(this.prePostCheckBox_CheckedChanged);
+            // 
+            // postfixLabel
+            // 
+            this.postfixLabel.AutoSize = true;
+            this.postfixLabel.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.postfixLabel.Location = new System.Drawing.Point(207, 171);
+            this.postfixLabel.Name = "postfixLabel";
+            this.postfixLabel.Size = new System.Drawing.Size(45, 14);
+            this.postfixLabel.TabIndex = 22;
+            this.postfixLabel.Text = "Postfix:";
+            // 
+            // prefixLabel
+            // 
+            this.prefixLabel.AutoSize = true;
+            this.prefixLabel.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.prefixLabel.Location = new System.Drawing.Point(46, 171);
+            this.prefixLabel.Name = "prefixLabel";
+            this.prefixLabel.Size = new System.Drawing.Size(38, 14);
+            this.prefixLabel.TabIndex = 19;
+            this.prefixLabel.Text = "Prefix:";
+            // 
+            // prefixTextBox
+            // 
+            this.prefixTextBox.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.prefixTextBox.Location = new System.Drawing.Point(90, 169);
+            this.prefixTextBox.Name = "prefixTextBox";
+            this.prefixTextBox.Size = new System.Drawing.Size(87, 22);
+            this.prefixTextBox.TabIndex = 20;
             // 
             // optionTypeLabel
             // 
@@ -355,13 +355,13 @@
             this.Controls.Add(this.postfixLabel);
             this.Controls.Add(this.numericRadioButton);
             this.Controls.Add(this.numericSettingsGroupBox);
-            this.Controls.Add(this.variantGeneratorTextBox);
+            this.Controls.Add(this.outputStringTextBox);
             this.Controls.Add(this.optionalCheckBox);
             this.Controls.Add(this.parentComboBox);
             this.Controls.Add(this.featureNameTextBox);
             this.Controls.Add(this.featureNameLabel);
             this.Controls.Add(this.prefixLabel);
-            this.Controls.Add(this.variantGenerationLabel);
+            this.Controls.Add(this.outputStringLabel);
             this.Controls.Add(this.parentLabel);
             this.Controls.Add(this.prefixTextBox);
             this.Controls.Add(this.cancelButton);
@@ -380,12 +380,12 @@
 
         #endregion
         
-        private System.Windows.Forms.TextBox variantGeneratorTextBox;
+        private System.Windows.Forms.TextBox outputStringTextBox;
         private System.Windows.Forms.CheckBox optionalCheckBox;
         private System.Windows.Forms.ComboBox parentComboBox;
         private System.Windows.Forms.TextBox featureNameTextBox;
         private System.Windows.Forms.Label featureNameLabel;
-        private System.Windows.Forms.Label variantGenerationLabel;
+        private System.Windows.Forms.Label outputStringLabel;
         private System.Windows.Forms.Label parentLabel;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button addOptionButton;

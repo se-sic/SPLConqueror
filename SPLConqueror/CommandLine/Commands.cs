@@ -368,8 +368,8 @@ namespace CommandLine
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                        List<Configuration> configurationsLearning = buildTestSet();
-                        List<Configuration> configurationsValidation = buildValidationSet();
+                        List<Configuration> configurationsLearning = buildSet(this.toSample);
+                        List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
                         
                         if (configurationsLearning.Count == 0)
                         {
@@ -435,28 +435,9 @@ namespace CommandLine
             return "";
         }
 
-        private List<Configuration> buildValidationSet()
+        private List<Configuration> buildSet(List<SamplingStrategies> strats)
         {
-            List<Configuration> configurationsValidation = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSampleValidation);
-            //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
-            if (trueModel != null)
-            {
-                foreach (Configuration conf in configurationsValidation)
-                {
-                    conf.setMeasuredValue(GlobalState.currentNFP, trueModel.eval(conf));
-                    GlobalState.addConfiguration(conf);
-                }
-            }
-            else
-            {
-                configurationsValidation = GlobalState.getMeasuredConfigs(configurationsValidation);
-            }
-            return configurationsValidation;
-        }
-
-        private List<Configuration> buildTestSet()
-        {
-            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, strats);
             //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
             if (trueModel != null)
             {
@@ -470,8 +451,8 @@ namespace CommandLine
             {
                 configurationsTest = GlobalState.getMeasuredConfigs(configurationsTest);
             }
-            return configurationsTest;
 
+            return configurationsTest;
         }
 
         private void parseOptionOrder(string task)
