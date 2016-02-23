@@ -127,7 +127,7 @@
             this.editOptionsToolStripMenuItem.Name = "editOptionsToolStripMenuItem";
             this.editOptionsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.editOptionsToolStripMenuItem.Text = "Edit Options...";
-            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem1_Click);
+            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem_Click);
             // 
             // editConstraintsToolStripMenuItem
             // 
