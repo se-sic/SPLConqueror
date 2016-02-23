@@ -16,8 +16,12 @@ namespace VariabilitModel_GUI
         private const string TITLE = "Model Creator";
         private const string CREATING_MODEL_TITLE = "Creating new model";
         private const string CREATING_MODEL_DESCRIPTION = "Enter the name of the new model.";
+        private const string DATA_NOT_SAVED = "There is still unsaved content. Do you want to save it?";
         private const string REMOVE_WARNING = "Are you sure about removing this feature?\n"
             + "All children features will be deleted as well.";
+
+        private string currentFilePath = "";
+        private bool dataSaved = true;
 
         public VariabilityModel_Form()
         {
@@ -25,6 +29,7 @@ namespace VariabilitModel_GUI
 
             this.Text = TITLE;
             this.saveModelToolStripMenuItem.Enabled = false;
+            this.saveModelAsToolStripMenuItem.Enabled = false;
             this.editToolStripMenuItem.Enabled = false;
         }
 
@@ -60,8 +65,6 @@ namespace VariabilitModel_GUI
             }
             this.treeView.Nodes.Add(root);
             this.treeView.ExpandAll();
-
-            //InitCheckedElements(root);
         }
 
         protected void insertSubElements(ConfigurationOption element, TreeNode t, bool bParentChecked)
@@ -71,33 +74,15 @@ namespace VariabilitModel_GUI
             t.Tag = element;
             if (element is SPLConqueror_Core.NumericOption)
                 t.ForeColor = Color.Red;
-            //else
-            //{
-            //    if (element.getCommulatives().Count > 0)
-            //        t.ForeColor = Color.LightBlue;
-            //    else
-            //    {
-            //        if (element.isOptional())
-            //            t.ForeColor = Color.Green;
-            //        //check optional childs if parent already checked
-            //        else if (bParentChecked)
-            //        {
-            //            bChecked = true;
-            //            t.Checked = true;
-            //        }
-            //    }
-            //}
 
             //rekursiv die unterelemente einfügen
             element.updateChildren();
             foreach (ConfigurationOption elem in element.Children)
             {
-
                 TreeNode tn = new TreeNode(elem.Name);
                 insertSubElements(elem, tn, bChecked);
 
                 t.Nodes.Add(tn);
-
             }
         }
 
@@ -112,7 +97,9 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void newModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // EXTENSION: Ask if there is any unsaved data
+            if (!dataSaved && handleUnsavedData() == DialogResult.Cancel)
+                return;
+            
             Tuple<DialogResult, string> result = CreationDialog();
 
             if (result.Item1 == DialogResult.Cancel)
@@ -120,8 +107,12 @@ namespace VariabilitModel_GUI
 
             GlobalState.varModel = new VariabilityModel(result.Item2);
             this.saveModelToolStripMenuItem.Enabled = true;
+            this.saveModelAsToolStripMenuItem.Enabled = true;
             this.editToolStripMenuItem.Enabled = true;
             this.Text = TITLE + ": " + result.Item2;
+
+            currentFilePath = "";
+            dataSaved = false;
 
             InitTreeView();
         }
@@ -129,11 +120,42 @@ namespace VariabilitModel_GUI
         /// <summary>
         /// Invokes if the 'File -> Save model'-option in the menu strip was clicked.
         /// 
-        /// This will open a dialog to determine where to save the current model.
+        /// This will save the curent model in the saved file path. If the saved path is empty,
+        /// a dialog will open to get the new saving path.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
         private void saveModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentFilePath.Length > 0)
+            {
+                GlobalState.varModel.Path = currentFilePath;
+                GlobalState.varModel.saveXML();
+
+                dataSaved = true;
+            }
+            else {
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                if (fbd.ShowDialog() == DialogResult.OK)
+                {
+                    String folder = fbd.SelectedPath;
+                    GlobalState.varModel.Path = folder + Path.DirectorySeparatorChar + GlobalState.varModel.Name + ".xml";
+                    GlobalState.varModel.saveXML();
+
+                    currentFilePath = GlobalState.varModel.Path;
+                    dataSaved = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Invokes if the 'File -> Save model as'-option in the menu strip was clicked.
+        /// 
+        /// This will open a dialog to determine where to save the current model.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
+        private void saveModelAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == DialogResult.OK)
@@ -141,6 +163,8 @@ namespace VariabilitModel_GUI
                 String folder = fbd.SelectedPath;
                 GlobalState.varModel.Path = folder + Path.DirectorySeparatorChar + GlobalState.varModel.Name + ".xml";
                 GlobalState.varModel.saveXML();
+
+                dataSaved = true;
             }
         }
 
@@ -153,7 +177,8 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void loadModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // EXTENSION: Ask if there is any unsaved data
+            if (!dataSaved && handleUnsavedData() == DialogResult.Cancel)
+                return;
 
             OpenFileDialog pfd = new OpenFileDialog();
             pfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
@@ -162,7 +187,12 @@ namespace VariabilitModel_GUI
                 System.IO.FileInfo fi = new FileInfo(pfd.FileName);
                 GlobalState.varModel = VariabilityModel.loadFromXML(fi.FullName);
                 this.saveModelToolStripMenuItem.Enabled = true;
+                this.saveModelAsToolStripMenuItem.Enabled = true;
                 this.editToolStripMenuItem.Enabled = true;
+
+                currentFilePath = fi.FullName;
+                dataSaved = true;
+
                 InitTreeView();
             }
         }
@@ -176,8 +206,32 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // EXTENSION: Ask if there is any unsaved data
+            if (!dataSaved && handleUnsavedData() == DialogResult.Cancel)
+                return;
+
             this.Dispose();
+        }
+
+        /// <summary>
+        /// Invokes if the current form is about to be closed.
+        /// 
+        /// Additionally, it will check if there is any unsaved data. If that is the case,
+        /// a dialog will be opened to dtermine if the data should be saved.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            if (!dataSaved)
+            {
+                DialogResult result = MessageBox.Show(DATA_NOT_SAVED, "", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                    saveModelToolStripMenuItem_Click(null, null);
+            }
         }
 
         /// <summary>
@@ -187,10 +241,12 @@ namespace VariabilitModel_GUI
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
-        private void editOptionsToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void editOptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EditOptionDialog form = new EditOptionDialog(this, null);
             form.Show();
+
+            dataSaved = false;
         }
 
         /// <summary>
@@ -205,6 +261,8 @@ namespace VariabilitModel_GUI
         {
             EditContraintsDialog form = new EditContraintsDialog();
             form.Show();
+
+            dataSaved = false;
         }
 
         /// <summary>
@@ -235,6 +293,8 @@ namespace VariabilitModel_GUI
             NewFeatureDialog dlg = new NewFeatureDialog(featureName);
             dlg.ShowDialog();
 
+            dataSaved = false;
+
             InitTreeView();
         }
 
@@ -261,6 +321,8 @@ namespace VariabilitModel_GUI
             EditOptionDialog dlg = new EditOptionDialog(this, selected);
             dlg.ShowDialog();
 
+            dataSaved = false;
+
             InitTreeView();
         }
 
@@ -277,15 +339,36 @@ namespace VariabilitModel_GUI
         {
             DialogResult result = MessageBox.Show(REMOVE_WARNING, "", MessageBoxButtons.YesNo);
 
-            if (DialogResult == DialogResult.Yes)
+            if (result == DialogResult.Yes)
             {
                 TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
                 ConfigurationOption selected = GlobalState.varModel.getOption(tn.Text);
 
                 GlobalState.varModel.deleteOption(selected);
 
+                dataSaved = false;
+
                 InitTreeView();
             }
+        }
+
+        /// <summary>
+        /// Opens a dialog to ask the user if he/she wants to save the unsaved data.
+        /// 
+        /// This method will also return the decision of the user.
+        /// </summary>
+        /// <returns>Result of the dialog</returns>
+        private DialogResult handleUnsavedData()
+        {
+            DialogResult result = MessageBox.Show(DATA_NOT_SAVED, "", MessageBoxButtons.YesNoCancel);
+
+            if (result == DialogResult.Yes)
+            {
+                saveModelToolStripMenuItem_Click(null, null);
+                dataSaved = true;
+            }
+
+            return result;
         }
 
         /// <summary>
