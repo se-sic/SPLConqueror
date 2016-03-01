@@ -44,6 +44,7 @@
             this.addFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveModelAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -78,6 +79,7 @@
             this.newModelToolStripMenuItem,
             this.loadModelToolStripMenuItem,
             this.saveModelToolStripMenuItem,
+            this.saveModelAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -86,28 +88,28 @@
             // newModelToolStripMenuItem
             // 
             this.newModelToolStripMenuItem.Name = "newModelToolStripMenuItem";
-            this.newModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.newModelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.newModelToolStripMenuItem.Text = "New Model...";
             this.newModelToolStripMenuItem.Click += new System.EventHandler(this.newModelToolStripMenuItem_Click);
             // 
             // loadModelToolStripMenuItem
             // 
             this.loadModelToolStripMenuItem.Name = "loadModelToolStripMenuItem";
-            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.loadModelToolStripMenuItem.Text = "Load Model";
+            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadModelToolStripMenuItem.Text = "Load Model...";
             this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.loadModelToolStripMenuItem_Click);
             // 
             // saveModelToolStripMenuItem
             // 
             this.saveModelToolStripMenuItem.Name = "saveModelToolStripMenuItem";
-            this.saveModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.saveModelToolStripMenuItem.Text = "Save Model";
+            this.saveModelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveModelToolStripMenuItem.Text = "Save Model...";
             this.saveModelToolStripMenuItem.Click += new System.EventHandler(this.saveModelToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -123,15 +125,15 @@
             // editOptionsToolStripMenuItem
             // 
             this.editOptionsToolStripMenuItem.Name = "editOptionsToolStripMenuItem";
-            this.editOptionsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.editOptionsToolStripMenuItem.Text = "Edit Options";
-            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem1_Click);
+            this.editOptionsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.editOptionsToolStripMenuItem.Text = "Edit Options...";
+            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem_Click);
             // 
             // editConstraintsToolStripMenuItem
             // 
             this.editConstraintsToolStripMenuItem.Name = "editConstraintsToolStripMenuItem";
-            this.editConstraintsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.editConstraintsToolStripMenuItem.Text = "Edit Constraints";
+            this.editConstraintsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.editConstraintsToolStripMenuItem.Text = "Edit Constraints...";
             this.editConstraintsToolStripMenuItem.Click += new System.EventHandler(this.editConstraintsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -171,6 +173,13 @@
             this.removeFeatureToolStripMenuItem.Text = "Remove Feature";
             this.removeFeatureToolStripMenuItem.Click += new System.EventHandler(this.removeFeatureToolStripMenuItem_Click);
             // 
+            // saveModelAsToolStripMenuItem
+            // 
+            this.saveModelAsToolStripMenuItem.Name = "saveModelAsToolStripMenuItem";
+            this.saveModelAsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveModelAsToolStripMenuItem.Text = "Save Model As...";
+            this.saveModelAsToolStripMenuItem.Click += new System.EventHandler(this.saveModelAsToolStripMenuItem_Click);
+            // 
             // VariabilityModel_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -207,6 +216,7 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editOptionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editConstraintsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveModelAsToolStripMenuItem;
     }
 }
 

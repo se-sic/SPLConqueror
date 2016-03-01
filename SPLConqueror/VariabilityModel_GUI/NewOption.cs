@@ -318,6 +318,7 @@ namespace VariabilitModel_GUI
                 newOption.Postfix = postfixTextBox.Text;
             }
 
+            newOption.OutputString = outputStringTextBox.Text;
             newOption.Parent = GlobalState.varModel.getOption(this.parentComboBox.Text);
 
             newOption.Parent.Children.Add(newOption);
