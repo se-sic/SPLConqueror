@@ -65,15 +65,25 @@ namespace VariabilitModel_GUI
             setParentButton.Enabled = currentOption != GlobalState.varModel.Root;
             renameOptionButton.Enabled = true;
 
+            optionTypeBinaryRadioButton.CheckedChanged -= optionTypeBinaryRadioButton_CheckedChanged;
+            optionTypeNumericRadioButton.CheckedChanged -= optionTypeNumericRadioButton_CheckedChanged;
+
             if (currentOption is BinaryOption)
             {
+                optionTypeBinaryRadioButton.Checked = true;
+                optionTypeNumericRadioButton.Checked = false;
+
                 optionalCheckBox.Visible = true;
                 optionalCheckBox.Checked = ((BinaryOption)currentOption).Optional;
                 numericSettingsGroupBox.Enabled = false;
                 rangeLabel.Text = NO_DATA;
                 stepSizeLabel.Text = NO_DATA;
-            } else if (currentOption is NumericOption)
+            }
+            else if (currentOption is NumericOption)
             {
+                optionTypeBinaryRadioButton.Checked = false;
+                optionTypeNumericRadioButton.Checked = true;
+
                 optionalCheckBox.Visible = false;
                 numericSettingsGroupBox.Enabled = true;
                 rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", "
@@ -81,8 +91,12 @@ namespace VariabilitModel_GUI
                 stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString();
             }
 
+            optionTypeBinaryRadioButton.CheckedChanged += optionTypeBinaryRadioButton_CheckedChanged;
+            optionTypeNumericRadioButton.CheckedChanged += optionTypeNumericRadioButton_CheckedChanged;
+
             prefixTextBox.Text = currentOption.Prefix;
             postfixTextBox.Text = currentOption.Postfix;
+            outputStringTextBox.Text = currentOption.OutputString;
 
             excludesCheckedListBox.Items.Clear();
             requiresCheckedListBox.Items.Clear();
@@ -95,7 +109,7 @@ namespace VariabilitModel_GUI
                     requiresCheckedListBox.Items.Add(opt);
                 }
             }
-            
+
             excludesOverviewListBox.Items.Clear();
             requiresOverviewListBox.Items.Clear();
 
@@ -139,6 +153,21 @@ namespace VariabilitModel_GUI
                 List<string> editedBooleanConstraints = new List<string>();
                 List<NonBooleanConstraint> editedNonBooleanConstraints = new List<NonBooleanConstraint>();
 
+                // Adjusting current step function if needed
+                if (currentOption is NumericOption)
+                {
+                    string[] funcParts = ((NumericOption)currentOption).StepFunction.ToString().Split(' ');
+
+                    for (int i = 0; i < funcParts.Length; i++)
+                        funcParts[i] = funcParts[i] == currentOption.Name ? result.Item2 : funcParts[i];
+
+                    ((NumericOption)currentOption).StepFunction =
+                        new InfluenceFunction(String.Join(" ", funcParts), GlobalState.varModel);
+
+                    stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString();
+                }
+
+                // Adjusting all boolean constraints
                 foreach (string boolConst in GlobalState.varModel.BooleanConstraints)
                 {
                     string[] constParts = boolConst.Split(' ');
@@ -149,6 +178,7 @@ namespace VariabilitModel_GUI
                     editedBooleanConstraints.Add(String.Join(" ", constParts));
                 }
 
+                // Adjusting all non-boolean constraints
                 foreach (NonBooleanConstraint nbConst in GlobalState.varModel.NonBooleanConstraints)
                 {
                     string[] constParts = nbConst.ToString().Split(' ');
@@ -190,6 +220,87 @@ namespace VariabilitModel_GUI
 
                 currentOption.Parent = result.Item2;
                 currentOption.Parent.Children.Add(currentOption);
+            }
+        }
+
+        /// <summary>
+        /// Invokes if the radio button for switching to a binary option has been pressed.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
+        private void optionTypeBinaryRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (optionTypeBinaryRadioButton.Checked)
+            {
+                optionTypeNumericRadioButton.Checked = false;
+
+                ConfigurationOption newOption = new BinaryOption(GlobalState.varModel, currentOption.Name);
+                
+                foreach (ConfigurationOption opt in currentOption.Children)
+                {
+                    opt.Parent = newOption;
+                    newOption.Children.Add(opt);
+                }
+
+                currentOption.Children = new List<ConfigurationOption>();
+                newOption.Parent = currentOption.Parent;
+                newOption.Prefix = currentOption.Prefix;
+                newOption.Postfix = currentOption.Postfix;
+                newOption.OutputString = currentOption.OutputString;
+                newOption.Excluded_Options = currentOption.Excluded_Options;
+                newOption.Implied_Options = currentOption.Implied_Options;
+
+                GlobalState.varModel.deleteOption(currentOption);
+                GlobalState.varModel.addConfigurationOption(newOption);
+
+                currentOption = newOption;
+
+                optionalCheckBox.Visible = true;
+                optionalCheckBox.Checked = ((BinaryOption)currentOption).Optional;
+                numericSettingsGroupBox.Enabled = false;
+                rangeLabel.Text = NO_DATA;
+                stepSizeLabel.Text = NO_DATA;
+            }
+        }
+
+        /// <summary>
+        /// Invokes if the radio button for switching to a numeric option has been pressed.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event</param>
+        private void optionTypeNumericRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (optionTypeNumericRadioButton.Checked)
+            {
+                optionTypeBinaryRadioButton.Checked = false;
+
+                ConfigurationOption newOption = new NumericOption(GlobalState.varModel, currentOption.Name);
+
+                foreach (ConfigurationOption opt in currentOption.Children)
+                {
+                    opt.Parent = newOption;
+                    newOption.Children.Add(opt);
+                }
+
+                currentOption.Children = new List<ConfigurationOption>();
+                newOption.Parent = currentOption.Parent;
+                newOption.Prefix = currentOption.Prefix;
+                newOption.Postfix = currentOption.Postfix;
+                newOption.OutputString = currentOption.OutputString;
+                newOption.Excluded_Options = currentOption.Excluded_Options;
+                newOption.Implied_Options = currentOption.Implied_Options;
+
+                GlobalState.varModel.deleteOption(currentOption);
+                GlobalState.varModel.addConfigurationOption(newOption);
+
+                currentOption = newOption;
+                ((NumericOption)currentOption).StepFunction = new InfluenceFunction(currentOption.Name + " + 1", GlobalState.varModel);
+
+                optionalCheckBox.Visible = false;
+                numericSettingsGroupBox.Enabled = true;
+                rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", "
+                    + ((NumericOption)currentOption).Max_value + " )";
+                stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString();
             }
         }
 
@@ -259,15 +370,16 @@ namespace VariabilitModel_GUI
         }
 
         /// <summary>
-        /// Invokes if the text of the corresponding text box has been changed.
+        /// Invokes if the text of the output string textbox has changed.
         /// 
-        /// ATTENTION: This will be open for an extension if needed.
+        /// This method will set the output string of the selected option to the text of
+        /// the corresponding textbox.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
-        private void variantGenerationTextBox_TextChanged(object sender, EventArgs e)
+        private void outputStringTextBox_TextChanged(object sender, EventArgs e)
         {
-            // TODO: EXTENSION
+            currentOption.OutputString = outputStringTextBox.Text;
         }
 
         /// <summary>
@@ -387,638 +499,6 @@ namespace VariabilitModel_GUI
                 requiresDelButton.Enabled = true;
             }
         }
-
-        /*private void button1_Click(object sender, EventArgs e)
-        {
-            if (otherOptionComboBox.Text != "")
-            {
-                //string path = fm.getFeatureModelPath(this.fm.getElementByNameUnsafe(this.selectBox.Text).getName(), "");
-                //if (path.Contains("/" + otherBox.Text) || path.Contains(otherBox.Text + "/"))
-                //    MessageBox.Show("Loop in Parent Child Relationship detected!");
-                //else
-                //    this.listBox1.Items.Add(otherBox.Text);
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (otherOptionComboBox.Text != "")
-            {
-                //this.excludeSingleListBox.Items.Add(otherOptionComboBox.Text);
-            }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            if (otherOptionComboBox.Text != "")
-            {
-                //this.requiresSingleListBox.Items.Add(otherOptionComboBox.Text);
-            }
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            if (otherOptionComboBox.Text != "")
-            {
-                //if (this.fm.getElementByNameUnsafe(this.otherBox.Text).isOptional() == true)
-                //{
-                //    State f1 = new State(this.otherBox.Text, "mandatory");
-                //    if (f1.ShowDialog() == DialogResult.OK)
-                //    {
-                //        this.fm.getElementByNameUnsafe(this.otherBox.Text).setOptional(false);
-                //        this.listBox5.Items.Add(otherBox.Text);
-                //    }
-                //    else
-                //        return;
-                //}
-                //else
-                //    this.listBox4.Items.Add(otherBox.Text);
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            if (otherOptionComboBox.Text != "")
-            {
-                //if (this.fm.getElementByNameUnsafe(this.otherBox.Text).isOptional() == false)
-                //{
-                //    State f1 = new State(this.otherBox.Text, "optional");
-                //    if (f1.ShowDialog() == DialogResult.OK)
-                //    {
-                //        this.fm.getElementByNameUnsafe(this.otherBox.Text).setOptional(true);
-                //        this.listBox5.Items.Add(otherBox.Text);
-                //    }
-                //    else
-                //        return;
-                //}
-                //else
-                //    this.listBox5.Items.Add(otherBox.Text);
-            }
-        }
-
-        //private void button5_Click(object sender, EventArgs e)
-        //{
-        //    if (otherBox.Text != "")
-        //    {
-        //        this.listBox6.Items.Add(otherBox.Text);
-        //    }
-        //}
-
-        //private void button4_Click(object sender, EventArgs e)
-        //{
-        //    if (otherBox.Text != "")
-        //    {
-        //        this.listBox7.Items.Add(otherBox.Text);
-        //    }
-        //}
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-            if (this.nbConstraintBox.SelectedItem != null)
-            {
-                //this.parents.Add(this.nbConstraintBox.SelectedItem.ToString());
-                this.nbConstraintBox.Items.Remove(this.nbConstraintBox.SelectedItem);
-            }
-        }
-
-        private void button9_Click(object sender, EventArgs e)
-        {
-            /*if (this.excludeSingleListBox.SelectedItem != null)
-            {
-                //this.exc.Add(this.excludeSingleListBox.SelectedItem.ToString());
-                this.excludeSingleListBox.Items.Remove(this.excludeSingleListBox.SelectedItem);
-            }
-        }
-
-        private void button10_Click(object sender, EventArgs e)
-        {
-            /*if (this.requiresSingleListBox.SelectedItem != null)
-            {
-                //this.req.Add(this.requiresSingleListBox.SelectedItem.ToString());
-                this.requiresSingleListBox.Items.Remove(this.requiresSingleListBox.SelectedItem);
-            }
-        }
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.otherOptionComboBox.Items.Remove(this.selectOptionComboBox.Text);
-            
-            BinaryOption temp = GlobalState.varModel.getBinaryOption(this.selectOptionComboBox.Text);
-
-            if (temp == null)
-                return;
-            
-            if (temp.Optional)
-                this.optionalCheckBox.Checked = true;
-            else
-                this.optionalCheckBox.Checked = false;
-            //fill all boxes
-            this.nbConstraintBox.Items.Clear();
-
-            excludesOverview.Items.Clear();
-            //excludeSingleListBox.Items.Clear();
-            for (int i = 0; i < temp.Excluded_Options.Count; i++)
-            {
-                List<ConfigurationOption> currExludes = temp.Excluded_Options[i];
-                StringBuilder currExString = new StringBuilder();
-                for (int j = 0; j < currExludes.Count-1; j++)
-                {
-                    currExString.Append(currExludes[j].Name+ " | ");
-                }
-                currExString.Append(currExludes[currExludes.Count - 1].Name);
-                excludesOverview.Items.Add(currExString.ToString());
-            }
-
-            requiresOverview.Items.Clear();
-            //requiresSingleListBox.Items.Clear();
-            for (int i = 0; i < temp.Implied_Options.Count; i++)
-            {
-                List<ConfigurationOption> currImplied = temp.Implied_Options[i];
-                StringBuilder currImpString = new StringBuilder();
-                for (int j = 0; j < currImplied.Count - 1; j++)
-                {
-                    currImpString.Append(currImplied[j].Name + " | ");
-                }
-                currImpString.Append(currImplied[currImplied.Count - 1].Name);
-                excludesOverview.Items.Add(currImpString.ToString());
-            }
-        }
-
-        private void button15_Click(object sender, EventArgs e)
-        {
-            this.Dispose();
-        }
-
-        //private void insertParent()
-        //{
-        //    int id;
-        //    if (this.nbConstraintBox.Items.Count == 0)
-        //        return;
-        //    if (this.comboBox3.SelectedItem.ToString() == "feature")
-        //        {
-        //            //id = this.fm.getElementByNameUnsafe(this.listBox1.Items[0].ToString()).getID();
-        //            //if (!this.fm.getElementByNameUnsafe(this.selectBox.Text).isParent(id))
-        //            //{
-        //            //    this.fm.getElementByNameUnsafe(this.selectBox.Text).setParent(id);//me
-        //            //    this.fm.getElementById(id).addChild(this.fm.getElementByNameUnsafe(this.selectBox.Text).getID());//target
-        //            //}
-        //        }
-        //    else
-        //    {
-        //        //Element current = fm.getElementByNameUnsafe(this.selectBox.Text);
-        //        //for (int i = 0; i < this.listBox1.Items.Count; i++)
-        //        //{
-        //        //    Element temp = this.fm.getElementByNameUnsafe(this.listBox1.Items[i].ToString());
-        //        //    current.addDerivativeParent(temp);
-        //        //}
-        //    }
-           
-        //}
-
-
-        private void button18_Click(object sender, EventArgs e)
-        {
-            if (otherOptionComboBox.Text != "")
-            {
-                //string path = this.fm.getFeatureModelPath(this.fm.getElementByNameUnsafe(this.selectBox.Text).getName(), "");
-                //if (path.Contains("/" + otherBox.Text) || path.Contains(otherBox.Text + "/"))
-                //    MessageBox.Show("Loop in Parent Child Relationship detected!");
-                //else
-                //    this.listBox8.Items.Add(otherBox.Text);
-            }
-        }
-
-        private void button19_Click(object sender, EventArgs e)
-        {
-            //this.fm.updateCodeUnits();
-            //GeneratingInteractions.automaticGenerationOfDerivatives(fm);
-        }
-
-        private void renameOption_Click(object sender, EventArgs e)
-        {
-            /*if (this.renameOption_TextBox.Text.Length > 0)
-            {
-                if (this.renameOption_TextBox.Text.Contains("-"))
-                {
-                    WarningLabel.Text = ("No '-' in option name!");
-                    return;
-                }
-                GlobalState.varModel.getOption(this.selectOptionComboBox.Text).Name = renameOption_TextBox.Text;
-                updateGUI();
-            }
-        }
-
-        private void button21_Click(object sender, EventArgs ea)
-        {
-            //List<Element> derivatives = new List<Element>();
-            //List<Element> dependenciesToRemove = new List<Element>();
-            //foreach (Element e in fm.getAllElements())
-            //{
-            //    if (e.getType() == "derivative")
-            //        derivatives.Add(e);
-            //}
-
-            //foreach (Element deriv in derivatives)
-            //{
-            //    foreach (Element deriv2 in derivatives)
-            //    {
-            //        if (deriv != deriv2 && deriv.getDerivativeParents().Count == deriv2.getDerivativeParents().Count)
-            //        {
-            //            bool sameDependency = true;
-            //            foreach (Element parent in deriv2.getDerivativeParents())
-            //            {
-            //                if (!deriv.getDerivativeParents().Contains(parent))
-            //                {
-            //                    sameDependency = false;
-            //                    break;
-            //                }
-            //            }
-            //            foreach (Element parent in deriv.getDerivativeParents())
-            //            {
-            //                if (!deriv2.getDerivativeParents().Contains(parent))
-            //                {
-            //                    sameDependency = false;
-            //                    break;
-            //                }
-            //            }
-            //            if (sameDependency)
-            //            {
-            //                if (!dependenciesToRemove.Contains(deriv) && !dependenciesToRemove.Contains(deriv2))
-            //                    dependenciesToRemove.Add(deriv);
-            //            }
-            //        }
-            //    }
-            //}
-
-            //foreach (Element e in dependenciesToRemove)
-            //{
-            //    fm.removeElement(e);
-            //}
-        }
-
-        private void button22_Click(object sender, EventArgs e)
-        {
-            //List<Element> depedenciesToAdd = new List<Element>();
-            //foreach (Element current in fm.getAllElements())
-            //{
-            //    if (current.getType() != "feature")
-            //        continue;
-            //    if (current.isOptional() == false && current.getAlternativeIDs().Count == 0 && current.getCommulativeIDs().Count == 0)
-            //        continue;
-            //    foreach (Element second in fm.getAllElements())
-            //    {
-            //        if (second.getType() != "feature")
-            //            continue;
-            //        if (second == current)
-            //            continue;
-            //        if (second.isOptional() == false && second.getAlternativeIDs().Count == 0 && second.getCommulativeIDs().Count == 0)
-            //            continue;
-            //        if (current.getAlternatives().Contains(second))
-            //            continue;
-            //        string featureModelpath1 = fm.getFeatureModelPath(current.getName(), "");
-            //        if (featureModelpath1.Contains(second.getName()))
-            //            continue;
-            //        featureModelpath1 = fm.getFeatureModelPath(second.getName(), "");
-            //        if (featureModelpath1.Contains(current.getName()))
-            //            continue;
-            //        List<Element> tempConfig = new List<Element>();
-            //        tempConfig.Add(current);
-            //        tempConfig.Add(second);
-
-            //        if (vg.minimizeConfig(tempConfig, fm, false, null, false).Count == 0)
-            //            continue;
-            //        Element pairWiseDepedency = new Element("dPair_" + current.getName() + "_" + second.getName(), fm.createID(), fm);
-            //        pairWiseDepedency.setType("derivative");
-            //        pairWiseDepedency.addDerivativeParent(current);
-            //        pairWiseDepedency.addDerivativeParent(second);
-            //        if (testDependencyOccurance(depedenciesToAdd,pairWiseDepedency))
-            //            depedenciesToAdd.Add(pairWiseDepedency);
-            //    }
-            //}
-            //int addedDeps = 0;
-            //foreach (Element current in depedenciesToAdd)
-            //{
-            //    if (isAlreadyExistingDependencies(current) == false)
-            //    {
-            //        addedDeps++;
-            //        fm.addElement(current);
-            //    }
-            //}
-            //MessageBox.Show("Added " + addedDeps.ToString() + " pair-wise depedencies to the model.");
-        }
-
-        //Checks if there is already an existing dependencies with the same parents
-        private bool isAlreadyExistingDependencies(ConfigurationOption current)
-        {
-            //foreach (Element dependency in fm.getAllElements())
-            //{
-            //    if (dependency.getType() == "derivative" && dependency.getDerivativeParents().Count == current.getDerivativeParents().Count)
-            //    {
-            //        bool sameElement = true;
-            //        foreach (Element parent in current.getDerivativeParents())
-            //        {
-            //            if (!dependency.getDerivativeParents().Contains(parent))
-            //            {
-            //                sameElement = false;
-            //                break;
-            //            }
-            //        }
-            //        if (sameElement)
-            //            return true;
-            //    }
-            //}
-            return false;
-        }
-
-        //checks if the element is already present in the list
-        private bool testDependencyOccurance(List<ConfigurationOption> depedenciesToAdd, ConfigurationOption pairWiseDepedency)
-        {
-            //List<Element> pairWiseParents = pairWiseDepedency.getDerivativeParents();
-            //foreach (Element current in depedenciesToAdd)
-            //{
-            //    if (pairWiseDepedency.getDerivativeParents().Count != current.getDerivativeParents().Count)
-            //        continue;
-            //    bool sameElement = true;
-            //    foreach (Element parent in current.getDerivativeParents())//should be enough, because both elements (current and pairWise) have the same number of parents
-            //    {
-            //        if (!pairWiseParents.Contains(parent))
-            //        {
-            //            sameElement = false;
-            //            break;
-            //        }
-            //    }
-            //    if (sameElement)
-            //        return false;
-            //}
-            return true;
-        }
-
-        private void button23_Click(object sender, EventArgs e)
-        {
-            //DependencyEditor de = new DependencyEditor(this.fm);
-            //de.Show();
-        }
-
-        private void button24_Click(object sender, EventArgs e)
-        {
-            ConfigurationOption toDelete = GlobalState.varModel.getOption(this.selectOptionComboBox.Text);
-            GlobalState.varModel.deleteOption(toDelete);
-            
-            //fm.removeElement(toDelete);
-            //removeParent();
-            //removeAlternative();
-            //removeCommulative();
-            //removeMandatory();
-            //removeOptional();
-            //removeRequires();
-            //removeExcludes();
-            //removeOrder();
-            //this.parents = new List<string>();
-            //this.manda = new List<string>();
-            //this.opt = new List<string>();
-            //this.alter = new List<string>();
-            //this.comm = new List<string>();
-            //this.exc = new List<string>();
-            //this.req = new List<string>();
-            //this.order = new List<string>();
-            //this.selectBox.Items.Clear();
-            //this.otherBox.Items.Clear();
-            //for (int i = 0; i < fm.getAllElements().Count; i++)
-            //{
-            //    this.otherBox.Items.Add(fm.getAllElements()[i].getName());
-            //    this.selectBox.Items.Add(fm.getAllElements()[i].getName());
-            //}
-            throw new NotImplementedException();
-        }
-
-        private void WorkloadConstraint_button_Click(object sender, EventArgs e)
-        {
-            //VariableFeatureModellConstrainCreatorDlg variableWorkloadConstraint = new VariableFeatureModellConstrainCreatorDlg(ref fm);
-            //variableWorkloadConstraint.Show();
-        }
-
-        private void UpdateCurrEquation()
-        {
-            nonBoolConstraint.Text = "";
-            for (int i = 0; i < currentEquation.Count; i++)
-            {
-                nonBoolConstraint.Text += currentEquation[i] + "";
-            }
-        }
-
-        private void num7_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("7");
-            UpdateCurrEquation();
-        }
-
-        private void num8_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("8");
-            UpdateCurrEquation();
-        }
-
-        private void num9_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("9");
-            UpdateCurrEquation();
-        }
-
-        private void num1_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("1");
-            UpdateCurrEquation();
-        }
-
-        private void num5_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("5");
-            UpdateCurrEquation();
-        }
-
-        private void num6_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("6");
-            UpdateCurrEquation();
-        }
-
-        private void num3_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("3");
-            UpdateCurrEquation();
-        }
-
-        private void num2_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("2");
-            UpdateCurrEquation();
-        }
-
-        private void num4_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("4");
-            UpdateCurrEquation();
-        }
-
-        private void num0_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("0");
-            UpdateCurrEquation();
-        }
-
-        private void numPlus_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add(" + ");
-            UpdateCurrEquation();
-        }
-
-        private void numTimes_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add(" * ");
-            UpdateCurrEquation();
-        }
-
-        private void numEq_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add("=");
-            UpdateCurrEquation();
-        }
-
-        private void numGre_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add(">");
-            UpdateCurrEquation();
-        }
-
-        private void numDif_Click(object sender, EventArgs e)
-        {
-            currentEquation.Add(" - ");
-            UpdateCurrEquation();
-        }
-
-
-        private void deleteNBConst_Click(object sender, EventArgs e)
-        {
-            if (nbConstraintBox.SelectedIndex != -1)
-            {
-                GlobalState.varModel.NonBooleanConstraints.Remove((NonBooleanConstraint)nbConstraintBox.SelectedItem);
-                nbConstraintBox.Items.RemoveAt(nbConstraintBox.SelectedIndex);
-
-            }
-        }
-
-        private void removeNBConst_Click(object sender, EventArgs e)
-        {
-            if (currentEquation.Count > 0)
-            {
-                currentEquation.RemoveAt(currentEquation.Count - 1);
-                UpdateCurrEquation();
-            }
-        }
-
-        private void addOption_Click(object sender, EventArgs e)
-        {
-            if (nbConstOptions.Text.Length != 0)
-            {
-                currentEquation.Add(nbConstOptions.Text);
-                UpdateCurrEquation();
-            }
-        }
-
-        private void addNBConst_Click(object sender, EventArgs e)
-        {
-            StringBuilder currConst = new StringBuilder();
-            for (int i = 0; i < currentEquation.Count; i++)
-            {
-                currConst.Append(currentEquation[i]);
-            }
-            currentEquation = new List<string>();
-            UpdateCurrEquation();
-            nbConstraintBox.Items.Add(currConst);
-            GlobalState.varModel.NonBooleanConstraints.Add(new NonBooleanConstraint(currConst.ToString(), GlobalState.varModel));
-        }
-
-        private void finExclude_Click(object sender, EventArgs e)
-        {
-            /*
-            StringBuilder sb = new StringBuilder();
-            List<ConfigurationOption> newExcludeList = new List<ConfigurationOption>();
-            for (int i = 0; i < excludeSingleListBox.Items.Count-2; i++)
-            {
-                sb.Append(excludeSingleListBox.Items[i].ToString()+" | ");
-                newExcludeList.Add(GlobalState.varModel.getBinaryOption(excludeSingleListBox.Items[i].ToString()));
-            }
-            sb.Append(excludeSingleListBox.Items[excludeSingleListBox.Items.Count-1].ToString());
-            newExcludeList.Add(GlobalState.varModel.getBinaryOption(excludeSingleListBox.Items[excludeSingleListBox.Items.Count - 1].ToString()));
-            excludeSingleListBox.Items.Clear();
-
-            excludesOverview.Items.Add(sb.ToString());
-            BinaryOption curr = GlobalState.varModel.getBinaryOption(selectOptionComboBox.Text);
-            curr.Excluded_Options.Add(newExcludeList);
-            
-        }
-
-        private void finRequire_Click(object sender, EventArgs e)
-        {
-            /*
-            StringBuilder sb = new StringBuilder();
-            List<ConfigurationOption> newRequireList = new List<ConfigurationOption>();
-            for (int i = 0; i < requiresSingleListBox.Items.Count - 2; i++)
-            {
-                sb.Append(requiresSingleListBox.Items[i].ToString() + " | ");
-                newRequireList.Add(GlobalState.varModel.getBinaryOption(requiresSingleListBox.Items[i].ToString()));
-            }
-            sb.Append(excludeSingleListBox.Items[requiresSingleListBox.Items.Count - 1].ToString());
-            newRequireList.Add(GlobalState.varModel.getBinaryOption(requiresSingleListBox.Items[requiresSingleListBox.Items.Count - 1].ToString()));
-            requiresSingleListBox.Items.Clear();
-
-            requiresOverview.Items.Add(sb.ToString());
-            BinaryOption curr = GlobalState.varModel.getBinaryOption(selectOptionComboBox.Text);
-            curr.Excluded_Options.Add(newRequireList);
-        }
-
-        private void excludesOverview_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (excludesOverview.SelectedIndex == -1)
-                return;
-
-            //excludeSingleListBox.Items.Clear();
-            String currEx = excludesOverview.Items[excludesOverview.SelectedIndex].ToString();
-            String[] currExParts = currEx.Split('|');
-            for(int i = 0; i < currExParts.Length;i++)
-            {
-                //excludeSingleListBox.Items.Add(currExParts[i].Trim());
-            }
-        }
-
-        private void excludesOverviewDelButton_Click(object sender, EventArgs e)
-        {
-            if (excludesOverview.SelectedIndex != -1)
-            {
-                ConfigurationOption curr = GlobalState.varModel.getBinaryOption(selectOptionComboBox.SelectedItem.ToString());
-                curr.Excluded_Options.RemoveAt(excludesOverview.SelectedIndex);
-            }
-            comboBox1_SelectedIndexChanged(null, null);
-        }
-
-        private void requiresOverviewDelButton_Click(object sender, EventArgs e)
-        {
-            if (requiresOverview.SelectedIndex != -1)
-            {
-                ConfigurationOption curr = GlobalState.varModel.getBinaryOption(selectOptionComboBox.SelectedItem.ToString());
-                curr.Implied_Options.RemoveAt(requiresOverview.SelectedIndex);
-            }
-            comboBox1_SelectedIndexChanged(null, null);
-        }
-
-        private void setParent_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void EditOptionDialog_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            parent.InitTreeView();
-        }*/
 
         private Tuple<DialogResult, string> RenameDialog()
         {
