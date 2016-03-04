@@ -19,15 +19,13 @@ namespace MachineLearning.Learning.Regression
             set { featureSet = value; }
         }
         public int round = 0;
-
         public TimeSpan elapsedTime = new TimeSpan(0);
         public double modelComplexity {
             get {
-                const double complexityPower = 1.21;
                 double complexity = 0;
                 foreach (var feature in featureSet)
                 {
-                    complexity += Math.Pow(feature.getNumberOfParticipatingOptions(), complexityPower);
+                    complexity += feature.getNumberOfParticipatingOptions();
                 }
                 return complexity;
             }
