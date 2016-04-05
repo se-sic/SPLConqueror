@@ -921,7 +921,7 @@ namespace MachineLearning.Learning.Regression
         private double computeModelError(List<Feature> currentModel, out double relativeError)
         {
             if (!this.MLsettings.crossValidation)
-                return computeValidationError(currentModel, out relativeError);
+                return computeLearningError(currentModel, out relativeError);
             else
             {
                 return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
