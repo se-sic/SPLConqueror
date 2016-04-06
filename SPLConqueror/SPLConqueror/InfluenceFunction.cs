@@ -167,7 +167,9 @@ namespace SPLConqueror_Core
 
         public string[] getExpressionTree()
         {
-            return expressionArray;
+            string[] copy = new string[expressionArray.Length];
+            Array.Copy(expressionArray, copy, copy.Length);
+            return copy;
         }
 
         /// <summary>
@@ -489,7 +491,7 @@ namespace SPLConqueror_Core
             BinaryOption binOpt = fm.getBinaryOption(token);
             if (binOpt != null)
             {
-                if(token.Equals("base"))
+                if (token.Equals("base"))
                     return 1.0;
 
                 if (config.BinaryOptions.Keys.Contains(binOpt) && config.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
