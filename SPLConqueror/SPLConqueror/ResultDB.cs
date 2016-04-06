@@ -11,6 +11,7 @@ namespace SPLConqueror_Core
         private IDictionary<string, IDictionary<string, List<Configuration>>> configsMapping =
             new Dictionary<string, IDictionary<string, List<Configuration>>>();
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
+        private static int splitFactor = 4;
 
         public List<Configuration> Configurations
         {
@@ -81,13 +82,16 @@ namespace SPLConqueror_Core
 
             foreach (BinaryOption opt in GlobalState.varModel.BinaryOptions)
             {
-                BinaryOption.BinaryValue val;
-                config.BinaryOptions.TryGetValue(opt, out val);
+                if (opt != GlobalState.varModel.Root)
+                {
+                    BinaryOption.BinaryValue val;
+                    config.BinaryOptions.TryGetValue(opt, out val);
 
-                if (val == BinaryOption.BinaryValue.Selected)
-                    vector += "1";
-                else
-                    vector += "0";
+                    if (val == BinaryOption.BinaryValue.Selected)
+                        vector += "1";
+                    else
+                        vector += "0";
+                }
             }
 
             return vector;
@@ -96,12 +100,9 @@ namespace SPLConqueror_Core
         private string calculateConfigNumVector(Configuration config)
         {
             string vector = "";
+            int amountOfParts = (int)Math.Pow(2, splitFactor);
 
-            // Aufteilfaktor: Wohin damit?
-            int a = 3;
-            int amountOfParts = (int)Math.Pow(2, a);
-
-            if (a > 0)
+            if (splitFactor > 0)
             {
                 foreach (NumericOption opt in GlobalState.varModel.NumericOptions)
                 {
@@ -123,7 +124,7 @@ namespace SPLConqueror_Core
                             found = true;
                             String bin = Convert.ToString(i, 2);
 
-                            while (bin.Length < a)
+                            while (bin.Length < splitFactor)
                                 bin = "0" + bin;
 
                             vector += bin;
