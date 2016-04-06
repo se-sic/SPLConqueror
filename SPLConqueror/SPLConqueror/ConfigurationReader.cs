@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace SPLConqueror_Core
 {
@@ -12,7 +13,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model.
         /// 
-        /// The file should be structured as follows:
+        /// If the file is a xml file, it should be structured as follows:
         /// 
         /// <![CDATA[ <results> ]]>
         /// <![CDATA[   <row> ]]>
@@ -35,17 +36,37 @@ namespace SPLConqueror_Core
         /// <![CDATA[ <results> ]]>
         /// 
         ///
+        /// If the file is a csv file, two different formats are supported. 
+        /// 
+        /// For the first on, the file should have a header: 
+        /// 
+        /// binaryOption1;numOption1;binaryOption2;numOption2;Performance;Footprint
+        /// true;64;false;4;21.178;1679
+        /// 
+        /// Note: If a binary option is selected in a configuration, the value can either be "true" or "1".  
+        /// 
+        /// In the second format, no header is needed and only binary options are supported. Additionally, the measurements have to consider only one non-functional property.
+        /// 
         /// </summary>
         /// <param name="file">Full qualified file name.</param>
         /// <param name="model">Variability model of the configurations.</param>
         /// <returns></returns>
         public static List<Configuration> readConfigurations(string file, VariabilityModel model)
         {
-            XmlDocument dat = new System.Xml.XmlDocument();
-            dat.Load(file);
-            return readConfigurations(dat, model);
+
+            if (file.EndsWith(".xml"))
+            {
+                XmlDocument dat = new System.Xml.XmlDocument();
+                dat.Load(file);
+                return readConfigurations(dat, model);
+            }
+            else
+            {
+                return readCSV(file, model);
+            }
+
         }
-        
+
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
         /// </summary>
@@ -54,8 +75,8 @@ namespace SPLConqueror_Core
         /// <returns>Returns a list of configurations that were defined in the XML document. Can be an empty list.</returns>
         public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
-            
-            
+
+
             XmlElement currentElemt = dat.DocumentElement;
 
             HashSet<Configuration> configurations = new HashSet<Configuration>();
@@ -100,7 +121,7 @@ namespace SPLConqueror_Core
                         case "ConfigID":
                             if (readMultipleMeasurements)
                             {
-                                configID = childNode.InnerText.Replace("_","%;%");
+                                configID = childNode.InnerText.Replace("_", "%;%");
                             }
                             else
                                 configID = childNode.InnerText;
@@ -132,61 +153,63 @@ namespace SPLConqueror_Core
                         case "StartupEnd":
                             //todo
                             break;
-                    default:
-                        NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
-                        double measuredValue = 0;
+                        default:
+                            NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
+                            double measuredValue = 0;
                             //-1 means that measurement failed... 3rd values strongly devigates in C.'s measurements, hence we use it only in case we have no other measurements
-                        if (readMultipleMeasurements)
-                        {
-                            //if (property.Name != "run-real")
-                            //    continue;
-                            String[] m = childNode.InnerText.ToString().Split(',');
-                            double val1 = 0;
-                            if (!Double.TryParse(m[0], out val1))
-                                break;
-                            if (m.Length > 1)
+                            if (readMultipleMeasurements)
                             {
-                                List<double> values = new List<double>();
-                                double avg = 0;
-                                foreach (var i in m)
-                                {
-                                    double d = Convert.ToDouble(i);
-                                    if (d != -1)
-                                    {
-                                        values.Add(d);
-                                        avg += d;
-                                    }
-                                }
-                                if (values.Count == 0)
-                                {
-                                    configsWithTooLargeDeviation++;
-                                    c = null;
+                                //if (property.Name != "run-real")
+                                //    continue;
+                                String[] m = childNode.InnerText.ToString().Split(',');
+                                double val1 = 0;
+                                if (!Double.TryParse(m[0], out val1))
                                     break;
-                                }
-                                avg = avg / values.Count;
-                                /* foreach (var d in values)
+                                if (m.Length > 1)
+                                {
+                                    List<double> values = new List<double>();
+                                    double avg = 0;
+                                    foreach (var i in m)
                                     {
-                                        if ((d / avg) * 100 > 10)
+                                        double d = Convert.ToDouble(i);
+                                        if (d != -1)
                                         {
-                                            configsWithTooLargeDeviation++;
-                                            c = null;
-                                            break;
+                                            values.Add(d);
+                                            avg += d;
                                         }
-                                    }*/
-                                measuredValue = avg;
-                                /*double val2 = Convert.ToDouble(m[1]);
-                                    if (val1 == -1)
-                                        measuredValue = val2;
-                                    else if (val1 == -1 && val2 == -1)
-                                        measuredValue = Convert.ToDouble(m[2]);
-                                    else if (val2 == -1)
-                                        measuredValue = val1;
-                                    else
-                                        measuredValue = (val1 + val2) / 2;*/
-                            } else
-                                measuredValue = val1;
-                        } else
-                            measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
+                                    }
+                                    if (values.Count == 0)
+                                    {
+                                        configsWithTooLargeDeviation++;
+                                        c = null;
+                                        break;
+                                    }
+                                    avg = avg / values.Count;
+                                    /* foreach (var d in values)
+                                        {
+                                            if ((d / avg) * 100 > 10)
+                                            {
+                                                configsWithTooLargeDeviation++;
+                                                c = null;
+                                                break;
+                                            }
+                                        }*/
+                                    measuredValue = avg;
+                                    /*double val2 = Convert.ToDouble(m[1]);
+                                        if (val1 == -1)
+                                            measuredValue = val2;
+                                        else if (val1 == -1 && val2 == -1)
+                                            measuredValue = Convert.ToDouble(m[2]);
+                                        else if (val2 == -1)
+                                            measuredValue = val1;
+                                        else
+                                            measuredValue = (val1 + val2) / 2;*/
+                                }
+                                else
+                                    measuredValue = val1;
+                            }
+                            else
+                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
 
                             // Save the largest measured value.
                             double currentMaxMeasuredValue;
@@ -196,7 +219,8 @@ namespace SPLConqueror_Core
                                 {
                                     GlobalState.allMeasurements.maxMeasuredValue[property] = measuredValue;
                                 }
-                            } else
+                            }
+                            else
                             {
                                 GlobalState.allMeasurements.maxMeasuredValue.Add(property, measuredValue);
                             }
@@ -222,8 +246,8 @@ namespace SPLConqueror_Core
                     }
                     else
                     {
-                       // if (GlobalState.currentNFP != null && c.nfpValues.Keys.Contains(GlobalState.currentNFP) && c.nfpValues[GlobalState.currentNFP] != -1)
-                            configurations.Add(c);
+                        // if (GlobalState.currentNFP != null && c.nfpValues.Keys.Contains(GlobalState.currentNFP) && c.nfpValues[GlobalState.currentNFP] != -1)
+                        configurations.Add(c);
                     }
                 cont: { }
                     continue;
@@ -276,13 +300,13 @@ namespace SPLConqueror_Core
                 }
 
                 Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
-                
+
                 //if(configurations.Contains(config))
                 //{
                 //    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
                 //}else
                 //{
-                    configurations.Add(config);
+                configurations.Add(config);
                 //}
             }
             GlobalState.logInfo.logLine("Configs with too large deviation: " + configsWithTooLargeDeviation);
@@ -320,13 +344,159 @@ namespace SPLConqueror_Core
                         break;
                     case "NumericOptions":
                         break;
-                    default: 
+                    default:
                         NFProperty property = new NFProperty(childNode.Attributes[0].Value);
-                        properties.Add(property);                
+                        properties.Add(property);
                         break;
                 }
             }
             return properties;
+        }
+
+        /// <summary>
+        /// This method reads all configurations specified in the .csv file. In this mehtod, we assume that the file has a header. 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="model">The variabiliy model for the configurations.</param>
+        /// <returns>A list of all configurations </returns>
+        public static List<Configuration> readConfigurations_Header_CSV(String file, VariabilityModel model)
+        {
+            List<Configuration> configurations = new List<Configuration>();
+
+            StreamReader sr = new StreamReader(file);
+            
+            String[] optionOrder = new String[model.getOptions().Count - 1];
+            String[] nfpOrder = null;
+
+            bool isHeader = true;
+
+            while(!sr.EndOfStream)
+            {
+                String[] tokens = sr.ReadLine().Split(';');
+
+                if (isHeader)
+                {
+                    nfpOrder = new String[tokens.Length - optionOrder.Length];
+                    for (int i = 0; i < tokens.Length; i++)
+                    {
+                        String token = tokens[i];
+                        if (i < optionOrder.Length)
+                        {
+                            optionOrder[i] = token;
+                        }
+                        else
+                        {
+                            nfpOrder[i - optionOrder.Length] = token;
+                            if (!GlobalState.nfProperties.ContainsKey(token))
+                            {
+                                GlobalState.nfProperties.Add(token, new NFProperty(token));
+                            }
+                        }
+                    }
+                    isHeader = false;
+                }
+                else
+                {
+                    Dictionary<BinaryOption, BinaryOption.BinaryValue> binOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+                    Dictionary<NumericOption, double> numOptions = new Dictionary<NumericOption, double>();
+                    Dictionary<NFProperty, double> properties = new Dictionary<NFProperty, double>();
+
+                    for (int i = 0; i < tokens.Length; i++)
+                    {
+                        String token = tokens[i];
+                        if (i < optionOrder.Length)
+                        {
+                            ConfigurationOption option = model.getOption(optionOrder[i]);
+                            if (option.GetType() == typeof(BinaryOption))
+                            {
+                                if (token.Equals("true") || token.Equals("1"))
+                                    binOptions.Add((BinaryOption)option, BinaryOption.BinaryValue.Selected);
+                                else
+                                    binOptions.Add((BinaryOption)option, BinaryOption.BinaryValue.Deselected);
+                            }
+                            else
+                            {
+                                double value = Convert.ToDouble(token);
+                                numOptions.Add((NumericOption)option, value);
+                            }
+                        }
+                        else
+                        {
+                            NFProperty nfp = GlobalState.nfProperties[nfpOrder[i - optionOrder.Length]];
+                            double value = Convert.ToDouble(token);
+                            properties.Add(nfp, value);
+
+                            double currentMaxMeasuredValue;
+                            if (GlobalState.allMeasurements.maxMeasuredValue.TryGetValue(nfp, out currentMaxMeasuredValue))
+                            {
+                                if (Math.Abs(value) > Math.Abs(currentMaxMeasuredValue))
+                                {
+                                    GlobalState.allMeasurements.maxMeasuredValue[nfp] = value;
+                                }
+                            }
+                            else
+                            {
+                                GlobalState.allMeasurements.maxMeasuredValue.Add(nfp, value);
+                            }
+
+                        }
+
+                    }
+
+                    Configuration config = new Configuration(binOptions, numOptions, properties);
+                    configurations.Add(config);
+                }
+            }
+            sr.Close();
+            return configurations;
+        }
+
+        //Two formats are possible: with header and 0,1s for binary selection or no header and giving the names of config options per per line (this excludex numeric options)
+        private static List<Configuration> readCSV(string file, VariabilityModel model)
+        {
+            StreamReader sr = new StreamReader(file);
+            String line1, line2;
+            if (!sr.EndOfStream)
+                line1 = sr.ReadLine();
+            else return null;
+            if (!sr.EndOfStream)
+                line2 = sr.ReadLine();
+            else
+                return null;
+            sr.Close();
+            var l1 = line1.Split(';');
+            var l2 = line2.Split(';');
+            if (l1.Length < 2 || l2.Length < 2)
+                return null;
+            int d = 0;
+            if (int.TryParse(l2[0], out d))
+                return readConfigurations_Header_CSV(file, model);
+            else
+                return readCSVBinaryOptFormat(file, model);
+
+        }
+
+        private static List<Configuration> readCSVBinaryOptFormat(string file, VariabilityModel model)
+        {
+            List<Configuration> result = new List<Configuration>();
+            StreamReader sr = new StreamReader(file);
+            while (!sr.EndOfStream)
+            {
+                var line = sr.ReadLine().Split(';');
+                List<BinaryOption> temp = new List<BinaryOption>();
+                for (int i = 0; i < line.Length - 1; i++)
+                {
+                    BinaryOption b = model.getBinaryOption(line[i]);
+                    temp.Add(b);
+                }
+                double value = Double.Parse(line[line.Length - 1].Replace(',', '.'));
+                var c = new Configuration(temp);
+                c.setMeasuredValue(GlobalState.currentNFP, value);
+                result.Add(c);
+
+            }
+            sr.Close();
+            return result;
         }
     }
 }
