@@ -394,7 +394,7 @@ namespace CommandLine
                         // We have to reuse the list of models because of NotifyCollectionChangedEventHandlers that might be attached to the list of models.  
                         exp.models.Clear();
                         var mod = exp.models;
-                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsLearning);
+                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
                         exp.models = mod;
 
                         exp.metaModel = infMod;
