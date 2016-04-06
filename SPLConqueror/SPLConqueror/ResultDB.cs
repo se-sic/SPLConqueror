@@ -81,13 +81,16 @@ namespace SPLConqueror_Core
 
             foreach (BinaryOption opt in GlobalState.varModel.BinaryOptions)
             {
-                BinaryOption.BinaryValue val;
-                config.BinaryOptions.TryGetValue(opt, out val);
+                if (opt != GlobalState.varModel.Root)
+                {
+                    BinaryOption.BinaryValue val;
+                    config.BinaryOptions.TryGetValue(opt, out val);
 
-                if (val == BinaryOption.BinaryValue.Selected)
-                    vector += "1";
-                else
-                    vector += "0";
+                    if (val == BinaryOption.BinaryValue.Selected)
+                        vector += "1";
+                    else
+                        vector += "0";
+                }
             }
 
             return vector;
