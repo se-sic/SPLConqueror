@@ -81,13 +81,16 @@ namespace SPLConqueror_Core
 
             foreach (BinaryOption opt in GlobalState.varModel.BinaryOptions)
             {
-                BinaryOption.BinaryValue val;
-                config.BinaryOptions.TryGetValue(opt, out val);
+                if (opt != GlobalState.varModel.Root)
+                {
+                    BinaryOption.BinaryValue val;
+                    config.BinaryOptions.TryGetValue(opt, out val);
 
-                if (val == BinaryOption.BinaryValue.Selected)
-                    vector += "1";
-                else
-                    vector += "0";
+                    if (val == BinaryOption.BinaryValue.Selected)
+                        vector += "1";
+                    else
+                        vector += "0";
+                }
             }
 
             return vector;
@@ -116,7 +119,8 @@ namespace SPLConqueror_Core
 
                     for (int i = 0; i < amountOfParts && !found; i++)
                     {
-                        currentElems = elems.GetRange(i * amountOfElemsInParts, amountOfElemsInParts);
+                        int rest = elems.Count - i * amountOfElemsInParts;
+                        currentElems = elems.GetRange(i * amountOfElemsInParts, rest >= amountOfElemsInParts ? amountOfElemsInParts : rest);
 
                         if (currentElems.Contains(val))
                         {
