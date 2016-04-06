@@ -80,7 +80,8 @@ namespace SPLConqueror_Core
         public VariabilityModel(String name)
         {
             this.name = name;
-            root = new BinaryOption(this, "root");
+            if (root == null)
+                root = new BinaryOption(this, "root");
             this.BinaryOptions.Add(root);
         }
 

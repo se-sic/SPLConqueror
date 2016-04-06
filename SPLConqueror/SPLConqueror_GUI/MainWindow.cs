@@ -379,10 +379,7 @@ namespace SPLConqueror_GUI
             originalFunction = modelLoaded ? new InfluenceFunction(optExpression, model) : new InfluenceFunction(optExpression);
             currentModel = originalFunction.getVariabilityModel();
 
-            adjustedExpressionTree = new string[originalFunction.getExpressionTree().Length];
-
-            for (int i = 0; i < adjustedExpressionTree.Length; i++)
-                adjustedExpressionTree[i] = string.Copy(originalFunction.getExpressionTree()[i]);
+            adjustedExpressionTree = originalFunction.getExpressionTree();
 
             calculateOccurances();
 
@@ -1921,8 +1918,7 @@ namespace SPLConqueror_GUI
                         if (splitComponent[i] == option)
                         {
                             componentAdded = true;
-
-                            // TODO: Testen
+                            
                             if (generalExpression.Count() == 0)
                                 generalExpression += "0";
 
@@ -2054,11 +2050,8 @@ namespace SPLConqueror_GUI
         /// </summary>
         private void updateAdjustedFunction()
         {
-            string[] expressionParts = new string[originalFunction.getExpressionTree().Length];
-
-            for (int i = 0; i < expressionParts.Length; i++)
-                expressionParts[i] = String.Copy(originalFunction.getExpressionTree()[i]);
-
+            string[] expressionParts = originalFunction.getExpressionTree();
+            
             // Adjusting variables
             if (filterVariablesCheckbox.Checked || filterRegexCheckBox.Checked)
                 expressionParts = filterVariables(expressionParts);
@@ -3496,7 +3489,6 @@ namespace SPLConqueror_GUI
                         else if (varPos == 0)
                         {
                             if (parts[1] == "/")
-                                // TODO: Fragen, ob so passt
                                 parts[0] = "1.0";
                             else
                             {
