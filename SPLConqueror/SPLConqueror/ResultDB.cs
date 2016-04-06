@@ -117,7 +117,8 @@ namespace SPLConqueror_Core
 
                     for (int i = 0; i < amountOfParts && !found; i++)
                     {
-                        currentElems = elems.GetRange(i * amountOfElemsInParts, amountOfElemsInParts);
+                        int rest = elems.Count - i * amountOfElemsInParts;
+                        currentElems = elems.GetRange(i * amountOfElemsInParts, rest >= amountOfElemsInParts ? amountOfElemsInParts : rest);
 
                         if (currentElems.Contains(val))
                         {
