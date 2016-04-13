@@ -309,7 +309,7 @@ namespace MachineLearning.Learning.Regression
                 foreach (Feature candidate in errorOfFeature.Keys)
                 {
                     var candidateError = errorOfFeature[candidate];
-                    var candidateScore = previousRound.learningError_relative - candidateError;
+                    var candidateScore = previousRound.validationError_relative - candidateError;
                     if (candidateScore > 0)
                     {
                         if (MLsettings.candidateSizePenalty)
@@ -772,28 +772,35 @@ namespace MachineLearning.Learning.Regression
                 return current;
             bool abort = false;
             List<Feature> featureSet = copyCombination(current.FeatureSet);
+            double previousReducedModelValidationError = current.validationError_relative;
             while (!abort)
             {
-                double roundError = Double.MaxValue;
-                Feature toRemove = null;
-                foreach (Feature toDelete in featureSet)
+                double previousRelativeValidationError = Double.MaxValue;
+                Feature worstCandidate = null;
+                foreach (Feature delitionCandidate in featureSet)
                 {
-                    List<Feature> tempSet = copyCombination(featureSet);
-                    tempSet.Remove(toDelete);
-                    double relativeError = 0;
-                    double error = computeModelError(tempSet, out relativeError);
-                    if (error - this.MLsettings.backwardErrorDelta < current.validationError && error < roundError)
+                    List<Feature> reducedFeatureSet = copyCombination(featureSet);
+                    reducedFeatureSet.Remove(delitionCandidate);
+                    double relativeValidationError = 0;
+                    computeModelError(reducedFeatureSet, out relativeValidationError);
+                    if ((relativeValidationError <= previousRelativeValidationError) 
+                        && (relativeValidationError - previousReducedModelValidationError < this.MLsettings.minImprovementPerRound))
                     {
-                        roundError = error;
-                        toRemove = toDelete;
+                        previousRelativeValidationError = relativeValidationError;
+                        worstCandidate = delitionCandidate;
                     }
                 }
-                if (toRemove != null)
-                    featureSet.Remove(toRemove);
-                if (featureSet.Count <= 2)
+                if (worstCandidate != null)
+                {
+                    featureSet.Remove(worstCandidate);
+                    previousReducedModelValidationError = previousRelativeValidationError;
+                } 
+                else {
                     abort = true;
+                }
             }
             current.FeatureSet = featureSet;
+            current.validationError_relative = previousReducedModelValidationError;
             return current;
         }
 
