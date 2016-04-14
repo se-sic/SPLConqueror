@@ -31,6 +31,7 @@ namespace VariabilitModel_GUI
             this.saveModelToolStripMenuItem.Enabled = false;
             this.saveModelAsToolStripMenuItem.Enabled = false;
             this.editToolStripMenuItem.Enabled = false;
+            this.addAlternativeGroupToolStripMenuItem.Enabled = false;
         }
 
         protected void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -109,6 +110,7 @@ namespace VariabilitModel_GUI
             this.saveModelToolStripMenuItem.Enabled = true;
             this.saveModelAsToolStripMenuItem.Enabled = true;
             this.editToolStripMenuItem.Enabled = true;
+            this.addAlternativeGroupToolStripMenuItem.Enabled = true;
             this.Text = TITLE + ": " + result.Item2;
 
             currentFilePath = "";
@@ -189,6 +191,7 @@ namespace VariabilitModel_GUI
                 this.saveModelToolStripMenuItem.Enabled = true;
                 this.saveModelAsToolStripMenuItem.Enabled = true;
                 this.editToolStripMenuItem.Enabled = true;
+                this.addAlternativeGroupToolStripMenuItem.Enabled = true;
 
                 currentFilePath = fi.FullName;
                 dataSaved = true;
@@ -266,6 +269,23 @@ namespace VariabilitModel_GUI
         }
 
         /// <summary>
+        /// Invokes if the 'Edit -> Edit Alternative Groups'-option in the menu strip was
+        /// clicked.
+        /// 
+        /// This will open the corresponding dialog for editing the alternative groups of the
+        /// current variability modl.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">EventArgs</param>
+        private void editAlternativeGroupsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AlternativeGroupDialog form = new AlternativeGroupDialog(null);
+            form.Show();
+
+            dataSaved = false;
+        }
+
+        /// <summary>
         /// Invokes if the '?'-option in the menu strip was clicked.
         /// 
         /// This will open a dialog with some information about this application.
@@ -329,7 +349,7 @@ namespace VariabilitModel_GUI
         /// <summary>
         /// Invokes if the 'Remove Feature'-option in the context menu strip was clicked.
         /// 
-        /// This will open a dialog to get sure if the user really wants to remove the
+        /// This will open a dialog to get assured if the user really wants to remove the
         /// feature at the position where the context menu strip was placed. All children
         /// of this feature will be deleted too.
         /// </summary>
@@ -350,6 +370,25 @@ namespace VariabilitModel_GUI
 
                 InitTreeView();
             }
+        }
+
+        /// <summary>
+        /// invokes if the 'Add Alternative Group'-option in the context menu strip was clicked.
+        /// 
+        /// This will open a dialog to edit the alternative groupd of the current
+        /// variability model.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">EventArgs</param>
+        private void addAlternativeGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
+            ConfigurationOption selected = GlobalState.varModel.getOption(tn.Text);
+
+            AlternativeGroupDialog form = new AlternativeGroupDialog(selected);
+            form.Show();
+
+            dataSaved = false;
         }
 
         /// <summary>
