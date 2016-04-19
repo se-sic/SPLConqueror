@@ -31,6 +31,15 @@ namespace SPLConqueror_Core
             set { defaultValue = value; }
         }
 
+        private double[] values = null;
+
+
+        public double[] Values
+        {
+            get { return values; }
+            set { values = value; }
+        }
+
         private InfluenceFunction stepFunction = null;
 
         /// <summary>
@@ -60,9 +69,24 @@ namespace SPLConqueror_Core
         /// <returns>The next valid value within the value range of that option</returns>
         public double getNextValue(double value)
         {
-            Dictionary<NumericOption, double> t = new Dictionary<NumericOption, double>();
-            t.Add(this, value);
-            return Math.Round(stepFunction.eval(t),3);
+            if (stepFunction != null)
+            {
+                Dictionary<NumericOption, double> t = new Dictionary<NumericOption, double>();
+                t.Add(this, value);
+                return Math.Round(stepFunction.eval(t), 3);
+            }
+            else
+            {
+                double nextGreaterValue = -1;
+                for (int i = 0; i < values.Count(); i++)
+                {
+                    if(values[i] > value && (Math.Abs(value-values[i]) < Math.Abs(nextGreaterValue - values[i])))
+                    {
+                        nextGreaterValue = values[i];
+                    }
+                }
+                return nextGreaterValue;
+            }
         }
 
         /// <summary>
@@ -73,6 +97,15 @@ namespace SPLConqueror_Core
         /// <returns>The step within the value range</returns>
         public int getStep(double parameter)
         {
+            if (stepFunction == null)
+            {
+                for (int i = 0; i < values.Count(); i++)
+                {
+                    if (values[i].Equals(parameter))
+                        return i;
+                }
+            }
+
             double curr = this.min_value;
             int count = 0;
             while (curr < parameter)
@@ -85,6 +118,10 @@ namespace SPLConqueror_Core
 
         public int getStepFast(double parameter)
         {
+            if (stepFunction == null)
+                return getStep(parameter);
+
+
             double stepDistance = Math.Abs(this.min_value - this.getNextValue(this.min_value));
             double steps = (parameter - this.min_value) / stepDistance;
             return (int)Math.Round(steps,0);
@@ -99,6 +136,15 @@ namespace SPLConqueror_Core
         {
             double value = this.Min_value;
 
+            if (stepFunction == null)
+            {
+                // if there are less values defined than the number of steps 
+                if (step > values.Count())
+                    return value;
+
+                return values[step];
+            }
+            
             for (int i = 0; i < step; i++)
             {
                 value = this.getNextValue(value);
@@ -106,13 +152,15 @@ namespace SPLConqueror_Core
             return value;
         }
 
- //       private List<double> allValues = null;
-
-
         private long numberOfSteps = -1;
 
         public long getNumberOfSteps()
         {
+            if (stepFunction == null)
+            {
+                return values.Count();
+            }
+
             if (numberOfSteps == -1)
             {
                 numberOfSteps = 0;
@@ -147,10 +195,29 @@ namespace SPLConqueror_Core
             maxNode.InnerText = this.max_value.ToString();
             node.AppendChild(maxNode);
 
-            //StepFunction
-            XmlNode stepNode = doc.CreateNode(XmlNodeType.Element, "stepFunction", "");
-            stepNode.InnerText = this.stepFunction.ToString();
-            node.AppendChild(stepNode);
+            if (this.stepFunction != null)
+            {
+                //StepFunction
+                XmlNode stepNode = doc.CreateNode(XmlNodeType.Element, "stepFunction", "");
+                stepNode.InnerText = this.stepFunction.ToString();
+                node.AppendChild(stepNode);
+            }
+
+            if (values != null)
+            {   
+                //Values
+                XmlNode valuesNode = doc.CreateNode(XmlNodeType.Element, "values", "");
+                String valuesAsString = "";
+                for (int i = 0; i < values.Count(); i++)
+                {
+                    valuesAsString += values[i] + ";";
+                }
+                // remove last ;
+                valuesAsString = valuesAsString.Substring(0, valuesAsString.Count() - 2);
+
+                valuesNode.InnerText = valuesAsString;
+                node.AppendChild(valuesNode);
+            }
 
             //DefaultValue
             XmlNode defNode = doc.CreateNode(XmlNodeType.Element, "defaultValue", "");
@@ -193,6 +260,15 @@ namespace SPLConqueror_Core
                     case "stepFunction":
                         this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',','.'),this);
                         break;
+                    case "values":
+                        String[] valueArray = xmlInfo.InnerText.Replace(',', '.').Split(';');
+                        double[] values_As_Double = new double[valueArray.Count()];
+                        for(int i = 0; i < valueArray.Count(); i++){
+                            values_As_Double[i] = Convert.ToDouble(valueArray[i]);
+                        }
+                        this.values = values_As_Double;
+                        break;
+
                 }
             }
         }
@@ -204,6 +280,19 @@ namespace SPLConqueror_Core
         /// <returns>The valid value with the smallest distance to the input value.</returns>
         public double nearestValidValue(double inputValue)
         {
+
+            if (stepFunction == null)
+            {
+                double nearestValue = values[0];
+                for (int i = 1; i < values.Count(); i++)
+                {
+                    if (Math.Abs(values[i] - inputValue) < Math.Abs(nearestValue - inputValue))
+                        nearestValue = values[i];
+                }
+                return nearestValue;
+            }
+
+
             ////TODO improve performance with Dictionary as described in Wunderlist TODO
             double lowerValue = 0;
             double upperValue = 0;
@@ -227,7 +316,8 @@ namespace SPLConqueror_Core
 
         public double getCenterValue()
         {
-            
+            if (stepFunction == null)
+                return values[(int)values.Count() / 2];
            // return getAllValues()[(int)getAllValues().Count / 2];
             return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
         }
@@ -241,6 +331,10 @@ namespace SPLConqueror_Core
         /// <returns>A list containing all values of the numeric options</returns>
         public List<double> getAllValues()
         {
+            if (stepFunction == null)
+                return values.ToList();
+
+
             if (allValues == null)
             {
                 allValues = new List<double>();
@@ -260,12 +354,17 @@ namespace SPLConqueror_Core
         public double getRandomValue()
         {
             Random r = new Random();
+
+            if (stepFunction == null)
+                return values[r.Next(values.Count())];     
             return getValueForStep(r.Next((int)this.numberOfSteps));
         }
 
         public double getRandomValue(int seed)
         {
             Random r = new Random(seed);
+            if (stepFunction == null)
+                return values[r.Next(values.Count())];     
             return getValueForStep(r.Next((int)this.numberOfSteps));
         }
     }
