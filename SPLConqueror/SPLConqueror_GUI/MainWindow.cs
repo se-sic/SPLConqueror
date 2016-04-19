@@ -32,7 +32,7 @@ namespace SPLConqueror_GUI
         private const string COMBOBOX_RELATIVE_DIFFERENCE_OPTION = "Relative Difference";
         private const string CONSTANT_INFORMATION = "What is the abstract influence of each variable?";
         private const string CORRESPONDING_VALUES_LABEL = "Corresponding values";
-        private const string DLL_LOCATION = "\\dll\\Microsoft.Solver.Foundation.dll";
+        private const string DLL_LOCATION = Path.DirectorySeparatorChar + "dll" + Path.DirectorySeparatorChar + "Microsoft.Solver.Foundation.dll";
         private const string ERROR_EXP_MODEL_INCOMPATIBLE = "The read expression does not work with the loaded variability model!";
         private const string ERROR_INVALID_MODEL = "The entered variability model is not valid.";
         private const string ERROR_INVALID_EXP = "The read expression is in an invalid form.";
