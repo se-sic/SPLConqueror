@@ -67,6 +67,13 @@ namespace SPLConqueror_Core
 
         }
 
+        // The default symbols for multiple measurements of the same configuration and nfp.
+        private static char decimalDelimiter = '.';
+        private static char separator = ',';
+
+        private const string decimalDelimiterTag = "decimalDelimiter";
+        private const string separatorTag = "separator";
+
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
         /// </summary>
@@ -78,6 +85,14 @@ namespace SPLConqueror_Core
 
 
             XmlElement currentElemt = dat.DocumentElement;
+
+            // Retrieve the decimal delimiter and the separator sign if included
+            if (currentElemt.HasAttribute(decimalDelimiterTag) && currentElemt.HasAttribute(separatorTag))
+            {
+                // I assume that the decimal delimiter as well as the separator are only one symbol
+                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
+                ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
+            }
 
             HashSet<Configuration> configurations = new HashSet<Configuration>();
 
@@ -161,7 +176,7 @@ namespace SPLConqueror_Core
                             {
                                 //if (property.Name != "run-real")
                                 //    continue;
-                                String[] m = childNode.InnerText.ToString().Split(',');
+                                String[] m = childNode.InnerText.ToString().Split(separator);
                                 double val1 = 0;
                                 if (!Double.TryParse(m[0], out val1))
                                     break;
@@ -209,7 +224,7 @@ namespace SPLConqueror_Core
                                     measuredValue = val1;
                             }
                             else
-                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
+                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(decimalDelimiter, '.'));
 
                             // Save the largest measured value.
                             double currentMaxMeasuredValue;
