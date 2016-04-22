@@ -92,6 +92,15 @@ namespace SPLConqueror_Core
                 // I assume that the decimal delimiter as well as the separator are only one symbol
                 ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
                 ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
+
+                if (currentElemt.GetAttribute(decimalDelimiterTag).Length > 1 || currentElemt.GetAttribute(separatorTag).Length > 1)
+                {
+                    GlobalState.logError.log("The decimal delimiter and the separator must consist of only one symbol.");
+                }
+                if (ConfigurationReader.decimalDelimiter == ConfigurationReader.separator)
+                {
+                    GlobalState.logError.log("The decimal delimiter symbol and the separator symbol must be different.");
+                }
             }
 
             HashSet<Configuration> configurations = new HashSet<Configuration>();
@@ -186,7 +195,7 @@ namespace SPLConqueror_Core
                                     double avg = 0;
                                     foreach (var i in m)
                                     {
-                                        double d = Convert.ToDouble(i);
+                                        double d = Convert.ToDouble(i.Replace(decimalDelimiter, '.'));
                                         if (d != -1)
                                         {
                                             values.Add(d);
