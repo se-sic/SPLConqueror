@@ -159,11 +159,20 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void saveModelAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            SaveFileDialog fbd = new SaveFileDialog();
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                String folder = fbd.SelectedPath;
-                GlobalState.varModel.Path = folder + Path.DirectorySeparatorChar + GlobalState.varModel.Name + ".xml";
+                String path = fbd.FileName;
+                String modelName = Path.GetFileNameWithoutExtension(path);
+
+                if (!path.EndsWith(".xml"))
+                    path += ".xml";
+
+                if (modelName.EndsWith(".xml"))
+                    modelName = modelName.Remove(modelName.Length - 4);
+
+                GlobalState.varModel.Name = modelName;
+                GlobalState.varModel.Path = path;
                 GlobalState.varModel.saveXML();
 
                 dataSaved = true;
