@@ -91,7 +91,9 @@ namespace SPLConqueror_Core
         }
 
 
-        public Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
+        public Feature(String expression, VariabilityModel vm) : base(expression, vm) {
+            hashCode = initHashCode();
+        }
 
         public override string ToString()
         {
