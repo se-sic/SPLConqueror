@@ -306,6 +306,8 @@ namespace MachineLearning.Learning.Regression
                 Task.WaitAll(tasks.ToArray());
 
             // Evaluation of the candidates
+            List<Feature> sortedFeatures = errorOfFeature.Keys.ToList();
+            sortedFeatures.Sort(sortedFeatures.First());
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
                 foreach (Feature candidate in errorOfFeature.Keys)
