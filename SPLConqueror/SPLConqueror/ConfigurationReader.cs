@@ -82,8 +82,6 @@ namespace SPLConqueror_Core
         /// <returns>Returns a list of configurations that were defined in the XML document. Can be an empty list.</returns>
         public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
-
-
             XmlElement currentElemt = dat.DocumentElement;
 
             // Retrieve the decimal delimiter and the separator sign if included
@@ -100,6 +98,22 @@ namespace SPLConqueror_Core
                 if (ConfigurationReader.decimalDelimiter == ConfigurationReader.separator)
                 {
                     GlobalState.logError.log("The decimal delimiter symbol and the separator symbol must be different.");
+                }
+            }
+            else if (currentElemt.HasAttribute(decimalDelimiterTag))
+            {
+                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
+                if (currentElemt.GetAttribute(decimalDelimiterTag).Length > 1)
+                {
+                    GlobalState.logError.log("The decimal delimiter must consist of only one symbol.");
+                }
+            }
+            else if (currentElemt.HasAttribute(separatorTag))
+            {
+                ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
+                if (currentElemt.GetAttribute(separatorTag).Length > 1)
+                {
+                    GlobalState.logError.log("The separator symbol must be different.");
                 }
             }
 
