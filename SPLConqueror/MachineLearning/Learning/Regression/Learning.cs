@@ -10,6 +10,7 @@ using System.Collections;
 using System.Diagnostics;
 using MachineLearning.Sampling;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -181,10 +182,16 @@ namespace MachineLearning.Learning.Regression
 
         private void createThreadPool(int coreCount)
         {
+            var customCulture = Thread.CurrentThread.CurrentCulture;
             for (int i = 0; i < coreCount; i++)
             {
-                Task.Factory.StartNew(Consume);
-            }
+                Task t = Task.Factory.StartNew(() =>
+                {
+                    Thread.CurrentThread.CurrentCulture = customCulture;
+                    this.Consume();
+                }
+                );
+             }
         }
 
         public void Dispose() { _taskQ.CompleteAdding(); }
