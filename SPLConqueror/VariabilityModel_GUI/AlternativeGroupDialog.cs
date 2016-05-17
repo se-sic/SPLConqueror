@@ -12,7 +12,7 @@ namespace VariabilitModel_GUI
 {
     public partial class AlternativeGroupDialog : Form
     {
-        private IDictionary<ConfigurationOption, string> currAltGroups = new Dictionary<ConfigurationOption, string>();
+        private List<ConfigurationOption> currAltGroups = new List<ConfigurationOption>();
 
         /// <summary>
         ///  Constructor of this class.
@@ -34,7 +34,7 @@ namespace VariabilitModel_GUI
                 else
                     selectedOptionComboBox.SelectedIndex = 0;
 
-                selectedOptionAddButton.Enabled = !currAltGroups.ContainsKey(
+                selectedOptionAddButton.Enabled = !currAltGroups.Contains(
                     (ConfigurationOption) selectedOptionComboBox.SelectedItem);
             } else
                 selectedOptionAddButton.Enabled = false;
@@ -60,9 +60,9 @@ namespace VariabilitModel_GUI
             {
                 ConfigurationOption opt = getAltGroup(c);
 
-                if (opt != null && !currAltGroups.ContainsKey(opt))
+                if (opt != null && !currAltGroups.Contains(opt))
                 {
-                    currAltGroups.Add(opt, c);
+                    currAltGroups.Add(opt);
                     currAltGroupsListBox.Items.Add(opt);
                 }
             }
@@ -79,7 +79,7 @@ namespace VariabilitModel_GUI
         /// <param name="e">EventArgs</param>
         private void selectedOptionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedOptionAddButton.Enabled = !currAltGroups.ContainsKey(
+            selectedOptionAddButton.Enabled = !currAltGroups.Contains(
                 (ConfigurationOption)selectedOptionComboBox.SelectedItem);
         }
 
@@ -95,21 +95,25 @@ namespace VariabilitModel_GUI
         private void selectedOptionAddButton_Click(object sender, EventArgs e)
         {
             ConfigurationOption selectedOption = (ConfigurationOption)selectedOptionComboBox.SelectedItem;
-            string altConstraint = createAltConstraint(selectedOption);
             List<ConfigurationOption> opts = selectedOption.Children;
 
-            GlobalState.varModel.BooleanConstraints.Add(altConstraint);
-            
-            foreach (ConfigurationOption o1 in opts)
+            foreach (ConfigurationOption thisOpt in opts)
             {
-                List<ConfigurationOption> list = new List<ConfigurationOption>();
-                list.AddRange(opts);
-                list.Remove(o1);
+                foreach (ConfigurationOption otherOpt in opts)
+                {
+                    if (!thisOpt.Equals(otherOpt))
+                    {
+                        List<ConfigurationOption> newContstraint = new List<ConfigurationOption>() { otherOpt };
+                        if (!ConfigurationOption.hasConstraint(thisOpt.Excluded_Options, newContstraint))
+                        {
+                            thisOpt.Excluded_Options.Add(new List<ConfigurationOption>() { otherOpt });
+                        }
 
-                o1.Excluded_Options.Add(list);
+                    }
+                }                
             }
 
-            currAltGroups.Add(selectedOption, altConstraint);
+            currAltGroups.Add(selectedOption);
             currAltGroupsListBox.Items.Add(selectedOption);
             selectedOptionAddButton.Enabled = false;
         }
@@ -128,10 +132,7 @@ namespace VariabilitModel_GUI
             if (currAltGroupsListBox.SelectedIndex > -1)
             {
                 ConfigurationOption selectedOption = (ConfigurationOption)currAltGroupsListBox.SelectedItem;
-                string altConstraint = currAltGroups[selectedOption];
                 List<ConfigurationOption> opts = selectedOption.Children;
-
-                GlobalState.varModel.BooleanConstraints.Remove(altConstraint);
 
                 foreach (ConfigurationOption o1 in opts)
                 {
@@ -150,30 +151,6 @@ namespace VariabilitModel_GUI
                     selectedOptionAddButton.Enabled = true;
             }
 
-        }
-
-        /// <summary>
-        /// Creates a constraint that depicts the specified option as alternative group.
-        /// </summary>
-        /// <param name="opt">Specified option for alternative group</param>
-        /// <returns>Constraint</returns>
-        private string createAltConstraint(ConfigurationOption opt)
-        {
-            string constraint = opt.Name + " => ";
-
-            for (int i = 0; i < opt.Children.Count; i++)
-            {
-                constraint += opt.Children[i].Name + " ";
-
-                foreach (ConfigurationOption o in opt.Children)
-                    if (opt.Children[i] != o)
-                        constraint += "& !" + o.Name + " ";
-
-                if (i < opt.Children.Count - 1)
-                    constraint += "| ";
-            }
-
-            return constraint.TrimEnd();
         }
 
         /// <summary>

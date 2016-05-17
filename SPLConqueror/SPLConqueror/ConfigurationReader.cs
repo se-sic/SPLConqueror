@@ -67,6 +67,13 @@ namespace SPLConqueror_Core
 
         }
 
+        // The default symbols for multiple measurements of the same configuration and nfp.
+        private static char decimalDelimiter = '.';
+        private static char separator = ',';
+
+        private const string decimalDelimiterTag = "decimalDelimiter";
+        private const string separatorTag = "separator";
+
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
         /// </summary>
@@ -75,9 +82,40 @@ namespace SPLConqueror_Core
         /// <returns>Returns a list of configurations that were defined in the XML document. Can be an empty list.</returns>
         public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
-
-
             XmlElement currentElemt = dat.DocumentElement;
+
+            // Retrieve the decimal delimiter and the separator sign if included
+            if (currentElemt.HasAttribute(decimalDelimiterTag) && currentElemt.HasAttribute(separatorTag))
+            {
+                // I assume that the decimal delimiter as well as the separator are only one symbol
+                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
+                ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
+
+                if (currentElemt.GetAttribute(decimalDelimiterTag).Length > 1 || currentElemt.GetAttribute(separatorTag).Length > 1)
+                {
+                    GlobalState.logError.log("The decimal delimiter and the separator must consist of only one symbol.");
+                }
+                if (ConfigurationReader.decimalDelimiter == ConfigurationReader.separator)
+                {
+                    GlobalState.logError.log("The decimal delimiter symbol and the separator symbol must be different.");
+                }
+            }
+            else if (currentElemt.HasAttribute(decimalDelimiterTag))
+            {
+                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
+                if (currentElemt.GetAttribute(decimalDelimiterTag).Length > 1)
+                {
+                    GlobalState.logError.log("The decimal delimiter must consist of only one symbol.");
+                }
+            }
+            else if (currentElemt.HasAttribute(separatorTag))
+            {
+                ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
+                if (currentElemt.GetAttribute(separatorTag).Length > 1)
+                {
+                    GlobalState.logError.log("The separator symbol must be different.");
+                }
+            }
 
             HashSet<Configuration> configurations = new HashSet<Configuration>();
 
@@ -161,7 +199,7 @@ namespace SPLConqueror_Core
                             {
                                 //if (property.Name != "run-real")
                                 //    continue;
-                                String[] m = childNode.InnerText.ToString().Split(',');
+                                String[] m = childNode.InnerText.ToString().Split(separator);
                                 double val1 = 0;
                                 if (!Double.TryParse(m[0], out val1))
                                     break;
@@ -171,7 +209,7 @@ namespace SPLConqueror_Core
                                     double avg = 0;
                                     foreach (var i in m)
                                     {
-                                        double d = Convert.ToDouble(i);
+                                        double d = Convert.ToDouble(i.Replace(decimalDelimiter, '.'));
                                         if (d != -1)
                                         {
                                             values.Add(d);
@@ -209,7 +247,7 @@ namespace SPLConqueror_Core
                                     measuredValue = val1;
                             }
                             else
-                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(',', '.'));
+                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(decimalDelimiter, '.'));
 
                             // Save the largest measured value.
                             double currentMaxMeasuredValue;

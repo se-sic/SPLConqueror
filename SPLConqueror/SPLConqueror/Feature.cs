@@ -91,7 +91,9 @@ namespace SPLConqueror_Core
         }
 
 
-        public Feature(String expression, VariabilityModel vm) : base(expression, vm) { }
+        public Feature(String expression, VariabilityModel vm) : base(expression, vm) {
+            hashCode = initHashCode();
+        }
 
         public override string ToString()
         {
@@ -100,19 +102,16 @@ namespace SPLConqueror_Core
 
         private int initHashCode()
         {
-            string[] thisFuntion = this.wellFormedExpression.Split('*');
-            Array.Sort<string>(thisFuntion);
-
-            StringBuilder sb = new StringBuilder();
-            for(int i = 0; i <thisFuntion.Length; i++)
+            string[] thisFunction = this.wellFormedExpression.Split('*').Select(element => element.Trim()).ToArray();
+            Array.Sort<string>(thisFunction);
+            var sb = new StringBuilder();
+            string separator = "";
+            foreach(string element in thisFunction)
             {
-                sb.Append(thisFuntion[i]);
-                if (i < thisFuntion.Length - 1)
-                    sb.Append("#");
+                sb.Append(separator).Append(element);
+                separator = "#";
             }
-
             name = sb.ToString();
-
             return name.GetHashCode();
         }
 
