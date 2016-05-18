@@ -391,9 +391,9 @@ namespace VariabilitModel_GUI
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
-        private void excludesCheckedListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void excludesCheckedListBox_SelectedIndexChanged(object sender, ItemCheckEventArgs e)
         {
-            excludesAddButton.Enabled = excludesCheckedListBox.CheckedIndices.Count > 0;
+            excludesAddButton.Enabled = excludesCheckedListBox.CheckedItems.Count != 1 || e.NewValue != CheckState.Unchecked;
         }
 
         /// <summary>
