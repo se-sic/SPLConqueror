@@ -227,7 +227,8 @@
             this.excludesCheckedListBox.Size = new System.Drawing.Size(267, 112);
             this.excludesCheckedListBox.Sorted = true;
             this.excludesCheckedListBox.TabIndex = 64;
-            this.excludesCheckedListBox.SelectedIndexChanged += new System.EventHandler(this.excludesCheckedListBox_SelectedIndexChanged);
+            this.excludesCheckedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.excludesCheckedListBox_SelectedIndexChanged);
+            //this.excludesCheckedListBox.SelectedIndexChanged += new System.EventHandler(this.excludesCheckedListBox_SelectedIndexChanged);
             // 
             // generalGroupBox
             // 

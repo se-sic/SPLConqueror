@@ -20,6 +20,7 @@ namespace VariabilitModel_GUI
         private const string REMOVE_WARNING = "Are you sure about removing this feature?\n"
             + "All children features will be deleted as well.";
 
+        private TreeNode currentNode = null;
         private string currentFilePath = "";
         private bool dataSaved = true;
 
@@ -28,6 +29,7 @@ namespace VariabilitModel_GUI
             InitializeComponent();
 
             this.Text = TITLE;
+            this.currentNode = null;
             this.saveModelToolStripMenuItem.Enabled = false;
             this.saveModelAsToolStripMenuItem.Enabled = false;
             this.editToolStripMenuItem.Enabled = false;
@@ -38,8 +40,8 @@ namespace VariabilitModel_GUI
         {
             if (e.Button == MouseButtons.Right)
             {
-                TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
-                removeFeatureToolStripMenuItem.Enabled = tn != null && tn.Text != "root";
+                this.currentNode = e.Node;
+                removeFeatureToolStripMenuItem.Enabled = e.Node != null && e.Node.Text != "root";
 
                 contextMenuStrip.Show(treeView, e.Location);
             }
@@ -316,8 +318,7 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void addFeatureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
-            String featureName = tn == null ? null : tn.Text;
+            String featureName = this.currentNode == null ? null : this.currentNode.Text;
 
             NewFeatureDialog dlg = new NewFeatureDialog(featureName);
             dlg.ShowDialog();
@@ -337,15 +338,14 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void editFeatureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
             ConfigurationOption selected;
 
-            if (tn == null)
+            if (this.currentNode == null)
                 selected = null;
-            else if (tn.Text == "root")
+            else if (this.currentNode.Text == "root")
                 selected = GlobalState.varModel.Root;
             else
-                selected = GlobalState.varModel.getOption(tn.Text);
+                selected = GlobalState.varModel.getOption(this.currentNode.Text);
 
             EditOptionDialog dlg = new EditOptionDialog(this, selected);
             dlg.ShowDialog();
@@ -370,8 +370,7 @@ namespace VariabilitModel_GUI
 
             if (result == DialogResult.Yes)
             {
-                TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
-                ConfigurationOption selected = GlobalState.varModel.getOption(tn.Text);
+                ConfigurationOption selected = GlobalState.varModel.getOption(this.currentNode.Text);
 
                 GlobalState.varModel.deleteOption(selected);
 
@@ -391,8 +390,7 @@ namespace VariabilitModel_GUI
         /// <param name="e">EventArgs</param>
         private void addAlternativeGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TreeNode tn = treeView.GetNodeAt(treeView.PointToClient(new Point(contextMenuStrip.Left, contextMenuStrip.Top)));
-            ConfigurationOption selected = GlobalState.varModel.getOption(tn.Text);
+            ConfigurationOption selected = GlobalState.varModel.getOption(this.currentNode.Text);
 
             AlternativeGroupDialog form = new AlternativeGroupDialog(selected);
             form.Show();
