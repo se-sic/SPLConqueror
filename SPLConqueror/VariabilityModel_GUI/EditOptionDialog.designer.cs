@@ -216,7 +216,7 @@
             this.requiresCheckedListBox.Size = new System.Drawing.Size(279, 112);
             this.requiresCheckedListBox.Sorted = true;
             this.requiresCheckedListBox.TabIndex = 65;
-            this.requiresCheckedListBox.SelectedIndexChanged += new System.EventHandler(this.requiresCheckedListBox_SelectedIndexChanged);
+            this.requiresCheckedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.requiresCheckedListBox_ItemCheck);
             // 
             // excludesCheckedListBox
             // 
@@ -227,8 +227,7 @@
             this.excludesCheckedListBox.Size = new System.Drawing.Size(267, 112);
             this.excludesCheckedListBox.Sorted = true;
             this.excludesCheckedListBox.TabIndex = 64;
-            this.excludesCheckedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.excludesCheckedListBox_SelectedIndexChanged);
-            //this.excludesCheckedListBox.SelectedIndexChanged += new System.EventHandler(this.excludesCheckedListBox_SelectedIndexChanged);
+            this.excludesCheckedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.excludesCheckedListBox_ItemCheck);
             // 
             // generalGroupBox
             // 
@@ -289,9 +288,9 @@
             this.parentLabel.AutoSize = true;
             this.parentLabel.Location = new System.Drawing.Point(145, 50);
             this.parentLabel.Name = "parentLabel";
-            this.parentLabel.Size = new System.Drawing.Size(40, 15);
+            this.parentLabel.Size = new System.Drawing.Size(59, 15);
             this.parentLabel.TabIndex = 58;
-            this.parentLabel.Text = "label1";
+            this.parentLabel.Text = "Unknown";
             // 
             // setParentButton
             // 
