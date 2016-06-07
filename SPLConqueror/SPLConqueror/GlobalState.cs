@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace SPLConqueror_Core
 {
@@ -119,17 +120,28 @@ namespace SPLConqueror_Core
             List<Configuration> configsWithValues = new List<Configuration>();
             List<Task<Tuple<Configuration, Configuration>>> taskList = new List<Task<Tuple<Configuration, Configuration>>>();
 
-            foreach (var config in list)
+            foreach (Configuration c in list)
             {
-                if (substitutedConfigs.Keys.Contains(config))
+                if (substitutedConfigs.Keys.Contains(c))
                 {
-                    configsWithValues.Add(substitutedConfigs[config]);
+                    configsWithValues.Add(substitutedConfigs[c]);
                     continue;
                 }
+                var customCulture = Thread.CurrentThread.CurrentCulture;
+                Task<Tuple<Configuration, Configuration>> task = Task.Factory.StartNew( (Object con) =>
+                {
+                    Configuration conf = (Configuration)con;
 
-                var task = Task<Tuple<Configuration, Configuration>>.Factory.StartNew(() => getSimilarConfig(config));
+                    Thread.CurrentThread.CurrentCulture = customCulture;
+                    return getSimilarConfig(conf);
+                }, c ) ;
+
+                //var taskA = Task<Tuple<Configuration, Configuration>>.Factory.StartNew(() => getSimilarConfig(config)); // TDOD
                 taskList.Add(task);
             }
+            Task.WaitAll(taskList.ToArray());
+
+            int found = 0;
 
             while (taskList.Count > 0)
             {
@@ -138,10 +150,16 @@ namespace SPLConqueror_Core
                 Task<Tuple<Configuration, Configuration>> task = taskList[i];
                 Tuple<Configuration, Configuration> result = task.Result;
 
+                found++;
+
                 taskList.Remove(task);
 
-                if (result.Item2 != null)
+               
+
+                if (result.Item2 != null && !substitutedConfigs.ContainsKey(result.Item1))
                 {
+                    
+
                     substitutedConfigs.Add(result.Item1, result.Item2);
                     configsWithValues.Add(result.Item2);
                     // logError.log("Substituted a not found configuration with a similar one.");
