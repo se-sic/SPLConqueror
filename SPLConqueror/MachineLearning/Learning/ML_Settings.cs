@@ -79,7 +79,7 @@ namespace MachineLearning.Learning
 
         public bool learn_ratioFunction = false;
 
-        public bool learn_mirrowedFunction = true;
+        public bool learn_mirrowedFunction = false;
 
         /// <summary>
         /// Defines the number of rounds the learning process have to be performed. 
