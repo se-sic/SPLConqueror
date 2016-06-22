@@ -352,5 +352,18 @@ namespace SPLConqueror_Core
         {
             return this.name.Equals(other.name);
         }
+
+        public static bool hasConstraint(List<List<ConfigurationOption>> list, List<ConfigurationOption> newContstraint)
+        {
+            foreach(List<ConfigurationOption> existingConstraint in list)
+            {
+                if (! (existingConstraint.Count == newContstraint.Count))
+                    continue;
+
+                if ((newContstraint.Union(existingConstraint)).ToList().Count == existingConstraint.Count)
+                    return true;
+            }
+            return false;
+        }
     }
 }

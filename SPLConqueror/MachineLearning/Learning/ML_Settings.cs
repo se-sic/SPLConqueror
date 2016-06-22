@@ -79,7 +79,7 @@ namespace MachineLearning.Learning
 
         public bool learn_ratioFunction = false;
 
-        public bool learn_mirrowedFunction = true;
+        public bool learn_mirrowedFunction = false;
 
         /// <summary>
         /// Defines the number of rounds the learning process have to be performed. 
@@ -138,6 +138,13 @@ namespace MachineLearning.Learning
         /// Defines which mesure is used to select the best candidate and to compute the score of a candidate. See ScoreMeasure enum for the available measures.
         /// </summary>
         public ScoreMeasure scoreMeasure = ScoreMeasure.RELERROR;
+
+        /// <summary>
+        /// If true, the info about the rounds is output not only to the 
+        /// log file at the end of the learning, but also to the stdout
+        /// during the learning after each round completion.
+        /// </summary>
+        public bool outputRoundsToStdout = false;
 
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 

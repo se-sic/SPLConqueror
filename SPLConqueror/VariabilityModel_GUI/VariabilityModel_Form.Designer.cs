@@ -35,6 +35,7 @@
             this.newModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveModelAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,6 +45,8 @@
             this.addFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addAlternativeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editAlternativeGroupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -53,10 +56,10 @@
             this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeView.Location = new System.Drawing.Point(11, 38);
+            this.treeView.Location = new System.Drawing.Point(10, 30);
             this.treeView.Margin = new System.Windows.Forms.Padding(2);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(276, 427);
+            this.treeView.Size = new System.Drawing.Size(600, 800);
             this.treeView.TabIndex = 63;
             this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             // 
@@ -78,6 +81,7 @@
             this.newModelToolStripMenuItem,
             this.loadModelToolStripMenuItem,
             this.saveModelToolStripMenuItem,
+            this.saveModelAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -86,28 +90,35 @@
             // newModelToolStripMenuItem
             // 
             this.newModelToolStripMenuItem.Name = "newModelToolStripMenuItem";
-            this.newModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.newModelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.newModelToolStripMenuItem.Text = "New Model...";
             this.newModelToolStripMenuItem.Click += new System.EventHandler(this.newModelToolStripMenuItem_Click);
             // 
             // loadModelToolStripMenuItem
             // 
             this.loadModelToolStripMenuItem.Name = "loadModelToolStripMenuItem";
-            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.loadModelToolStripMenuItem.Text = "Load Model";
+            this.loadModelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadModelToolStripMenuItem.Text = "Load Model...";
             this.loadModelToolStripMenuItem.Click += new System.EventHandler(this.loadModelToolStripMenuItem_Click);
             // 
             // saveModelToolStripMenuItem
             // 
             this.saveModelToolStripMenuItem.Name = "saveModelToolStripMenuItem";
-            this.saveModelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.saveModelToolStripMenuItem.Text = "Save Model";
+            this.saveModelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveModelToolStripMenuItem.Text = "Save Model...";
             this.saveModelToolStripMenuItem.Click += new System.EventHandler(this.saveModelToolStripMenuItem_Click);
+            // 
+            // saveModelAsToolStripMenuItem
+            // 
+            this.saveModelAsToolStripMenuItem.Name = "saveModelAsToolStripMenuItem";
+            this.saveModelAsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveModelAsToolStripMenuItem.Text = "Save Model As...";
+            this.saveModelAsToolStripMenuItem.Click += new System.EventHandler(this.saveModelAsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -115,7 +126,8 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editOptionsToolStripMenuItem,
-            this.editConstraintsToolStripMenuItem});
+            this.editConstraintsToolStripMenuItem,
+            this.editAlternativeGroupsToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -123,15 +135,15 @@
             // editOptionsToolStripMenuItem
             // 
             this.editOptionsToolStripMenuItem.Name = "editOptionsToolStripMenuItem";
-            this.editOptionsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.editOptionsToolStripMenuItem.Text = "Edit Options";
-            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem1_Click);
+            this.editOptionsToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.editOptionsToolStripMenuItem.Text = "Edit Options...";
+            this.editOptionsToolStripMenuItem.Click += new System.EventHandler(this.editOptionsToolStripMenuItem_Click);
             // 
             // editConstraintsToolStripMenuItem
             // 
             this.editConstraintsToolStripMenuItem.Name = "editConstraintsToolStripMenuItem";
-            this.editConstraintsToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.editConstraintsToolStripMenuItem.Text = "Edit Constraints";
+            this.editConstraintsToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.editConstraintsToolStripMenuItem.Text = "Edit Constraints...";
             this.editConstraintsToolStripMenuItem.Click += new System.EventHandler(this.editConstraintsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -146,36 +158,51 @@
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addFeatureToolStripMenuItem,
             this.editFeatureToolStripMenuItem,
-            this.removeFeatureToolStripMenuItem});
+            this.removeFeatureToolStripMenuItem,
+            this.addAlternativeGroupToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(160, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(193, 114);
             // 
             // addFeatureToolStripMenuItem
             // 
             this.addFeatureToolStripMenuItem.Name = "addFeatureToolStripMenuItem";
-            this.addFeatureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.addFeatureToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.addFeatureToolStripMenuItem.Text = "Add Feature";
             this.addFeatureToolStripMenuItem.Click += new System.EventHandler(this.addFeatureToolStripMenuItem_Click);
             // 
             // editFeatureToolStripMenuItem
             // 
             this.editFeatureToolStripMenuItem.Name = "editFeatureToolStripMenuItem";
-            this.editFeatureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.editFeatureToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.editFeatureToolStripMenuItem.Text = "Edit Feature";
             this.editFeatureToolStripMenuItem.Click += new System.EventHandler(this.editFeatureToolStripMenuItem_Click);
             // 
             // removeFeatureToolStripMenuItem
             // 
             this.removeFeatureToolStripMenuItem.Name = "removeFeatureToolStripMenuItem";
-            this.removeFeatureToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.removeFeatureToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.removeFeatureToolStripMenuItem.Text = "Remove Feature";
             this.removeFeatureToolStripMenuItem.Click += new System.EventHandler(this.removeFeatureToolStripMenuItem_Click);
+            // 
+            // addAlternativeGroupToolStripMenuItem
+            // 
+            this.addAlternativeGroupToolStripMenuItem.Name = "addAlternativeGroupToolStripMenuItem";
+            this.addAlternativeGroupToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.addAlternativeGroupToolStripMenuItem.Text = "Add Alternative Group";
+            this.addAlternativeGroupToolStripMenuItem.Click += new System.EventHandler(this.addAlternativeGroupToolStripMenuItem_Click);
+            // 
+            // editAlternativeGroupsToolStripMenuItem
+            // 
+            this.editAlternativeGroupsToolStripMenuItem.Name = "editAlternativeGroupsToolStripMenuItem";
+            this.editAlternativeGroupsToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.editAlternativeGroupsToolStripMenuItem.Text = "Edit Alternative Groups...";
+            this.editAlternativeGroupsToolStripMenuItem.Click += new System.EventHandler(this.editAlternativeGroupsToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(298, 476);
+            this.ClientSize = new System.Drawing.Size(620, 840);
             this.Controls.Add(this.treeView);
             this.Controls.Add(this.menuStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -207,6 +234,9 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editOptionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editConstraintsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveModelAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editAlternativeGroupsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addAlternativeGroupToolStripMenuItem;
     }
 }
 
