@@ -20,6 +20,7 @@ namespace CommandLine
         public const string COMMAND_TRUEMODEL = "truemodel";
 
         public const string COMMAND_LOG = "log";
+        public const string COMMAND_MEASUREMENTS_TO_CSV = "measurementstocsv";
 
         public const string COMMAND_CLEAR_GLOBAL = "clean-global";
         public const string COMMAND_CLEAR_SAMPLING = "clean-sampling";
@@ -182,6 +183,59 @@ namespace CommandLine
                     GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
 
                     break;
+
+                case COMMAND_MEASUREMENTS_TO_CSV:
+                    FileStream ostrm;
+                    ostrm = new FileStream(task.Trim(), FileMode.OpenOrCreate, FileAccess.Write);
+                    ostrm.SetLength(0); 
+                    StreamWriter writer = new StreamWriter(ostrm);
+                    StringBuilder header = new StringBuilder();
+                    List<NFProperty> propertiesOrder = new List<NFProperty>();
+                    for (int i = 0; i < GlobalState.varModel.optionToIndex.Count; i++)
+                    {
+                        header.Append(GlobalState.varModel.optionToIndex[i].Name + ";");
+                    }
+                    foreach (NFProperty prop in GlobalState.nfProperties.Values)
+                    {
+                        header.Append(prop.Name + ";");
+                        propertiesOrder.Add(prop);
+                    }
+                    header.Append("\n");
+                    StringBuilder configurations = new StringBuilder();
+                    foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                    {
+                        for (int i = 0; i < GlobalState.varModel.optionToIndex.Count; i++)
+                        {
+                            ConfigurationOption opt = GlobalState.varModel.optionToIndex[i];
+                            if (opt.GetType() == typeof(BinaryOption))
+                            {
+                                if (config.BinaryOptions.ContainsKey((BinaryOption)opt) && config.BinaryOptions[(BinaryOption)opt] == BinaryOption.BinaryValue.Selected)
+                                    configurations.Append("1;");
+                                else
+                                    configurations.Append("0;");
+                            }
+                            else
+                            {
+                                configurations.Append(config.NumericOptions[(NumericOption) opt]+";");
+                            }    
+                        }
+                        for (int i = 0; i < propertiesOrder.Count; i++)
+                        {
+                            if (!config.nfpValues.ContainsKey(propertiesOrder[i]))
+                                configurations.Append("0;");
+                            else
+                                configurations.Append(config.nfpValues[propertiesOrder[i]]+";");
+                        }
+                        configurations.Append("\n");
+                    }
+
+                    writer.Write(header);
+                    writer.Write(configurations);
+                    writer.Flush();
+                    writer.Close();
+                    ostrm.Close();
+                    break;
+
                 case COMMAND_SAMPLE_ALLBINARY:
                     {
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
@@ -199,6 +253,7 @@ namespace CommandLine
                     }
                 case COMMAND_ANALYZE_LEARNING:
                     {//TODO: Analyzation is not supported in the case of bagging
+                        GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
                         if (this.mlSettings.bagging)
                         {
