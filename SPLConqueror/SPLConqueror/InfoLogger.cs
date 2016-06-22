@@ -7,7 +7,7 @@ namespace SPLConqueror_Core
 {
     public class InfoLogger : Logger
     {
-
+        readonly object loggerLock = new Object();
         public InfoLogger()
         {
         }
@@ -26,14 +26,16 @@ namespace SPLConqueror_Core
         /// <param name="msg">The message to be printed or logged</param>
         public override void logLine(String msg)
         {
+            lock (loggerLock)
+            {
+                if (!msg.EndsWith(System.Environment.NewLine))
+                    msg += System.Environment.NewLine;
 
-            if (!msg.EndsWith(System.Environment.NewLine))
-                msg += System.Environment.NewLine;
-
-            if (writer != null)
-                writer.Write(msg);
-            else
-                Console.Write(msg);
+                if (writer != null)
+                    writer.Write(msg);
+                else
+                    Console.Write(msg);
+            }
         }
 
         /// <summary>
@@ -42,11 +44,13 @@ namespace SPLConqueror_Core
         /// <param name="msg">The message to be printed or logged</param>
         public override void log(String msg)
         {
-
-            if (writer != null)
-                writer.Write(msg);
-            else
-                Console.Write(msg);
+            lock (loggerLock)
+            {
+                if (writer != null)
+                    writer.Write(msg);
+                else
+                    Console.Write(msg);
+            }
         }
 
     }
