@@ -25,7 +25,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// The property being considered. 
         /// </summary>
-        public static NFProperty currentNFP = null;
+        public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
 
         public static ResultDB evalutionSet = new ResultDB();

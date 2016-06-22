@@ -12,6 +12,7 @@ using CommandLine;
 using System.Reflection;
 using System.Collections.Specialized;
 using MachineLearning.Learning.Regression;
+using System.IO;
 
 namespace PerformancePrediction_GUI
 {
@@ -85,14 +86,15 @@ namespace PerformancePrediction_GUI
             {
                 this.nfpSelection.Items.Add(item);
             }
-            this.nfpSelection.SelectedItem = this.nfpSelection.Items[0];
-            this.nfpSelection.SetItemChecked(0,true);
+            if (nfpSelection.Items.Count == 0)
+                this.nfpSelection.Items.Add(GlobalState.currentNFP);
+            else
+            {
+                this.nfpSelection.SelectedItem = this.nfpSelection.Items[0];
+                this.nfpSelection.SetItemChecked(0, true);
 
-            GlobalState.currentNFP = GlobalState.nfProperties[(string)this.nfpSelection.SelectedItem];
-           
-
-         
-
+                GlobalState.currentNFP = GlobalState.nfProperties[(string)this.nfpSelection.SelectedItem];
+            }
         }
 
         private void readVarModel_Click(object sender, EventArgs e)
@@ -129,7 +131,7 @@ namespace PerformancePrediction_GUI
             cleanButton_Click(null, null);
 
             setMLSettings();
-
+            button1.Enabled = true;
 
             bool ableToStart = createSamplingCommands();
 
@@ -173,6 +175,7 @@ namespace PerformancePrediction_GUI
 
         private void startLearning()
         {
+            
             cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
         }
@@ -258,6 +261,11 @@ namespace PerformancePrediction_GUI
                 binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
             }
+            if (this.binWholePop.Checked)
+            {
+                binarySelected = true;
+                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
+            }
             if (num_BoxBehnken_check.Checked)
             {
                 numSelected = true;
@@ -335,6 +343,33 @@ namespace PerformancePrediction_GUI
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if(perfInfGridView.SelectedRows.Count == 1)
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+                StreamWriter sw = new StreamWriter(sfd.FileName);
+                StringBuilder sb = new StringBuilder();
+                var row = perfInfGridView.SelectedRows[0];
+                for (int i = 3; i < row.Cells.Count;i++)
+                {
+                    if (row.Cells[i].Value == null)
+                        break;
+                    if (i == row.Cells.Count - 1 || row.Cells[i+1].Value == null)
+                        sb.Append(row.Cells[i].Value + " * " + perfInfGridView.Columns[i].HeaderText);
+                    else
+                        sb.Append(row.Cells[i].Value + " * " + perfInfGridView.Columns[i].HeaderText + " + ");
+                }
+                sw.WriteLine(sb.ToString());
+                sw.Close();
+            }
+            else
+            {
+                MessageBox.Show("Please select exactly one row of the result set.");
+            }
+        }
+        private void button2_Click  (object sender, EventArgs e)
+        {
             cleanButton_Click(null, null);
 
             setMLSettings();
@@ -345,7 +380,5 @@ namespace PerformancePrediction_GUI
             InitDataGridView();
                
         }
-
-        
     }
 }

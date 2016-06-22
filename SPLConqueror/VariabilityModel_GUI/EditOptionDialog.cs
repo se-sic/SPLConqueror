@@ -40,6 +40,8 @@ namespace VariabilitModel_GUI
 
             optionalCheckBox.Visible = false;
 
+            optionTypeBinaryRadioButton.Enabled = false;
+            optionTypeNumericRadioButton.Enabled = false;
             renameOptionButton.Enabled = false;
             setParentButton.Enabled = false;
             numericSettingsGroupBox.Enabled = false;
@@ -65,7 +67,9 @@ namespace VariabilitModel_GUI
             setParentButton.Enabled = currentOption != GlobalState.varModel.Root;
             renameOptionButton.Enabled = true;
 
+            optionTypeBinaryRadioButton.Enabled = true;
             optionTypeBinaryRadioButton.CheckedChanged -= optionTypeBinaryRadioButton_CheckedChanged;
+            optionTypeNumericRadioButton.Enabled = true;
             optionTypeNumericRadioButton.CheckedChanged -= optionTypeNumericRadioButton_CheckedChanged;
 
             if (currentOption is BinaryOption)
@@ -391,9 +395,9 @@ namespace VariabilitModel_GUI
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
-        private void excludesCheckedListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void excludesCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            excludesAddButton.Enabled = excludesCheckedListBox.CheckedIndices.Count > 0;
+            excludesAddButton.Enabled = excludesCheckedListBox.CheckedItems.Count != 1 || e.NewValue != CheckState.Unchecked;
         }
 
         /// <summary>
@@ -450,9 +454,9 @@ namespace VariabilitModel_GUI
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event</param>
-        private void requiresCheckedListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void requiresCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            requiresAddButton.Enabled = requiresCheckedListBox.CheckedIndices.Count > 0;
+            requiresAddButton.Enabled = requiresCheckedListBox.CheckedItems.Count != 1 || e.NewValue != CheckState.Unchecked;
         }
 
         /// <summary>
