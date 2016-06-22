@@ -53,6 +53,8 @@ namespace SPLConqueror_Core
         }
 
 
+        static NFProperty defaultProp = new NFProperty("default");
 
+        public static NFProperty DefaultProperty { get {return defaultProp;} }
     }
 }
