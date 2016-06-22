@@ -70,6 +70,7 @@
             this.readMeasurements = new System.Windows.Forms.Button();
             this.cleanButton = new System.Windows.Forms.Button();
             this.readVarModel = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.BinarySamplingGroup.SuspendLayout();
             this.LogGroup.SuspendLayout();
             this.expDasign_group.SuspendLayout();
@@ -548,11 +549,23 @@
             this.readVarModel.UseVisualStyleBackColor = true;
             this.readVarModel.Click += new System.EventHandler(this.readVarModel_Click);
             // 
+            // button1
+            // 
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(23, 285);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(118, 54);
+            this.button1.TabIndex = 15;
+            this.button1.Text = "Export selected model";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // PerformancePrediction_Frame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1230, 877);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.readVarModel);
             this.Controls.Add(this.cleanButton);
             this.Controls.Add(this.readMeasurements);
@@ -626,6 +639,7 @@
         public System.Windows.Forms.TextBox LogBox;
         private System.Windows.Forms.Button readVarModel;
         private System.Windows.Forms.CheckBox binWholePop;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -86,9 +86,15 @@ namespace MachineLearning.Learning.Regression
             {
                 if (opt == infModel.Vm.Root)
                     continue;
+                if (opt.Optional == false && (opt.Parent == null || opt.Parent == infModel.Vm.Root))
+                {
+                    this.strictlyMandatoryFeatures.Add(new Feature(opt.Name, infModel.Vm));
+                    continue;
+                }
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
             }
-            this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
+            if(this.strictlyMandatoryFeatures.Count == 0)
+                this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
         }
@@ -105,8 +111,14 @@ namespace MachineLearning.Learning.Regression
             {
                 if (opt == infModel.Vm.Root)
                     continue;
+                if (opt.Optional == false && (opt.Parent == null || opt.Parent == infModel.Vm.Root))
+                {
+                    this.strictlyMandatoryFeatures.Add(new Feature(opt.Name, infModel.Vm));
+                    continue;
+                }
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
             }
+            if (this.strictlyMandatoryFeatures.Count == 0)
             this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
