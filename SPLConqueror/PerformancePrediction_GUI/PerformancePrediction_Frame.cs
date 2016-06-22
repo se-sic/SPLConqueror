@@ -169,6 +169,7 @@ namespace PerformancePrediction_GUI
 
         void initLearning(object sender, NotifyCollectionChangedEventArgs e)
         {
+            Console.WriteLine();
             if(cmd.exp.models.Count > 0)
                 cmd.exp.models[cmd.exp.models.Count-1].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
         }

@@ -120,7 +120,11 @@ namespace CommandLine
 
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
+
+                        exp.models.Clear();
+                        var mod = exp.models;
                         exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        exp.models = mod;
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
