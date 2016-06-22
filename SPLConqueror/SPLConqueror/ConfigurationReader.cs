@@ -337,7 +337,8 @@ namespace SPLConqueror_Core
 
                         if (bOpt == null)
                             GlobalState.logError.logLine("No Binary option found with name: " + currOption);
-                        binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
+                        else
+                            binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
                     }
                 }
 

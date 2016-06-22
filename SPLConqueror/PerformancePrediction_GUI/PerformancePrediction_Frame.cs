@@ -12,6 +12,7 @@ using CommandLine;
 using System.Reflection;
 using System.Collections.Specialized;
 using MachineLearning.Learning.Regression;
+using System.IO;
 
 namespace PerformancePrediction_GUI
 {
@@ -130,7 +131,7 @@ namespace PerformancePrediction_GUI
             cleanButton_Click(null, null);
 
             setMLSettings();
-
+            button1.Enabled = true;
 
             bool ableToStart = createSamplingCommands();
 
@@ -334,6 +335,32 @@ namespace PerformancePrediction_GUI
 
         }
 
-        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(perfInfGridView.SelectedRows.Count == 1)
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+                StreamWriter sw = new StreamWriter(sfd.FileName);
+                StringBuilder sb = new StringBuilder();
+                var row = perfInfGridView.SelectedRows[0];
+                for (int i = 3; i < row.Cells.Count;i++)
+                {
+                    if (row.Cells[i].Value == null)
+                        break;
+                    if (i == row.Cells.Count - 1 || row.Cells[i+1].Value == null)
+                        sb.Append(row.Cells[i].Value + " * " + perfInfGridView.Columns[i].HeaderText);
+                    else
+                        sb.Append(row.Cells[i].Value + " * " + perfInfGridView.Columns[i].HeaderText + " + ");
+                }
+                sw.WriteLine(sb.ToString());
+                sw.Close();
+            }
+            else
+            {
+                MessageBox.Show("Please select exactly one row of the result set.");
+            }
+        }
     }
 }
