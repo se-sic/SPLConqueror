@@ -167,7 +167,6 @@ namespace PerformancePrediction_GUI
 
         void initLearning(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Console.WriteLine("foo");
             if(cmd.exp.models.Count > 0)
                 cmd.exp.models[cmd.exp.models.Count-1].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
         }
@@ -177,6 +176,13 @@ namespace PerformancePrediction_GUI
             cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
         }
+
+        private void startWithAllMeasurements()
+        {
+            cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
+            cmd.performOneCommand(Commands.COMMAND_START_ALLMEASUREMENTS);
+        }
+
 
         Dictionary<String, int> termToIndex = null;
 
@@ -325,6 +331,19 @@ namespace PerformancePrediction_GUI
 
             return numSelected && binarySelected;
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            cleanButton_Click(null, null);
+
+            setMLSettings();
+          
+            System.Threading.Thread myThread;
+            myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
+            myThread.Start();
+            InitDataGridView();
+               
         }
 
         

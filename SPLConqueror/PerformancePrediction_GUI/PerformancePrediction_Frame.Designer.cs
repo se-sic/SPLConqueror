@@ -70,6 +70,7 @@
             this.readMeasurements = new System.Windows.Forms.Button();
             this.cleanButton = new System.Windows.Forms.Button();
             this.readVarModel = new System.Windows.Forms.Button();
+            this.LearnAllMeasurements = new System.Windows.Forms.Button();
             this.BinarySamplingGroup.SuspendLayout();
             this.LogGroup.SuspendLayout();
             this.expDasign_group.SuspendLayout();
@@ -548,11 +549,22 @@
             this.readVarModel.UseVisualStyleBackColor = true;
             this.readVarModel.Click += new System.EventHandler(this.readVarModel_Click);
             // 
+            // LearnAllMeasurements
+            // 
+            this.LearnAllMeasurements.Location = new System.Drawing.Point(519, 291);
+            this.LearnAllMeasurements.Name = "LearnAllMeasurements";
+            this.LearnAllMeasurements.Size = new System.Drawing.Size(151, 54);
+            this.LearnAllMeasurements.TabIndex = 15;
+            this.LearnAllMeasurements.Text = "Learn with all measurements";
+            this.LearnAllMeasurements.UseVisualStyleBackColor = true;
+            this.LearnAllMeasurements.Click += new System.EventHandler(this.button1_Click);
+            // 
             // PerformancePrediction_Frame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1230, 877);
+            this.Controls.Add(this.LearnAllMeasurements);
             this.Controls.Add(this.readVarModel);
             this.Controls.Add(this.cleanButton);
             this.Controls.Add(this.readMeasurements);
@@ -626,6 +638,7 @@
         public System.Windows.Forms.TextBox LogBox;
         private System.Windows.Forms.Button readVarModel;
         private System.Windows.Forms.CheckBox binWholePop;
+        private System.Windows.Forms.Button LearnAllMeasurements;
     }
 }
 
