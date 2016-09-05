@@ -372,7 +372,7 @@ namespace PerformancePrediction_GUI
         private void button2_Click  (object sender, EventArgs e)
         {
             cleanButton_Click(null, null);
-
+            button1.Enabled = true;
             setMLSettings();
           
             System.Threading.Thread myThread;
