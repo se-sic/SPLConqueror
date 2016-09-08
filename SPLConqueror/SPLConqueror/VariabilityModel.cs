@@ -142,8 +142,18 @@ namespace SPLConqueror_Core
                 conNode.InnerText = constraint;
                 boolConstraints.AppendChild(conNode);
             }
-
             xmlroot.AppendChild(boolConstraints);
+
+            //Add non-boolean constraints
+            XmlNode nonBooleanConstraints = doc.CreateNode(XmlNodeType.Element, "nonBooleanConstraints", "");
+            foreach (var constraint in this.nonBooleanConstraints)
+            {
+                XmlNode conNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
+                conNode.InnerText = constraint.ToString();
+                nonBooleanConstraints.AppendChild(conNode);
+            }
+            xmlroot.AppendChild(nonBooleanConstraints);
+
 
             doc.AppendChild(xmlroot);
 
