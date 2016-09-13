@@ -531,6 +531,16 @@ namespace MachineLearning.Learning.Regression
                         newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
+
+                        // Create accumulated log-functions
+                        if (feature.participatingNumOptions.Count > 0 && !feature.getPureString().Contains("log10("))
+                        {
+                            newCandidate = new Feature("log10(" + feature.getPureString() + ")", feature.getVariabilityModel());
+                            if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
+                            {
+                                listOfCandidates.Add(newCandidate);
+                            }
+                        }
                     }
                 }
 
