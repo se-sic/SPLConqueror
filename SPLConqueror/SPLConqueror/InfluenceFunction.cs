@@ -491,7 +491,7 @@ namespace SPLConqueror_Core
             BinaryOption binOpt = fm.getBinaryOption(token);
             if (binOpt != null)
             {
-                if (token.Equals("base"))
+                if (token.Equals("base") || token.Equals("root"))
                     return 1.0;
 
                 if (config.BinaryOptions.Keys.Contains(binOpt) && config.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
