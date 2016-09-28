@@ -11,6 +11,7 @@ using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
 using MachineLearning;
+using ProcessWrapper;
 
 namespace CommandLine
 {
@@ -74,6 +75,8 @@ namespace CommandLine
 
         public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
+        public static string pyResult = "";
+
         /// <summary>
         /// Performs the functionality of one command. If no functionality is found for the command, the command is retuned by this method. 
         /// </summary>
@@ -121,13 +124,17 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
 
-                        exp.models.Clear();
-                        var mod = exp.models;
-                        exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
-                        exp.models = mod;
-                        exp.metaModel = infMod;
-                        exp.mLsettings = this.mlSettings;
-                        exp.learn();
+                        PythonWrapper pyInterpreter = new PythonWrapper("E:\\HiWi\\spl\\git\\SPLConqueror-master\\SPLConqueror-master\\SPLConqueror\\PyML\\pyScripts\\Communication.py");
+                        pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.LinearSVR, LearningSettings.LearningKernel.standard);
+                        pyResult = pyInterpreter.getLearningResult();
+                        Console.WriteLine("Py result:" + pyResult);
+                        //exp.models.Clear();
+                        //var mod = exp.models;
+                        //exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        //exp.models = mod;
+                        //exp.metaModel = infMod;
+                        //exp.mLsettings = this.mlSettings;
+                        //exp.learn();
                     }
                     break;
 
@@ -259,57 +266,58 @@ namespace CommandLine
                     {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
-                        if (this.mlSettings.bagging)
-                        {
-                            for (int i = 0; i < this.exp.models.Count; i++)
-                            {
-                                FeatureSubsetSelection learnedModel = exp.models[i];
-                                if (learnedModel == null)
-                                {
-                                    GlobalState.logError.logLine("Error... learning was not performed!");
-                                    break;
-                                }
-                                GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
-                                foreach (LearningRound lr in learnedModel.LearningHistory)
-                                {
-                                    double relativeError = 0;
-                                    if (GlobalState.evalutionSet.Configurations.Count > 0)
-                                    {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
-                                    }
-                                    else
-                                    {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
-                                    }
+                        GlobalState.logInfo.logLine(pyResult);
+                        //if (this.mlSettings.bagging)
+                        //{
+                        //    for (int i = 0; i < this.exp.models.Count; i++)
+                        //    {
+                        //        FeatureSubsetSelection learnedModel = exp.models[i];
+                        //        if (learnedModel == null)
+                        //        {
+                        //            GlobalState.logError.logLine("Error... learning was not performed!");
+                        //            break;
+                        //        }
+                        //        GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
+                        //        foreach (LearningRound lr in learnedModel.LearningHistory)
+                        //        {
+                        //            double relativeError = 0;
+                        //            if (GlobalState.evalutionSet.Configurations.Count > 0)
+                        //            {
+                        //                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                        //            }
+                        //            else
+                        //            {
+                        //                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                        //            }
 
-                                    GlobalState.logInfo.logLine(lr.ToString() + relativeError);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            FeatureSubsetSelection learnedModel = exp.models[0];
-                            if (learnedModel == null)
-                            {
-                                GlobalState.logError.logLine("Error... learning was not performed!");
-                                break;
-                            }
-                            GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
-                            foreach (LearningRound lr in learnedModel.LearningHistory)
-                            {
-                                double relativeError = 0;
-                                if (GlobalState.evalutionSet.Configurations.Count > 0)
-                                {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
-                                }
-                                else
-                                {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
-                                }
+                        //            GlobalState.logInfo.logLine(lr.ToString() + relativeError);
+                        //        }
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    FeatureSubsetSelection learnedModel = exp.models[0];
+                        //    if (learnedModel == null)
+                        //    {
+                        //        GlobalState.logError.logLine("Error... learning was not performed!");
+                        //        break;
+                        //    }
+                        //    GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
+                        //    foreach (LearningRound lr in learnedModel.LearningHistory)
+                        //    {
+                        //        double relativeError = 0;
+                        //        if (GlobalState.evalutionSet.Configurations.Count > 0)
+                        //        {
+                        //            double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                        //        }
+                        //        else
+                        //        {
+                        //            double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                        //        }
 
-                                GlobalState.logInfo.logLine(lr.ToString() + relativeError);
-                            }
-                        }
+                        //        GlobalState.logInfo.logLine(lr.ToString() + relativeError);
+                        //    }
+                        //}
                        
 
                         break;
@@ -448,31 +456,35 @@ namespace CommandLine
                         
                         
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+                        PythonWrapper pyInterpreter = new PythonWrapper("E:\\HiWi\\spl\\git\\SPLConqueror-master\\SPLConqueror-master\\SPLConqueror\\PyML\\pyScripts\\Communication.py");
+                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.LinearSVR);
+                        pyResult = pyInterpreter.getLearningResult();
+                        GlobalState.logInfo.logLine("Py result:" + pyResult);
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // We have to reuse the list of models because of NotifyCollectionChangedEventHandlers that might be attached to the list of models.  
-                        exp.models.Clear();
-                        var mod = exp.models;
-                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                        exp.models = mod;
+                        //    exp.models.clear();
+                        //    var mod = exp.models;
+                        //    exp = new machinelearning.learning.regression.learning(configurationslearning, configurationsvalidation);
+                        //    exp.models = mod;
 
-                        exp.metaModel = infMod;
-                        exp.mLsettings = this.mlSettings;
-                        exp.learn();
-                        GlobalState.logInfo.logLine("Average model: \n" + exp.metaModel.printModelAsFunction());
-                        double relativeError = 0;
-                        if (GlobalState.evalutionSet.Configurations.Count > 0)
-                        {
-                            relativeError = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evalutionSet.Configurations, ML_Settings.LossFunction.RELATIVE);
-                        }
-                        else
-                        {
-                            relativeError = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE);
-                        }
+                        //    exp.metamodel = infmod;
+                        //    exp.mlsettings = this.mlsettings;
+                        //    exp.learn();
+                        //    globalstate.loginfo.logline("average model: \n" + exp.metamodel.printmodelasfunction());
+                        //    double relativeerror = 0;
+                        //    if (globalstate.evalutionset.configurations.count > 0)
+                        //    {
+                        //        relativeerror = featuresubsetselection.computeerror(exp.metamodel, globalstate.evalutionset.configurations, ml_settings.lossfunction.relative);
+                        //    }
+                        //    else
+                        //    {
+                        //        relativeerror = featuresubsetselection.computeerror(exp.metamodel, globalstate.allmeasurements.configurations, ml_settings.lossfunction.relative);
+                        //    }
 
-                        GlobalState.logInfo.logLine("Error :" + relativeError);
-                    }
-                    break;
+                        //    globalstate.loginfo.logline("error :" + relativeerror);
+                        }
+                        break;
 
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
