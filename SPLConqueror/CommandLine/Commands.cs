@@ -67,6 +67,8 @@ namespace CommandLine
 
         public const string COMMAND_SUBSCRIPT = "script";
 
+
+        public const string COMMAND_PYTHON_LEARN = "learn-python";
         
         List<SamplingStrategies> toSample = new List<SamplingStrategies>();
         List<SamplingStrategies> toSampleValidation = new List<SamplingStrategies>();
@@ -124,7 +126,7 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
 
-                        PythonWrapper pyInterpreter = new PythonWrapper("E:\\HiWi\\spl\\git\\SPLConqueror-master\\SPLConqueror-master\\SPLConqueror\\PyML\\pyScripts\\Communication.py");
+                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT,new string[]{});
                         pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.LinearSVR, LearningSettings.LearningKernel.standard);
                         pyResult = pyInterpreter.getLearningResult();
                         Console.WriteLine("Py result:" + pyResult);
@@ -432,6 +434,38 @@ namespace CommandLine
                         }
                         break;
                     }
+
+                case COMMAND_PYTHON_LEARN:
+                    {
+                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                        List<Configuration> configurationsLearning = buildSet(this.toSample);
+                        List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
+
+                        if (configurationsLearning.Count == 0)
+                        {
+                            configurationsLearning = configurationsValidation;
+                        }
+
+                        if (configurationsLearning.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
+                            break;
+                        }
+
+                        if (configurationsValidation.Count == 0)
+                        {
+                            configurationsValidation = configurationsLearning;
+                        }
+
+
+                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+
+                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.LinearSVR);
+                        pyResult = pyInterpreter.getLearningResult();
+                        GlobalState.logInfo.logLine("Py result:" + pyResult);
+                        break;
+                    }
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -456,36 +490,31 @@ namespace CommandLine
                         
                         
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
-                        PythonWrapper pyInterpreter = new PythonWrapper("E:\\HiWi\\spl\\git\\SPLConqueror-master\\SPLConqueror-master\\SPLConqueror\\PyML\\pyScripts\\Communication.py");
-                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.LinearSVR);
-                        pyResult = pyInterpreter.getLearningResult();
-                        GlobalState.logInfo.logLine("Py result:" + pyResult);
-                        //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
-                        // We have to reuse the list of models because of NotifyCollectionChangedEventHandlers that might be attached to the list of models.  
-                        //    exp.models.clear();
-                        //    var mod = exp.models;
-                        //    exp = new machinelearning.learning.regression.learning(configurationslearning, configurationsvalidation);
-                        //    exp.models = mod;
+                        // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
+                        exp.models.Clear();
+                        var mod = exp.models;
+                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                        exp.models = mod;
 
-                        //    exp.metamodel = infmod;
-                        //    exp.mlsettings = this.mlsettings;
-                        //    exp.learn();
-                        //    globalstate.loginfo.logline("average model: \n" + exp.metamodel.printmodelasfunction());
-                        //    double relativeerror = 0;
-                        //    if (globalstate.evalutionset.configurations.count > 0)
-                        //    {
-                        //        relativeerror = featuresubsetselection.computeerror(exp.metamodel, globalstate.evalutionset.configurations, ml_settings.lossfunction.relative);
-                        //    }
-                        //    else
-                        //    {
-                        //        relativeerror = featuresubsetselection.computeerror(exp.metamodel, globalstate.allmeasurements.configurations, ml_settings.lossfunction.relative);
-                        //    }
+                        exp.metaModel = infMod;
+                        exp.mlSettings = this.mlSettings;
+                        exp.learn();
+                        GlobalState.logInfo.logLine("average model: \n" + exp.metaModel.printModelAsFunction());
+                        double relativeerror = 0;
+                        if (GlobalState.evalutionSet.Configurations.Count > 0)
+                        {
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evalutionSet.Configurations, ML_Settings.LossFunction.RELATIVE);
+                        }
+                        else
+                        {
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE);
+                        }
 
                         //    globalstate.loginfo.logline("error :" + relativeerror);
-                        }
+                        
                         break;
-
+                     }
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
 
@@ -833,5 +862,33 @@ namespace CommandLine
 
             return "";
         }
+
+
+        public String getLocationPythonScript()
+        {
+
+            String location = AppDomain.CurrentDomain.BaseDirectory;
+#if release
+            if (pathToDll != null && pathToDll.Length > 0)
+                    location = pathToDll;
+                else
+                    location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Release").Length)));
+
+#else
+            location = location.Substring(0, (location.Length - ((Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar + "Debug").Length)));
+#endif
+
+            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing tailing dir sep
+            location = location.Substring(0, location.LastIndexOf(Path.DirectorySeparatorChar));//Removing project path
+
+#if release
+            catalog.Catalogs.Add(new DirectoryCatalog(location));
+            location = location + Path.DirectorySeparatorChar + "PyML" + Path.DirectorySeparatorChar + "pyScripts";
+#else
+            location = location + Path.DirectorySeparatorChar + "PyML" + Path.DirectorySeparatorChar + "pyScripts";
+#endif
+            return location;
+        }
+
     }
 }
