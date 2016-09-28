@@ -16,7 +16,7 @@ namespace MachineLearning.Learning.Regression
 {
     public class Learning : IDisposable
     {
-        public ML_Settings mLsettings = null;
+        public ML_Settings mlSettings = null;
         public List<Configuration> testSet, validationSet = null;
         int nbBaggings = 0;
         public ObservableCollection<FeatureSubsetSelection> models = new ObservableCollection<FeatureSubsetSelection>();
@@ -60,7 +60,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (!hasNecessaryData())
                 return;
-            if (this.mLsettings.bagging)
+            if (this.mlSettings.bagging)
             {
                 //Get number of cores
                 int coreCount = 0;
@@ -70,14 +70,14 @@ namespace MachineLearning.Learning.Regression
                 }
                 createThreadPool(coreCount);
 
-                this.nbBaggings = this.mLsettings.baggingNumbers;
+                this.nbBaggings = this.mlSettings.baggingNumbers;
                 iCount = this.nbBaggings;
                 Random rand = new Random();
-                int nbOfConfigs = (testSet.Count * this.mLsettings.baggingTestDataFraction) / 100;
+                int nbOfConfigs = (testSet.Count * this.mlSettings.baggingTestDataFraction) / 100;
                 for (int i = 0; i < nbBaggings; i++)
                 {
                     InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                    FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                    FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
                     this.models.Add(sel);
                     List<int> selection = new List<int>();
                     for (int r = 0; r <= nbOfConfigs; r++)
@@ -103,7 +103,7 @@ namespace MachineLearning.Learning.Regression
             else
             {
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
                 this.models.Add(sel);
                 sel.setLearningSet(testSet);
                 sel.setValidationSet(this.validationSet);
@@ -267,7 +267,7 @@ namespace MachineLearning.Learning.Regression
         public void clear()
         {
             this.nbBaggings = 0;
-            this.mLsettings = new ML_Settings();
+            this.mlSettings = new ML_Settings();
             this.metaModel = null;
             this.models.Clear();
             clearSampling();

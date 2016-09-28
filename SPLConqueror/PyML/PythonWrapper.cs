@@ -10,7 +10,12 @@ namespace ProcessWrapper
     {
         private Process pythonProcess;
 
-        private const string PYTHON_APP = "python.exe";
+        protected const string SCRIPT_LOCATION = "\\PyML\\pyScripts";
+
+        public const string COMMUNICATION_SCRIPT = "Communication.py";
+
+        // TODO
+        private const string PYTHON_APP = "C:\\Users\\Alex\\Anaconda2\\python.exe";
 
         private const string CONFIG_STREAM_START = "config_start";
 
@@ -33,19 +38,14 @@ namespace ProcessWrapper
         /// <summary>
         /// Create a new wrapper that contains a running Python Process.
         /// </summary>
-        /// <param name="args">Command line arguments passed to the process. First argument has to be the the path of the source file</param>
-        public PythonWrapper(params string[] args)
+        /// <param name="path">The path of the source file called to start Python.</param>
+        /// <param name="mlProperties">Options for the machine learning algortihm.</param>
+        public PythonWrapper(string path, string[] mlProperties)
         {
-            string argumentLine = "";
-            foreach (string statement in args)
-            {
-                argumentLine = argumentLine + statement + " ";
-            }
-            ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_APP, argumentLine);
+            ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_APP, path);
             pythonSetup.UseShellExecute = false;
             pythonSetup.RedirectStandardInput = true;
             pythonSetup.RedirectStandardOutput = true;
-        //    pythonSetup.RedirectStandardError = true;
             pythonProcess = Process.Start(pythonSetup);
         }
 
