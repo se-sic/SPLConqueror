@@ -269,57 +269,59 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
                         GlobalState.logInfo.logLine(pyResult);
-                        //if (this.mlSettings.bagging)
-                        //{
-                        //    for (int i = 0; i < this.exp.models.Count; i++)
-                        //    {
-                        //        FeatureSubsetSelection learnedModel = exp.models[i];
-                        //        if (learnedModel == null)
-                        //        {
-                        //            GlobalState.logError.logLine("Error... learning was not performed!");
-                        //            break;
-                        //        }
-                        //        GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
-                        //        foreach (LearningRound lr in learnedModel.LearningHistory)
-                        //        {
-                        //            double relativeError = 0;
-                        //            if (GlobalState.evalutionSet.Configurations.Count > 0)
-                        //            {
-                        //                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
-                        //            }
-                        //            else
-                        //            {
-                        //                double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
-                        //            }
+                        if (this.mlSettings.bagging)
+                        {
+                            // this.metaModel
 
-                        //            GlobalState.logInfo.logLine(lr.ToString() + relativeError);
-                        //        }
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    FeatureSubsetSelection learnedModel = exp.models[0];
-                        //    if (learnedModel == null)
-                        //    {
-                        //        GlobalState.logError.logLine("Error... learning was not performed!");
-                        //        break;
-                        //    }
-                        //    GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
-                        //    foreach (LearningRound lr in learnedModel.LearningHistory)
-                        //    {
-                        //        double relativeError = 0;
-                        //        if (GlobalState.evalutionSet.Configurations.Count > 0)
-                        //        {
-                        //            double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
-                        //        }
-                        //        else
-                        //        {
-                        //            double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
-                        //        }
+                            for (int i = 0; i < this.exp.models.Count; i++)
+                            {
+                                FeatureSubsetSelection learnedModel = exp.models[i];
+                                if (learnedModel == null)
+                                {
+                                    GlobalState.logError.logLine("Error... learning was not performed!");
+                                    break;
+                                }
+                                GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
+                                foreach (LearningRound lr in learnedModel.LearningHistory)
+                                {
+                                    double relativeError = 0;
+                                    if (GlobalState.evalutionSet.Configurations.Count > 0)
+                                    {
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                    }
+                                    else
+                                    {
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                    }
 
-                        //        GlobalState.logInfo.logLine(lr.ToString() + relativeError);
-                        //    }
-                        //}
+                                    GlobalState.logInfo.logLine(lr.ToString() + relativeError);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            FeatureSubsetSelection learnedModel = exp.models[0];
+                            if (learnedModel == null)
+                            {
+                                GlobalState.logError.logLine("Error... learning was not performed!");
+                                break;
+                            }
+                            GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
+                            foreach (LearningRound lr in learnedModel.LearningHistory)
+                            {
+                                double relativeError = 0;
+                                if (GlobalState.evalutionSet.Configurations.Count > 0)
+                                {
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                }
+                                else
+                                {
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                }
+
+                                GlobalState.logInfo.logLine(lr.ToString() + relativeError);
+                            }
+                        }
                        
 
                         break;
@@ -438,7 +440,6 @@ namespace CommandLine
                 case DEFINE_PYTHON_PATH:
                     {
                         PythonWrapper.PYTHON_PATH = taskAsParameter[0]+"python.exe";
-
                         break;
                     }
 
@@ -468,8 +469,11 @@ namespace CommandLine
 
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
+
+
+
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
-                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.LinearSVR);
+                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.DecisionTreeRegressor);
                         pyResult = pyInterpreter.getLearningResult();
                         GlobalState.logInfo.logLine("Py result:" + pyResult);
                         break;
