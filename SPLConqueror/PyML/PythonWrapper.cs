@@ -14,7 +14,7 @@ namespace ProcessWrapper
 
         public const string COMMUNICATION_SCRIPT = "Communication.py";
 
-        public static string PYTHON_PATH = "";
+        public static string PYTHON_PATH = "python.exe";
 
         private const string CONFIG_STREAM_START = "config_start";
 

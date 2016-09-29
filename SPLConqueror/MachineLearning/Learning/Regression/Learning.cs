@@ -118,7 +118,9 @@ namespace MachineLearning.Learning.Regression
         private void averageModels()
         {
             List<FeatureSubsetSelection> sorted = this.models.OrderBy(o => o.finalError).ToList();
-            int avg = this.models.Count / 2;
+
+            int avg = this.models.Count;
+            //int avg = this.models.Count / 2;
             for (int i = 0; i <= avg; i++)
             {
                 updateInfluenceModel(sorted[i].infModel);
