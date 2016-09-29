@@ -67,7 +67,7 @@ namespace CommandLine
 
         public const string COMMAND_SUBSCRIPT = "script";
 
-
+        public const string DEFINE_PYTHON_PATH = "define-python-path";
         public const string COMMAND_PYTHON_LEARN = "learn-python";
         
         List<SamplingStrategies> toSample = new List<SamplingStrategies>();
@@ -434,6 +434,14 @@ namespace CommandLine
                         }
                         break;
                     }
+
+                case DEFINE_PYTHON_PATH:
+                    {
+                        PythonWrapper.PYTHON_PATH = taskAsParameter[0]+"python.exe";
+
+                        break;
+                    }
+
 
                 case COMMAND_PYTHON_LEARN:
                     {

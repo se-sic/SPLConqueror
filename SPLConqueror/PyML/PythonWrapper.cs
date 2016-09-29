@@ -14,8 +14,7 @@ namespace ProcessWrapper
 
         public const string COMMUNICATION_SCRIPT = "Communication.py";
 
-        // TODO
-        private const string PYTHON_APP = "C:\\Users\\Alex\\Anaconda2\\python.exe";
+        public static string PYTHON_PATH = "";
 
         private const string CONFIG_STREAM_START = "config_start";
 
@@ -42,7 +41,7 @@ namespace ProcessWrapper
         /// <param name="mlProperties">Options for the machine learning algortihm.</param>
         public PythonWrapper(string path, string[] mlProperties)
         {
-            ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_APP, path);
+            ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_PATH, path);
             pythonSetup.UseShellExecute = false;
             pythonSetup.RedirectStandardInput = true;
             pythonSetup.RedirectStandardOutput = true;
@@ -144,5 +143,6 @@ namespace ProcessWrapper
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return formatPyResults(waitForNextReceivedLine());
         }
+
     }
 }
