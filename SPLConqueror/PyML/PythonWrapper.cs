@@ -106,10 +106,10 @@ namespace ProcessWrapper
             passLineToApplication(CONFIG_PREDICT_STREAM_END);
         }
 
-        private void initializeLearning(LearningSettings.LearningStrategies strategy, LearningSettings.LearningKernel kernelSettings)
+        private void initializeLearning(string strategy, LearningSettings.LearningKernel kernelSettings)
         {
             passLineToApplication(LEARNING_SETTINGS_STREAM_START);
-            passLineToApplication(Enum.GetName(typeof(LearningSettings.LearningStrategies), (int)strategy));
+            passLineToApplication(strategy);
             passLineToApplication(Enum.GetName(typeof(LearningSettings.LearningKernel), (int)kernelSettings));
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
         }
@@ -146,7 +146,7 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
-        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, LearningSettings.LearningKernel kernelSettings, List<Configuration> configurationsToPredict)
+        public void setupApplication(List<Configuration> configs, string strategy, LearningSettings.LearningKernel kernelSettings, List<Configuration> configurationsToPredict)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
@@ -161,7 +161,7 @@ namespace ProcessWrapper
             }
         }
 
-        public void setupDefaultApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict )
+        public void setupDefaultApplication(List<Configuration> configs, string strategy, List<Configuration> configurationsToPredict )
         {
             setupApplication(configs, strategy, LearningSettings.LearningKernel.standard, configurationsToPredict);
         }

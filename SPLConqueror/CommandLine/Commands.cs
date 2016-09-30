@@ -127,7 +127,7 @@ namespace CommandLine
                         // prepare the machine learning 
 
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT,new string[]{});
-                        pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.SVR, LearningSettings.LearningKernel.standard,GlobalState.allMeasurements.Configurations);
+                        pyInterpreter.setupApplication(configurations_Learning, "svr", LearningSettings.LearningKernel.standard,GlobalState.allMeasurements.Configurations);
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         Console.WriteLine("Py result:\n" + pyResult);
                         //exp.models.Clear();
@@ -465,14 +465,12 @@ namespace CommandLine
                         {
                             configurationsValidation = configurationsLearning;
                         }
-
-
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
-
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
 
-                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.DecisionTreeRegressor, GlobalState.allMeasurements.Configurations);
+                        string learningStrategy = taskAsParameter[0].ToLower();
+
+                        pyInterpreter.setupDefaultApplication(configurationsLearning, learningStrategy, GlobalState.allMeasurements.Configurations);
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         GlobalState.logInfo.logLine("Py result:" + pyResult);
                         break;
