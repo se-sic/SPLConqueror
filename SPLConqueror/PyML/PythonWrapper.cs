@@ -16,9 +16,15 @@ namespace ProcessWrapper
 
         public static string PYTHON_PATH = "python.exe";
 
-        private const string CONFIG_STREAM_START = "config_start";
+        private const string CONFIG_LEARN_STREAM_START = "config_learn_start";
 
-        private const string CONFIG_STREAM_END = "config_end";
+        private const string CONFIG_LEARN_STREAM_END = "config_learn_end";
+
+
+        private const string CONFIG_PREDICT_STREAM_START = "config_predict_start";
+
+        private const string CONFIG_PREDICT_STREAM_END = "config_predict_end";
+
 
         private const string LEARNING_SETTINGS_STREAM_START = "settings_start";
 
@@ -70,7 +76,7 @@ namespace ProcessWrapper
 
         private void passConfigurations(List<Configuration> toPass)
         {
-            passLineToApplication(CONFIG_STREAM_START);
+            passLineToApplication(CONFIG_LEARN_STREAM_START);
 
             foreach (Configuration config in toPass)
             {
@@ -81,7 +87,23 @@ namespace ProcessWrapper
                 }
             }
 
-                passLineToApplication(CONFIG_STREAM_END);
+                passLineToApplication(CONFIG_LEARN_STREAM_END);
+        }
+
+        private void passConfigurationsPredict(List<Configuration> toPass)
+        {
+            passLineToApplication(CONFIG_PREDICT_STREAM_START);
+
+            foreach (Configuration config in toPass)
+            {
+                passLineToApplication(config.toNumeric());
+                while (!waitForNextReceivedLine().Equals(PASS_OK))
+                {
+                    // Wait to make sure the previous input is processed in order to make sure receiver wont be overwhelmed
+                }
+            }
+
+            passLineToApplication(CONFIG_PREDICT_STREAM_END);
         }
 
         private void initializeLearning(LearningSettings.LearningStrategies strategy, LearningSettings.LearningKernel kernelSettings)
@@ -92,19 +114,29 @@ namespace ProcessWrapper
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
         }
 
-        private string formatPyResults(string pythonList)
+        private string nfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations)
         {
-            string withoutBracket = pythonList.Substring(1, pythonList.Length - 2);
             string[] separators = new String[] { "," };
-            string[] optionPrefix = withoutBracket.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             StringBuilder sb = new StringBuilder();
-            if (optionPrefix.Length == GlobalState.varModel.optionToIndex.Count)
+
+            if (predictedConfigurations.Count != predictions.Length)
+                GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
+
+            sb.Append("Configuration;Measured;Predicted\n");
+            for (int i = 0; i < predictedConfigurations.Count; i++)
+            {
+                sb.Append(predictedConfigurations[i].ToString()+";"+predictedConfigurations[i].GetNFPValue() + ";" + predictions[i]+"\n");
+            }
+            
+            
+            if (predictions.Length == GlobalState.varModel.optionToIndex.Count)
             {
                 int counter = 0;
                 foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
                 {
-                    sb.Append(optionPrefix[counter] + " " + option.Value.ToString());
-                    if (counter < optionPrefix.Length - 1)
+                    sb.Append(predictions[counter] + " " + option.Value.ToString());
+                    if (counter < predictions.Length - 1)
                     {
                         sb.Append(" + ");
                     }
@@ -114,7 +146,7 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
-        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, LearningSettings.LearningKernel kernelSettings)
+        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, LearningSettings.LearningKernel kernelSettings, List<Configuration> configurationsToPredict)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
@@ -123,16 +155,18 @@ namespace ProcessWrapper
                 if (AWAITING_CONFIGS.Equals(waitForNextReceivedLine()))
                 {
                     passConfigurations(configs);
+
+                    passConfigurationsPredict(configurationsToPredict);
                 }
             }
         }
 
-        public void setupDefaultApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy)
+        public void setupDefaultApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict )
         {
-            setupApplication(configs, strategy, LearningSettings.LearningKernel.standard);
+            setupApplication(configs, strategy, LearningSettings.LearningKernel.standard, configurationsToPredict);
         }
 
-        public string getLearningResult()
+        public string getLearningResult(List<Configuration> predictedConfigurations)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
@@ -141,7 +175,7 @@ namespace ProcessWrapper
             }
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
-            return formatPyResults(waitForNextReceivedLine());
+            return nfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations);
         }
 
     }

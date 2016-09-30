@@ -8,8 +8,7 @@ import numpy as np
 def setup_learning(strategy, kernel_setting):
     if strategy == "SVR":
         if kernel_setting == "standard":
-#            return sk.SVR()
-        return sk.SVR(C=1.0, cache_size=200, coef0=0.0, degree=3, gamma='auto', kernel='linear', max_iter=-1, shrinking=True, tol=0.001, verbose=False)
+             return sk.SVR(C=1.0, cache_size=200, coef0=0.0, degree=3, kernel='linear', gamma='auto', max_iter=-1, shrinking=True, tol=0.001, verbose=False)
         else:
             return sk.SVR(kernel=kernel_setting)
     elif strategy == "DecisionTreeRegressor":
@@ -23,26 +22,11 @@ def setup_learning(strategy, kernel_setting):
         return skNE.KNeighborsRegressor(n_neighbors=5, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=-1)
     elif strategy == "KERNELRIDGE":
           return skKR.KernelRidge(alpha=1, kernel='linear', gamma=None, degree=3, coef0=1, kernel_params=None)	
-    
+
 def learn(strategy, kernel_setting, X, y):
     model = setup_learning(strategy, kernel_setting)
-   # X = np.array(configurations)
-   # y = np.array(nfp_values)
-    if strategy == "KERNELRIDGE":
-        return "KernelRidge"
-    elif strategy == "DecisionTreeRegressor":
-        return "DecTree"
-    else:
-        model.fit(X, y)
-        if strategy == "KNeighborsRegressor":
-            return "KNeighborsRegressor"
-        elif strategy == "RandomForestRegressor":
-            return "RanFor"
-        elif strategy == "BaggingSVR":
-            return "BaggingSVR"
-        elif strategy == "LinearSVR" or kernel_setting:
-            to_Return = []
-            for number in model.coef_:
-               to_Return.append(number)
-            return to_Return
-	   
+    model.fit(X, y)
+    return model
+
+def predict(strategy, model, X, y): 
+        return model.predict(X)   
