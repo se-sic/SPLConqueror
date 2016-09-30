@@ -7,8 +7,14 @@ SETTING_STREAM_START = "settings_start"
 SETTING_STREAM_END = "settings_end"
 REQUESTING_CONFIGURATION = "req_configs"
 REQUESTING_LEARNING_RESULTS = "req_results"
-CONFIG_STREAM_START = "config_start"
-CONFIG_STREAM_END = "config_end"
+
+CONFIG_LEARN_STREAM_START = "config_learn_start"
+CONFIG_LEARN_STREAM_END = "config_learn_end"
+
+CONFIG_PREDICT_STREAM_START = "config_predict_start"
+
+CONFIG_PREDICT_STREAM_END = "config_predict_end"
+
 PASS_OK = "pass_ok"
 FINISHED_LEARNING = "learn_finished"
 
@@ -17,6 +23,14 @@ def print_line(string):
     print string
     # flushing output buffer
     sys.stdout.flush()
+    
+def print_lineArray(array):
+    output = ""
+    for item in array:
+        output+=str(item)
+        output+=","
+    print output
+    sys.stdout.flush()    
 
 def parse_to_config(string):
             data = string.split(",")
@@ -26,21 +40,35 @@ def parse_to_config(string):
                 int_data.append(int(option))
             return Configuration(int_data, nfp_val)
 
-def get_configurations():
+def get_configurationsLearn():
     configurations = []
     print_line(REQUESTING_CONFIGURATION)
     marker = raw_input()
-    if marker == CONFIG_STREAM_START:
+    if marker == CONFIG_LEARN_STREAM_START:
         line = raw_input()
-        while not line == CONFIG_STREAM_END:
+        while not line == CONFIG_LEARN_STREAM_END:
             config = parse_to_config(line)
             configurations.append(config)
             print_line(PASS_OK)
             line = raw_input()
     return configurations
 
-def main():
+def get_configurationsPredict():
     configurations = []
+    print_line(REQUESTING_CONFIGURATION)
+    marker = raw_input()
+    if marker == CONFIG_PREDICT_STREAM_START:
+        line = raw_input()
+        while not line == CONFIG_PREDICT_STREAM_END:
+            config = parse_to_config(line)
+            configurations.append(config)
+            print_line(PASS_OK)
+            line = raw_input()
+    return configurations    
+    
+def main():
+    configurationsLearn = []
+    configurationsPredict = []
     learning_strategy = ""
     kernel_settings = ""
 
@@ -52,16 +80,31 @@ def main():
         kernel_settings = raw_input()
     marker = raw_input()
     if marker == SETTING_STREAM_END:
-        configurations = get_configurations()
-    features = []
-    results = []
-    for config in configurations:
-        features.append(config.configuration_settings)
-        results.append(config.nfp_value)
-    learning_result = learning.learn(learning_strategy, kernel_settings, features, results)
+        configurationsLearn = get_configurationsLearn()
+   
+    configurationsPredict = get_configurationsPredict()
+    
+    
+    featuresLearn = []
+    resultsLearn = []
+    for config in configurationsLearn:
+        featuresLearn.append(config.configuration_settings)
+        resultsLearn.append(config.nfp_value)
+	   
+    featuresPredict = []
+    resultsPredict = []
+    for config in configurationsPredict:
+        featuresPredict.append(config.configuration_settings)
+        resultsPredict.append(config.nfp_value)	   
+	   
+    model = learning.learn(learning_strategy, kernel_settings, featuresLearn, resultsLearn)
+    
+    predictions = learning.predict(learning_strategy, model, featuresPredict, resultsPredict)
+    
+    
     print_line(FINISHED_LEARNING)
     if raw_input() == REQUESTING_LEARNING_RESULTS:
-        print_line(learning_result)
+        print_lineArray(predictions)
 
 class Configuration():
 

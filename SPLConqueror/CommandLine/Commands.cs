@@ -127,9 +127,9 @@ namespace CommandLine
                         // prepare the machine learning 
 
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT,new string[]{});
-                        pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.LinearSVR, LearningSettings.LearningKernel.standard);
-                        pyResult = pyInterpreter.getLearningResult();
-                        Console.WriteLine("Py result:" + pyResult);
+                        pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.SVR, LearningSettings.LearningKernel.standard,GlobalState.allMeasurements.Configurations);
+                        pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
+                        Console.WriteLine("Py result:\n" + pyResult);
                         //exp.models.Clear();
                         //var mod = exp.models;
                         //exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
@@ -469,12 +469,11 @@ namespace CommandLine
 
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
-
-
-
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
-                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.DecisionTreeRegressor);
-                        pyResult = pyInterpreter.getLearningResult();
+
+                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                        pyInterpreter.setupDefaultApplication(configurationsLearning, LearningSettings.LearningStrategies.DecisionTreeRegressor, GlobalState.allMeasurements.Configurations);
+                        pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         GlobalState.logInfo.logLine("Py result:" + pyResult);
                         break;
                     }
