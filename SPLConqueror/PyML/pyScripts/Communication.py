@@ -32,87 +32,76 @@ def print_lineArray(array):
     print output
     sys.stdout.flush()    
 
-def parse_to_config(string):
-            data = string.split(",")
-            int_data = []
-            nfp_val = float(data.pop())
-            for option in data:
-                int_data.append(int(option))
-            return Configuration(int_data, nfp_val)
-
-def get_configurationsLearn():
-    configurations = []
+def get_configurations(container, stream_start_arg, stream_end_arg):
     print_line(REQUESTING_CONFIGURATION)
     marker = raw_input()
-    if marker == CONFIG_LEARN_STREAM_START:
+    if marker == stream_start_arg:
         line = raw_input()
-        while not line == CONFIG_LEARN_STREAM_END:
-            config = parse_to_config(line)
-            configurations.append(config)
-            print_line(PASS_OK)
-            line = raw_input()
-    return configurations
+        while not line == stream_end_arg:
 
-def get_configurationsPredict():
-    configurations = []
-    print_line(REQUESTING_CONFIGURATION)
-    marker = raw_input()
-    if marker == CONFIG_PREDICT_STREAM_START:
-        line = raw_input()
-        while not line == CONFIG_PREDICT_STREAM_END:
-            config = parse_to_config(line)
-            configurations.append(config)
+            # parse each line written by C# in the format binOpt,...,binOpt,numOpt,...,numOpt, nfp_value
+            # into a list containing the option values as int and cast the nfp value to double
+            # then save it in the configuration class
+            data = line.split(",")
+            nfp_value = float(data.pop())
+            configuration_values = []
+            for value in data:
+                configuration_values.append(int(value))
+            container.append(nfp_value, configuration_values)
+
+            # message to C# indicating that current line is processed and next can be sent in order to control traffic
             print_line(PASS_OK)
             line = raw_input()
-    return configurations    
+
+    return container
+
+def get_configurationsLearn(container):
+    return get_configurations(container, CONFIG_LEARN_STREAM_START, CONFIG_LEARN_STREAM_END)
+
+def get_configurationsPredict(container):
+    return get_configurations(container, CONFIG_PREDICT_STREAM_START, CONFIG_PREDICT_STREAM_END)
     
 def main():
-    configurationsLearn = []
-    configurationsPredict = []
+    configurationsLearn = Configurations()
+    configurationsPredict = Configurations()
     learning_strategy = ""
-    kernel_settings = ""
+    learner_settings = []
 
+    # Sequenz for getting the basic learning settings from C#
     print_line(REQUESTING_LEARNING_SETTINGS)
-    marker = raw_input()
-
-    if marker == SETTING_STREAM_START:
+    csharp_response = raw_input()
+    if csharp_response == SETTING_STREAM_START:
         learning_strategy = raw_input()
-        kernel_settings = raw_input()
-    marker = raw_input()
-    if marker == SETTING_STREAM_END:
-        configurationsLearn = get_configurationsLearn()
+        learner_setting = raw_input()
+        while learner_setting != SETTING_STREAM_END:
+            # pair of settings passed by other application in format identifier=value
+            learner_settings.append(learner_setting)
+            learner_setting = raw_input()
+			
+    configurationsLearn = get_configurationsLearn(configurationsLearn)
    
-    configurationsPredict = get_configurationsPredict()
-    
-    
-    featuresLearn = []
-    resultsLearn = []
-    for config in configurationsLearn:
-        featuresLearn.append(config.configuration_settings)
-        resultsLearn.append(config.nfp_value)
-	   
-    featuresPredict = []
-    resultsPredict = []
-    for config in configurationsPredict:
-        featuresPredict.append(config.configuration_settings)
-        resultsPredict.append(config.nfp_value)	   
-	   
-    model = learning.learn(learning_strategy, kernel_settings, featuresLearn, resultsLearn)
-    
-    predictions = learning.predict(learning_strategy, model, featuresPredict, resultsPredict)
+    configurationsPredict = get_configurationsPredict(configurationsPredict)
+
+    model = learning.Learner(learning_strategy, learner_settings)
+    model.learn(configurationsLearn.features, configurationsLearn.results)
+    predictions = model.predict(configurationsPredict.features)
     
     
     print_line(FINISHED_LEARNING)
     if raw_input() == REQUESTING_LEARNING_RESULTS:
         print_lineArray(predictions)
 
-class Configuration():
+# class to hold values passed by c#
+class Configurations():
 
-    def __init__(self, configuration_settings, nfp_value):
-        self.nfp_value = nfp_value
-        self.configuration_settings = configuration_settings
+    def __init__(self):
+        self.results = []
+        self.features = []
+
+    def append(self, nfp_value, features):
+        self.results.append(nfp_value)
+        self.features.append(features)
 
 main()
-
 
 
