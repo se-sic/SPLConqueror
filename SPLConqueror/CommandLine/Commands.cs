@@ -471,8 +471,10 @@ namespace CommandLine
 
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
 
+                        // assuming the strategy is always the first parameter passed to the program
+                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        pyInterpreter.setupApplication(configurationsLearning, LearningSettings.LearningStrategies.DecisionTreeRegressor, GlobalState.allMeasurements.Configurations);
+                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations);
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         GlobalState.logInfo.logLine("Py result:" + pyResult);
                         break;
