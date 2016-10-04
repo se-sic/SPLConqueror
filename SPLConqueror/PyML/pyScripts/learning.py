@@ -6,6 +6,7 @@ import sklearn.tree as skTr
 import numpy as np
 
 def setup_learning(strategy, learner_settings):
+    strategy = strategy.lower()
     if strategy == "svr":
         return setup_SVR(learner_settings)
     elif strategy == "decisiontreeregressor":

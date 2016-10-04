@@ -112,7 +112,7 @@ namespace ProcessWrapper
         private void initializeLearning(LearningSettings.LearningStrategies strategy, string[] mlSettings)
         {
             passLineToApplication(LEARNING_SETTINGS_STREAM_START);
-            passLineToApplication(strategy);
+            passLineToApplication((Enum.GetName(typeof(LearningSettings.LearningStrategies), (int)strategy)).ToLower());
             if (mlSettings != null)
             {
                 foreach (string setting in mlSettings)
