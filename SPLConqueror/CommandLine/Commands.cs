@@ -274,7 +274,7 @@ namespace CommandLine
                     {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
-                        GlobalState.logInfo.logLine(pyResult);
+                        //GlobalState.logInfo.logLine(pyResult);
                         if (this.mlSettings.bagging)
                         {
                             // this.metaModel
