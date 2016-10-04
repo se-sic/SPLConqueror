@@ -126,8 +126,14 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
 
+
+
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
-                        pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.SVR, LearningSettings.LearningKernel.standard, GlobalState.allMeasurements.Configurations);
+
+                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
+                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                        pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations);
+
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         Console.WriteLine("Py result:\n" + pyResult);
                         //exp.models.Clear();

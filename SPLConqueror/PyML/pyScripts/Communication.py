@@ -77,7 +77,7 @@ def main():
             # pair of settings passed by other application in format identifier=value
             learner_settings.append(learner_setting)
             learner_setting = raw_input()
-			
+    
     configurationsLearn = get_configurationsLearn(configurationsLearn)
    
     configurationsPredict = get_configurationsPredict(configurationsPredict)
