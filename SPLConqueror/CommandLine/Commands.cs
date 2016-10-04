@@ -69,7 +69,7 @@ namespace CommandLine
 
         public const string DEFINE_PYTHON_PATH = "define-python-path";
         public const string COMMAND_PYTHON_LEARN = "learn-python";
-        
+
         List<SamplingStrategies> toSample = new List<SamplingStrategies>();
         List<SamplingStrategies> toSampleValidation = new List<SamplingStrategies>();
         ML_Settings mlSettings = new ML_Settings();
@@ -126,8 +126,8 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
                         // prepare the machine learning 
 
-                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT,new string[]{});
-                        pyInterpreter.setupApplication(configurations_Learning, "svr", LearningSettings.LearningKernel.standard,GlobalState.allMeasurements.Configurations);
+                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
+                        pyInterpreter.setupApplication(configurations_Learning, LearningSettings.LearningStrategies.SVR, LearningSettings.LearningKernel.standard, GlobalState.allMeasurements.Configurations);
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         Console.WriteLine("Py result:\n" + pyResult);
                         //exp.models.Clear();
@@ -200,7 +200,7 @@ namespace CommandLine
                 case COMMAND_MEASUREMENTS_TO_CSV:
                     FileStream ostrm;
                     ostrm = new FileStream(task.Trim(), FileMode.OpenOrCreate, FileAccess.Write);
-                    ostrm.SetLength(0); 
+                    ostrm.SetLength(0);
                     StreamWriter writer = new StreamWriter(ostrm);
                     StringBuilder header = new StringBuilder();
                     List<NFProperty> propertiesOrder = new List<NFProperty>();
@@ -229,15 +229,15 @@ namespace CommandLine
                             }
                             else
                             {
-                                configurations.Append(config.NumericOptions[(NumericOption) opt]+";");
-                            }    
+                                configurations.Append(config.NumericOptions[(NumericOption)opt] + ";");
+                            }
                         }
                         for (int i = 0; i < propertiesOrder.Count; i++)
                         {
                             if (!config.nfpValues.ContainsKey(propertiesOrder[i]))
                                 configurations.Append("0;");
                             else
-                                configurations.Append(config.nfpValues[propertiesOrder[i]]+";");
+                                configurations.Append(config.nfpValues[propertiesOrder[i]] + ";");
                         }
                         configurations.Append("\n");
                     }
@@ -322,7 +322,7 @@ namespace CommandLine
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
                             }
                         }
-                       
+
 
                         break;
                     }
@@ -372,7 +372,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_SAMPLE_PAIRWISE:
-                    
+
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
                         this.toSampleValidation.Add(SamplingStrategies.PAIRWISE);
@@ -391,22 +391,22 @@ namespace CommandLine
 
                 case COMMAND_PRINT_CONFIGURATIONS:
                     {
-                       /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
-                        List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
+                        /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
+                         List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
 
-                        List<Configuration> configurations = new List<Configuration>();
+                         List<Configuration> configurations = new List<Configuration>();
 
-                        foreach (Dictionary<NumericOption, double> numeric in numericSampling)
-                        {
-                            foreach (List<BinaryOption> binary in binarySampling)
-                            {
-                                Configuration config = Configuration.getConfiguration(binary, numeric);
-                                if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
-                                {
-                                    configurations.Add(config);
-                                }
-                            }
-                        }*/
+                         foreach (Dictionary<NumericOption, double> numeric in numericSampling)
+                         {
+                             foreach (List<BinaryOption> binary in binarySampling)
+                             {
+                                 Configuration config = Configuration.getConfiguration(binary, numeric);
+                                 if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
+                                 {
+                                     configurations.Add(config);
+                                 }
+                             }
+                         }*/
 
                         var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
 
@@ -439,7 +439,7 @@ namespace CommandLine
 
                 case DEFINE_PYTHON_PATH:
                     {
-                        PythonWrapper.PYTHON_PATH = taskAsParameter[0]+"python.exe";
+                        PythonWrapper.PYTHON_PATH = taskAsParameter[0] + "python.exe";
                         break;
                     }
 
@@ -468,9 +468,10 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
                         PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
 
-                        string learningStrategy = taskAsParameter[0].ToLower();
-
-                        pyInterpreter.setupDefaultApplication(configurationsLearning, learningStrategy, GlobalState.allMeasurements.Configurations);
+                        // assuming the strategy is always the first parameter passed to the program
+                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
+                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations);
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         GlobalState.logInfo.logLine("Py result:" + pyResult);
                         break;
@@ -480,7 +481,7 @@ namespace CommandLine
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         List<Configuration> configurationsLearning = buildSet(this.toSample);
                         List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
-                        
+
                         if (configurationsLearning.Count == 0)
                         {
                             configurationsLearning = configurationsValidation;
@@ -496,8 +497,8 @@ namespace CommandLine
                         {
                             configurationsValidation = configurationsLearning;
                         }
-                        
-                        
+
+
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
                         // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
@@ -521,9 +522,9 @@ namespace CommandLine
                         }
 
                         //    globalstate.loginfo.logline("error :" + relativeerror);
-                        
+
                         break;
-                     }
+                    }
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
 
@@ -582,51 +583,51 @@ namespace CommandLine
         /// </summary>
         private void computeEvaluationDataSetBasedOnTrueModel()
         {
-         /*   VariantGenerator vg = new VariantGenerator(null);
-            List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
-            List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
-            //take only 10k
-            if (temp.Count > 1000)
-            {
-                GlobalState.logInfo.log("Found " + temp.Count + " configurations. Use only 1000.");
-                HashSet<int> picked = new HashSet<int>();
-                Random r = new Random(1);
-                for (int i = 0; i < 1000; i++)
-                {
-                    int x = 0;
-                    do
-                    {
-                        x = r.Next(1, temp.Count);
-                    } while (picked.Contains(x));
-                    picked.Add(x);
-                    binaryConfigs.Add(temp[x]);
-                }
-                temp.Clear();
-            }
-            else
-                binaryConfigs = temp;
-            exp.addBinarySelection_Validation(binaryConfigs);
-            var expDesign = new HyperSampling(GlobalState.varModel.NumericOptions);
-            expDesign.Precision = 10;
-            expDesign.computeDesign();
-            exp.addNumericalSelection_Validation(expDesign.SelectedConfigurations);
-            var numericConfigs = expDesign.SelectedConfigurations;
-            foreach (List<BinaryOption> binConfig in binaryConfigs)
-            {
-                if (numericConfigs.Count == 0)
-                {
-                    Configuration c = new Configuration(binConfig);
-                    c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
-                    GlobalState.addConfiguration(c);
-                }
-                foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
-                {
+            /*   VariantGenerator vg = new VariantGenerator(null);
+               List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
+               List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
+               //take only 10k
+               if (temp.Count > 1000)
+               {
+                   GlobalState.logInfo.log("Found " + temp.Count + " configurations. Use only 1000.");
+                   HashSet<int> picked = new HashSet<int>();
+                   Random r = new Random(1);
+                   for (int i = 0; i < 1000; i++)
+                   {
+                       int x = 0;
+                       do
+                       {
+                           x = r.Next(1, temp.Count);
+                       } while (picked.Contains(x));
+                       picked.Add(x);
+                       binaryConfigs.Add(temp[x]);
+                   }
+                   temp.Clear();
+               }
+               else
+                   binaryConfigs = temp;
+               exp.addBinarySelection_Validation(binaryConfigs);
+               var expDesign = new HyperSampling(GlobalState.varModel.NumericOptions);
+               expDesign.Precision = 10;
+               expDesign.computeDesign();
+               exp.addNumericalSelection_Validation(expDesign.SelectedConfigurations);
+               var numericConfigs = expDesign.SelectedConfigurations;
+               foreach (List<BinaryOption> binConfig in binaryConfigs)
+               {
+                   if (numericConfigs.Count == 0)
+                   {
+                       Configuration c = new Configuration(binConfig);
+                       c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
+                       GlobalState.addConfiguration(c);
+                   }
+                   foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
+                   {
 
-                    Configuration c = new Configuration(binConfig, numConf);
-                    c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
-                    GlobalState.addConfiguration(c);
-                }
-            }*/
+                       Configuration c = new Configuration(binConfig, numConf);
+                       c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
+                       GlobalState.addConfiguration(c);
+                   }
+               }*/
         }
 
 
@@ -717,7 +718,7 @@ namespace CommandLine
             if (optionsToConsider.Count == 0)
                 optionsToConsider = GlobalState.varModel.NumericOptions;
 
-            
+
             switch (designName.ToLower())
             {
                 case COMMAND_EXPDESIGN_BOXBEHNKEN:
