@@ -11,6 +11,10 @@ namespace ProcessWrapper
 
         public enum LearningStrategies { SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor };
 
-        public enum LearningKernel { linear, standard, poly}
+        public static LearningStrategies getStrategy(string strategyAsString)
+        {
+            return (LearningStrategies)Enum.Parse(typeof(LearningStrategies), strategyAsString);
+        }
+
     }
 }

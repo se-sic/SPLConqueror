@@ -40,6 +40,8 @@ namespace ProcessWrapper
 
         private const string FINISHED_LEARNING = "learn_finished";
 
+        private string[] mlProperties = null;
+
         /// <summary>
         /// Create a new wrapper that contains a running Python Process.
         /// </summary>
@@ -47,6 +49,7 @@ namespace ProcessWrapper
         /// <param name="mlProperties">Options for the machine learning algortihm.</param>
         public PythonWrapper(string path, string[] mlProperties)
         {
+            this.mlProperties = mlProperties;
             ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_PATH, path);
             pythonSetup.UseShellExecute = false;
             pythonSetup.RedirectStandardInput = true;
@@ -87,7 +90,7 @@ namespace ProcessWrapper
                 }
             }
 
-                passLineToApplication(CONFIG_LEARN_STREAM_END);
+            passLineToApplication(CONFIG_LEARN_STREAM_END);
         }
 
         private void passConfigurationsPredict(List<Configuration> toPass)
@@ -106,11 +109,17 @@ namespace ProcessWrapper
             passLineToApplication(CONFIG_PREDICT_STREAM_END);
         }
 
-        private void initializeLearning(string strategy, LearningSettings.LearningKernel kernelSettings)
+        private void initializeLearning(LearningSettings.LearningStrategies strategy, string[] mlSettings)
         {
             passLineToApplication(LEARNING_SETTINGS_STREAM_START);
             passLineToApplication(strategy);
-            passLineToApplication(Enum.GetName(typeof(LearningSettings.LearningKernel), (int)kernelSettings));
+            if (mlSettings != null)
+            {
+                foreach (string setting in mlSettings)
+                {
+                    passLineToApplication(setting);
+                }
+            }
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
         }
 
@@ -126,10 +135,10 @@ namespace ProcessWrapper
             sb.Append("Configuration;Measured;Predicted\n");
             for (int i = 0; i < predictedConfigurations.Count; i++)
             {
-                sb.Append(predictedConfigurations[i].ToString()+";"+predictedConfigurations[i].GetNFPValue() + ";" + predictions[i]+"\n");
+                sb.Append(predictedConfigurations[i].ToString() + ";" + predictedConfigurations[i].GetNFPValue() + ";" + predictions[i] + "\n");
             }
-            
-            
+
+
             if (predictions.Length == GlobalState.varModel.optionToIndex.Count)
             {
                 int counter = 0;
@@ -146,11 +155,11 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
-        public void setupApplication(List<Configuration> configs, string strategy, LearningSettings.LearningKernel kernelSettings, List<Configuration> configurationsToPredict)
+        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
-                initializeLearning(strategy, kernelSettings);
+                initializeLearning(strategy, this.mlProperties);
 
                 if (AWAITING_CONFIGS.Equals(waitForNextReceivedLine()))
                 {
@@ -161,17 +170,12 @@ namespace ProcessWrapper
             }
         }
 
-        public void setupDefaultApplication(List<Configuration> configs, string strategy, List<Configuration> configurationsToPredict )
-        {
-            setupApplication(configs, strategy, LearningSettings.LearningKernel.standard, configurationsToPredict);
-        }
-
         public string getLearningResult(List<Configuration> predictedConfigurations)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
             {
-                
+
             }
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
