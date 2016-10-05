@@ -69,6 +69,7 @@ namespace CommandLine
 
         public const string DEFINE_PYTHON_PATH = "define-python-path";
         public const string COMMAND_PYTHON_LEARN = "learn-python";
+        public const string COMMAND_PYTHON_LEARN_OPT = "learn-python-opt";
 
         List<SamplingStrategies> toSample = new List<SamplingStrategies>();
         List<SamplingStrategies> toSampleValidation = new List<SamplingStrategies>();
@@ -132,7 +133,7 @@ namespace CommandLine
 
                         LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations);
+                        pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
 
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         Console.WriteLine("Py result:\n" + pyResult);
@@ -477,11 +478,47 @@ namespace CommandLine
                         // assuming the strategy is always the first parameter passed to the program
                         LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations);
+                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
                         pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         GlobalState.logInfo.logLine("Py result:" + pyResult);
                         break;
                     }
+
+
+                case COMMAND_PYTHON_LEARN_OPT:
+                    {
+                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                        List<Configuration> configurationsLearning = buildSet(this.toSample);
+                        List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
+
+                        if (configurationsLearning.Count == 0)
+                        {
+                            configurationsLearning = configurationsValidation;
+                        }
+
+                        if (configurationsLearning.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
+                            break;
+                        }
+
+                        if (configurationsValidation.Count == 0)
+                        {
+                            configurationsValidation = configurationsLearning;
+                        }
+                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+
+                        // assuming the strategy is always the first parameter passed to the program
+                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
+                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
+                        pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations);
+                        GlobalState.logInfo.logLine("Py result:" + pyResult);
+                        break;
+                    }
+
+                    
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);

@@ -1,5 +1,7 @@
 import sys
 import learning
+import parameterTuning
+
 
 CONF_MARKER = "Configurations"
 REQUESTING_LEARNING_SETTINGS = "req_settings"
@@ -14,6 +16,9 @@ CONFIG_LEARN_STREAM_END = "config_learn_end"
 CONFIG_PREDICT_STREAM_START = "config_predict_start"
 
 CONFIG_PREDICT_STREAM_END = "config_predict_end"
+
+START_LEARN = "start_learn"
+START_PARAM_TUNING = "start_param_tuning"
 
 PASS_OK = "pass_ok"
 FINISHED_LEARNING = "learn_finished"
@@ -82,14 +87,21 @@ def main():
    
     configurationsPredict = get_configurationsPredict(configurationsPredict)
 
-    model = learning.Learner(learning_strategy, learner_settings)
-    model.learn(configurationsLearn.features, configurationsLearn.results)
-    predictions = model.predict(configurationsPredict.features)
-    
-    
-    print_line(FINISHED_LEARNING)
-    if raw_input() == REQUESTING_LEARNING_RESULTS:
-        print_lineArray(predictions)
+    task = raw_input()
+    if(task == START_LEARN):
+        model = learning.Learner(learning_strategy, learner_settings)
+        model.learn(configurationsLearn.features, configurationsLearn.results)
+        predictions = model.predict(configurationsPredict.features)
+        
+        
+        print_line(FINISHED_LEARNING)
+        if raw_input() == REQUESTING_LEARNING_RESULTS:
+            print_lineArray(predictions)
+    elif(task == START_PARAM_TUNING):
+        print_line(FINISHED_LEARNING)
+        optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results)
+        if raw_input() == REQUESTING_LEARNING_RESULTS:
+            print_lineArray(optimalParameters)
 
 # class to hold values passed by c#
 class Configurations():
