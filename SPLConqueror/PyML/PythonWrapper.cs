@@ -40,6 +40,10 @@ namespace ProcessWrapper
 
         private const string FINISHED_LEARNING = "learn_finished";
 
+        public const string START_LEARN = "start_learn";
+
+        public const string START_PARAM_TUNING = "start_param_tuning";
+
         private string[] mlProperties = null;
 
         /// <summary>
@@ -155,7 +159,7 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
-        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict)
+        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict, string task)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
@@ -167,6 +171,7 @@ namespace ProcessWrapper
 
                     passConfigurationsPredict(configurationsToPredict);
                 }
+                passLineToApplication(task);
             }
         }
 
@@ -181,6 +186,19 @@ namespace ProcessWrapper
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return nfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations);
         }
+
+        public string getOptimizationResult(List<Configuration> predictedConfigurations)
+        {
+
+            while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
+            {
+
+            }
+
+            passLineToApplication(REQUESTING_LEARNING_RESULTS);
+            return waitForNextReceivedLine();
+        }
+
 
     }
 }
