@@ -9,9 +9,14 @@ import numpy as np
 
 param_SVR = [
  # {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf','linear']}
-  {'C': [1, 10], 'gamma': [0.001], 'kernel': ['rbf']}
+   {'C': [0.1, 0.2, 0.5, 1, 2], 'epsilon': [0.5, 0.3, 0.2, 0.1, 0.01], 'kernel': ['rbf', 'linear', 'poly', 'sigmoid'], 'degree' : [1, 2, 3, 4, 5] , 'coef0' : [0,1,2,3], 'shrinking' : [True, False], 'tol' : [1e-3, 2e-3, 5e-3, 1e-2]}
+  #{'C': [0.1, 0.2], 'epsilon': [0.5, 0.3], 'kernel': ['poly', 'sigmoid'], 'degree' : [4, 5] , 'coef0' : [2,3], 'shrinking' : [True, False], 'tol' : [5e-3, 1e-2]}
+  ]
+param_DecisionTree = [
+   { 'citerion' : ['mse','mae'], 'splitter' : ['best', 'random'], 'max_features' : ['auto','sqrt','log2'], 'min_samples_leaf' : [1, 2], 'random_state' : [1, 2, 3], 'min_impurity_split' : [1e-7, 1e-6, 1e-5, 1e-4] }
   ]
 
+  
 def optimizeParameter(strategy,X_train, y_train): 
   text_file = open("E:\SPLConquerorPython\Input.txt", "w")
   text_file.write(str(X_train))
@@ -20,9 +25,9 @@ def optimizeParameter(strategy,X_train, y_train):
   strategy = strategy.lower()
   if strategy == "svr":
     return optimize_SVR(X_train, y_train)
-'''  elif strategy == "decisiontreeregressor":
+  elif strategy == "decisiontreeregressor":
     return optimize_DecisionTree()
-  elif strategy == "randomforestregressor":
+'''  elif strategy == "randomforestregressor":
     return optimize_RandomForestRegressor()
   elif strategy == "baggingsvr": 
     return optimize_BaggingSVR()
@@ -46,8 +51,18 @@ def scoreFunction(estimator, configurations, measurements):
     
     
 def optimize_SVR(X_train, y_train):
-  opt = modelSel.GridSearchCV(sk.SVR(C =1), param_SVR, cv=5,scoring=scoreFunction)
+  opt = modelSel.GridSearchCV(sk.SVR(), param_SVR, cv=5,scoring=scoreFunction)
   opt.fit(X_train, y_train)
-  return opt.best_params_
+  output = ""
+  for key in opt.best_params_:
+    output += key +"="+str(opt.best_params_[key])+";"
+  return output  
   
+def optimize_DecisionTree(X_train, y_train):
+  opt = modelSel.GridSearchCV(sk.DecisionTreeRegressor(), param_SVR, cv=5,scoring=scoreFunction)
+  opt.fit(X_train, y_train)
+  output = ""
+  for key in opt.best_params_:
+    output += key +"="+str(opt.best_params_[key])+";"
+  return output    
   

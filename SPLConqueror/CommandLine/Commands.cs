@@ -514,7 +514,7 @@ namespace CommandLine
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
                         pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations);
-                        GlobalState.logInfo.logLine("Py result:" + pyResult);
+                        GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",",""));
                         break;
                     }
 
