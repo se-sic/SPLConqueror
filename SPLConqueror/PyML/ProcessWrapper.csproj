@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PythonPredictionWriter.cs" />
     <Compile Include="LearningSettings.cs" />
     <Compile Include="PythonWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
