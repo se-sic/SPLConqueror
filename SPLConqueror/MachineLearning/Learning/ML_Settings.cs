@@ -75,6 +75,11 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool learn_logFunction = false;
 
+        /// <summary>
+        /// Allows the creation of logarithmic functions with multiple features such as log(soption1 * soption2).
+        /// </summary>
+        public bool learn_accumulatedLogFunction = false;
+
         public bool learn_asymFunction = false;
 
         public bool learn_ratioFunction = false;
