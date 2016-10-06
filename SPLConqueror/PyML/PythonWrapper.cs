@@ -127,6 +127,7 @@ namespace ProcessWrapper
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
         }
 
+        // currently replaced by PrintNfpPredictionsPython
         private string nfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations)
         {
             string[] separators = new String[] { "," };
@@ -159,6 +160,20 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
+        public void printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
+        {
+            string[] separators = new String[] { "," };
+            string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+            if (predictedConfigurations.Count != predictions.Length)
+                GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
+
+            for (int i = 0; i < predictedConfigurations.Count; i++)
+            {
+                writer.writePredictions(predictedConfigurations[i].ToString() + ";" + predictedConfigurations[i].GetNFPValue() + ";" + predictions[i] + "\n");
+            }
+        }
+
         public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict, string task)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
@@ -175,7 +190,7 @@ namespace ProcessWrapper
             }
         }
 
-        public string getLearningResult(List<Configuration> predictedConfigurations)
+        public void getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
@@ -184,16 +199,18 @@ namespace ProcessWrapper
             }
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
-            return nfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations);
+            printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer);
         }
 
-        public string getOptimizationResult(List<Configuration> predictedConfigurations)
+        public string getOptimizationResult(List<Configuration> predictedConfigurations, string targetPath)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
             {
 
             }
+
+            passLineToApplication(targetPath);
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return waitForNextReceivedLine();

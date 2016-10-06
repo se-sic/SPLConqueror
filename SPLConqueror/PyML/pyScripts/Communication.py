@@ -99,6 +99,8 @@ def main():
             print_lineArray(predictions)
     elif(task == START_PARAM_TUNING):
         print_line(FINISHED_LEARNING)
+        target_path = raw_input()
+        parameterTuning.setOutputPath(target_path)
         optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimalParameters)

@@ -32,10 +32,20 @@ param_baggingSVR = [
   {'n_estimators' : [5, 8, 10, 12, 15], 'max_samples' : [0.5,0.625,0.75,0.875,1], 'max_features' : [0.5,0.625,0.75,0.875,1] , 'bootstrap' : [True, False], 'bootstrap_features' : [True, False], 'oob_score' : [False, True], 'n_jobs' : [-1], 'random_state' : [1, 2, 3],  'base_estimator__C': [0.1, 0.2, 0.5, 1, 2,5,10], 'base_estimator__epsilon': [0.5, 0.3, 0.2, 0.1, 0.01], 'base_estimator__kernel': ['rbf', 'linear', 'poly', 'sigmoid'], 'base_estimator__degree' : [1, 2, 3, 4, 5] , 'base_estimator__coef0' : [0,1,2,3], 'base_estimator__shrinking' : [True, False], 'base_estimator__tol' : [1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 1e-1]}
   ]
 
+target_path = ""
+
+strat_filename = "strat.txt"
+
+output_filename = "Output.txt"
+
+def setOutputPath(path):
+  global target_path
+  target_path = path
+
 def optimizeParameter(strategy,X_train, y_train): 
   strategy = strategy.lower()
   
-  text_file = open("E:\SPLConquerorPython\strat.txt", "w")
+  text_file = open(target_path+strat_filename, "a")
   text_file.write(strategy)
   text_file.close()
   
@@ -49,12 +59,12 @@ def optimizeParameter(strategy,X_train, y_train):
     return optimize_KNNeighborsRegressor(X_train, y_train)
   elif strategy == "kernelridge":
     return optimize_KernelRidge(X_train, y_train)
-  elif strategy == "baggingsvr": 
+  elif strategy == "baggingsvr":
     return optimize_BaggingSVR(X_train, y_train)
 
 
 def scoreFunction(estimator, configurations, measurements):
-  text_file = open("E:\SPLConquerorPython\Output.txt", "w")
+  text_file = open(target_path + output_filename, "a")
   text_file.write(str(estimator))
   text_file.write("sum")
   predictions = estimator.predict(configurations)
