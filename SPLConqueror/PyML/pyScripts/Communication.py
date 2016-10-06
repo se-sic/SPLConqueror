@@ -101,7 +101,7 @@ def main():
         print_line(FINISHED_LEARNING)
         optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
-            print_lineArray(optimalParameters)
+            print_line(optimalParameters)
 
 # class to hold values passed by c#
 class Configurations():
