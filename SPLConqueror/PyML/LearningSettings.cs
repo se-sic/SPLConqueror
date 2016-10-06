@@ -9,7 +9,7 @@ namespace ProcessWrapper
     public class LearningSettings
     {
 
-        public enum LearningStrategies { SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor };
+        public enum LearningStrategies { SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE};
 
         public static LearningStrategies getStrategy(string strategyAsString)
         {
