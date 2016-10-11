@@ -32,6 +32,16 @@ param_baggingSVR = [
   
   ]
 
+target_path = ""
+
+strat_filename = "strat.txt"
+
+output_filename = "Output.txt"
+
+def setOutputPath(path):
+  global target_path
+  target_path = path
+
 def optimizeParameter(strategy,X_train, y_train): 
   strategy = strategy.lower()
   
@@ -45,7 +55,7 @@ def optimizeParameter(strategy,X_train, y_train):
     return optimize_KNNeighborsRegressor(X_train, y_train)
   elif strategy == "kernelridge":
     return optimize_KernelRidge(X_train, y_train)
-  elif strategy == "baggingsvr": 
+  elif strategy == "baggingsvr":
     return optimize_BaggingSVR(X_train, y_train)
 
 
