@@ -10,11 +10,11 @@ namespace ProcessWrapper
     {
         private Process pythonProcess;
 
-        protected const string SCRIPT_LOCATION = "\\PyML\\pyScripts";
+        protected string SCRIPT_LOCATION = System.IO.Path.DirectorySeparatorChar + "PyML" + System.IO.Path.DirectorySeparatorChar + "pyScripts";
 
         public const string COMMUNICATION_SCRIPT = "Communication.py";
 
-        public static string PYTHON_PATH = "python.exe";
+        public static string PYTHON_PATH = "python";
 
         private const string CONFIG_LEARN_STREAM_START = "config_learn_start";
 
