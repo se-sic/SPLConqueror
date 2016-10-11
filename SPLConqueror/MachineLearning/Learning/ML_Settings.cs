@@ -69,6 +69,8 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool crossValidation = false;
 
+        public int crossValidation_k = 5;
+
 
         /// <summary>
         /// If true, the learn algorithm can learn logarithmic functions auch as log(soption1). 

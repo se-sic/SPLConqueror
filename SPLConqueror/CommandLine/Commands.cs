@@ -54,6 +54,7 @@ namespace CommandLine
         public const string COMMAND_SET_MLSETTING = "mlsettings";
 
         public const string COMMAND_START_LEARNING = "start";
+        public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
 
         public const string COMMAND_EXERIMENTALDESIGN = "expdesign";
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
@@ -483,10 +484,10 @@ namespace CommandLine
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         GlobalState.logInfo.logLine("Starting Prediction");
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
-                        pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
-                        GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
-                        csvWriter.close();
+                        //PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
+                        //pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                        //GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                        //csvWriter.close();
                         break;
                     }
 
@@ -519,9 +520,9 @@ namespace CommandLine
                         LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
-                        string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
-                        pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
-                        GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",",""));
+                        //string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
+                        //pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
+                        //GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",",""));
                         break;
                     }
 
@@ -575,6 +576,58 @@ namespace CommandLine
 
                         break;
                     }
+                case COMMAND_OPTIMIZE_PARAMETER:
+                    {
+                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                        List<Configuration> configurationsLearning = buildSet(this.toSample);
+                        List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
+
+                        if (configurationsLearning.Count == 0)
+                        {
+                            configurationsLearning = configurationsValidation;
+                        }
+
+                        if (configurationsLearning.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
+                            break;
+                        }
+
+                        if (configurationsValidation.Count == 0)
+                        {
+                            configurationsValidation = configurationsLearning;
+                        }
+
+
+                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+                        
+                        // TODO read paramters of the command and generate the set of parameter combinations that are used in the optimization process.
+                        List<ML_Settings> parameterSettings = new List<ML_Settings>();
+
+                        ML_Settings optimalParameters = null;
+                        double minimalError = Double.MaxValue;
+
+                        foreach (ML_Settings parameters in parameterSettings)
+                        {
+                            // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
+                            KFoldCrossValidation kFold = new KFoldCrossValidation(parameters, configurationsLearning);
+                            double error = kFold.learn();
+
+                            if (error < minimalError)
+                            {
+                                optimalParameters = parameters;
+                                minimalError = error;
+                            }
+
+                        }
+                        GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
+                        GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
+
+                        break;
+                    }
+
+
+
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
 

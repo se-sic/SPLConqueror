@@ -98,6 +98,12 @@ namespace MachineLearning.Learning.Regression
                 this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+
+            if (this.MLsettings.crossValidation)
+            {
+                // split the dataset in different test and trainingsets
+            }
+
         }
 
         /// <summary>
@@ -958,9 +964,10 @@ namespace MachineLearning.Learning.Regression
                 return computeValidationError(currentModel, out relativeError);
             else
             {
+                //todo k-fold
                 return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
             }
-            //todo k-fold
+
         }
 
         /// <summary>
