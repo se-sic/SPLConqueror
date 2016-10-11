@@ -78,6 +78,8 @@ namespace CommandLine
 
         public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
+        public static string targetPath = null;
+
         public static string pyResult = "";
 
         /// <summary>
@@ -135,8 +137,8 @@ namespace CommandLine
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
 
-                        pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
-                        Console.WriteLine("Py result:\n" + pyResult);
+                        //pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
+                        //Console.WriteLine("Py result:\n" + pyResult);
                         //exp.models.Clear();
                         //var mod = exp.models;
                         //exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
@@ -365,6 +367,7 @@ namespace CommandLine
                 case COMMAND_LOG:
 
                     string location = task.Trim();
+                    targetPath = location;
                     GlobalState.logInfo.close();
                     GlobalState.logInfo = new InfoLogger(location);
 
@@ -478,9 +481,12 @@ namespace CommandLine
                         // assuming the strategy is always the first parameter passed to the program
                         LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                        GlobalState.logInfo.logLine("Starting Prediction");
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                        pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
-                        GlobalState.logInfo.logLine("Py result:" + pyResult);
+                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
+                        pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                        GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                        csvWriter.close();
                         break;
                     }
 
@@ -513,7 +519,8 @@ namespace CommandLine
                         LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
-                        pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations);
+                        string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
+                        pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
                         GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",",""));
                         break;
                     }

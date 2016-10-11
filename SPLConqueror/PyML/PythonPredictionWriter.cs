@@ -49,5 +49,10 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
+        public string getPath()
+        {
+            return ((FileStream)csvWriter.BaseStream).Name;
+        }
+
     }
 }
