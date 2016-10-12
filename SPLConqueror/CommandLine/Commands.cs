@@ -132,21 +132,21 @@ namespace CommandLine
 
 
 
-                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
+                        //PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
 
-                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
-                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
+                        //LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
+                        //// SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                        //pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
 
                         //pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
                         //Console.WriteLine("Py result:\n" + pyResult);
-                        //exp.models.Clear();
-                        //var mod = exp.models;
-                        //exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
-                        //exp.models = mod;
-                        //exp.metaModel = infMod;
-                        //exp.mLsettings = this.mlSettings;
-                        //exp.learn();
+                        exp.models.Clear();
+                        var mod = exp.models;
+                        exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+                        exp.models = mod;
+                        exp.metaModel = infMod;
+                        exp.mlSettings = this.mlSettings;
+                        exp.learn();
                     }
                     break;
 
@@ -484,10 +484,10 @@ namespace CommandLine
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         GlobalState.logInfo.logLine("Starting Prediction");
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                        //PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
-                        //pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
-                        //GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
-                        //csvWriter.close();
+                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
+                        pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                        GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                        csvWriter.close();
                         break;
                     }
 
@@ -520,9 +520,9 @@ namespace CommandLine
                         LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
-                        //string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
-                        //pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
-                        //GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",",""));
+                        string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
+                        pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
+                        GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
                         break;
                     }
 
