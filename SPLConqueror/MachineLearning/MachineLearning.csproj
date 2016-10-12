@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Learning\LearningInfo.cs" />
     <Compile Include="Learning\ML_Settings.cs" />
+    <Compile Include="Learning\ML_SettingsGenerator.cs" />
     <Compile Include="Learning\Regression\FeatureSubsetSelection.cs" />
     <Compile Include="Learning\Regression\Learning.cs" />
     <Compile Include="Learning\Regression\LearningRound.cs" />
@@ -112,6 +113,9 @@
       <Project>{1f035958-15b1-450a-bfc5-bebd95376c40}</Project>
       <Name>SPLConqueror_Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
