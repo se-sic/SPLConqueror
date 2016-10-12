@@ -601,8 +601,8 @@ namespace CommandLine
 
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
                         
-                        // TODO read paramters of the command and generate the set of parameter combinations that are used in the optimization process.
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
+                        parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
 
                         ML_Settings optimalParameters = null;
                         double minimalError = Double.MaxValue;
