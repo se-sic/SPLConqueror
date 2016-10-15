@@ -20,7 +20,7 @@ namespace ProcessWrapper
             string logFilename = (path.Split(Path.DirectorySeparatorChar)).Last();
             path = path.Substring(0, (path.Length - ((logFilename).Length)));
             path += csvFilename;
-            FileStream csvFileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream csvFileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
             csvWriter = new StreamWriter(csvFileStream);
             learningSettingsAttachment = parseLearningSettings(learningSettings);
         }
