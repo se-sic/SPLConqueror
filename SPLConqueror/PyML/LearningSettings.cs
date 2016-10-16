@@ -11,9 +11,23 @@ namespace ProcessWrapper
 
         public enum LearningStrategies { SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE};
 
-        public static LearningStrategies getStrategy(string strategyAsString)
+        private static LearningStrategies getStrategy(string strategyAsString)
         {
-            return (LearningStrategies)Enum.Parse(typeof(LearningStrategies), strategyAsString);
+            bool ignoreCase = true;
+            return (LearningStrategies)Enum.Parse(typeof(LearningStrategies), strategyAsString, ignoreCase);
+        }
+
+        public static bool isLearningStrategy(string toTest)
+        {
+            try
+            {
+                getStrategy(toTest);
+                return true;
+            }
+            catch (ArgumentException e)
+            {
+                return false;
+            }
         }
 
     }

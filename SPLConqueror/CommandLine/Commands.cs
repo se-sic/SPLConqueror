@@ -477,17 +477,20 @@ namespace CommandLine
                             configurationsValidation = configurationsLearning;
                         }
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
-                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
 
-                        // assuming the strategy is always the first parameter passed to the program
-                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        GlobalState.logInfo.logLine("Starting Prediction");
-                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
-                        pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
-                        GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
-                        csvWriter.close();
+                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0])) {
+                            PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+                            GlobalState.logInfo.logLine("Starting Prediction");
+                            pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
+                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
+                            pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                            GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                            csvWriter.close();
+                        } else
+                        {
+                            GlobalState.logInfo.logLine("Invalid Learning strategy " + taskAsParameter[0] + "! Aborting learning");
+                        }
                         break;
                     }
 
@@ -514,15 +517,19 @@ namespace CommandLine
                             configurationsValidation = configurationsLearning;
                         }
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
-                        PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
 
-                        // assuming the strategy is always the first parameter passed to the program
-                        LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        pyInterpreter.setupApplication(configurationsLearning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
-                        string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
-                        pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
-                        GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
+                        {
+                            PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+                            pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
+                            string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
+                            pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
+                            GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                        } else
+                        {
+                            GlobalState.logInfo.logLine("Invalid learning strategy " + taskAsParameter[0] + "! Aborting Learning");
+                        }
                         break;
                     }
 
