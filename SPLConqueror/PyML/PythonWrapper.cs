@@ -113,15 +113,15 @@ namespace ProcessWrapper
             passLineToApplication(CONFIG_PREDICT_STREAM_END);
         }
 
-        private void initializeLearning(LearningSettings.LearningStrategies strategy, string[] mlSettings)
+        private void initializeLearning(string[] mlSettings)
         {
             passLineToApplication(LEARNING_SETTINGS_STREAM_START);
-            passLineToApplication((Enum.GetName(typeof(LearningSettings.LearningStrategies), (int)strategy)).ToLower());
-            if (mlSettings != null)
+            passLineToApplication(mlSettings[0].Trim().ToLower());
+            if (mlSettings.Length > 1)
             {
-                foreach (string setting in mlSettings)
+                for(int i = 1; i < mlSettings.Length; ++i)
                 {
-                    passLineToApplication(setting);
+                    passLineToApplication(mlSettings[i]);
                 }
             }
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
@@ -174,11 +174,11 @@ namespace ProcessWrapper
             }
         }
 
-        public void setupApplication(List<Configuration> configs, LearningSettings.LearningStrategies strategy, List<Configuration> configurationsToPredict, string task)
+        public void setupApplication(List<Configuration> configs, List<Configuration> configurationsToPredict, string task)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
-                initializeLearning(strategy, this.mlProperties);
+                initializeLearning(this.mlProperties);
 
                 if (AWAITING_CONFIGS.Equals(waitForNextReceivedLine()))
                 {
