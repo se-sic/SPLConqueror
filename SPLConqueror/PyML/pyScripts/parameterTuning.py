@@ -42,7 +42,7 @@ def setOutputPath(path):
   global target_path
   target_path = path
 
-def optimizeParameter(strategy,X_train, y_train): 
+def optimizeParameter(strategy,X_train, y_train, parameter_space_def):
   strategy = strategy.lower()
   
   if strategy == "svr":
@@ -105,4 +105,35 @@ def formatOptimal(optimalParams):
   output = ""
   for key in optimalParams:
     output += key +"="+str(optimalParams[key])+";"
-  return output    
+  return output
+
+def format_parameter_space(parameter_space):
+  formated_space = ""
+  for parameter in parameter_space:
+    name_value_pair = parameter.split("=")
+    formated_space += " '" + name_value_pair[0] + "' : "
+    formated_space += str(name_value_pair[1]) + ","
+  formated_space += formated_space[:-1]
+  formated_space += "}]"
+  return formated_space
+
+def change_parameter_space(strategy, parameter_space_def):
+  if parameter_space_def:
+    to_execute = ""
+    if strategy == "svr":
+      to_execute = "param_SVR"
+    elif strategy == "decisiontreeregression":
+      to_execute = "param_DecisionTree"
+    elif strategy == "randomforestregressor":
+      to_execute = "param_RandomForest"
+    elif strategy == "kneighborsregressor":
+      to_execute = "param_kNNRegressor"
+    elif strategy == "kernelridge":
+      to_execute = "param_kernelRidge"
+    elif strategy == "baggingsvr":
+      to_execute = "param_baggingSVR"
+    to_execute += " = [{"
+    to_execute += format_parameter_space(parameter_space_def)
+    exec(to_execute, globals())
+
+
