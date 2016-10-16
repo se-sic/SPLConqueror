@@ -101,7 +101,7 @@ def main():
         print_line(FINISHED_LEARNING)
         target_path = raw_input()
         parameterTuning.setOutputPath(target_path)
-        optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results)
+        optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results, learner_setting)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimalParameters)
 
