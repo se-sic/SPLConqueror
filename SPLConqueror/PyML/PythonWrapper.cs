@@ -16,33 +16,54 @@ namespace ProcessWrapper
 
         public static string PYTHON_PATH = "python";
 
+        // Messages sent to the python process.
+
+        /* These messages are used indicate the start and end of the sequenz, where 
+         * the configuration data of the learner will be sent.
+         * Used in initialize Learning.
+        */
+        private const string LEARNING_SETTINGS_STREAM_START = "settings_start";
+
+        private const string LEARNING_SETTINGS_STREAM_END = "settings_end";
+        
+        /* Meassages to indicate the start and end of the stream of configurations.
+         * Configurations will be sent in between the messages.
+        */
         private const string CONFIG_LEARN_STREAM_START = "config_learn_start";
 
         private const string CONFIG_LEARN_STREAM_END = "config_learn_end";
 
-
+        /* Meassages to indicate the start and end of the stream of configurations.
+         * Configurations will be sent in between the messages.
+        */
         private const string CONFIG_PREDICT_STREAM_START = "config_predict_start";
 
         private const string CONFIG_PREDICT_STREAM_END = "config_predict_end";
 
-
-        private const string LEARNING_SETTINGS_STREAM_START = "settings_start";
-
-        private const string LEARNING_SETTINGS_STREAM_END = "settings_end";
-
-        private const string AWAITING_SETTINGS = "req_settings";
-
-        private const string AWAITING_CONFIGS = "req_configs";
-
-        private const string REQUESTING_LEARNING_RESULTS = "req_results";
-
-        private const string PASS_OK = "pass_ok";
-
-        private const string FINISHED_LEARNING = "learn_finished";
-
+        /* Message to send the task that should be performed by the application.
+         * Only one task can be performed by the process before terminating.
+        */
         public const string START_LEARN = "start_learn";
 
         public const string START_PARAM_TUNING = "start_param_tuning";
+
+        // Message to request of the results of the process.
+        private const string REQUESTING_LEARNING_RESULTS = "req_results";
+
+
+        // Messages received by the python process
+
+        // Message to indicate that settings can be sent.
+        private const string AWAITING_SETTINGS = "req_settings";
+
+        // Message to indicate that configurations can be sent.
+        private const string AWAITING_CONFIGS = "req_configs";
+
+        // ACK.
+        private const string PASS_OK = "pass_ok";
+
+        // Message to indicate that the process has performed the task.
+        private const string FINISHED_LEARNING = "learn_finished";
 
         private string[] mlProperties = null;
 
@@ -50,7 +71,7 @@ namespace ProcessWrapper
         /// Create a new wrapper that contains a running Python Process.
         /// </summary>
         /// <param name="path">The path of the source file called to start Python.</param>
-        /// <param name="mlProperties">Options for the machine learning algortihm.</param>
+        /// <param name="mlProperties">Configurations for the machine learning algorithm.</param>
         public PythonWrapper(string path, string[] mlProperties)
         {
             this.mlProperties = mlProperties;
@@ -76,6 +97,9 @@ namespace ProcessWrapper
             pythonProcess.StandardInput.WriteLine(toPass);
         }
 
+        /// <summary>
+        /// Kill the process.
+        /// </summary>
         public void endProcess()
         {
             pythonProcess.Close();
@@ -160,7 +184,7 @@ namespace ProcessWrapper
             return sb.ToString();
         }
 
-        public void printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
+        private void printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
         {
             string[] separators = new String[] { "," };
             string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
@@ -174,6 +198,17 @@ namespace ProcessWrapper
             }
         }
 
+        /// <summary>
+        /// Starts the python process by sending the learner configurations.
+        /// Then sends the configurations that are used to train the learner and the configurations that should be used for prediction by
+        /// the learner.
+        /// At last sends the task that should be performed(learning or parameter tuning).
+        /// This has to be performed before requesting results and can only be done once per lifetime of the process.
+        /// </summary>
+        /// <param name="configs">Configurations used to train.</param>
+        /// <param name="configurationsToPredict">Configurations used for prediction.</param>
+        /// <param name="task">Task that should be performed by the learner. Can either be parameter tuning
+        /// or learning.</param>
         public void setupApplication(List<Configuration> configs, List<Configuration> configurationsToPredict, string task)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
@@ -190,6 +225,13 @@ namespace ProcessWrapper
             }
         }
 
+        /// <summary>
+        /// Send a request to the process to get the learning/prediction results.
+        /// The process has to be set up before performing this method.
+        /// The process will automatically terminate after this method was performed.
+        /// </summary>
+        /// <param name="predictedConfigurations">The configurations that were used to predict the nfp values by the learner.</param>
+        /// <param name="writer">Writer to write the prediction results into a csv File.</param>
         public void getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
         {
 
@@ -202,6 +244,15 @@ namespace ProcessWrapper
             printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer);
         }
 
+        /// <summary>
+        /// Send a request to the process to get the parameter tuning results(optimal configuration of the learner for the current
+        /// scenario).
+        /// The process has to be set up before performing this method.
+        /// The process will automatically terminate after this method was performed.
+        /// </summary>
+        /// <param name="predictedConfigurations">The configurations that were used to predict the nfp values by the learner.</param>
+        /// <param name="targetPath">Target path to write intermediate results into a file.</param>
+        /// <returns>Optimal configuration</returns>
         public string getOptimizationResult(List<Configuration> predictedConfigurations, string targetPath)
         {
 

@@ -166,7 +166,7 @@ namespace MachineLearning.Learning
         }
 
         /// <summary>
-        /// Method that generates all ML_Settings object within a user defined parameter space
+        /// Method that generates all ML_Settings objects within a user defined parameter space
         /// </summary>
         /// <param name="parameters">Definition of the parameter space in String format</param>
         /// <returns>List of all ML_Settings within the parameter space</returns>
