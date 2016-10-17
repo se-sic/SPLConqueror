@@ -4,11 +4,10 @@ import parameterTuning
 
 
 CONF_MARKER = "Configurations"
-REQUESTING_LEARNING_SETTINGS = "req_settings"
+
+# Messages received by the parent process
 SETTING_STREAM_START = "settings_start"
 SETTING_STREAM_END = "settings_end"
-REQUESTING_CONFIGURATION = "req_configs"
-REQUESTING_LEARNING_RESULTS = "req_results"
 
 CONFIG_LEARN_STREAM_START = "config_learn_start"
 CONFIG_LEARN_STREAM_END = "config_learn_end"
@@ -20,15 +19,22 @@ CONFIG_PREDICT_STREAM_END = "config_predict_end"
 START_LEARN = "start_learn"
 START_PARAM_TUNING = "start_param_tuning"
 
+# Messages sent to the parent process
+REQUESTING_CONFIGURATION = "req_configs"
+REQUESTING_LEARNING_RESULTS = "req_results"
+
 PASS_OK = "pass_ok"
 FINISHED_LEARNING = "learn_finished"
+
+REQUESTING_LEARNING_SETTINGS = "req_settings"
 
 # Output finction to pass strings to C#, flushing the output buffer is required to make sure the string is written in the stream
 def print_line(string):
     print string
     # flushing output buffer
     sys.stdout.flush()
-    
+
+# format and print a list
 def print_lineArray(array):
     output = ""
     for item in array:
@@ -37,6 +43,7 @@ def print_lineArray(array):
     print output
     sys.stdout.flush()    
 
+# Function to request and then parse configurations.
 def get_configurations(container, stream_start_arg, stream_end_arg):
     print_line(REQUESTING_CONFIGURATION)
     marker = raw_input()
@@ -60,12 +67,15 @@ def get_configurations(container, stream_start_arg, stream_end_arg):
 
     return container
 
+# Request and return the configurations used to train.
 def get_configurationsLearn(container):
     return get_configurations(container, CONFIG_LEARN_STREAM_START, CONFIG_LEARN_STREAM_END)
 
+# Request and return the configurations used to preidct.
 def get_configurationsPredict(container):
     return get_configurations(container, CONFIG_PREDICT_STREAM_START, CONFIG_PREDICT_STREAM_END)
-    
+
+# Main method, that will be executed when executing this script.
 def main():
     configurationsLearn = Configurations()
     configurationsPredict = Configurations()
@@ -88,6 +98,7 @@ def main():
     configurationsPredict = get_configurationsPredict(configurationsPredict)
 
     task = raw_input()
+    # perform prediction
     if(task == START_LEARN):
         model = learning.Learner(learning_strategy, learner_settings)
         model.learn(configurationsLearn.features, configurationsLearn.results)
@@ -97,11 +108,12 @@ def main():
         print_line(FINISHED_LEARNING)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_lineArray(predictions)
+    # perform parameter tuning
     elif(task == START_PARAM_TUNING):
         print_line(FINISHED_LEARNING)
         target_path = raw_input()
         parameterTuning.setOutputPath(target_path)
-        optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results, learner_setting)
+        optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results, learner_settings)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimalParameters)
 

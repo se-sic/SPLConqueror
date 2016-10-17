@@ -7,6 +7,8 @@ import sklearn.grid_search as modelSel
 
 import numpy as np
 
+#default parameter spaces used for parameter tuning.
+
 param_SVR = [
   {'C': [0.5, 1, 2,5,10], 'epsilon': [0.3, 0.2, 0.1, 0.01], 'kernel': ['rbf', 'linear', 'poly', 'sigmoid'], 'degree' : [1, 2, 3, 4] , 'coef0' : [0,1,2], 'shrinking' : [True, False], 'tol' : [5e-3, 1e-2, 2e-2, 5e-2, 1e-1]} 
   ]
@@ -42,8 +44,11 @@ def setOutputPath(path):
   global target_path
   target_path = path
 
+# Perform parameter tuning.
 def optimizeParameter(strategy,X_train, y_train, parameter_space_def):
   strategy = strategy.lower()
+
+  change_parameter_space(strategy, parameter_space_def)
   
   if strategy == "svr":
     return optimize_SVR(X_train, y_train)
@@ -59,6 +64,7 @@ def optimizeParameter(strategy,X_train, y_train, parameter_space_def):
     return optimize_BaggingSVR(X_train, y_train)
 
 
+# Score function used measure how good the configurations/estimator is
 def scoreFunction(estimator, configurations, measurements):
   predictions = estimator.predict(configurations)
   sum = 0.0
@@ -98,7 +104,7 @@ def optimize_BaggingSVR(X_train, y_train):
   
   return formatOptimal(opt.best_params_)
 
-
+# Format the best configuration found during parameter tuning.
 def formatOptimal(optimalParams): 
   if len(optimalParams.keys()) == 0: 
      return "No parameter has an influence on the accuracy of the result!"  
@@ -107,6 +113,7 @@ def formatOptimal(optimalParams):
     output += key +"="+str(optimalParams[key])+";"
   return output
 
+# Format a user defined parameter space to one that can be eecuted by python.
 def format_parameter_space(parameter_space):
   formated_space = ""
   for parameter in parameter_space:
@@ -117,6 +124,7 @@ def format_parameter_space(parameter_space):
   formated_space += "}]"
   return formated_space
 
+#Change the default parameter space to user given one.
 def change_parameter_space(strategy, parameter_space_def):
   if parameter_space_def:
     to_execute = ""

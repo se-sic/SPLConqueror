@@ -5,6 +5,7 @@ import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
 import numpy as np
 
+# setup the learner with the right settings.
 def setup_learning(strategy, learner_settings):
     strategy = strategy.lower()
     if strategy == "svr":
@@ -76,8 +77,7 @@ def setup_SVR(learner_settings):
     verbose = False
     max_iter = -1
 
-    # change kernel if needed
-
+	#change default values.
     for additional_setting in learner_settings:
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
@@ -111,6 +111,7 @@ def setup_SVR(learner_settings):
 
 
 def setup_DecisionTree(learner_settings):
+	#default values
     criterion = 'mse'
     splitter = 'best'
     max_depth = None
@@ -124,6 +125,7 @@ def setup_DecisionTree(learner_settings):
     #min_impurity_split = 1e-07
     presort = False
 
+	#change default values
     for additional_setting in learner_settings:
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
@@ -156,6 +158,7 @@ def setup_DecisionTree(learner_settings):
 
 
 def setup_RandomForestRegressor(learner_settings):
+	#default values
     n_estimators = 10
     criterion = 'mse'
     max_depth = None
@@ -173,6 +176,7 @@ def setup_RandomForestRegressor(learner_settings):
     verbose = 0
     warm_start = False
 
+	#change default values
     for additional_setting in learner_settings:
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
@@ -215,6 +219,7 @@ def setup_RandomForestRegressor(learner_settings):
                                           max_depth=max_depth)
 
 def setup_BaggingSVR(learner_settings):
+	#default values
     base_estimator = setup_SVR(learner_settings)
     n_estimators = 10
     max_samples = 1.0
@@ -227,6 +232,7 @@ def setup_BaggingSVR(learner_settings):
     random_state = None
     verbose = 0
 
+	#change default values
     for additional_setting in learner_settings:
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
@@ -258,6 +264,7 @@ def setup_BaggingSVR(learner_settings):
                      random_state=random_state, verbose=verbose)
 
 def setup_KNeighborsRegressor(learner_settings):
+	#default values
     n_neighbors = 5
     weights = 'uniform'
     algorithm = 'auto'
@@ -267,6 +274,7 @@ def setup_KNeighborsRegressor(learner_settings):
     metric_params = None
     n_jobs = 1
 
+	#change default values
     for additional_setting in learner_settings:
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
