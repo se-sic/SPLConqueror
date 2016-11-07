@@ -108,7 +108,15 @@ def setup_SVR(learner_settings):
     return sk.SVR(C= C, cache_size=cache_size, epsilon= epsilon, coef0=coef0, degree=degree,
                   kernel=kernel, gamma=gamma, max_iter=max_iter, shrinking=shrinking, tol=tol, verbose=verbose)
 
-
+def parse_max_features(n):
+    try:
+        x = int(n)
+    except ValueError:
+        try:
+            x = float(n)
+        except ValueError:
+            x = n
+    return x
 
 def setup_DecisionTree(learner_settings):
 	#default values
@@ -142,7 +150,7 @@ def setup_DecisionTree(learner_settings):
         if setting_value_pair[0] == "min_weight_fraction_leaf":
             min_weight_fraction_leaf = float(setting_value_pair[1])
         if setting_value_pair[0] == "max_features":
-            max_features = int(setting_value_pair[1])
+            max_features = parse_max_features(setting_value_pair[1])
         if setting_value_pair[0] == "random_state":
             random_state = int(setting_value_pair[1])
         if setting_value_pair[0] == "max_leaf_nodes":
