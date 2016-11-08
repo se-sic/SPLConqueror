@@ -11,7 +11,8 @@ namespace ProcessWrapper
 
         private string learningSettingsAttachment = null;
 
-        public const string csvFilename = "PredictedValues.csv";
+        public const string csvFilename = "PredictedValues";
+        public const string csv = ".csv";
 
         private const string csvSeparator = ";";
 
@@ -20,11 +21,16 @@ namespace ProcessWrapper
         /// </summary>
         /// <param name="path">The path where the file will be written.</param>
         /// <param name="learningSettings">The learner configurations that were used for prediction.</param>
-        public PythonPredictionWriter(string path, string[] learningSettings)
+        /// <param name="identifyer">Identifier of the current experiment. This should consist of the sampling strategies used and the name of the case study.</param>
+        public PythonPredictionWriter(string path, string[] learningSettings, string identifier)
         {
             string logFilename = (path.Split(Path.DirectorySeparatorChar)).Last();
             path = path.Substring(0, (path.Length - ((logFilename).Length)));
-            path += csvFilename;
+            path += csvFilename + "_";
+            path += learningSettings[0] + "_";
+            path += identifier;
+            path += csv; 
+
             FileStream csvFileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
             csvWriter = new StreamWriter(csvFileStream);
             learningSettingsAttachment = parseLearningSettings(learningSettings);

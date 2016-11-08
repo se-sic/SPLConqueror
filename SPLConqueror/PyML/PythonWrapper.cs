@@ -194,7 +194,7 @@ namespace ProcessWrapper
 
             for (int i = 0; i < predictedConfigurations.Count; i++)
             {
-                writer.writePredictions(predictedConfigurations[i].ToString() + ";" + predictedConfigurations[i].GetNFPValue() + ";" + predictions[i] + "\n");
+                writer.writePredictions(predictedConfigurations[i].ToString() + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(),4) + ";" + Math.Round(Convert.ToDouble(predictions[i]),4) + "\n");
             }
         }
 

@@ -45,7 +45,7 @@ namespace CommandLine
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
 
-        // using this option, a partial or full option order can be defined. The order is used during the printconfigs command. To define an order, the names of the options separated with whitespace have to be defined. If an option is not defined in the ordering its name and the value is printed at the end of the configurtion. 
+        // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
         public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
         public const string COMMAND_PRINT_CONFIGURATIONS = "printconfigs";
 
@@ -79,7 +79,7 @@ namespace CommandLine
 
         public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
-        public static string targetPath = null;
+        public static string targetPath = "";
 
         public static string pyResult = "";
 
@@ -348,6 +348,8 @@ namespace CommandLine
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     if (GlobalState.varModel == null)
                         GlobalState.logError.logLine("No variability model found at " + task);
+                    if(targetPath.Length == 0)
+                        targetPath = task.Substring(0, Math.Max(task.LastIndexOf("\\"), task.LastIndexOf("/")))+Path.DirectorySeparatorChar;
                     break;
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
@@ -483,7 +485,7 @@ namespace CommandLine
                             PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                             GlobalState.logInfo.logLine("Starting Prediction");
                             pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter);
+                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_"+this.exp.info.binarySamplings_Learning+"_"+this.exp.info.numericSamplings_Learning);
                             pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
                             GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
                             csvWriter.close();
