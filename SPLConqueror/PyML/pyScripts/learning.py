@@ -4,6 +4,7 @@ import sklearn.neighbors as skNE
 import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
 import numpy as np
+import ast
 
 # setup the learner with the right settings.
 def setup_learning(strategy, learner_settings):
@@ -108,7 +109,18 @@ def setup_SVR(learner_settings):
     return sk.SVR(C= C, cache_size=cache_size, epsilon= epsilon, coef0=coef0, degree=degree,
                   kernel=kernel, gamma=gamma, max_iter=max_iter, shrinking=shrinking, tol=tol, verbose=verbose)
 
-
+def parse_to_int_float_bool_string(n):
+    try:
+        x = int(n)
+    except ValueError:
+        try:
+            x = float(n)
+        except ValueError:
+            try:
+                x = ast.literal_eval(n)
+            except ValueError:
+                x = n
+    return x
 
 def setup_DecisionTree(learner_settings):
 	#default values
@@ -136,13 +148,13 @@ def setup_DecisionTree(learner_settings):
         if setting_value_pair[0] == "max_depth":
             max_depth = int(setting_value_pair[1])
         if setting_value_pair[0] == "min_samples_split":
-            min_samples_split = int(setting_value_pair[1])
+            min_samples_split = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "min_samples_leaf":
-            min_samples_leaf = int(setting_value_pair[1])
+            min_samples_leaf = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "min_weight_fraction_leaf":
             min_weight_fraction_leaf = float(setting_value_pair[1])
         if setting_value_pair[0] == "max_features":
-            max_features = int(setting_value_pair[1])
+            max_features = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "random_state":
             random_state = int(setting_value_pair[1])
         if setting_value_pair[0] == "max_leaf_nodes":
@@ -187,13 +199,13 @@ def setup_RandomForestRegressor(learner_settings):
         if setting_value_pair[0] == "max_depth":
             max_depth = int(setting_value_pair[1])
         if setting_value_pair[0] == "min_samples_split":
-            min_samples_split = int(setting_value_pair[1])
+            min_samples_split = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "min_samples_leaf":
-            min_samples_leaf = int(setting_value_pair[1])
+            min_samples_leaf = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "min_weight_fraction_leaf":
             min_weight_fraction_leaf = float(setting_value_pair[1])
         if setting_value_pair[0] == "max_features":
-            max_features = setting_value_pair[1]
+            max_features = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "max_leaf_nodes":
             max_leaf_nodes = int(setting_value_pair[1])
         #if setting_value_pair[0] == "min_impurity_split":
@@ -252,9 +264,9 @@ def setup_BaggingSVR(learner_settings):
         if setting_value_pair[0] == "bootstrap":
             bootstrap = (setting_value_pair[1] == "True")
         if setting_value_pair[0] == "max_features":
-            max_features = float(setting_value_pair[1])
+            max_features = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "max_samples":
-            max_samples = float(setting_value_pair[1])
+            max_samples = parse_to_int_float_bool_string(setting_value_pair[1])
         if setting_value_pair[0] == "n_estimators":
             n_estimators = int(setting_value_pair[1])
 
