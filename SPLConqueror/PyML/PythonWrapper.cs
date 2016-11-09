@@ -192,9 +192,10 @@ namespace ProcessWrapper
             if (predictedConfigurations.Count != predictions.Length)
                 GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
 
+            writer.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
             for (int i = 0; i < predictedConfigurations.Count; i++)
             {
-                writer.writePredictions(predictedConfigurations[i].ToString() + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(),4) + ";" + Math.Round(Convert.ToDouble(predictions[i]),4) + "\n");
+                writer.writePredictions(predictedConfigurations[i].ToString().Replace(";","_")+ ";" + Math.Round(predictedConfigurations[i].GetNFPValue(),4) + ";" + Math.Round(Convert.ToDouble(predictions[i]),4) + "\n");
             }
         }
 
