@@ -18,7 +18,7 @@ def setup_learning(strategy, learner_settings):
         return setup_RandomForestRegressor(learner_settings)
     elif strategy == "baggingsvr": 
         return setup_BaggingSVR(learner_settings)
-    elif strategy == "knneighborsregressor":
+    elif strategy == "kneighborsregressor":
         return setup_KNeighborsRegressor(learner_settings)
     elif strategy == "kernelridge":
         return setup_KernelRidge(learner_settings)
@@ -321,7 +321,7 @@ def setup_KernelRidge(learner_settings):
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
         if setting_value_pair[0] == "alpha":
-            alpha = int(setting_value_pair[1])
+            alpha = float(setting_value_pair[1])
         if setting_value_pair[0] == "kernel":
             kernel = setting_value_pair[1]
         if setting_value_pair[0] == "gamma":
