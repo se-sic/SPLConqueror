@@ -11,7 +11,7 @@ def setup_learning(strategy, learner_settings):
     strategy = strategy.lower()
     if strategy == "svr":
         return setup_SVR(learner_settings)
-    elif strategy == "decisiontreeregressor":
+    elif strategy == "decisiontreeregression":
         return setup_DecisionTree(learner_settings)
    
     elif strategy == "randomforestregressor":

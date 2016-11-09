@@ -166,17 +166,19 @@ namespace CommandLine
                         FileInfo fi = new FileInfo(task);
                         StreamReader reader = null;
                         if (!fi.Exists)
-                            throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
-
-                        reader = fi.OpenText();
-                        Commands co = new Commands();
-                        co.exp = this.exp;
-
-                        while (!reader.EndOfStream)
+                            GlobalState.logError.logLine(@"Automation script not found. " + fi.ToString());
+                        else
                         {
-                            String oneLine = reader.ReadLine().Trim();
-                            co.performOneCommand(oneLine);
+                            reader = fi.OpenText();
+                            Commands co = new Commands();
+                            co.exp = this.exp;
 
+                            while (!reader.EndOfStream)
+                            {
+                                String oneLine = reader.ReadLine().Trim();
+                                co.performOneCommand(oneLine);
+
+                            }
                         }
                     }
                     break;
@@ -463,6 +465,8 @@ namespace CommandLine
                         List<Configuration> configurationsLearning = buildSet(this.toSample);
                         List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
 
+                        String samplingIdentifier = createSamplingIdentifier();
+
                         if (configurationsLearning.Count == 0)
                         {
                             configurationsLearning = configurationsValidation;
@@ -485,7 +489,7 @@ namespace CommandLine
                             PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                             GlobalState.logInfo.logLine("Starting Prediction");
                             pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_"+this.exp.info.binarySamplings_Learning+"_"+this.exp.info.numericSamplings_Learning);
+                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_"+ samplingIdentifier);
                             pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
                             GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
                             csvWriter.close();
@@ -502,7 +506,7 @@ namespace CommandLine
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         List<Configuration> configurationsLearning = buildSet(this.toSample);
                         List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
-
+                        
                         if (configurationsLearning.Count == 0)
                         {
                             configurationsLearning = configurationsValidation;
@@ -655,6 +659,28 @@ namespace CommandLine
                     return command;
             }
             return "";
+        }
+
+        private string createSamplingIdentifier()
+        {
+            StringBuilder sb = new StringBuilder();
+            // add binay sampling strategy to the identifier
+            sb.Append(this.exp.info.binarySamplings_Learning+"_");
+
+            // add numeric sampling strategy to the identifier
+            foreach (KeyValuePair<SamplingStrategies,List<Dictionary<string,string>>> sampling in ConfigurationBuilder.parametersOfExpDesigns)
+            {
+                foreach(Dictionary<string,string> allParameters in sampling.Value)
+                {
+                    StringBuilder parameterString = new StringBuilder();
+                    foreach (KeyValuePair<string,string> parameters in allParameters)
+                    {
+                        parameterString.Append(parameters.Key + "-" + parameters.Value+"_");
+                    }
+                    sb.Append("_"+sampling.Key + "--" + parameterString);
+                }
+            }
+            return sb.ToString();
         }
 
         private List<Configuration> buildSet(List<SamplingStrategies> strats)
