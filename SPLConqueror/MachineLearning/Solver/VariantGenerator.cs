@@ -182,6 +182,26 @@ namespace MachineLearning.Solver
             removedElements = null;
             return null;
         }
+
+
+        public List<List<BinaryOption>> generateTilSize(int i1, int size, int timeout, VariabilityModel vm)
+        {
+            foreach (Lazy<IVariantGenerator, ISolverType> solver in solvers)
+            {
+                if (solver.Metadata.SolverType.Equals("MSSolverFoundation")) return solver.Value.generateTilSize(i1, size, timeout, vm);
+            }
+
+            //If not MS Solver, take any solver. Should be changed when supporting more than 2 solvers here
+            foreach (Lazy<IVariantGenerator, ISolverType> solver in solvers)
+            {
+                return solver.Value.generateTilSize(i1, size, timeout, vm);
+            }
+            return null;
+        }
+
+       
+
+
         #endregion
 
     }

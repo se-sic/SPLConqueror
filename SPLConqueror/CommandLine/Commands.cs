@@ -35,10 +35,15 @@ namespace CommandLine
         public const string COMMAND_EVALUATION_SET = "evaluationset";
 
         public const string COMMAND_SAMPLE_ALLBINARY = "allbinary";
-        public const string COMMAND_SAMPLE_OPTIONWISE = "featurewise";
+        public const string COMMAND_SAMPLE_FEATUREWISE = "featurewise";
+        public const string COMMAND_SAMPLE_OPTIONWISE = "optionwise";
         public const string COMMAND_SAMPLE_PAIRWISE = "pairwise";
         public const string COMMAND_SAMPLE_NEGATIVE_OPTIONWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
+        public const string COMMAND_SAMPLE_BINARY_LINEAR = "linear";
+        public const string COMMAND_SAMPLE_BINARY_QUADRATIC = "quadratic";
+        public const string COMMAND_SAMPLE_BINARY_MINMAX = "minmax";
+        public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
 
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
 
@@ -350,12 +355,13 @@ namespace CommandLine
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     if (GlobalState.varModel == null)
                         GlobalState.logError.logLine("No variability model found at " + task);
-                    if(targetPath.Length == 0)
-                        targetPath = task.Substring(0, Math.Max(task.LastIndexOf("\\"), task.LastIndexOf("/")))+Path.DirectorySeparatorChar;
+                    if (targetPath.Length == 0)
+                        targetPath = task.Substring(0, Math.Max(task.LastIndexOf("\\"), task.LastIndexOf("/"))) + Path.DirectorySeparatorChar;
                     break;
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
                     break;
+                case COMMAND_SAMPLE_FEATUREWISE:
                 case COMMAND_SAMPLE_OPTIONWISE:
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
@@ -366,6 +372,94 @@ namespace CommandLine
                     {
                         this.toSample.Add(SamplingStrategies.OPTIONWISE);
                         this.exp.info.binarySamplings_Learning = "OPTIONSWISE";
+                    }
+                    break;
+
+                case COMMAND_SAMPLE_BINARY_LINEAR:
+                    {
+                        string[] para = task.Split(new char[] { ' ' });
+
+                        Dictionary<String, String> prameters = parseParametersToLinearAndQuadraticBinarySampling(para);
+
+                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        {
+                            this.toSampleValidation.Add(SamplingStrategies.BINARY_LINEAR);
+                            this.exp.info.binarySamplings_Validation = "BINARY_LINEAR "+ task.Replace(":", "_");
+                        }
+                        else
+                        {
+                            this.toSample.Add(SamplingStrategies.BINARY_LINEAR);
+                            this.exp.info.binarySamplings_Learning = "BINARY_LINEAR "+ task.Replace(":", "_");
+                        }
+                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_LINEAR))
+                        {
+                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_LINEAR, new List<Dictionary<string, string>>());
+                        }
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_LINEAR].Add(prameters);
+                    }
+                    break;
+
+                case COMMAND_SAMPLE_BINARY_QUADRATIC:
+                    { 
+                        string[] para = task.Split(new char[] { ' ' });
+
+                        Dictionary<String, String> prameters = parseParametersToLinearAndQuadraticBinarySampling(para);
+
+                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        {
+                            this.toSampleValidation.Add(SamplingStrategies.BINARY_QUADRATIC);
+                            this.exp.info.binarySamplings_Validation = "BINARY_QUADRATIC "+ task.Replace(":","_");
+                        }
+                        else
+                        {
+                            this.toSample.Add(SamplingStrategies.BINARY_QUADRATIC);
+                            this.exp.info.binarySamplings_Learning = "BINARY_QUADRATIC " + task.Replace(":", "_");
+                        }
+
+                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_LINEAR))
+                        {
+                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_LINEAR, new List<Dictionary<string, string>>());
+                        }
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_LINEAR].Add(prameters);
+                    }
+                    break;
+
+                case COMMAND_SAMPLE_BINARY_TWISE:
+                    {
+                        string[] para = task.Split(new char[] { ' ' });
+
+                        Dictionary<String, String> prameters = parseParametersToLinearAndQuadraticBinarySampling(para);
+
+                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        {
+                            this.toSampleValidation.Add(SamplingStrategies.T_WISE);
+                            this.exp.info.binarySamplings_Validation = "T_WISE ";
+                        }
+                        else
+                        {
+                            this.toSample.Add(SamplingStrategies.T_WISE);
+                            this.exp.info.binarySamplings_Learning = "T_WISE ";
+                        }
+
+                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.T_WISE))
+                        {
+                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.T_WISE, new List<Dictionary<string, string>>());
+                        }
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.T_WISE].Add(prameters);
+                    }
+                    break;
+                case COMMAND_SAMPLE_BINARY_MINMAX:
+                    {
+                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        {
+                            this.toSampleValidation.Add(SamplingStrategies.MINMAX);
+                            this.exp.info.binarySamplings_Validation = "MINMAX";
+                        }
+                        else
+                        {
+                            this.toSample.Add(SamplingStrategies.MINMAX);
+                            this.exp.info.binarySamplings_Learning = "MINMAX";
+                        }
                     }
                     break;
 
@@ -1037,6 +1131,30 @@ namespace CommandLine
 #endif
             return location;
         }
+
+
+        public Dictionary<String,String> parseParametersToLinearAndQuadraticBinarySampling(string[] param)
+        {
+            Dictionary<string, string> parameter = new Dictionary<string, string>();
+
+            if (param.Length > 0)
+            {
+                foreach (string par in param)
+                {
+                    if (par.Contains(':'))
+                    {
+                        string[] nameAndValue = par.Split(':');
+                        parameter.Add(nameAndValue[0], nameAndValue[1]);
+                    }
+                    else
+                    {
+                        parameter.Add(par, "");
+                    }
+                }
+            }
+            return parameter;
+        }
+
 
     }
 }

@@ -47,6 +47,7 @@ namespace MachineLearning.Learning
             }
             catch (ArgumentException e)
             {
+                GlobalState.logError.log(e.StackTrace);
                 return false;
             }
         }
@@ -66,6 +67,7 @@ namespace MachineLearning.Learning
             }
             catch (ArgumentException e)
             {
+                GlobalState.logError.log(e.StackTrace);
                 return false;
             }
         }

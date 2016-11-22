@@ -263,6 +263,12 @@ namespace MachineLearning.Learning.Regression
             if (this.validationSet != null)
                 this.validationSet.Clear();
 
+            this.info.binarySamplings_Learning = "";
+            this.info.binarySamplings_Validation = "";
+
+            this.info.numericSamplings_Learning = "";
+            this.info.numericSamplings_Validation = "";
+
             ConfigurationBuilder.parametersOfExpDesigns.Clear();
         }
 
