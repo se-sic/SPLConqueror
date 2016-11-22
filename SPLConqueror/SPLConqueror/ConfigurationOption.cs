@@ -219,7 +219,11 @@ namespace SPLConqueror_Core
                 {
                     case "name":
                         this.Name = xmlInfo.InnerText;
-                        
+
+                        if (Name.Equals("File"))
+                        {
+                            
+                        }
                         break;
                     case "outputString":
                         this.outputString = xmlInfo.InnerText;
@@ -239,11 +243,11 @@ namespace SPLConqueror_Core
                         break;
                     case "impliedOptions":
                         foreach (XmlElement elem in xmlInfo.ChildNodes)
-                            implied_Options_names.Add(elem.InnerText.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList());
+                            implied_Options_names.Add(elem.InnerText.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList());
                         break;
                     case "excludedOptions":
                         foreach (XmlElement elem in xmlInfo.ChildNodes)
-                            excluded_Options_names.Add(elem.InnerText.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList());
+                            excluded_Options_names.Add(elem.InnerText.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList());
                         break;
                 }
             }

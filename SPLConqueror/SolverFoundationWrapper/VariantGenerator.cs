@@ -292,6 +292,47 @@ namespace MicrosoftSolverFoundation
             return resultConfigs;
         }
 
+        public List<List<BinaryOption>> generateTilSize(int i1, int size, int timeout, VariabilityModel vm)
+        {
+            var foundSolutions = new List<List<BinaryOption>>();
+            List<CspTerm> variables = new List<CspTerm>();
+            Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
+            Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
+            ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+
+            CspTerm t = S.ExactlyMofN(i1, variables.ToArray());
+            S.AddConstraints(new CspTerm[] { t });
+            var csp = new ConstraintSolverParams
+            {
+                TimeLimitMilliSec = timeout * 1000,
+            };
+            ConstraintSolverSolution soln = S.Solve(csp);
+
+            int counter = 0;
+
+            while (soln.HasFoundSolution)
+            {
+                List<BinaryOption> tempConfig = (
+                    from cT
+                        in variables
+                    where soln.GetIntegerValue(cT) == 1
+                    select termToElem[cT]).ToList();
+
+                if (tempConfig.Contains(null))
+                    tempConfig.Remove(null);
+
+                foundSolutions.Add(tempConfig);
+                counter++;
+                if (counter == size)
+                {
+                    break;
+                }
+                soln.GetNext();
+            }
+            //Console.WriteLine(i1 + "\t" + foundSolutions.Count);
+            return foundSolutions;
+        }
+
         #endregion
     }
 }
