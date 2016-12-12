@@ -244,11 +244,7 @@ namespace PerformancePrediction_GUI
             bool numSelected = false;
             string validation = "";
 
-            if (this.OW.Checked)
-            {
-                binarySelected = true;
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
-            }
+            // Binary sampling strategies
             if (this.OW.Checked)
             {
                 binarySelected = true;
@@ -267,6 +263,9 @@ namespace PerformancePrediction_GUI
                 binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
             }
+
+
+            // Numeric sampling strategies
             if (num_BoxBehnken_check.Checked)
             {
                 numSelected = true;
