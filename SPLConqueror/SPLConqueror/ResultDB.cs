@@ -11,7 +11,7 @@ namespace SPLConqueror_Core
         private IDictionary<string, IDictionary<string, List<Configuration>>> configsMapping =
             new Dictionary<string, IDictionary<string, List<Configuration>>>();
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
-        private static int splitFactor = 4;
+        private static int splitFactor = 2;
 
         public List<Configuration> Configurations
         {
