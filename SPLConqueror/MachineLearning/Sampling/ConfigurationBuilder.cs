@@ -56,17 +56,6 @@ namespace MachineLearning.Sampling
                         {
                             PairWise pw = new PairWise();
                             binaryConfigs.AddRange(pw.generatePairWiseVariants(GlobalState.varModel));
-                            List<List<BinaryOption>> pairWise = pw.generatePairWiseVariants(GlobalState.varModel);
-                            Console.WriteLine("From Pariwise");
-                            for(int i = 0; i < pairWise.Count; i++)
-                            {
-                                for(int j = 0; j < pairWise[i].Count; j++)
-                                {
-                                    Console.Write(pairWise[i][j]+" ");
-                                }
-                                Console.WriteLine("");
-                            }
-
                         }
                         break;
                     case SamplingStrategies.NEGATIVE_OPTIONWISE:
@@ -81,7 +70,7 @@ namespace MachineLearning.Sampling
                             {
                                 Linear lin = new Linear();
                                 int numberConfigs = 10;
-                                int timeout = 10000;
+                                int timeout = 400000000;
 
                                 foreach (KeyValuePair<String, String> param in ParamSet)
                                 {
@@ -117,7 +106,7 @@ namespace MachineLearning.Sampling
                             {
                                 Quadratic qr = new Quadratic();
                                 int numberConfigs = 10;
-                                int timeout = 10000;
+                                int timeout = 400000000;
                                 double scale = 0.1;
 
                                 foreach (KeyValuePair<String, String> param in ParamSet)

@@ -858,7 +858,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="c">The configuration for which the estimation should be performed.</param>
         /// <returns>The estimated value.</returns>
-        private static double estimate(List<Feature> currentModel, Configuration c)
+        public static double estimate(List<Feature> currentModel, Configuration c)
         {
             double prediction = 0;
             for (int i = 0; i < currentModel.Count; i++)

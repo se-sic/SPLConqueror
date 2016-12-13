@@ -477,7 +477,7 @@ namespace SPLConqueror_Core
                 else
                 {
                     if (this.numericOptions.ContainsKey((NumericOption)c))
-                        sb.Append(c.Prefix + this.NumericOptions[(NumericOption)c]+" ");
+                        sb.Append(c.Prefix + this.NumericOptions[(NumericOption)c] + c.Postfix + " ");
                 }
 
             }
