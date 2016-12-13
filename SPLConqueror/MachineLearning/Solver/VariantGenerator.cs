@@ -196,7 +196,7 @@ namespace MachineLearning.Solver
             {
                 return solver.Value.generateTilSize(i1, size, timeout, vm);
             }
-            return null;
+            return new List<List<BinaryOption>>();
         }
 
        

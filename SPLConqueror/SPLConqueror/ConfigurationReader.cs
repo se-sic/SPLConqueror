@@ -143,17 +143,12 @@ namespace SPLConqueror_Core
                     switch (childNode.Attributes[0].Value)
                     {
                         // TODO we use this to support result files having the old structure
+                        case "BinaryOptions":
                         case "Configuration":
                             binaryString = childNode.InnerText;
                             break;
-                        case "Variable Features":
-                            numericString = childNode.InnerText;
-                            break;
-
-                        case "BinaryOptions":
-                            binaryString = childNode.InnerText;
-                            break;
                         case "NumericOptions":
+                        case "Variable Features":
                             numericString = childNode.InnerText;
                             break;
                         case "ConfigID":

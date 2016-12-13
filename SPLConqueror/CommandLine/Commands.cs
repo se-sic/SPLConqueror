@@ -49,6 +49,7 @@ namespace CommandLine
 
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
+        public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
 
         // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
         public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
@@ -281,6 +282,25 @@ namespace CommandLine
 
                         break;
                     }
+
+                case COMMAND_PREDICT_CONFIGURATIONS:
+                    {
+                        FeatureSubsetSelection learnedModel = exp.models[exp.models.Count-1];
+                        String samplingIdentifier = createSamplingIdentifier();
+
+                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, new String[]{ "SPLConqueror" }, GlobalState.varModel.Name + "_" + samplingIdentifier);
+                        List<Feature> features = learnedModel.LearningHistory[learnedModel.LearningHistory.Count-1].FeatureSet;
+                        csvWriter.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
+                        for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; i++)
+                        {
+
+                            Double predictedValue = FeatureSubsetSelection.estimate(features, GlobalState.allMeasurements.Configurations[i]);
+                            csvWriter.writePredictions(GlobalState.allMeasurements.Configurations[i].ToString().Replace(";", "_") + ";" + Math.Round(GlobalState.allMeasurements.Configurations[i].GetNFPValue(), 4) + ";" + Math.Round(predictedValue, 4) + "\n");
+                        }
+
+                        break;
+                    }
+
                 case COMMAND_ANALYZE_LEARNING:
                     {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
@@ -373,6 +393,12 @@ namespace CommandLine
                         this.toSample.Add(SamplingStrategies.OPTIONWISE);
                         this.exp.info.binarySamplings_Learning = "OPTIONSWISE";
                     }
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.OPTIONWISE))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.OPTIONWISE, new List<Dictionary<string, string>>());
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.OPTIONWISE].Add(new Dictionary<string, string>());
+                    }
+
                     break;
 
                 case COMMAND_SAMPLE_BINARY_LINEAR:
@@ -416,11 +442,11 @@ namespace CommandLine
                             this.exp.info.binarySamplings_Learning = "BINARY_QUADRATIC " + task.Replace(":", "_");
                         }
 
-                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_LINEAR))
+                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_QUADRATIC))
                         {
-                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_LINEAR, new List<Dictionary<string, string>>());
+                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_QUADRATIC, new List<Dictionary<string, string>>());
                         }
-                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_LINEAR].Add(prameters);
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_QUADRATIC].Add(prameters);
                     }
                     break;
 
@@ -491,6 +517,11 @@ namespace CommandLine
                     {
                         this.toSample.Add(SamplingStrategies.PAIRWISE);
                         this.exp.info.binarySamplings_Learning = "PAIRWISE";
+                    }
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.PAIRWISE))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.PAIRWISE, new List<Dictionary<string, string>>());
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.PAIRWISE].Add(new Dictionary<string, string>());
                     }
                     break;
 
@@ -747,6 +778,11 @@ namespace CommandLine
                     {
                         this.toSample.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
                         this.exp.info.binarySamplings_Learning = "NEGATIVE_OPTIONWISE";
+                    }
+                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.NEGATIVE_OPTIONWISE))
+                    {
+                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.NEGATIVE_OPTIONWISE, new List<Dictionary<string, string>>());
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.NEGATIVE_OPTIONWISE].Add(new Dictionary<string, string>());
                     }
                     break;
                 default:
