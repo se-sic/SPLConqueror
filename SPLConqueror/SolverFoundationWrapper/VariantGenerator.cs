@@ -67,14 +67,12 @@ namespace MicrosoftSolverFoundation
             List<List<BinaryOption>> erglist = new List<List<BinaryOption>>();
             ConstraintSolverSolution soln = S.Solve();
             int mod = 0;
+
+            List<List<BinaryOption>> allConfigs = new List<List<BinaryOption>>();
+
             while (soln.HasFoundSolution)
             {
-                mod++;
-                if (mod % modulu != 0)
-                {
-                    soln.GetNext();
-                    continue;
-                }
+                soln.GetNext();
                 List<BinaryOption> tempConfig = new List<BinaryOption>();
                 foreach (CspTerm cT in variables)
                 {
@@ -83,10 +81,13 @@ namespace MicrosoftSolverFoundation
                 }
                 if (tempConfig.Contains(null))
                     tempConfig.Remove(null);
-                erglist.Add(tempConfig);
-                if (erglist.Count == treshold)
-                    break;
-                soln.GetNext();
+                allConfigs.Add(tempConfig);
+            }
+
+            Random r = new Random(modulu);
+            for(int i = 0; i < treshold; i++)
+            {
+                erglist.Add(allConfigs[r.Next(allConfigs.Count)]);
             }
             return erglist;
         }
@@ -150,7 +151,7 @@ namespace MicrosoftSolverFoundation
             return null;
         }
 
-        #region change Configuration size
+#region change Configuration size
 
         /// <summary>
         /// Based on a given (partial) configuration and a variability, we aim at finding the smallest (or largest if minimize == false) valid configuration that has all options.
@@ -292,6 +293,6 @@ namespace MicrosoftSolverFoundation
             return resultConfigs;
         }
 
-        #endregion
+#endregion
     }
 }
