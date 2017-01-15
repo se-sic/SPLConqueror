@@ -2,7 +2,6 @@ import sys
 import learning
 import parameterTuning
 
-
 CONF_MARKER = "Configurations"
 
 # Messages received by the parent process
@@ -28,20 +27,24 @@ FINISHED_LEARNING = "learn_finished"
 
 REQUESTING_LEARNING_SETTINGS = "req_settings"
 
-# Output finction to pass strings to C#, flushing the output buffer is required to make sure the string is written in the stream
+
+# Output finction to pass strings to C#, flushing the output buffer is required to make sure the string is written
+#  in the stream
 def print_line(string):
     print string
     # flushing output buffer
     sys.stdout.flush()
 
+
 # format and print a list
 def print_lineArray(array):
     output = ""
     for item in array:
-        output+=str(item)
-        output+=","
+        output += str(item)
+        output += ","
     print output
-    sys.stdout.flush()    
+    sys.stdout.flush()
+
 
 # Function to request and then parse configurations.
 def get_configurations(container, stream_start_arg, stream_end_arg):
@@ -67,13 +70,16 @@ def get_configurations(container, stream_start_arg, stream_end_arg):
 
     return container
 
+
 # Request and return the configurations used to train.
 def get_configurationsLearn(container):
     return get_configurations(container, CONFIG_LEARN_STREAM_START, CONFIG_LEARN_STREAM_END)
 
+
 # Request and return the configurations used to preidct.
 def get_configurationsPredict(container):
     return get_configurations(container, CONFIG_PREDICT_STREAM_START, CONFIG_PREDICT_STREAM_END)
+
 
 # Main method, that will be executed when executing this script.
 def main():
@@ -92,34 +98,34 @@ def main():
             # pair of settings passed by other application in format identifier=value
             learner_settings.append(learner_setting)
             learner_setting = raw_input()
-    
+
     configurationsLearn = get_configurationsLearn(configurationsLearn)
-   
+
     configurationsPredict = get_configurationsPredict(configurationsPredict)
 
     task = raw_input()
     # perform prediction
-    if(task == START_LEARN):
+    if task == START_LEARN:
         model = learning.Learner(learning_strategy, learner_settings)
         model.learn(configurationsLearn.features, configurationsLearn.results)
         predictions = model.predict(configurationsPredict.features)
-        
-        
+
         print_line(FINISHED_LEARNING)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_lineArray(predictions)
     # perform parameter tuning
-    elif(task == START_PARAM_TUNING):
+    elif task == START_PARAM_TUNING:
         print_line(FINISHED_LEARNING)
         target_path = raw_input()
         parameterTuning.setOutputPath(target_path)
-        optimalParameters = parameterTuning.optimizeParameter(learning_strategy,configurationsLearn.features, configurationsLearn.results, learner_settings)
+        optimalParameters = parameterTuning.optimizeParameter(learning_strategy, configurationsLearn.features,
+                                                              configurationsLearn.results, learner_settings)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimalParameters)
 
-# class to hold values passed by c#
-class Configurations():
 
+# class to hold values passed by c#
+class Configurations:
     def __init__(self):
         self.results = []
         self.features = []
@@ -131,3 +137,17 @@ class Configurations():
 main()
 
 
+def test_function():
+    model = learning.Learner("svr", "")
+    model.learn([[0, 0]], [1])
+    pred = model.predict([[0, 0]])
+    print_lineArray(pred)
+    model = learning.Learner("ssvr", "")
+    model.learn([[0, 0]], [1])
+    pred = model.predict([[0, 0]])
+    print_lineArray(pred)
+    model = learning.Learner("svr", ["C=\'bogus\'"])
+    model.learn([[0, 0]], [1])
+    print_lineArray(model.predict([[0, 0]]))
+    model = learning.Learner("svr", [])
+    print_lineArray(model.predict([[0, 0]]))
