@@ -121,7 +121,7 @@ namespace MachineLearning.Learning.Regression
 
             int avg = this.models.Count;
             //int avg = this.models.Count / 2;
-            for (int i = 0; i <= avg; i++)
+            for (int i = 0; i < avg; i++)
             {
                 updateInfluenceModel(sorted[i].infModel);
             }
