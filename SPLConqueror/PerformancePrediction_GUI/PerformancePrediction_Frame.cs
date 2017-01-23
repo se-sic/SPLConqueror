@@ -167,11 +167,21 @@ namespace PerformancePrediction_GUI
 
         }
 
+        private NotifyCollectionChangedEventHandler notifyer = null;
+
         void initLearning(object sender, NotifyCollectionChangedEventArgs e)
         {
             Console.WriteLine();
-            if(cmd.exp.models.Count > 0)
-                cmd.exp.models[cmd.exp.models.Count-1].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
+            if (cmd.exp.models.Count > 0)
+            {
+                if(notifyer == null)
+                   notifyer =  new NotifyCollectionChangedEventHandler(roundFinished);
+
+                cmd.exp.models[cmd.exp.models.Count - 1].LearningHistory.CollectionChanged -= notifyer;
+                cmd.exp.models[cmd.exp.models.Count - 1].LearningHistory.CollectionChanged += notifyer;
+            
+            }
+
         }
 
         private void startLearning()
