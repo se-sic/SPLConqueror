@@ -68,7 +68,7 @@ namespace SPLConqueror_Core
         }
 
         // The default symbols for multiple measurements of the same configuration and nfp.
-        private static char decimalDelimiter = '.';
+        private static char decimalDelimiter = ',';
         private static char separator = ',';
 
         private const string decimalDelimiterTag = "decimalDelimiter";
