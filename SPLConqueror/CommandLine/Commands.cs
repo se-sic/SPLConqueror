@@ -379,29 +379,48 @@ namespace CommandLine
 
                 case COMMAND_PRINT_CONFIGURATIONS:
                     {
-                       /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
-                        List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
+                        /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
+                         List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
 
-                        List<Configuration> configurations = new List<Configuration>();
+                         List<Configuration> configurations = new List<Configuration>();
 
-                        foreach (Dictionary<NumericOption, double> numeric in numericSampling)
-                        {
-                            foreach (List<BinaryOption> binary in binarySampling)
-                            {
-                                Configuration config = Configuration.getConfiguration(binary, numeric);
-                                if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
-                                {
-                                    configurations.Add(config);
-                                }
-                            }
-                        }*/
-
-                        var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+                         foreach (Dictionary<NumericOption, double> numeric in numericSampling)
+                         {
+                             foreach (List<BinaryOption> binary in binarySampling)
+                             {
+                                 Configuration config = Configuration.getConfiguration(binary, numeric);
+                                 if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
+                                 {
+                                     configurations.Add(config);
+                                 }
+                             }
+                         }*/
 
                         string[] para = task.Split(new char[] { ' ' });
                         // TODO very error prone..
-                        ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2], GlobalState.optionOrder);
-                        printer.print(configs);
+                        if (para.Length >= 1 && (para[0].Trim()).Length > 0)
+                        {
+                            ConfigurationPrinter printer = null;
+                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+                            if (para.Length >= 3)
+                            {
+                                printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1], para[2]);
+                            }
+                            else if (para.Length == 2)
+                            {
+                                printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1]);
+                            }
+                            else
+                            {
+                                printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder);
+                            }
+                            printer.print(configs);
+                        }
+                        else
+                        {
+                            GlobalState.logInfo.logLine("Couldnt print configs");
+                            GlobalState.logError.logLine("Error cant print configs without at least a outputfile");
+                        }
 
                         break;
                     }
