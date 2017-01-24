@@ -34,10 +34,10 @@ namespace SPLConqueror_Core
         /// Creates a new printer object with the specified file, prefix and postfix.
         /// </summary>
         /// <param name="file">Path and name of the file, the configurations have to be printed in. </param>
-        /// <param name="prefix">The prefix of each configuration.</param>
-        /// <param name="postfix">The postfix of each configuartion.</param>
+        /// <param name="prefix">The prefix of each configuration. Uses 'prefix' as default</param>
+        /// <param name="postfix">The postfix of each configuartion. Uses 'postfix' as default</param>
         /// <param name="order"> Order of the configuration option. If only a partial order is given, options not considered in the order are written after all options existing in the order. Information about all configuration options are used from the variability model in the GlobalState.</param>
-        public ConfigurationPrinter(string file, string prefix, string postfix, List<ConfigurationOption> order)
+        public ConfigurationPrinter(string file, List<ConfigurationOption> order, string prefix = "prefix", string postfix = "postfix")
         {
             this.file = file;
             this.prefix = prefix;
