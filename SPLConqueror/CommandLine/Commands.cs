@@ -285,11 +285,11 @@ namespace CommandLine
 
                 case COMMAND_PREDICT_CONFIGURATIONS:
                     {
-                        FeatureSubsetSelection learnedModel = exp.models[exp.models.Count-1];
+                        FeatureSubsetSelection learnedModel = exp.models[exp.models.Count - 1];
                         String samplingIdentifier = createSamplingIdentifier();
 
-                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, new String[]{ "SPLConqueror" }, GlobalState.varModel.Name + "_" + samplingIdentifier);
-                        List<Feature> features = learnedModel.LearningHistory[learnedModel.LearningHistory.Count-1].FeatureSet;
+                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, new String[] { "SPLConqueror" }, GlobalState.varModel.Name + "_" + samplingIdentifier);
+                        List<Feature> features = learnedModel.LearningHistory[learnedModel.LearningHistory.Count - 1].FeatureSet;
                         csvWriter.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
                         for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; i++)
                         {
@@ -410,12 +410,12 @@ namespace CommandLine
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.toSampleValidation.Add(SamplingStrategies.BINARY_LINEAR);
-                            this.exp.info.binarySamplings_Validation = "BINARY_LINEAR "+ task.Replace(":", "_");
+                            this.exp.info.binarySamplings_Validation = "BINARY_LINEAR " + task.Replace(":", "_");
                         }
                         else
                         {
                             this.toSample.Add(SamplingStrategies.BINARY_LINEAR);
-                            this.exp.info.binarySamplings_Learning = "BINARY_LINEAR "+ task.Replace(":", "_");
+                            this.exp.info.binarySamplings_Learning = "BINARY_LINEAR " + task.Replace(":", "_");
                         }
                         if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_LINEAR))
                         {
@@ -426,7 +426,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_SAMPLE_BINARY_QUADRATIC:
-                    { 
+                    {
                         string[] para = task.Split(new char[] { ' ' });
 
                         Dictionary<String, String> prameters = parseParametersToLinearAndQuadraticBinarySampling(para);
@@ -434,7 +434,7 @@ namespace CommandLine
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.toSampleValidation.Add(SamplingStrategies.BINARY_QUADRATIC);
-                            this.exp.info.binarySamplings_Validation = "BINARY_QUADRATIC "+ task.Replace(":","_");
+                            this.exp.info.binarySamplings_Validation = "BINARY_QUADRATIC " + task.Replace(":", "_");
                         }
                         else
                         {
@@ -548,12 +548,31 @@ namespace CommandLine
                              }
                          }*/
 
-                        var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
-
                         string[] para = task.Split(new char[] { ' ' });
                         // TODO very error prone..
-                        ConfigurationPrinter printer = new ConfigurationPrinter(para[0], para[1], para[2], GlobalState.optionOrder);
-                        printer.print(configs);
+                        if (para.Length >= 1 && (para[0].Trim()).Length > 0)
+                        {
+                            ConfigurationPrinter printer = null;
+                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+                            if (para.Length >= 3)
+                            {
+                                printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1], para[2]);
+                            }
+                            else if (para.Length == 2)
+                            {
+                                printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1]);
+                            }
+                            else
+                            {
+                                printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder);
+                            }
+                            printer.print(configs);
+                        }
+                        else
+                        {
+                            GlobalState.logInfo.logLine("Couldnt print configs");
+                            GlobalState.logError.logLine("Error cant print configs without at least a outputfile");
+                        }
 
                         break;
                     }
@@ -610,15 +629,17 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0])) {
+                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
+                        {
                             PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                             GlobalState.logInfo.logLine("Starting Prediction");
                             pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_"+ samplingIdentifier);
+                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_" + samplingIdentifier);
                             pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
                             GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
                             csvWriter.close();
-                        } else
+                        }
+                        else
                         {
                             GlobalState.logInfo.logLine("Invalid Learning strategy " + taskAsParameter[0] + "! Aborting learning");
                         }
@@ -631,7 +652,7 @@ namespace CommandLine
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         List<Configuration> configurationsLearning = buildSet(this.toSample);
                         List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
-                        
+
                         if (configurationsLearning.Count == 0)
                         {
                             configurationsLearning = configurationsValidation;
@@ -657,14 +678,15 @@ namespace CommandLine
                             string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
                             pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
                             GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
-                        } else
+                        }
+                        else
                         {
                             GlobalState.logInfo.logLine("Invalid learning strategy " + taskAsParameter[0] + "! Aborting Learning");
                         }
                         break;
                     }
 
-                    
+
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -738,7 +760,7 @@ namespace CommandLine
 
 
                         GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
-                        
+
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
                         parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
 
@@ -795,19 +817,19 @@ namespace CommandLine
         {
             StringBuilder sb = new StringBuilder();
             // add binay sampling strategy to the identifier
-            sb.Append(this.exp.info.binarySamplings_Learning+"_");
+            sb.Append(this.exp.info.binarySamplings_Learning + "_");
 
             // add numeric sampling strategy to the identifier
-            foreach (KeyValuePair<SamplingStrategies,List<Dictionary<string,string>>> sampling in ConfigurationBuilder.parametersOfExpDesigns)
+            foreach (KeyValuePair<SamplingStrategies, List<Dictionary<string, string>>> sampling in ConfigurationBuilder.parametersOfExpDesigns)
             {
-                foreach(Dictionary<string,string> allParameters in sampling.Value)
+                foreach (Dictionary<string, string> allParameters in sampling.Value)
                 {
                     StringBuilder parameterString = new StringBuilder();
-                    foreach (KeyValuePair<string,string> parameters in allParameters)
+                    foreach (KeyValuePair<string, string> parameters in allParameters)
                     {
-                        parameterString.Append(parameters.Key + "-" + parameters.Value+"_");
+                        parameterString.Append(parameters.Key + "-" + parameters.Value + "_");
                     }
-                    sb.Append("_"+sampling.Key + "--" + parameterString);
+                    sb.Append("_" + sampling.Key + "--" + parameterString);
                 }
             }
             return sb.ToString();
@@ -1169,7 +1191,7 @@ namespace CommandLine
         }
 
 
-        public Dictionary<String,String> parseParametersToLinearAndQuadraticBinarySampling(string[] param)
+        public Dictionary<String, String> parseParametersToLinearAndQuadraticBinarySampling(string[] param)
         {
             Dictionary<string, string> parameter = new Dictionary<string, string>();
 
