@@ -76,6 +76,13 @@ namespace SPLConqueror_Core
             set { nonBooleanConstraints = value; }
         }
 
+        private List<MixedConstraint> mixedConstraints = new List<MixedConstraint>();
+
+        public List<MixedConstraint> MixedConstraints
+        {
+            get { return mixedConstraints; }
+            set { mixedConstraints = value; }
+        }
 
         public VariabilityModel(String name)
         {
@@ -213,6 +220,9 @@ namespace SPLConqueror_Core
                     case "nonBooleanConstraints":
                         loadNonBooleanConstraint(xmlNode);
                         break;
+                    case "mixedConstraints":
+                        loadMixedConstraints(xmlNode);
+                        break;
                 }
             }
 
@@ -250,7 +260,13 @@ namespace SPLConqueror_Core
             }
         }
 
-
+        private void loadMixedConstraints(XmlElement xmlNode)
+        {
+            foreach (XmlElement mixedConstraint in xmlNode.ChildNodes)
+            {
+                this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value));
+            }
+        }
 
         private void loadNumericOptions(XmlElement xmlNode)
         {
