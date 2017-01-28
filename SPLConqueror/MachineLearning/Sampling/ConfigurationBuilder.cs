@@ -279,8 +279,31 @@ namespace MachineLearning.Sampling
                     result.Add(c);
                 }
             }
+            if (vm.MixedConstraints.Count == 0)
+            {
+                return result.Distinct().ToList();
+            } else
+            {
+                List<Configuration> unfilteredList = result.Distinct().ToList();
+                List<Configuration> filteredConfiguration = new List<Configuration>();
+                foreach (Configuration toTest in unfilteredList)
+                {
+                    bool isValid = true;
+                    foreach (MixedConstraint constr in vm.MixedConstraints)
+                    {
+                        if(!constr.requirementsFulfilled(toTest))
+                        {
+                            isValid = false;
+                        }
+                    }
 
-            return result.Distinct().ToList();
+                    if (isValid)
+                    {
+                        filteredConfiguration.Add(toTest);
+                    }
+                }
+                return filteredConfiguration;
+            }
         }
 
         public static void printSelectetedConfigurations_expDesign(List<Dictionary<NumericOption, double>> configurations)

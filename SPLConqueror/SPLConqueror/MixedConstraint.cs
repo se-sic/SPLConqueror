@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace SPLConqueror_Core
+{
+    public class MixedConstraint : NonBooleanConstraint
+    {
+        private const string REQUIRE_ALL = "all";
+
+        private const string REQUIRE_ONE = "one";
+
+        private InfluenceFunction leftHandSide = null;
+
+        private InfluenceFunction rightHandSide = null;
+
+        private string requirement;
+
+        public MixedConstraint(String unparsedExpr, VariabilityModel vm, VariabilityModel varMod, string requirement) : base(unparsedExpr, vm)
+        {
+            if (requirement.Trim().ToLower().Equals(REQUIRE_ALL))
+            {
+                this.requirement = REQUIRE_ALL;
+            }
+            else if (requirement.Trim().ToLower().Equals(REQUIRE_ONE))
+            {
+                this.requirement = REQUIRE_ONE;
+            }
+            else
+            {
+                throw new ArgumentException(String.Format("The tag {0} for mixed requirements is not valid.", requirement));
+            }
+
+            String[] parts = base.ToString().Split(new string[] { ">", "<", "=", "<=", ">=" }, StringSplitOptions.None);
+            leftHandSide = new InfluenceFunction(parts[0], varMod);
+            rightHandSide = new InfluenceFunction(parts[parts.Length - 1], varMod);
+        }
+
+        public bool requirementsFulfilled(Configuration conf)
+        {
+            if (requirement.Equals(REQUIRE_ALL))
+            {
+                return base.configIsValid(conf);
+            }
+            else if (requirement.Equals(REQUIRE_ONE))
+            {
+                Tuple<bool, bool> preCheckResult = preCheckConfigReqOne(conf);
+                bool hasAllConfigs = preCheckResult.Item1;
+                bool hasAtLeastOneConfig = preCheckResult.Item2;
+
+                if (!hasAtLeastOneConfig)
+                {
+                    return true;
+                } else if (!hasAllConfigs && hasAtLeastOneConfig)
+                {
+                    return false;
+                } else
+                {
+                    return base.configIsValid(conf);
+                }
+            } else
+            {
+                throw new ArgumentException("Illegal Reuqirement for mixed constraints");
+            }
+        }
+
+        private Tuple<bool,bool> preCheckConfigReqOne(Configuration config)
+        {
+            bool hasAllConfigs = true;
+            bool hasAtLeastOne = false;
+            foreach (BinaryOption bo in leftHandSide.participatingBoolOptions.Union(rightHandSide.participatingBoolOptions))
+            {
+                if (!config.BinaryOptions.ContainsKey(bo))
+                {
+                    hasAllConfigs = false;
+                }
+                else if (config.BinaryOptions.ContainsKey(bo))
+                {
+                    hasAtLeastOne = true;
+                }
+
+
+            }
+
+            foreach (NumericOption no in leftHandSide.participatingNumOptions.Union(rightHandSide.participatingNumOptions))
+            {
+                if (!config.NumericOptions.ContainsKey(no))
+                {
+                    hasAllConfigs = false;
+                } else if (config.NumericOptions.ContainsKey(no))
+                {
+                    hasAtLeastOne = true;
+                }
+            }
+            return Tuple.Create(hasAllConfigs, hasAtLeastOne);
+        }
+
+        public override string ToString()
+        {
+            return requirement + ": " + base.ToString();
+        }
+    }
+}
