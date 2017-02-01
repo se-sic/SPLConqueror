@@ -606,8 +606,16 @@ namespace CommandLine
                 case COMMAND_PYTHON_LEARN:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                        List<Configuration> configurationsLearning = buildSet(this.toSample);
+                        List<Configuration> configurationsLearning;
                         List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
+                        if (this.toSample.Contains(SamplingStrategies.ALLBINARY) && this.toSample.Contains(SamplingStrategies.FULLFACTORIAL))
+                        {
+                            configurationsLearning = GlobalState.allMeasurements.Configurations;
+             
+                        } else
+                        {
+                            configurationsLearning = buildSet(this.toSample);
+                        }
 
                         String samplingIdentifier = createSamplingIdentifier();
 
