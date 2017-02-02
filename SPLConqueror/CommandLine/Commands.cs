@@ -642,6 +642,7 @@ namespace CommandLine
                             PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                             GlobalState.logInfo.logLine("Starting Prediction");
                             pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
+                            configurationsLearning = null;
                             PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_" + samplingIdentifier);
                             pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
                             GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
