@@ -25,7 +25,7 @@ namespace ProcessWrapper
         private const string LEARNING_SETTINGS_STREAM_START = "settings_start";
 
         private const string LEARNING_SETTINGS_STREAM_END = "settings_end";
-        
+
         /* Meassages to indicate the start and end of the stream of configurations.
          * Configurations will be sent in between the messages.
         */
@@ -64,6 +64,13 @@ namespace ProcessWrapper
 
         // Message to indicate that the process has performed the task.
         private const string FINISHED_LEARNING = "learn_finished";
+
+        // Partial Stream that sends the configs in more than one run
+        private const string CONFIG_PARTIAL_STREAM_START = "partial_start";
+
+        private const string CONFIG_PARTIAL_STREAM_END = "partial_end";
+
+        private const string PARTIAL_TRAIN_FINISHED = "partial_trained";
 
         private string[] mlProperties = null;
 
@@ -143,7 +150,7 @@ namespace ProcessWrapper
             passLineToApplication(mlSettings[0].Trim().ToLower());
             if (mlSettings.Length > 1)
             {
-                for(int i = 1; i < mlSettings.Length; ++i)
+                for (int i = 1; i < mlSettings.Length; ++i)
                 {
                     passLineToApplication(mlSettings[i]);
                 }
@@ -192,7 +199,8 @@ namespace ProcessWrapper
             if (predictedConfigurations.Count != predictions.Length)
                 GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
 
-            if ((predictions[0].ToLower()).StartsWith("error")) {
+            if ((predictions[0].ToLower()).StartsWith("error"))
+            {
                 GlobalState.logError.log("There was a error running the Python script.");
                 StringBuilder errMessage = new StringBuilder();
                 foreach (string errInfo in predictions)
@@ -200,7 +208,8 @@ namespace ProcessWrapper
                     errMessage.Append(errInfo);
                 }
                 GlobalState.logError.log("Error message: " + errMessage.ToString());
-            } else
+            }
+            else
             {
                 writer.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
                 for (int i = 0; i < predictedConfigurations.Count; i++)
@@ -226,14 +235,43 @@ namespace ProcessWrapper
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
                 initializeLearning(this.mlProperties);
-
+                passLineToApplication(task);
                 if (AWAITING_CONFIGS.Equals(waitForNextReceivedLine()))
                 {
-                    passConfigurations(configs);
+                    if (task.Equals(START_PARAM_TUNING))
+                    {
+                        passConfigurations(configs);
 
-                    passConfigurationsPredict(configurationsToPredict);
+                        passConfigurationsPredict(configurationsToPredict);
+                    }
+                    else
+                    {
+                        int j = 1;
+                        List<Configuration>.Enumerator enumerator = configs.GetEnumerator();
+                        enumerator.MoveNext();
+                        passLineToApplication(CONFIG_PARTIAL_STREAM_START);
+                        while (enumerator.Current != null)
+                        {
+                            passLineToApplication(CONFIG_LEARN_STREAM_START);
+                            while (j <= 5000 && enumerator.Current != null)
+                            {
+                                passLineToApplication(enumerator.Current.toNumeric());
+                                enumerator.MoveNext();
+                                while (!waitForNextReceivedLine().Equals(PASS_OK))
+                                {
+                                    // Wait to make sure the previous input is processed in order to make sure receiver wont be overwhelmed
+                                }
+                                j++;
+                            }
+                            j = 1;
+                            passLineToApplication(CONFIG_LEARN_STREAM_END);
+                            while (!waitForNextReceivedLine().Equals(PARTIAL_TRAIN_FINISHED)) ;
+                        }
+                        passLineToApplication(CONFIG_PARTIAL_STREAM_END);
+                        while (!waitForNextReceivedLine().Equals(AWAITING_CONFIGS)) ;
+                        passConfigurationsPredict(configurationsToPredict);
+                    }
                 }
-                passLineToApplication(task);
             }
         }
 
