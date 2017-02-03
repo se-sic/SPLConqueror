@@ -31,7 +31,7 @@ CONFIG_PARTIAL_STREAM_START = "partial_start"
 
 CONFIG_PARTIAL_STREAM_END = "partial_end"
 
-PARTIAL_TRAIN_FINISHED = "partial_trained"
+PARTIAL_ACK = "partial_ack"
 
 
 # Output function to pass strings to C#, flushing the output buffer is required to make sure the string is written
@@ -82,12 +82,12 @@ def get_configurations_learn(container):
     return get_configurations(container, CONFIG_LEARN_STREAM_START, CONFIG_LEARN_STREAM_END)
 
 
-def learn_partial(learner):
+def conf_partial(learner):
 
     cs_input = raw_input()
+    configs = Configurations()
     while cs_input != CONFIG_PARTIAL_STREAM_END:
         if cs_input == CONFIG_LEARN_STREAM_START:
-            configs = Configurations()
             cs_input = raw_input()
             while cs_input != CONFIG_LEARN_STREAM_END:
                 data = cs_input.split(",")
@@ -98,9 +98,9 @@ def learn_partial(learner):
                 configs.append(nfp_value, configuration_values)
                 print_line(PASS_OK)
                 cs_input = raw_input()
-            learner.learn(configs.features, configs.results)
-            print_line(PARTIAL_TRAIN_FINISHED)
+            print_line(PARTIAL_ACK)
             cs_input = raw_input()
+    learner.learn(configs.features, configs.results)
 
 
 # Request and return the configurations used to predict.
@@ -134,7 +134,7 @@ def main():
         model = learning.Learner(learning_strategy, learner_settings)
         task = raw_input()
         if task == CONFIG_PARTIAL_STREAM_START:
-            learn_partial(model)
+            conf_partial(model)
 
         configurations_predict = get_configurations_predict(configurations_predict)
         predictions = model.predict(configurations_predict.features)
