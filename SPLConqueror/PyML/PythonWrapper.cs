@@ -3,6 +3,7 @@ using SPLConqueror_Core;
 using System.Collections.Generic;
 using System;
 using System.Text;
+using System.Threading;
 
 namespace ProcessWrapper
 {
@@ -70,7 +71,7 @@ namespace ProcessWrapper
 
         private const string CONFIG_PARTIAL_STREAM_END = "partial_end";
 
-        private const string PARTIAL_TRAIN_FINISHED = "partial_trained";
+        private const string PARTIAL_ACK = "partial_ack";
 
         private string[] mlProperties = null;
 
@@ -265,10 +266,13 @@ namespace ProcessWrapper
                             }
                             j = 1;
                             passLineToApplication(CONFIG_LEARN_STREAM_END);
-                            while (!waitForNextReceivedLine().Equals(PARTIAL_TRAIN_FINISHED)) ;
+                            while (!waitForNextReceivedLine().Equals(PARTIAL_ACK)) ;
                         }
                         passLineToApplication(CONFIG_PARTIAL_STREAM_END);
-                        while (!waitForNextReceivedLine().Equals(AWAITING_CONFIGS)) ;
+                        while (!waitForNextReceivedLine().Equals(AWAITING_CONFIGS))
+                        {
+                            Thread.Sleep(1000);
+                        }
                         passConfigurationsPredict(configurationsToPredict);
                     }
                 }
