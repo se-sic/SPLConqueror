@@ -29,6 +29,10 @@ namespace CommandLine
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
 
+        public const string COMMAND_RESUME = "resume";
+
+        public const string COMMAND_SAVE = "save";
+
         public const string COMMAND_VALIDATION = "validation";
 
         public const string COMMAND_EVALUATION_SET = "evaluationset";
@@ -136,6 +140,12 @@ namespace CommandLine
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
                     }
+                    break;
+
+                case COMMAND_RESUME:
+                    break;
+
+                case COMMAND_SAVE:
                     break;
 
                 case COMMAND_TRUEMODEL:
@@ -682,6 +692,21 @@ namespace CommandLine
 
 
             return "";
+
+        }
+
+        private void persist()
+        {
+
+        }
+
+        private void recoverFromPersistentDump(string dumpPath)
+        {
+
+        }
+
+        private void recoverFromLogFiles(string[] aScripts, params string[] logFiles)
+        {
 
         }
 

@@ -62,6 +62,33 @@ namespace SPLConqueror_Core
             optionOrder = new List<ConfigurationOption>();
         }
 
+        /// <summary>
+        /// String that represents the current global state object to save it as persistent file.
+        /// </summary>
+        /// <returns></returns>
+        public string dump()
+        {
+            return "";
+        }
+
+        /// <summary>
+        /// Try to recover the state from log files.
+        /// </summary>
+        /// <param name="logFile">Log files</param>
+        public void recoverFromLogFile(params string[] logFile)
+        {
+
+        }
+
+        /// <summary>
+        /// Recover a older Global State from the persistent dump.
+        /// </summary>
+        /// <param name="persistentDump">Global state object as string</param>
+        public void recoverFromPersistentDump(string persistentDump)
+        {
+
+        }
+
 
         /// <summary>
         /// The mehtod returns non function property with the given name. If there is no property with the name, a new property is created. 
