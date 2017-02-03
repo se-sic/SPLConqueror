@@ -106,10 +106,17 @@ namespace CommandLine
 
                         List<Configuration> configurations_Learning = new List<Configuration>();
 
-                        foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                        if (allMeasurementsValid())
                         {
-                            if (config.nfpValues.ContainsKey(GlobalState.currentNFP))
-                                configurations_Learning.Add(config);
+                            configurations_Learning = GlobalState.allMeasurements.Configurations;
+                        }
+                        else
+                        {
+                            foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                            {
+                                if (config.nfpValues.ContainsKey(GlobalState.currentNFP))
+                                    configurations_Learning.Add(config);
+                            }
                         }
 
                         if (configurations_Learning.Count == 0)
@@ -446,9 +453,10 @@ namespace CommandLine
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                        List<Configuration> configurationsLearning = buildSet(this.toSample);
-                        List<Configuration> configurationsValidation = buildSet(this.toSampleValidation);
-                        
+                        Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
+                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
+
                         if (configurationsLearning.Count == 0)
                         {
                             configurationsLearning = configurationsValidation;
@@ -531,6 +539,53 @@ namespace CommandLine
             }
 
             return configurationsTest;
+        }
+
+        private bool isAllMeasurementsToSample()
+        {
+            return this.toSample.Contains(SamplingStrategies.ALLBINARY) && this.toSample.Contains(SamplingStrategies.FULLFACTORIAL);
+        }
+
+        private bool isAllMeasurementsValidation()
+        {
+            return this.toSampleValidation.Contains(SamplingStrategies.ALLBINARY) && this.toSample.Contains(SamplingStrategies.FULLFACTORIAL);
+        }
+
+        private Tuple<List<Configuration>, List<Configuration>> buildSetsEfficient()
+        {
+            bool measurementsValid = false;
+            List<Configuration> configurationsLearning = new List<Configuration>();
+            List<Configuration> configurationsValidation = new List<Configuration>();
+
+            if (isAllMeasurementsToSample() && allMeasurementsValid())
+            {
+                measurementsValid = true;
+                configurationsLearning = GlobalState.allMeasurements.Configurations;
+            }
+            else
+            {
+                configurationsLearning = buildSet(this.toSample);
+            }
+
+            if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()))
+            {
+                configurationsValidation = GlobalState.allMeasurements.Configurations;
+            }
+            else
+            {
+                configurationsValidation = buildSet(this.toSampleValidation);
+            }
+            return Tuple.Create(configurationsLearning, configurationsValidation);
+        }
+
+        private bool allMeasurementsValid()
+        {
+            foreach (Configuration conf in GlobalState.allMeasurements.Configurations)
+            {
+                if (!conf.nfpValues.ContainsKey(GlobalState.currentNFP))
+                    return false;
+            }
+            return true;
         }
 
         private void parseOptionOrder(string task)
