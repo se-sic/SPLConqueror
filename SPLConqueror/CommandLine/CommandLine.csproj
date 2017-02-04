@@ -114,6 +114,10 @@
       <Project>{AEBDC4EA-60AD-4A95-8407-059B07150782}</Project>
       <Name>MachineLearning</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Persistence\Persistence.csproj">
+      <Project>{3a0abb96-f33e-472a-998e-535a4f9668db}</Project>
+      <Name>Persistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
       <Project>{1F035958-15B1-450A-BFC5-BEBD95376C40}</Project>
       <Name>SPLConqueror_Core</Name>

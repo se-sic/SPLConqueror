@@ -10,6 +10,7 @@ using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
+using Persistence;
 using MachineLearning;
 
 namespace CommandLine
@@ -146,6 +147,9 @@ namespace CommandLine
                     break;
 
                 case COMMAND_SAVE:
+                    StreamWriter sw = new StreamWriter(task);
+                    sw.Write(PersistGlobalState.dump());
+                    sw.Flush();
                     break;
 
                 case COMMAND_TRUEMODEL:
@@ -201,6 +205,7 @@ namespace CommandLine
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
+                    GlobalState.measurementSource = task;
                     GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
 
                     break;
@@ -340,6 +345,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_VARIABILITYMODEL:
+                    GlobalState.vmSource = task;
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     if (GlobalState.varModel == null)
                         GlobalState.logError.logLine("No variability model found at " + task);
