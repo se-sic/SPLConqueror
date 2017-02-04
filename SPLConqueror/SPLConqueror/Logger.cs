@@ -12,12 +12,15 @@ namespace SPLConqueror_Core
         protected StreamWriter writer = null;
         protected static TextWriter stdout = new StreamWriter(Console.OpenStandardOutput());
 
+        private string outputLocation;
+
         public Logger()
         {
         }
 
         public Logger(String outputLocation)
         {
+            this.outputLocation = outputLocation;
             if (writer != null)
             {
                 writer.Flush();
@@ -61,6 +64,17 @@ namespace SPLConqueror_Core
             {
                 writer.Flush();
                 writer.Close();
+            }
+        }
+
+        override public string ToString()
+        {
+            if (outputLocation == null)
+            {
+                return "null";
+            } else
+            {
+                return outputLocation;
             }
         }
 

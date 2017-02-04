@@ -21,12 +21,14 @@ namespace SPLConqueror_Core
         /// The variability model of the case study. 
         /// </summary>
         public static VariabilityModel varModel = null;
+        public static string vmSource;
 
         /// <summary>
         /// The property being considered. 
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
+        public static string measurementSource;
 
         public static ResultDB evalutionSet = new ResultDB();
 
@@ -60,33 +62,6 @@ namespace SPLConqueror_Core
             infModel = null;
             nfProperties = new Dictionary<string,NFProperty>();
             optionOrder = new List<ConfigurationOption>();
-        }
-
-        /// <summary>
-        /// String that represents the current global state object to save it as persistent file.
-        /// </summary>
-        /// <returns></returns>
-        public string dump()
-        {
-            return "";
-        }
-
-        /// <summary>
-        /// Try to recover the state from log files.
-        /// </summary>
-        /// <param name="logFile">Log files</param>
-        public void recoverFromLogFile(params string[] logFile)
-        {
-
-        }
-
-        /// <summary>
-        /// Recover a older Global State from the persistent dump.
-        /// </summary>
-        /// <param name="persistentDump">Global state object as string</param>
-        public void recoverFromPersistentDump(string persistentDump)
-        {
-
         }
 
 
