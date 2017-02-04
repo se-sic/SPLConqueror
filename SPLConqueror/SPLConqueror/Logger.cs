@@ -18,7 +18,7 @@ namespace SPLConqueror_Core
         {
         }
 
-        public Logger(String outputLocation)
+        public Logger(String outputLocation, bool append)
         {
             this.outputLocation = outputLocation;
             if (writer != null)
@@ -33,11 +33,19 @@ namespace SPLConqueror_Core
             {
                 try
                 {
-                    ostrm = new FileStream(outputLocation.Trim(), FileMode.OpenOrCreate, FileAccess.Write);
-                    ostrm.SetLength(0); // clear the file
-                    ostrm.Flush();
-                    writer = new StreamWriter(ostrm);
-                    writer.AutoFlush = true;
+                    if (!append)
+                    {
+                        ostrm = new FileStream(outputLocation.Trim(), FileMode.OpenOrCreate, FileAccess.Write);
+                        ostrm.SetLength(0); // clear the file
+                        ostrm.Flush();
+                        writer = new StreamWriter(ostrm);
+                        writer.AutoFlush = true;
+                    } else
+                    {
+                        ostrm = new FileStream(outputLocation.Trim(), FileMode.Append, FileAccess.Write);
+                        writer = new StreamWriter(ostrm);
+                        writer.AutoFlush = true;
+                    }
                 }
                 catch (Exception e)
                 {

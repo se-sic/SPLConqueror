@@ -8,7 +8,7 @@ namespace SPLConqueror_Core
     public class ErrorLogger : Logger
     {
         readonly object loggerLock = new Object();
-        public ErrorLogger(String location) :base(location)
+        public ErrorLogger(String location, bool mode=false) :base(location, mode)
         {
             if(writer!=null)
             Console.SetError(writer);
