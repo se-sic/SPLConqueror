@@ -33,6 +33,7 @@ namespace CommandLine
         public const string COMMAND_RESUME = "resume";
 
         public const string COMMAND_SAVE = "save";
+        public const string COMMAND_ROLLBACK = "rollback";
 
         public const string COMMAND_VALIDATION = "validation";
 
@@ -86,8 +87,7 @@ namespace CommandLine
         /// <returns>Returns an empty string if the command could be performed by the method. If the command could not be performed by the method, the original command is returned.</returns>
         public string performOneCommand(string line)
         {
-            GlobalState.logInfo.logLine(COMMAND + line);
-
+            string command;
 
             // remove comment part of the line (the comment starts with an #)
             line = line.Split(new Char[] { '#' }, 2)[0];
@@ -96,12 +96,21 @@ namespace CommandLine
 
             // split line in command and parameters of the command
             string[] components = line.Split(new Char[] { ' ' }, 2);
-            string command = components[0];
+
             string task = "";
             if (components.Length > 1)
                 task = components[1];
 
             string[] taskAsParameter = task.Split(new Char[] { ' ' });
+            if (!GlobalState.rollback)
+            {
+                GlobalState.logInfo.logLine(COMMAND + line);
+
+                command = components[0];
+            } else
+            {
+                command = COMMAND_ROLLBACK;
+            }
 
             switch (command.ToLower())
             {
@@ -144,14 +153,22 @@ namespace CommandLine
                     break;
 
                 case COMMAND_RESUME:
-                    PersistGlobalState.recoverFromPersistentDump(task);
+                    PersistGlobalState.recoverFromPersistentDump(taskAsParameter[0]);
+                    this.mlSettings = PersistMLSettings.recoverFromPersistentDump(taskAsParameter[1]);
                     break;
 
                 case COMMAND_SAVE:
-                    StreamWriter sw = new StreamWriter(task);
+                    StreamWriter sw = new StreamWriter(taskAsParameter[0]);
                     sw.Write(PersistGlobalState.dump());
                     sw.Flush();
+                    sw = new StreamWriter(taskAsParameter[1]);
+                    sw.Write(PersistMLSettings.dump(this.mlSettings));
+                    sw.Flush();
+
                     break;
+
+                case COMMAND_ROLLBACK:
+                    break; 
 
                 case COMMAND_TRUEMODEL:
                     StreamReader readModel = new StreamReader(task);

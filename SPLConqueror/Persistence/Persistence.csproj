@@ -40,10 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PersistMLSettings.cs" />
     <Compile Include="PersistGlobalState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MachineLearning\MachineLearning.csproj">
+      <Project>{aebdc4ea-60ad-4a95-8407-059b07150782}</Project>
+      <Name>MachineLearning</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
       <Project>{1f035958-15b1-450a-bfc5-bebd95376c40}</Project>
       <Name>SPLConqueror_Core</Name>

@@ -12,10 +12,12 @@ namespace Persistence
 {
     public class PersistGlobalState
     {
+
         private PersistGlobalState()
         {
 
         }
+
         /// <summary>
         /// String that represents the current global state object to save it as persistent file.
         /// </summary>
@@ -49,7 +51,7 @@ namespace Persistence
         /// <param name="logFile">Log files</param>
         public void recoverFromLogFile(params string[] logFile)
         {
-
+            GlobalState.rollback = true;
         }
 
         /// <summary>
@@ -58,6 +60,7 @@ namespace Persistence
         /// <param name="persistentDump">Global state object as string</param>
         public static void recoverFromPersistentDump(string persistentDump)
         {
+            GlobalState.rollback = true;
             XmlDocument persistentGlobalState = new System.Xml.XmlDocument();
             persistentGlobalState.Load(persistentDump);
             XmlElement globalState = persistentGlobalState.DocumentElement;
