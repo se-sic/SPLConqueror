@@ -144,6 +144,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_RESUME:
+                    PersistGlobalState.recoverFromPersistentDump(task);
                     break;
 
                 case COMMAND_SAVE:
