@@ -40,8 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PersistLearning.cs" />
     <Compile Include="PersistMLSettings.cs" />
     <Compile Include="PersistGlobalState.cs" />
+    <Compile Include="PersistSampling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -16,6 +16,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -50,6 +51,56 @@ namespace MachineLearning.Learning.Regression
         protected LearningRound CurrentRound
         {
             get { if (learningHistory.Count == 0) return null; else return learningHistory[learningHistory.Count - 1]; }
+        }
+
+        public string getCurrentInfo()
+        {
+            string header = "<? xml version =\"1.0\" encoding=\"utf-8\"?>";
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<hierachyLevel>\n");
+            sb.Append(this.hierachyLevel.ToString());
+            sb.Append("</hierachyLevel>\n");
+            XmlSerializer xmls = new XmlSerializer(typeof(List<Feature>));
+            StringWriter sw = new StringWriter();
+            sb.Append("<initialFeatures>\n");
+            xmls.Serialize(sw, this.initialFeatures);
+            sb.Append(sw.ToString().Replace(header, ""));
+            sb.Append("</initialFeatures>\n");
+            sw = new StringWriter();
+            sb.Append("<strictlyMandatoryFeatures>\n");
+            xmls.Serialize(sw, this.strictlyMandatoryFeatures);
+            sb.Append(sw.ToString().Replace(header, ""));
+            sb.Append("</strictlyMandatoryFeatures>\n");
+            sb.Append("<y_learning>\n");
+            xmls = new XmlSerializer(typeof(ILArray<double>));
+            sw = new StringWriter();
+            xmls.Serialize(sw, this.Y_learning);
+            sb.Append(sw.ToString().Replace(header, ""));
+            sb.Append("</y_learning>\n");
+            sb.Append("<y_validation>\n");
+            sw = new StringWriter();
+            xmls.Serialize(sw, this.Y_validation);
+            sb.Append(sw.ToString().Replace(header, ""));
+            sb.Append("</y_validation>\n");
+            sb.Append("<DM_Columns>\n");
+            XmlSerializer xmls2 = new XmlSerializer(typeof(Feature));
+            foreach (KeyValuePair<Feature, ILArray<double>> kv in this.DM_columns)
+            {
+                sb.Append("<keyvaluepair>\n");
+                StringWriter sw2 = new StringWriter();
+                sw = new StringWriter();
+                sb.Append("<key>\n");
+                xmls2.Serialize(sw2, kv.Key);
+                sb.Append(sw2.ToString().Replace(header, ""));
+                sb.Append("</key>\n");
+                sb.Append("<value>\n");
+                xmls.Serialize(sw, kv.Value);
+                sb.Append(sw.ToString().Replace(header, ""));
+                sb.Append("</value>\n");
+                sb.Append("</keyvaluepair>\n");
+            }
+            sb.Append("</DM_Columns>\n");
+            return sb.ToString();
         }
 
         // TODO: unused method?
