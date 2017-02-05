@@ -25,7 +25,7 @@ namespace Persistence
             XmlSerializer xmls = new XmlSerializer(typeof(ML_Settings));
             StringWriter sw = new StringWriter();
             xmls.Serialize(sw, mlsettings);
-            return sw.ToString();
+            return sw.ToString().Replace("utf-16", "utf-8");
         }
 
 
@@ -48,7 +48,11 @@ namespace Persistence
                 }
             }
             return ML_Settings.readSettings(sb.ToString());
+        }
 
+        public static ML_Settings recoverFromLog(string log)
+        {
+            return new ML_Settings();
         }
 
     }

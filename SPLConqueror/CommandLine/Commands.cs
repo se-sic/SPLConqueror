@@ -155,15 +155,31 @@ namespace CommandLine
                 case COMMAND_RESUME:
                     PersistGlobalState.recoverFromPersistentDump(taskAsParameter[0]);
                     this.mlSettings = PersistMLSettings.recoverFromPersistentDump(taskAsParameter[1]);
+                    this.toSample = PersistSampling.recoverFromDump(taskAsParameter[2]);
+                    this.toSampleValidation = PersistSampling.recoverFromDump(taskAsParameter[3]);
                     break;
 
                 case COMMAND_SAVE:
                     StreamWriter sw = new StreamWriter(taskAsParameter[0]);
                     sw.Write(PersistGlobalState.dump());
                     sw.Flush();
+                    sw.Close();
                     sw = new StreamWriter(taskAsParameter[1]);
                     sw.Write(PersistMLSettings.dump(this.mlSettings));
                     sw.Flush();
+                    sw.Close();
+                    sw = new StreamWriter(taskAsParameter[2]);
+                    sw.Write(PersistSampling.dump(this.toSample));
+                    sw.Flush();
+                    sw.Close();
+                    sw = new StreamWriter(taskAsParameter[3]);
+                    sw.Write(PersistSampling.dump(this.toSample));
+                    sw.Flush();
+                    sw.Close();
+                    sw = new StreamWriter(taskAsParameter[4]);
+                    sw.Write(PersistLearning.dump(this.exp));
+                    sw.Flush();
+                    sw.Close();
 
                     break;
 
