@@ -16,12 +16,13 @@ namespace Persistence
         /// Simulate the programm flow and find all relevant Commands
         /// </summary>
         /// <param name="aScript">A script file with the commands.</param>
-        /// <returns>Dictionary with the relevant commands and the value that has to be set to restore the state</returns>
-        public static Dictionary<string, string> findRelevantCommandsLogFiles(string aScript)
+        /// <returns>Tuple with a dictionary with the relevant commands and the value that has to be set to restore the state
+        /// and a bool value indicating if the end was reached.</returns>
+        public static Tuple<bool, Dictionary<string, string>> findRelevantCommandsLogFiles(string aScript, Dictionary<string, string> performedCommands, StreamReader log=null)
         {
-            Dictionary<string, string> relevantCommands = new Dictionary<string, string>();
+            Dictionary<string, string> relevantCommands = performedCommands;
             StreamReader aScriptReader = new StreamReader(aScript);
-            StreamReader logReader = null;
+            StreamReader logReader = log;
             while (!aScriptReader.EndOfStream)
             {
                 string command;
@@ -39,7 +40,7 @@ namespace Persistence
                         Tuple<bool, StreamReader> wasPerformedAndLogReader = reconstructLogCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformedAndLogReader.Item1)
                         {
-                            return relevantCommands;
+                            return Tuple.Create(false, relevantCommands);
                         }
                         else
                         {
@@ -49,10 +50,83 @@ namespace Persistence
                         break;
 
                     case "mlsettings":
+                        bool wasPerformed = reconstructMLSettingsCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(false, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
+
+                    case "nfp":
+                        wasPerformed = reconstructNfpCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(false,relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
+
+                    case "vm":
+                        wasPerformed = reconstructVMCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(false, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
+
+                    case "featurewise":
+                    case "random":
+                    case "pairwise":
+                    case "negfw":
+                    case "allbinary":
+                        wasPerformed = reconstructBinarySampling(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(false, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
+
+                    case "expdesign":
+                        wasPerformed = reconstructNumericSampling(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(false, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
+
+                    case "all":
+                        wasPerformed = reconstructReadingMeasurements(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(false, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
+
+                    case "script":
+                        Tuple<bool, Dictionary<string, string>> subscriptResults = reconstructRecursiveAScript(logReader, relevantCommands, task, command, line);
                         break;
                 }
             }
-            return relevantCommands;
+            return Tuple.Create(true, relevantCommands);
         }
 
         private static bool logExists(string log)
@@ -78,15 +152,9 @@ namespace Persistence
                 {
                     if (logExists(task.Trim()))
                     {
-                        try
-                        {
-                            relevantCommands.Add(command, task);
-                        }
-                        catch (ArgumentException argexc)
-                        {
-                            relevantCommands.Remove(command);
-                            relevantCommands.Add(command, task);
-                        }
+                        addOrReplace(relevantCommands, command, task);
+                        FileStream ostrm = new FileStream(task.Trim(), FileMode.Open, FileAccess.Read);
+                        logReader = new StreamReader(ostrm);
                         return Tuple.Create(true, logReader);
                     }
                     else
@@ -107,22 +175,127 @@ namespace Persistence
                 }
                 FileStream ostrm = new FileStream(task.Trim(), FileMode.OpenOrCreate, FileAccess.Read);
                 logReader = new StreamReader(ostrm);
-                try
-                {
-                    relevantCommands.Add(command, task);
-                }
-                catch (ArgumentException argexc)
-                {
-                    relevantCommands.Remove(command);
-                    relevantCommands.Add(command, task);
-                }
+                addOrReplace(relevantCommands, command, task);
                 return Tuple.Create(true, logReader);
+            }
+        }
+
+        private static void addOrReplace(Dictionary<string, string> dict, string key, string value)
+        {
+            try
+            {
+                dict.Add(key, value);
+            }
+            catch (ArgumentException argexc)
+            {
+                dict.Remove(key);
+                dict.Add(key, value);
             }
         }
 
         private static bool reconstructMLSettingsCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            return true;
+            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
+        }
+
+        private static bool reconstructNfpCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
+        }
+
+        private static bool reconstructVMCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
+        }
+
+        private static bool reconstructBinarySampling(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            if(commandLine.Contains("validation"))
+            {
+                return reconstructValidationSampling(logReader, relevantCommands, task, command, commandLine);
+            } else
+            {
+                return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
+            }
+        }
+
+        private static bool reconstructNumericSampling(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            if (commandLine.Contains("validation"))
+            {
+                return reconstructValidationSampling(logReader, relevantCommands, task, command, commandLine);
+            }
+            else
+            {
+                return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
+            }
+        }
+
+        private static bool reconstructValidationSampling(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = "command: " + commandLine;
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                addOrReplace(relevantCommands, command + " validation", (commandLine.Replace(command, "").Replace("validation", "")));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool reconstructReadingMeasurements(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = "command: " + commandLine;
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                if (logReader.ReadLine().Contains("Configs with too large deviation"))
+                {
+                    if (logReader.ReadLine().Contains("onfigurations loaded"))
+                    {
+                        return true;
+                    } else
+                    {
+                        return false;
+                    }
+                } else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool reconstructTrivialCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = "command: " + commandLine;
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                addOrReplace(relevantCommands, command, task.Trim());
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static Tuple<bool, Dictionary<string, string>> reconstructRecursiveAScript(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = "command: " + commandLine;
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                addOrReplace(relevantCommands, command, task.Trim());
+                return findRelevantCommandsLogFiles(task, relevantCommands, logReader);
+            }
+            else
+            {
+                return Tuple.Create(false, relevantCommands);
+            }
         }
     }
 }
