@@ -149,6 +149,7 @@ namespace CommandLine
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
+                        GlobalState.logInfo.logLine("Finished");
                     }
                     break;
 
@@ -366,7 +367,7 @@ namespace CommandLine
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
                             }
                         }
-                       
+                        GlobalState.logInfo.logLine("Analyze finished");
 
                         break;
                     }
