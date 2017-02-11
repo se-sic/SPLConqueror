@@ -11,6 +11,10 @@ namespace SPLConqueror_Core
 
         private const string REQUIRE_ONE = "one";
 
+        private const string NEGATIVE = "neg";
+
+        private const string POSITIVE = "pos";
+
         private InfluenceFunction leftHandSide = null;
 
         private InfluenceFunction rightHandSide = null;
@@ -19,7 +23,9 @@ namespace SPLConqueror_Core
 
         private string requirement;
 
-        public MixedConstraint(String unparsedExpr, VariabilityModel vm, VariabilityModel varMod, string requirement) : base(unparsedExpr, vm)
+        private string negativeOrPositiveExpr;
+
+        public MixedConstraint(String unparsedExpr, VariabilityModel vm, VariabilityModel varMod, string requirement, string exprKind = "pos") : base(unparsedExpr, vm)
         {
             if (requirement.Trim().ToLower().Equals(REQUIRE_ALL))
             {
@@ -34,6 +40,17 @@ namespace SPLConqueror_Core
                 throw new ArgumentException(String.Format("The tag {0} for mixed requirements is not valid.", requirement));
             }
 
+            if (exprKind.Trim().ToLower().Equals(NEGATIVE))
+            {
+                this.negativeOrPositiveExpr = NEGATIVE;
+            } else if (exprKind.Trim().ToLower().Equals(POSITIVE))
+            {
+                this.negativeOrPositiveExpr = POSITIVE;
+            } else
+            {
+                throw new ArgumentException(String.Format("The expression kind {0} is not valid. Expression can either be neg or pos.", exprKind));
+            }
+
             String[] parts = base.ToString().Split(new string[] { ">", "<", "=", "<=", ">=" }, StringSplitOptions.None);
             leftHandSide = new InfluenceFunction(parts[0], varMod);
             rightHandSide = new InfluenceFunction(parts[parts.Length - 1], varMod);
@@ -41,6 +58,22 @@ namespace SPLConqueror_Core
         }
 
         public bool requirementsFulfilled(Configuration conf)
+        {
+            if (negativeOrPositiveExpr.Equals(POSITIVE))
+            {
+                return evaluatePos(conf);
+            }
+            else if (negativeOrPositiveExpr.Equals(NEGATIVE))
+            {
+                return !evaluatePos(conf);
+            }
+            else
+            {
+                throw new ArgumentException("Illegal expression kind");
+            }
+        }
+
+        private bool evaluatePos(Configuration conf)
         {
             if (requirement.Equals(REQUIRE_ALL))
             {
