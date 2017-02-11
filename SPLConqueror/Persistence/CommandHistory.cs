@@ -22,5 +22,29 @@ namespace Persistence
                 commandHistory.Dequeue();
             }
         }
+
+        public bool Equals(CommandHistory other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentException();
+            }
+            string[] thisAsArr = commandHistory.ToArray();
+            string[] otherAsArr = other.commandHistory.ToArray();
+            if (thisAsArr.Length != otherAsArr.Length)
+            {
+                return false;
+            }
+            else
+            {
+                for (int i = 0; i < thisAsArr.Length; i++)
+                {
+                    if (!(thisAsArr[i].Equals(otherAsArr[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
     }
 }

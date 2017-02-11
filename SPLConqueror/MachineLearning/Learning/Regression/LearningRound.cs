@@ -66,6 +66,30 @@ namespace MachineLearning.Learning.Regression
             return sb.ToString();
         }
 
+        public static LearningRound FromString(string learningRoundAsString, VariabilityModel vm)
+        {
+            LearningRound learningRound = new LearningRound();
+            string[] data = learningRoundAsString.Split(new char[] { ';' });
+            learningRound.round = int.Parse(data[0].Trim());
+            List<Feature> featureSetFromString = new List<Feature>();
+            string[] featureExpressions = data[1].Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach(string featureExpression in featureExpressions)
+            {
+                featureSetFromString.Add(new Feature(featureExpression, vm));
+            }
+            learningRound.featureSet = featureSetFromString;
+            learningRound.learningError = double.Parse(data[2].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.learningError_relative = double.Parse(data[3].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.validationError = double.Parse(data[4].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.validationError_relative = double.Parse(data[5].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.elapsedTime = TimeSpan.FromSeconds(double.Parse(data[6].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us")));
+            Feature bestCandidateFromString = new Feature(data[8], vm);
+            learningRound.bestCandidate = bestCandidateFromString;
+            learningRound.bestCandidateSize = int.Parse(data[9].Trim());
+            learningRound.bestCandidateScore = double.Parse(data[10].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            return learningRound;
+        }
+
         internal LearningRound(List<Feature> featureSet, double learningError, double validationError, int round)
         {
             this.featureSet = featureSet;
