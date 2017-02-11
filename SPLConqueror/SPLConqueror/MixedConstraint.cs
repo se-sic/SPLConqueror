@@ -73,6 +73,37 @@ namespace SPLConqueror_Core
             }
         }
 
+        private bool evaluateNeg(Configuration conf)
+        {
+            if (requirement.Equals(REQUIRE_ALL))
+            {
+                return base.configIsValidNeg(conf);
+            }
+            else if (requirement.Equals(REQUIRE_ONE))
+            {
+                Tuple<bool, bool> preCheckResult = preCheckConfigReqOne(conf);
+                bool hasAllConfigs = preCheckResult.Item1;
+                bool hasAtLeastOneConfig = preCheckResult.Item2;
+
+                if (!hasAtLeastOneConfig)
+                {
+                    return true;
+                }
+                else if (!hasAllConfigs && hasAtLeastOneConfig)
+                {
+                    return false;
+                }
+                else
+                {
+                    return !base.configIsValid(conf);
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Illegal Reuqirement for mixed constraints");
+            }
+        }
+
         private bool evaluatePos(Configuration conf)
         {
             if (requirement.Equals(REQUIRE_ALL))
