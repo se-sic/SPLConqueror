@@ -30,7 +30,8 @@ namespace CommandLine
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
 
-        public const string COMMAND_RESUME = "resume";
+        public const string RESUME_FROM_DUMP = "resume-dump";
+        public const string RESUME_FROM_LOG = "resume-log";
 
         public const string COMMAND_SAVE = "save";
         public const string COMMAND_ROLLBACK = "rollback";
@@ -78,6 +79,9 @@ namespace CommandLine
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
+        private CommandHistory currentHistory = new CommandHistory();
+        private bool hasLearnData = false;
+
         public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
         /// <summary>
@@ -87,6 +91,7 @@ namespace CommandLine
         /// <returns>Returns an empty string if the command could be performed by the method. If the command could not be performed by the method, the original command is returned.</returns>
         public string performOneCommand(string line)
         {
+            currentHistory.addCommand(line);
             string command;
 
             // remove comment part of the line (the comment starts with an #)
@@ -153,7 +158,7 @@ namespace CommandLine
                     }
                     break;
 
-                case COMMAND_RESUME:
+                case RESUME_FROM_DUMP:
                     PersistGlobalState.recoverFromPersistentDump(taskAsParameter[0]);
                     this.mlSettings = PersistMLSettings.recoverFromPersistentDump(taskAsParameter[1]);
                     this.toSample = PersistSampling.recoverFromDump(taskAsParameter[2]);
@@ -185,7 +190,35 @@ namespace CommandLine
                     break;
 
                 case COMMAND_ROLLBACK:
-                    break; 
+                    if (currentHistory.Equals(Persistence.Persistence.learningHistory))
+                    {
+                        GlobalState.rollback = false;
+                        GlobalState.logInfo.logLine("Performed rollback");
+                    }
+                    break;
+
+                case RESUME_FROM_LOG:
+                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = Persistence.Persistence.findRelevantCommandsLogFiles(task, new Dictionary<string, string>());
+                    if (reachedEndAndRelevantCommands.Item1)
+                    {
+                        GlobalState.logInfo.logLine("The end of the script was already reached");
+                    }
+                    else
+                    {
+                        foreach (KeyValuePair<string, string> kv in reachedEndAndRelevantCommands.Item2)
+                        {
+                            performOneCommand(kv.Value);
+                        }
+                        
+                        if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
+                        {
+                            //restore exp
+                            hasLearnData = true;
+                        }
+                        currentHistory = new CommandHistory();
+                        GlobalState.rollback = true;
+                    }
+                    break;
 
                 case COMMAND_TRUEMODEL:
                     StreamReader readModel = new StreamReader(task);
@@ -735,22 +768,6 @@ namespace CommandLine
             return "";
 
         }
-
-        private void persist()
-        {
-
-        }
-
-        private void recoverFromPersistentDump(string dumpPath)
-        {
-
-        }
-
-        private void recoverFromLogFiles(string[] aScripts, params string[] logFiles)
-        {
-
-        }
-
 
 
         /// <summary>

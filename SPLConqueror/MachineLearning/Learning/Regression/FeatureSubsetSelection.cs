@@ -226,11 +226,13 @@ namespace MachineLearning.Learning.Regression
                 if (current == null)
                     return;
                 learningHistory.Add(current);
+                GlobalState.logInfo.logLine(current.ToString());
 
                 if (this.MLsettings.useBackward)
                 {
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
+                    GlobalState.logInfo.logLine(current.ToString());
                 }
             } while (!abortLearning(current, previous));
             updateInfluenceModel();

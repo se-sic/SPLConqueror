@@ -213,6 +213,18 @@ namespace Persistence
                             history.addCommand(line);
                         }
                         break;
+
+                    case "start":
+                        wasPerformed = reconstructLearn(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line);
+                        }
+                        break;
                 }
             }
             return Tuple.Create(true, relevantCommands);
@@ -428,7 +440,7 @@ namespace Persistence
                 while (!logReader.EndOfStream)
                 {
                     string line = logReader.ReadLine();
-                    if (line.Contains("Analyze finished"))
+                    if (line.Contains("Analyze finished") || line.Contains("learning"))
                     {
                         return true;
                     }
@@ -509,6 +521,32 @@ namespace Persistence
                 learningHistory = null;
                 return true;
             }
+            {
+                return false;
+            }
+        }
+
+        private static bool reconstructLearn(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = "command: " + commandLine;
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                learningHistory = new List<string>();
+                while (!logReader.EndOfStream)
+                {
+                    string line = logReader.ReadLine();
+                    if (line.Contains(";"))
+                    {
+                        learningHistory.Add(line);
+                    }
+                    else if (line.StartsWith("Error: "))
+                    {
+                        addOrReplace(relevantCommands, task, commandLine);
+                        return true;
+                    }
+                }
+                return false;
+            } else
             {
                 return false;
             }

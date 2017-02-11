@@ -102,6 +102,7 @@ namespace MachineLearning.Learning.Regression
             }
             else
             {
+                GlobalState.logInfo.logLine("Learning progress:");
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                 FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
                 this.models.Add(sel);
