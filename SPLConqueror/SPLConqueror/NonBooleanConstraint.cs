@@ -139,6 +139,18 @@ namespace SPLConqueror_Core
             return false;
         }
 
+        protected bool configIsValidNeg(Configuration config)
+        {
+            if (!configHasOptionsOfConstraint(config))
+            {
+                return true;
+            } else
+            {
+                return !configIsValid(config);
+            }
+          
+        }
+
         private bool configHasOptionsOfConstraint(Configuration config)
         {
             foreach(BinaryOption bo in leftHandSide.participatingBoolOptions.Union(rightHandSide.participatingBoolOptions))
