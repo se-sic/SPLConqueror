@@ -116,6 +116,36 @@ namespace MachineLearning.Learning.Regression
             }
         }
 
+        public void continueLearning(List<LearningRound> recoveredLr)
+        {
+            if (!hasNecessaryData())
+                return;
+            if (this.mLsettings.bagging)
+            {
+                throw new NotImplementedException("Recovering with bagging currently dosent work");
+            }
+            else
+            {
+                ObservableCollection<LearningRound> learningRounds = new ObservableCollection<LearningRound>();
+                GlobalState.logInfo.logLine("Learning progress:");
+                foreach(LearningRound lr in recoveredLr)
+                {
+                    GlobalState.logInfo.logLine(lr.ToString());
+                    learningRounds.Add(lr);
+                }
+                InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                this.models.Add(sel);
+                sel.setLearningSet(testSet);
+                sel.setValidationSet(this.validationSet);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                sel.continueLearn(learningRounds);
+                sw.Stop();
+                Console.WriteLine("Elapsed={0}", sw.Elapsed);
+            }
+        }
+
         private void averageModels()
         {
             List<FeatureSubsetSelection> sorted = this.models.OrderBy(o => o.finalError).ToList();

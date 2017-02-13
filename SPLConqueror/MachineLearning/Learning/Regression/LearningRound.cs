@@ -86,7 +86,14 @@ namespace MachineLearning.Learning.Regression
             Feature bestCandidateFromString = new Feature(data[8], vm);
             learningRound.bestCandidate = bestCandidateFromString;
             learningRound.bestCandidateSize = int.Parse(data[9].Trim());
-            learningRound.bestCandidateScore = double.Parse(data[10].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            try
+            {
+                learningRound.bestCandidateScore = double.Parse(data[10].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            }
+            catch(OverflowException overF)
+            {
+                learningRound.bestCandidateScore = Double.MaxValue;
+            }
             return learningRound;
         }
 
