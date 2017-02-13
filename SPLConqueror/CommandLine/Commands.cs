@@ -114,7 +114,10 @@ namespace CommandLine
                 command = components[0];
             } else
             {
-                command = COMMAND_ROLLBACK;
+                command = components[0];
+                if (!command.Equals(COMMAND_SUBSCRIPT)) {
+                    command = COMMAND_ROLLBACK;
+                }
             }
 
             switch (command.ToLower())
@@ -190,7 +193,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_ROLLBACK:
-                    if (currentHistory.Equals(Persistence.Persistence.learningHistory))
+                    if (currentHistory.Equals(Persistence.Persistence.history))
                     {
                         GlobalState.rollback = false;
                         GlobalState.logInfo.logLine("Performed rollback");
@@ -207,7 +210,16 @@ namespace CommandLine
                     {
                         foreach (KeyValuePair<string, string> kv in reachedEndAndRelevantCommands.Item2)
                         {
-                            performOneCommand(kv.Value);
+                            if(!kv.Key.Equals(COMMAND_SUBSCRIPT))
+                            {
+                                if(kv.Key.Equals(COMMAND_LOG))
+                                {
+                                    GlobalState.logInfo = new InfoLogger(kv.Value.Split()[1].Trim(), true);
+                                } else
+                                {
+                                    performOneCommand(kv.Value);
+                                }
+                            }
                         }
                         
                         if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
@@ -215,7 +227,30 @@ namespace CommandLine
                             //restore exp
                             hasLearnData = true;
                         }
-                        currentHistory = new CommandHistory();
+                        FileInfo fi = new FileInfo(task);
+                        StreamReader reader = null;
+                        if (!fi.Exists)
+                            throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
+
+                        reader = fi.OpenText();
+                        Commands co = new Commands();
+                        if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
+                        {
+                            //restore exp
+                            co.hasLearnData = true;
+                        }
+                        co.exp = this.exp;
+                        co.toSample = this.toSample;
+                        co.toSampleValidation = this.toSampleValidation;
+                        co.mlSettings = this.mlSettings;
+                        GlobalState.rollback = true;
+
+                        while (!reader.EndOfStream)
+                        {
+                            String oneLine = reader.ReadLine().Trim();
+                            co.performOneCommand(oneLine);
+
+                        }
                         GlobalState.rollback = true;
                     }
                     break;
@@ -240,6 +275,15 @@ namespace CommandLine
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
+                        co.currentHistory = this.currentHistory;
+                        if (GlobalState.rollback)
+                        {
+                            co.toSample = this.toSample;
+                            co.toSampleValidation = this.toSampleValidation;
+                            co.mlSettings = this.mlSettings;
+                        }
+
+                        co.hasLearnData = this.hasLearnData;
                         co.exp = this.exp;
 
                         while (!reader.EndOfStream)
@@ -248,6 +292,7 @@ namespace CommandLine
                             co.performOneCommand(oneLine);
 
                         }
+                        this.hasLearnData = co.hasLearnData;
                     }
                     break;
                 case COMMAND_EVALUATION_SET:
@@ -562,14 +607,33 @@ namespace CommandLine
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // We have to reuse the list of models because of NotifyCollectionChangedEventHandlers that might be attached to the list of models.  
-                        exp.models.Clear();
-                        var mod = exp.models;
-                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                        exp.models = mod;
+                        if (!hasLearnData)
+                        {
+                            exp.models.Clear();
+                            var mod = exp.models;
+                            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                            exp.models = mod;
 
-                        exp.metaModel = infMod;
-                        exp.mLsettings = this.mlSettings;
-                        exp.learn();
+                            exp.metaModel = infMod;
+                            exp.mLsettings = this.mlSettings;
+                            exp.learn();
+                        }
+                        else
+                        {
+                            GlobalState.logInfo.logLine("Continue learning");
+                            exp.models.Clear();
+                            var mod = exp.models;
+                            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                            exp.models = mod;
+                            exp.metaModel = infMod;
+                            exp.mLsettings = this.mlSettings;
+                            List<LearningRound> lr = new List<LearningRound>();
+                            foreach(string lrAsString in Persistence.Persistence.learningHistory)
+                            {
+                                lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
+                            }
+                            exp.continueLearning(lr);
+                        }
                         GlobalState.logInfo.logLine("Average model: \n" + exp.metaModel.printModelAsFunction());
                         double relativeError = 0;
                         if (GlobalState.evalutionSet.Configurations.Count > 0)

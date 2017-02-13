@@ -47,7 +47,7 @@ namespace Persistence
                         else
                         {
                             logReader = wasPerformedAndLogReader.Item2;
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -55,11 +55,12 @@ namespace Persistence
                         bool wasPerformed = reconstructMLSettingsCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -67,11 +68,12 @@ namespace Persistence
                         wasPerformed = reconstructNfpCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -79,11 +81,12 @@ namespace Persistence
                         wasPerformed = reconstructVMCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -95,11 +98,12 @@ namespace Persistence
                         wasPerformed = reconstructBinarySampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -107,11 +111,12 @@ namespace Persistence
                         wasPerformed = reconstructNumericSampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -119,24 +124,26 @@ namespace Persistence
                         wasPerformed = reconstructReadingMeasurements(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
                     case "script":
+                        history.addCommand(line.Trim());
                         Tuple<bool, Dictionary<string, string>> subscriptResults = reconstructRecursiveAScript(logReader, relevantCommands, task, command, line);
                         if (!subscriptResults.Item1)
                         {
+                            logReader.Close();
                             return subscriptResults;
                         }
                         else
                         {
                             relevantCommands = subscriptResults.Item2;
-                            history.addCommand(line);
                         }
                         break;
 
@@ -144,11 +151,12 @@ namespace Persistence
                         wasPerformed = reconstructLoadMLSettingsCommand(logReader, relevantCommands, task, "mlsettings", line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -156,11 +164,12 @@ namespace Persistence
                         wasPerformed = reconstructCleanSampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -168,11 +177,12 @@ namespace Persistence
                         Tuple<bool, Dictionary<string, string>> wasPerformedAndNewState = reconstructCleanGlobal(logReader, relevantCommands, task, command, line);
                         if (!wasPerformedAndNewState.Item1)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformedAndNewState.Item1, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                             relevantCommands = wasPerformedAndNewState.Item2;
                         }
                         break;
@@ -181,11 +191,12 @@ namespace Persistence
                         wasPerformed = reconstructLearnWithAllMeasurements(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -193,11 +204,12 @@ namespace Persistence
                         wasPerformed = reconstructAnalyzeLearning(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -205,12 +217,13 @@ namespace Persistence
                         wasPerformed = reconstructCleanLearning(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
                             learningHistory = null;
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
 
@@ -218,15 +231,17 @@ namespace Persistence
                         wasPerformed = reconstructLearn(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
+                            logReader.Close();
                             return Tuple.Create(wasPerformed, relevantCommands);
                         }
                         else
                         {
-                            history.addCommand(line);
+                            history.addCommand(line.Trim());
                         }
                         break;
                 }
             }
+            logReader.Close();
             return Tuple.Create(true, relevantCommands);
         }
 
@@ -253,7 +268,7 @@ namespace Persistence
                 {
                     if (logExists(task.Trim()))
                     {
-                        addOrReplace(relevantCommands, command, task);
+                        addOrReplace(relevantCommands, command, commandLine);
                         FileStream ostrm = new FileStream(task.Trim(), FileMode.Open, FileAccess.Read);
                         logReader = new StreamReader(ostrm);
                         return Tuple.Create(true, logReader);
@@ -276,7 +291,7 @@ namespace Persistence
                 }
                 FileStream ostrm = new FileStream(task.Trim(), FileMode.OpenOrCreate, FileAccess.Read);
                 logReader = new StreamReader(ostrm);
-                addOrReplace(relevantCommands, command, task);
+                addOrReplace(relevantCommands, command, commandLine);
                 return Tuple.Create(true, logReader);
             }
         }
@@ -487,10 +502,10 @@ namespace Persistence
 
         private static bool reconstructTrivialCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = "command: " + commandLine.Trim();
             if (lineInLog.Equals(logReader.ReadLine()))
             {
-                addOrReplace(relevantCommands, command, task.Trim());
+                addOrReplace(relevantCommands, command, commandLine);
                 return true;
             }
             else
@@ -504,7 +519,7 @@ namespace Persistence
             string lineInLog = "command: " + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
-                addOrReplace(relevantCommands, command, task.Trim());
+                addOrReplace(relevantCommands, command, commandLine);
                 return findRelevantCommandsLogFiles(task, relevantCommands, logReader);
             }
             else

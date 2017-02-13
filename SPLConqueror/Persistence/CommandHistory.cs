@@ -39,7 +39,7 @@ namespace Persistence
             {
                 for (int i = 0; i < thisAsArr.Length; i++)
                 {
-                    if (!(thisAsArr[i].Equals(otherAsArr[i])) {
+                    if (!(thisAsArr[i].Equals(otherAsArr[i]))) {
                         return false;
                     }
                 }
