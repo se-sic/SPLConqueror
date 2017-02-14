@@ -75,7 +75,9 @@ namespace MachineLearning.Learning.Regression
             string[] featureExpressions = data[1].Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
             foreach(string featureExpression in featureExpressions)
             {
-                featureSetFromString.Add(new Feature(featureExpression, vm));
+                Feature toAdd = new Feature(featureExpression.Split(new char[] { '*' }, 2)[1], vm);
+                toAdd.Constant = double.Parse(featureExpression.Split(new char[] { '*' }, 2)[0].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+                featureSetFromString.Add(toAdd);
             }
             learningRound.featureSet = featureSetFromString;
             learningRound.learningError = double.Parse(data[2].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
