@@ -208,20 +208,22 @@ namespace CommandLine
                     }
                     else
                     {
+                        string logBuffer = null;
                         foreach (KeyValuePair<string, string> kv in reachedEndAndRelevantCommands.Item2)
                         {
                             if(!kv.Key.Equals(COMMAND_SUBSCRIPT))
                             {
                                 if(kv.Key.Equals(COMMAND_LOG))
                                 {
-                                    GlobalState.logInfo = new InfoLogger(kv.Value.Split()[1].Trim(), true);
+                                    logBuffer = kv.Value.Split()[1].Trim();
                                 } else
                                 {
                                     performOneCommand(kv.Value);
                                 }
                             }
                         }
-                        
+                        GlobalState.logInfo = new InfoLogger(logBuffer, true);
+
                         if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
                         {
                             //restore exp
