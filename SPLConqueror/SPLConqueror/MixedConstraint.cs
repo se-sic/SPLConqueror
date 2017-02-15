@@ -65,7 +65,7 @@ namespace SPLConqueror_Core
             }
             else if (negativeOrPositiveExpr.Equals(NEGATIVE))
             {
-                return !evaluatePos(conf);
+                return evaluateNeg(conf);
             }
             else
             {
