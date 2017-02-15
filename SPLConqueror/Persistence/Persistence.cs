@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MachineLearning.Learning;
+using MachineLearning.Learning.Regression;
+using MachineLearning.Sampling;
+using SPLConqueror_Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +17,60 @@ namespace Persistence
         public static CommandHistory history = new CommandHistory();
 
         public static List<string> learningHistory;
+
+        public static void dump(string[] pathArray, ML_Settings mlSettings, List<SamplingStrategies> toSample, List<SamplingStrategies> toSampleValidation, Learning exp, CommandHistory history)
+        {
+            if (pathArray.Length >= 6)
+            {
+                StreamWriter sw = new StreamWriter(pathArray[0]);
+                sw.Write(PersistGlobalState.dump());
+                sw.Flush();
+                sw.Close();
+                sw = new StreamWriter(pathArray[1]);
+                sw.Write(PersistMLSettings.dump(mlSettings));
+                sw.Flush();
+                sw.Close();
+                sw = new StreamWriter(pathArray[2]);
+                sw.Write(PersistSampling.dump(toSample));
+                sw.Flush();
+                sw.Close();
+                sw = new StreamWriter(pathArray[3]);
+                sw.Write(PersistSampling.dump(toSampleValidation));
+                sw.Flush();
+                sw.Close();
+                sw = new StreamWriter(pathArray[4]);
+                sw.Write(PersistLearning.dump(exp));
+                sw.Flush();
+                sw.Close();
+                sw = new StreamWriter(pathArray[5]);
+                sw.Write(PersistCommandHistory.dump(history));
+                sw.Flush();
+                sw.Close();
+            }
+            else
+            {
+                GlobalState.logError.logLine("Couldnt dump the data. Not all target paths are given");
+            }
+        }
+
+        public static Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoverDataFromDump(string[] pathArray)
+        {
+            if (pathArray.Length >= 6)
+            {
+                PersistGlobalState.recoverFromPersistentDump(pathArray[0]);
+                ML_Settings mlSettings = PersistMLSettings.recoverFromPersistentDump(pathArray[1]);
+                List<SamplingStrategies> toSample = PersistSampling.recoverFromDump(pathArray[2]);
+                List<SamplingStrategies> toSampleValidation = PersistSampling.recoverFromDump(pathArray[3]);
+                List<List<string>> learningRounds = PersistLearning.recoverFromPersistentDump(pathArray[4]);
+                learningHistory = learningRounds.Last();
+                history = PersistCommandHistory.recoverFromDump(pathArray[5]);
+                return Tuple.Create(mlSettings, toSample, toSampleValidation);
+            } else
+            {
+                GlobalState.logError.logLine("Couldnt recover from dump. Not all source paths are given");
+                return null;
+            }
+        }
 
         /// <summary>
         /// Simulate the programm flow and find all relevant Commands
@@ -561,7 +619,8 @@ namespace Persistence
                     }
                 }
                 return false;
-            } else
+            }
+            else
             {
                 return false;
             }

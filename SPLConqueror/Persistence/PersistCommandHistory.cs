@@ -11,20 +11,25 @@ namespace Persistence
     {
         private PersistCommandHistory() { }
 
-        public string dump(CommandHistory toDump)
+        public static string dump(CommandHistory toDump)
         {
-            XmlSerializer xmls = new XmlSerializer(typeof(CommandHistory));
+            XmlSerializer xmls = new XmlSerializer(typeof(List<string>));
             StringWriter sw = new StringWriter();
-            xmls.Serialize(sw, toDump);
+            xmls.Serialize(sw, toDump.commandHistory.ToList());
             return sw.ToString().Replace("utf-16", "utf-8");
         }
 
-        public CommandHistory recoverFromDump(string path)
+        public static CommandHistory recoverFromDump(string path)
         {
-            XmlSerializer xmls = new XmlSerializer(typeof(CommandHistory));
+            XmlSerializer xmls = new XmlSerializer(typeof(List<string>));
             StreamReader sr = new StreamReader(path);
-            object cmdHistory = xmls.Deserialize(sr);
-            return (CommandHistory)cmdHistory;
+            List<string> cmdHistoryList = (List<string>)xmls.Deserialize(sr);
+            CommandHistory cmdHistory = new CommandHistory();
+            foreach (string command in cmdHistoryList)
+            {
+                cmdHistory.addCommand(command);
+            }
+            return cmdHistory;
         }
     }
 }

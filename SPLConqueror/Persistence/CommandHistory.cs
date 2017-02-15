@@ -7,7 +7,7 @@ namespace Persistence
 {
     public class CommandHistory
     {
-        private Queue<string> commandHistory = new Queue<string>();
+        public Queue<string> commandHistory = new Queue<string>();
 
         public CommandHistory()
         {

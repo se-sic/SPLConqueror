@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Persistence
@@ -20,24 +21,37 @@ namespace Persistence
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<learning>\n");
-            XmlSerializer xmls = new XmlSerializer(typeof(LearningInfo));
-            StringWriter sw = new StringWriter();
-            xmls.Serialize(sw, exp.info);
-            sb.Append(sw.ToString().Replace(HEADER, ""));
             foreach(FeatureSubsetSelection sel in exp.models)
             {
-                sb.Append("<subsetSelection>\n");
+                sb.Append("<subset>");
                 foreach(LearningRound round in sel.LearningHistory)
                 {
-                    xmls = new XmlSerializer(typeof(LearningRound));
-                    sw = new StringWriter();
-                    xmls.Serialize(sw, round);
-                    sb.Append(sw.ToString().Replace(HEADER, ""));
+                    sb.Append("<LearningRound>\n");
+                    sb.Append(round.ToString());
+                    sb.Append("</LearningRound>\n");
                 }
-                sb.Append(sel.getCurrentInfo());
-                sb.Append("</subsetSelection>\n");
+                sb.Append("</subset>");
             }
             return sb.Append("</learning>\n").ToString().Replace(HEADER, "");
+        }
+
+        public static List<List<string>> recoverFromPersistentDump(string path)
+        {
+            XmlDocument persistentLearning = new System.Xml.XmlDocument();
+            persistentLearning.Load(path);
+            List<List<string>> recoveredLearningRounds = new List<List<string>>();
+            XmlElement learning = persistentLearning.DocumentElement;
+
+            foreach (XmlElement learningRound in learning)
+            {
+                List<string> roundList = new List<string>();
+                foreach (XmlElement round in learningRound)
+                {
+                    roundList.Add(learningRound.InnerText.Trim());
+                }
+                recoveredLearningRounds.Add(roundList);
+            }
+            return recoveredLearningRounds;
         }
     }
 }
