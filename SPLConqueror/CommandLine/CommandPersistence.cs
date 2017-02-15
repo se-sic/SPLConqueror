@@ -1,6 +1,7 @@
 ﻿using MachineLearning.Learning;
 using MachineLearning.Learning.Regression;
 using MachineLearning.Sampling;
+using Persistence;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Persistence
+namespace CommandLine
 {
-    public class Persistence
+    public class CommandPersistence
     {
-        private Persistence() { }
+        private CommandPersistence() { }
 
         public static CommandHistory history = new CommandHistory();
 
@@ -96,7 +97,7 @@ namespace Persistence
                 string[] taskAsParameter = task.Split(new Char[] { ' ' });
                 switch (command)
                 {
-                    case "log":
+                    case Commands.COMMAND_LOG:
                         Tuple<bool, StreamReader> wasPerformedAndLogReader = reconstructLogCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformedAndLogReader.Item1)
                         {
@@ -109,7 +110,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "mlsettings":
+                    case Commands.COMMAND_SET_MLSETTING:
                         bool wasPerformed = reconstructMLSettingsCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -122,7 +123,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "nfp":
+                    case Commands.COMMAND_SET_NFP:
                         wasPerformed = reconstructNfpCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -135,7 +136,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "vm":
+                    case Commands.COMMAND_VARIABILITYMODEL:
                         wasPerformed = reconstructVMCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -148,11 +149,11 @@ namespace Persistence
                         }
                         break;
 
-                    case "featurewise":
-                    case "random":
-                    case "pairwise":
-                    case "negfw":
-                    case "allbinary":
+                    case Commands.COMMAND_SAMPLE_OPTIONWISE:
+                    case Commands.COMMAND_SAMPLE_BINARY_RANDOM:
+                    case Commands.COMMAND_SAMPLE_PAIRWISE:
+                    case Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
+                    case Commands.COMMAND_SAMPLE_ALLBINARY:
                         wasPerformed = reconstructBinarySampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -165,7 +166,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "expdesign":
+                    case Commands.COMMAND_EXERIMENTALDESIGN:
                         wasPerformed = reconstructNumericSampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -178,7 +179,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "all":
+                    case Commands.COMMAND_LOAD_CONFIGURATIONS:
                         wasPerformed = reconstructReadingMeasurements(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -191,7 +192,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "script":
+                    case Commands.COMMAND_SUBSCRIPT:
                         history.addCommand(line.Trim());
                         Tuple<bool, Dictionary<string, string>> subscriptResults = reconstructRecursiveAScript(logReader, relevantCommands, task, command, line);
                         if (!subscriptResults.Item1)
@@ -205,7 +206,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "load_mlsettings":
+                    case Commands.COMMAND_LOAD_MLSETTINGS:
                         wasPerformed = reconstructLoadMLSettingsCommand(logReader, relevantCommands, task, "mlsettings", line);
                         if (!wasPerformed)
                         {
@@ -218,7 +219,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "clean-sampling":
+                    case Commands.COMMAND_CLEAR_SAMPLING:
                         wasPerformed = reconstructCleanSampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -231,7 +232,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "clean-global":
+                    case Commands.COMMAND_CLEAR_GLOBAL:
                         Tuple<bool, Dictionary<string, string>> wasPerformedAndNewState = reconstructCleanGlobal(logReader, relevantCommands, task, command, line);
                         if (!wasPerformedAndNewState.Item1)
                         {
@@ -245,7 +246,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "learnwithallmeasurements":
+                    case Commands.COMMAND_START_ALLMEASUREMENTS:
                         wasPerformed = reconstructLearnWithAllMeasurements(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -258,7 +259,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "analyze-learning":
+                    case Commands.COMMAND_ANALYZE_LEARNING:
                         wasPerformed = reconstructAnalyzeLearning(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -271,7 +272,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "clean-learning":
+                    case Commands.COMMAND_CLEAR_LEARNING:
                         wasPerformed = reconstructCleanLearning(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -285,7 +286,7 @@ namespace Persistence
                         }
                         break;
 
-                    case "start":
+                    case Commands.COMMAND_START_LEARNING:
                         wasPerformed = reconstructLearn(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -372,18 +373,18 @@ namespace Persistence
             string lineInLog = "command: " + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
-                relevantCommands.Remove("expdesign");
-                relevantCommands.Remove("expdesign validation");
-                relevantCommands.Remove("featurewise");
-                relevantCommands.Remove("random");
-                relevantCommands.Remove("pairwise");
-                relevantCommands.Remove("negfw");
-                relevantCommands.Remove("allbinary");
-                relevantCommands.Remove("featurewise validation");
-                relevantCommands.Remove("random validation");
-                relevantCommands.Remove("pairwise validation");
-                relevantCommands.Remove("negfw validation");
-                relevantCommands.Remove("allbinary validation");
+                relevantCommands.Remove(Commands.COMMAND_EXERIMENTALDESIGN);
+                relevantCommands.Remove(Commands.COMMAND_EXERIMENTALDESIGN + " validation");
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_OPTIONWISE);
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_BINARY_RANDOM);
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_PAIRWISE);
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE);
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_ALLBINARY);
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_OPTIONWISE + " validation");
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_BINARY_RANDOM + " validation");
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_PAIRWISE + " validation");
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " validation");
+                relevantCommands.Remove(Commands.COMMAND_SAMPLE_ALLBINARY + " validation");
                 return true;
             }
             else

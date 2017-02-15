@@ -162,7 +162,7 @@ namespace CommandLine
                     break;
 
                 case RESUME_FROM_DUMP:
-                    Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoveredData = Persistence.Persistence.recoverDataFromDump(taskAsParameter);
+                    Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoveredData = CommandPersistence.recoverDataFromDump(taskAsParameter);
                     if (recoveredData == null) {
                         GlobalState.logError.logLine("Couldnt recover.");
                     } else {
@@ -177,7 +177,7 @@ namespace CommandLine
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
-                        if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Count > 0)
                         {
                             //restore exp
                             hasLearnData = true;
@@ -198,12 +198,12 @@ namespace CommandLine
                     break;
 
                 case COMMAND_SAVE:
-                    Persistence.Persistence.dump(taskAsParameter, this.mlSettings, this.toSample, 
+                    CommandPersistence.dump(taskAsParameter, this.mlSettings, this.toSample, 
                         this.toSampleValidation, this.exp, this.currentHistory);
                     break;
 
                 case COMMAND_ROLLBACK:
-                    if (currentHistory.Equals(Persistence.Persistence.history))
+                    if (currentHistory.Equals(CommandPersistence.history))
                     {
                         GlobalState.rollback = false;
                         GlobalState.logInfo.logLine("Performed rollback");
@@ -211,7 +211,7 @@ namespace CommandLine
                     break;
 
                 case RESUME_FROM_LOG:
-                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = Persistence.Persistence.findRelevantCommandsLogFiles(task, new Dictionary<string, string>());
+                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = CommandPersistence.findRelevantCommandsLogFiles(task, new Dictionary<string, string>());
                     if (reachedEndAndRelevantCommands.Item1)
                     {
                         GlobalState.logInfo.logLine("The end of the script was already reached");
@@ -234,7 +234,7 @@ namespace CommandLine
                         }
                         GlobalState.logInfo = new InfoLogger(logBuffer, true);
 
-                        if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Count > 0)
                         {
                             //restore exp
                             hasLearnData = true;
@@ -246,7 +246,7 @@ namespace CommandLine
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
-                        if (Persistence.Persistence.learningHistory != null && Persistence.Persistence.learningHistory.Count > 0)
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Count > 0)
                         {
                             //restore exp
                             co.hasLearnData = true;
@@ -639,7 +639,7 @@ namespace CommandLine
                             exp.metaModel = infMod;
                             exp.mLsettings = this.mlSettings;
                             List<LearningRound> lr = new List<LearningRound>();
-                            foreach(string lrAsString in Persistence.Persistence.learningHistory)
+                            foreach(string lrAsString in CommandPersistence.learningHistory)
                             {
                                 lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
                             }

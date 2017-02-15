@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="CommandHistory.cs" />
     <Compile Include="PersistCommandHistory.cs" />
-    <Compile Include="Persistence.cs" />
     <Compile Include="PersistLearning.cs" />
     <Compile Include="PersistMLSettings.cs" />
     <Compile Include="PersistGlobalState.cs" />

@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="CommandLine.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="CommandPersistence.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script.cs" />
