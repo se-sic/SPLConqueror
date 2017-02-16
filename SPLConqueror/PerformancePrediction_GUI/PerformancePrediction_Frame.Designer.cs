@@ -72,12 +72,19 @@
             this.readVarModel = new System.Windows.Forms.Button();
             this.LearnAllMeasurements = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.PrintConfigsGroupBox = new System.Windows.Forms.GroupBox();
+            this.PrintconfigsButton = new System.Windows.Forms.Button();
+            this.PostfixLabel = new System.Windows.Forms.Label();
+            this.PrefixLabel = new System.Windows.Forms.Label();
+            this.PostFixTextBox = new System.Windows.Forms.TextBox();
+            this.PrefixTextBox = new System.Windows.Forms.TextBox();
             this.BinarySamplingGroup.SuspendLayout();
             this.LogGroup.SuspendLayout();
             this.expDasign_group.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.perfInfGridView)).BeginInit();
             this.pim_group.SuspendLayout();
             this.MlSettings_Box.SuspendLayout();
+            this.PrintConfigsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // BinarySamplingGroup
@@ -571,11 +578,68 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // PrintConfigsGroupBox
+            // 
+            this.PrintConfigsGroupBox.Controls.Add(this.PrintconfigsButton);
+            this.PrintConfigsGroupBox.Controls.Add(this.PostfixLabel);
+            this.PrintConfigsGroupBox.Controls.Add(this.PrefixLabel);
+            this.PrintConfigsGroupBox.Controls.Add(this.PostFixTextBox);
+            this.PrintConfigsGroupBox.Controls.Add(this.PrefixTextBox);
+            this.PrintConfigsGroupBox.Location = new System.Drawing.Point(675, 7);
+            this.PrintConfigsGroupBox.Name = "PrintConfigsGroupBox";
+            this.PrintConfigsGroupBox.Size = new System.Drawing.Size(176, 204);
+            this.PrintConfigsGroupBox.TabIndex = 16;
+            this.PrintConfigsGroupBox.TabStop = false;
+            this.PrintConfigsGroupBox.Text = "Print Configurations";
+            // 
+            // PrintconfigsButton
+            // 
+            this.PrintconfigsButton.Location = new System.Drawing.Point(36, 127);
+            this.PrintconfigsButton.Name = "PrintconfigsButton";
+            this.PrintconfigsButton.Size = new System.Drawing.Size(103, 51);
+            this.PrintconfigsButton.TabIndex = 4;
+            this.PrintconfigsButton.Text = "Printconfigs";
+            this.PrintconfigsButton.UseVisualStyleBackColor = true;
+            this.PrintconfigsButton.Click += new System.EventHandler(this.PrintconfigsButton_Click);
+            // 
+            // PostfixLabel
+            // 
+            this.PostfixLabel.AutoSize = true;
+            this.PostfixLabel.Location = new System.Drawing.Point(6, 88);
+            this.PostfixLabel.Name = "PostfixLabel";
+            this.PostfixLabel.Size = new System.Drawing.Size(57, 18);
+            this.PostfixLabel.TabIndex = 3;
+            this.PostfixLabel.Text = "Postfix:";
+            // 
+            // PrefixLabel
+            // 
+            this.PrefixLabel.AutoSize = true;
+            this.PrefixLabel.Location = new System.Drawing.Point(6, 36);
+            this.PrefixLabel.Name = "PrefixLabel";
+            this.PrefixLabel.Size = new System.Drawing.Size(49, 18);
+            this.PrefixLabel.TabIndex = 2;
+            this.PrefixLabel.Text = "Prefix:";
+            // 
+            // PostFixTextBox
+            // 
+            this.PostFixTextBox.Location = new System.Drawing.Point(76, 82);
+            this.PostFixTextBox.Name = "PostFixTextBox";
+            this.PostFixTextBox.Size = new System.Drawing.Size(100, 24);
+            this.PostFixTextBox.TabIndex = 1;
+            // 
+            // PrefixTextBox
+            // 
+            this.PrefixTextBox.Location = new System.Drawing.Point(76, 30);
+            this.PrefixTextBox.Name = "PrefixTextBox";
+            this.PrefixTextBox.Size = new System.Drawing.Size(100, 24);
+            this.PrefixTextBox.TabIndex = 0;
+            // 
             // PerformancePrediction_Frame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1230, 877);
+            this.Controls.Add(this.PrintConfigsGroupBox);
             this.Controls.Add(this.LearnAllMeasurements);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.readVarModel);
@@ -602,6 +666,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.perfInfGridView)).EndInit();
             this.pim_group.ResumeLayout(false);
             this.MlSettings_Box.ResumeLayout(false);
+            this.PrintConfigsGroupBox.ResumeLayout(false);
+            this.PrintConfigsGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -651,6 +717,13 @@
         public System.Windows.Forms.TextBox LogBox;
         private System.Windows.Forms.Button readVarModel;
         private System.Windows.Forms.CheckBox binWholePop;
-private System.Windows.Forms.Button LearnAllMeasurements;private System.Windows.Forms.Button button1;    }
+private System.Windows.Forms.Button LearnAllMeasurements;private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.GroupBox PrintConfigsGroupBox;
+        private System.Windows.Forms.Button PrintconfigsButton;
+        private System.Windows.Forms.Label PostfixLabel;
+        private System.Windows.Forms.Label PrefixLabel;
+        private System.Windows.Forms.TextBox PostFixTextBox;
+        private System.Windows.Forms.TextBox PrefixTextBox;
+    }
 }
 

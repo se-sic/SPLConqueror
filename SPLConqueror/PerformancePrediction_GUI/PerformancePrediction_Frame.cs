@@ -390,5 +390,47 @@ namespace PerformancePrediction_GUI
             InitDataGridView();
                
         }
+
+        private void printConfigs(string path)
+        {
+            string prefix = PrefixTextBox.Text;
+            string postfix = PostFixTextBox.Text;
+            if (prefix.Trim().Equals("") && postfix.Trim().Equals(""))
+            {
+                cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path);
+            }
+            else if (postfix.Trim().Equals(""))
+            {
+                cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path + " " + prefix);
+            } else
+            {
+                cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path + " " + prefix + " " + postfix);
+            }
+            MessageBox.Show("Configurations printed", "Finished");
+        }
+
+        private void PrintconfigsButton_Click(object sender, EventArgs e)
+        {
+            bool ableToStart = createSamplingCommands();
+            if (!ableToStart)
+            {
+                MessageBox.Show("No sampling selected!", "Error");
+
+            } else
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+                if (sfd.CheckPathExists)
+                {
+                    System.Threading.Thread printConfigsThread = new System.Threading.Thread(() => printConfigs(sfd.FileName));
+                    printConfigsThread.Start();
+ 
+                } else
+                {
+                    MessageBox.Show("Invalid path!", "Error");
+                }
+            }
+        }
     }
 }
