@@ -49,11 +49,5 @@ namespace Persistence
             }
             return ML_Settings.readSettings(sb.ToString());
         }
-
-        public static ML_Settings recoverFromLog(string log)
-        {
-            return new ML_Settings();
-        }
-
     }
 }

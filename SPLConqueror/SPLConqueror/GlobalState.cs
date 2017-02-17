@@ -21,6 +21,9 @@ namespace SPLConqueror_Core
         /// The variability model of the case study. 
         /// </summary>
         public static VariabilityModel varModel = null;
+        /// <summary>
+        /// Path the variablity model is located.
+        /// </summary>
         public static string vmSource;
 
         /// <summary>
@@ -28,6 +31,9 @@ namespace SPLConqueror_Core
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
+        /// <summary>
+        /// Path the measurements are located at.
+        /// </summary>
         public static string measurementSource;
 
         public static ResultDB evalutionSet = new ResultDB();

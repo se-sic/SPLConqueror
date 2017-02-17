@@ -21,7 +21,7 @@ namespace Persistence
         /// <summary>
         /// String that represents the current global state object to save it as persistent file.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>GlobalState as string.</returns>
         public static string dump()
         {
             StringBuilder sb = new StringBuilder();

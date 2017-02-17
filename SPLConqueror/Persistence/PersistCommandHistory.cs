@@ -11,6 +11,11 @@ namespace Persistence
     {
         private PersistCommandHistory() { }
 
+        /// <summary>
+        /// Serialize a CommandHistory.
+        /// </summary>
+        /// <param name="toDump">CommandHistory that will be serialized.</param>
+        /// <returns>CommandHistory as string.</returns>
         public static string dump(CommandHistory toDump)
         {
             XmlSerializer xmls = new XmlSerializer(typeof(List<string>));
@@ -19,6 +24,11 @@ namespace Persistence
             return sw.ToString().Replace("utf-16", "utf-8");
         }
 
+        /// <summary>
+        /// Parse a serialized CommandHistory into a CommandHistory object.
+        /// </summary>
+        /// <param name="path">The file the serialized CommandHistory is saved.</param>
+        /// <returns>Recovered CommandHistory object.</returns>
         public static CommandHistory recoverFromDump(string path)
         {
             XmlSerializer xmls = new XmlSerializer(typeof(List<string>));

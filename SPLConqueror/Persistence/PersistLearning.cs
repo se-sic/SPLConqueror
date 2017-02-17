@@ -15,8 +15,13 @@ namespace Persistence
     {
         private PersistLearning() { }
 
-        public const string HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+        private const string HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
+        /// <summary>
+        /// Parse the learning data to a string.
+        /// </summary>
+        /// <param name="exp">Learning data.</param>
+        /// <returns>String representation of the learning data.</returns>
         public static string dump(MachineLearning.Learning.Regression.Learning exp)
         {
             StringBuilder sb = new StringBuilder();
@@ -35,6 +40,11 @@ namespace Persistence
             return sb.Append("</learning>\n").ToString().Replace(HEADER, "");
         }
 
+        /// <summary>
+        /// Recover learning data from saved files.
+        /// </summary>
+        /// <param name="path">The file the learning data is saved to.</param>
+        /// <returns>List of string lists. The strings are representations of LearningRounds.</returns>
         public static List<List<string>> recoverFromPersistentDump(string path)
         {
             XmlDocument persistentLearning = new System.Xml.XmlDocument();

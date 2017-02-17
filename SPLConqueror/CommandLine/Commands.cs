@@ -31,9 +31,14 @@ namespace CommandLine
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
 
         public const string RESUME_FROM_DUMP = "resume-dump";
+
+        //resume a A script with only log files. 
         public const string RESUME_FROM_LOG = "resume-log";
 
+        //save current SPLConqueror state to a file.
         public const string COMMAND_SAVE = "save";
+
+        // shouldnt be used by user.
         public const string COMMAND_ROLLBACK = "rollback";
 
         public const string COMMAND_VALIDATION = "validation";
