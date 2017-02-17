@@ -7,13 +7,23 @@ namespace Persistence
 {
     public class CommandHistory
     {
+        /// <summary>
+        /// Queue that represents the command history. No data should be added using the queue directly.
+        /// </summary>
         public Queue<string> commandHistory = new Queue<string>();
 
+        /// <summary>
+        /// Create a new CommandHistory object. CommandHistory stores the last 10 commands performed.
+        /// </summary>
         public CommandHistory()
         {
 
         }
 
+        /// <summary>
+        /// Add a command to the command history.
+        /// </summary>
+        /// <param name="command">Command that will be added.</param>
         public void addCommand(string command)
         {
             commandHistory.Enqueue(command);
@@ -23,6 +33,11 @@ namespace Persistence
             }
         }
 
+        /// <summary>
+        /// Checks whether 2 command history objects are the same.
+        /// </summary>
+        /// <param name="other">The other CommandHistory object for comparison.</param>
+        /// <returns>True if they are equal, else false.</returns>
         public bool Equals(CommandHistory other)
         {
             if (other == null)

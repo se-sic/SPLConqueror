@@ -116,6 +116,11 @@ namespace MachineLearning.Learning.Regression
             }
         }
 
+
+        /// <summary>
+        /// Continues learning with recovered learning data.
+        /// </summary>
+        /// <param name="recoveredLr">Learning rounds that were already performed.</param>
         public void continueLearning(List<LearningRound> recoveredLr)
         {
             if (!hasNecessaryData())

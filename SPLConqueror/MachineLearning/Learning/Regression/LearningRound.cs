@@ -66,6 +66,13 @@ namespace MachineLearning.Learning.Regression
             return sb.ToString();
         }
 
+
+        /// <summary>
+        /// Parse string representation of a learning round to a LearningRound object.
+        /// </summary>
+        /// <param name="learningRoundAsString">LearningRound as string.</param>
+        /// <param name="vm">Variability model the LearningRound belongs to.</param>
+        /// <returns>LearningRound object that has the data of the string representation.</returns>
         public static LearningRound FromString(string learningRoundAsString, VariabilityModel vm)
         {
             LearningRound learningRound = new LearningRound();

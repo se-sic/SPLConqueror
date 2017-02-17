@@ -153,6 +153,10 @@ namespace MachineLearning.Learning.Regression
             }
         }
 
+        /// <summary>
+        /// Continue learning with recovered learning data.
+        /// </summary>
+        /// <param name="recoveredHistory">The learning rounds, that were already successfully performed.</param>
         public void continueLearn(ObservableCollection<LearningRound> recoveredHistory)
         {
             this.learningHistory = recoveredHistory;

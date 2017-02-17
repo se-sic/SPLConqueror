@@ -15,10 +15,25 @@ namespace CommandLine
     {
         private CommandPersistence() { }
 
+        /// <summary>
+        /// Recovered command history.
+        /// </summary>
         public static CommandHistory history = new CommandHistory();
 
+        /// <summary>
+        /// Recovered learning informations.
+        /// </summary>
         public static List<string> learningHistory;
 
+        /// <summary>
+        /// Dump the current state of SPLConqueror to Files.
+        /// </summary>
+        /// <param name="pathArray">Array with file paths. Needs 5 paths. Data will be stored in these files.</param>
+        /// <param name="mlSettings">Current ML_Settings, to save.</param>
+        /// <param name="toSample">Sampling strategies to save.</param>
+        /// <param name="toSampleValidation">Validation sampling strategies to save.</param>
+        /// <param name="exp">Learning object to save.</param>
+        /// <param name="history">Command history to save.</param>
         public static void dump(string[] pathArray, ML_Settings mlSettings, List<SamplingStrategies> toSample, List<SamplingStrategies> toSampleValidation, Learning exp, CommandHistory history)
         {
             if (pathArray.Length >= 6)
@@ -54,6 +69,11 @@ namespace CommandLine
             }
         }
 
+        /// <summary>
+        /// Recover the SPLConqueror data from files.
+        /// </summary>
+        /// <param name="pathArray">String array with the file paths. Needs 6 file paths.</param>
+        /// <returns>Tuple containing all recovered data.</returns>
         public static Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoverDataFromDump(string[] pathArray)
         {
             if (pathArray.Length >= 6)
@@ -77,6 +97,8 @@ namespace CommandLine
         /// Simulate the programm flow and find all relevant Commands
         /// </summary>
         /// <param name="aScript">A script file with the commands.</param>
+        /// <param name="performedCommands">Empty dictionary to store the performed commands and arguments.</param>
+        /// <param name="log">StreamReader that reads the logs of the A script. Should be null.</param>
         /// <returns>Tuple with a dictionary with the relevant commands and the value that has to be set to restore the state
         /// and a bool value indicating if the end was reached.</returns>
         public static Tuple<bool, Dictionary<string, string>> findRelevantCommandsLogFiles(string aScript, Dictionary<string, string> performedCommands, StreamReader log = null)
