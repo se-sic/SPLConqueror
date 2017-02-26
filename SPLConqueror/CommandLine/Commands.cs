@@ -96,13 +96,14 @@ namespace CommandLine
         /// <returns>Returns an empty string if the command could be performed by the method. If the command could not be performed by the method, the original command is returned.</returns>
         public string performOneCommand(string line)
         {
-            currentHistory.addCommand(line);
             string command;
 
             // remove comment part of the line (the comment starts with an #)
             line = line.Split(new Char[] { '#' }, 2)[0];
             if (line.Length == 0)
                 return "";
+
+            currentHistory.addCommand(line);
 
             // split line in command and parameters of the command
             string[] components = line.Split(new Char[] { ' ' }, 2);
