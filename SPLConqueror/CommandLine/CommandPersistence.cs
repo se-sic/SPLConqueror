@@ -119,6 +119,86 @@ namespace CommandLine
                 string[] taskAsParameter = task.Split(new Char[] { ' ' });
                 switch (command)
                 {
+                    case Commands.COMMAND_TRUEMODEL:
+                        bool wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
+                    case Commands.COMMAND_SAMPLING_OPTIONORDER:
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
+                    case Commands.COMMAND_PRINT_CONFIGURATIONS:
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
+                    case Commands.COMMAND_MEASUREMENTS_TO_CSV:
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
+                    case Commands.COMMAND_PRINT_MLSETTINGS:
+                        wasPerformed = reconstructPrintMLSettings(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
+                    case Commands.COMMAND_EVALUATION_SET:
+                        wasPerformed = reconstructEvaluationSetCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        } else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
+                    case Commands.COMMAND_SAVE:
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+
                     case Commands.COMMAND_LOG:
                         Tuple<bool, StreamReader> wasPerformedAndLogReader = reconstructLogCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformedAndLogReader.Item1)
@@ -133,7 +213,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_SET_MLSETTING:
-                        bool wasPerformed = reconstructMLSettingsCommand(logReader, relevantCommands, task, command, line);
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
                             logReader.Close();
@@ -146,7 +226,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_SET_NFP:
-                        wasPerformed = reconstructNfpCommand(logReader, relevantCommands, task, command, line);
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
                             logReader.Close();
@@ -159,7 +239,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_VARIABILITYMODEL:
-                        wasPerformed = reconstructVMCommand(logReader, relevantCommands, task, command, line);
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
                             logReader.Close();
@@ -229,7 +309,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_LOAD_MLSETTINGS:
-                        wasPerformed = reconstructLoadMLSettingsCommand(logReader, relevantCommands, task, "mlsettings", line);
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, "mlsettings", line);
                         if (!wasPerformed)
                         {
                             logReader.Close();
@@ -344,7 +424,7 @@ namespace CommandLine
         {
             if (logReader != null)
             {
-                string lineInLog = "command: " + commandLine;
+                string lineInLog = Commands.COMMAND + commandLine;
                 if (lineInLog.Equals(logReader.ReadLine()))
                 {
                     if (logExists(task.Trim()))
@@ -392,7 +472,7 @@ namespace CommandLine
 
         private static bool reconstructCleanSampling(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 relevantCommands.Remove(Commands.COMMAND_EXERIMENTALDESIGN);
@@ -413,26 +493,6 @@ namespace CommandLine
             {
                 return false;
             }
-        }
-
-        private static bool reconstructMLSettingsCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
-        {
-            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
-        }
-
-        private static bool reconstructLoadMLSettingsCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
-        {
-            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
-        }
-
-        private static bool reconstructNfpCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
-        {
-            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
-        }
-
-        private static bool reconstructVMCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
-        {
-            return reconstructTrivialCommand(logReader, relevantCommands, task, command, commandLine);
         }
 
         private static bool reconstructBinarySampling(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
@@ -461,7 +521,7 @@ namespace CommandLine
 
         private static bool reconstructValidationSampling(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 addOrReplace(relevantCommands, command + " validation", (commandLine.Replace(command, "").Replace("validation", "")));
@@ -475,7 +535,7 @@ namespace CommandLine
 
         private static Tuple<bool, Dictionary<string, string>> reconstructCleanGlobal(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 Dictionary<string, string> newState = new Dictionary<string, string>();
@@ -499,7 +559,7 @@ namespace CommandLine
 
         private static bool reconstructLearnWithAllMeasurements(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 learningHistory = new List<string>();
@@ -530,7 +590,7 @@ namespace CommandLine
 
         private static bool reconstructAnalyzeLearning(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 while (!logReader.EndOfStream)
@@ -555,7 +615,7 @@ namespace CommandLine
 
         private static bool reconstructReadingMeasurements(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 if (logReader.ReadLine().Contains("Configs with too large deviation"))
@@ -581,9 +641,48 @@ namespace CommandLine
             }
         }
 
+        private static bool reconstructEvaluationSetCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = Commands.COMMAND + commandLine.TrimEnd();
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                if (logReader.ReadLine().Trim().Equals("Evaluation set loaded."))
+                {
+                    addOrReplace(relevantCommands, command, commandLine);
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } else
+            {
+                return false;
+            }
+        }
+
+        private static bool reconstructPrintMLSettings(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = Commands.COMMAND + commandLine.TrimEnd();
+            if (lineInLog.Equals(logReader.ReadLine()))
+            {
+                if (!logReader.EndOfStream)
+                {
+                    logReader.ReadLine();
+                    addOrReplace(relevantCommands, command, commandLine);
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } else
+            {
+                return false;
+            }
+        }
+
         private static bool reconstructTrivialCommand(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine.Trim();
+            string lineInLog = Commands.COMMAND + commandLine.Trim();
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 addOrReplace(relevantCommands, command, commandLine);
@@ -597,7 +696,7 @@ namespace CommandLine
 
         private static Tuple<bool, Dictionary<string, string>> reconstructRecursiveAScript(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 addOrReplace(relevantCommands, command, commandLine);
@@ -611,7 +710,7 @@ namespace CommandLine
 
         private static bool reconstructCleanLearning(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 learningHistory = null;
@@ -624,7 +723,7 @@ namespace CommandLine
 
         private static bool reconstructLearn(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
         {
-            string lineInLog = "command: " + commandLine;
+            string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 learningHistory = new List<string>();
