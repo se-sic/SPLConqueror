@@ -86,7 +86,8 @@ namespace CommandLine
                 learningHistory = learningRounds.Last();
                 history = PersistCommandHistory.recoverFromDump(pathArray[5]);
                 return Tuple.Create(mlSettings, toSample, toSampleValidation);
-            } else
+            }
+            else
             {
                 GlobalState.logError.logLine("Couldnt recover from dump. Not all source paths are given");
                 return null;
@@ -124,7 +125,8 @@ namespace CommandLine
                         if (!wasPerformed)
                         {
                             return Tuple.Create(wasPerformed, relevantCommands);
-                        } else
+                        }
+                        else
                         {
                             history.addCommand(line.Trim());
                         }
@@ -159,7 +161,8 @@ namespace CommandLine
                         if (!wasPerformed)
                         {
                             return Tuple.Create(wasPerformed, relevantCommands);
-                        } else
+                        }
+                        else
                         {
                             history.addCommand(line.Trim());
                         }
@@ -170,7 +173,8 @@ namespace CommandLine
                         if (!wasPerformed)
                         {
                             return Tuple.Create(wasPerformed, relevantCommands);
-                        } else
+                        }
+                        else
                         {
                             history.addCommand(line.Trim());
                         }
@@ -181,7 +185,8 @@ namespace CommandLine
                         if (!wasPerformed)
                         {
                             return Tuple.Create(wasPerformed, relevantCommands);
-                        } else
+                        }
+                        else
                         {
                             history.addCommand(line.Trim());
                         }
@@ -650,11 +655,13 @@ namespace CommandLine
                 {
                     addOrReplace(relevantCommands, command, commandLine);
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -670,11 +677,13 @@ namespace CommandLine
                     logReader.ReadLine();
                     addOrReplace(relevantCommands, command, commandLine);
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
-            } else
+            }
+            else
             {
                 return false;
             }
