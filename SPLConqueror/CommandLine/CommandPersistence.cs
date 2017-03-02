@@ -21,9 +21,9 @@ namespace CommandLine
         public static CommandHistory history = new CommandHistory();
 
         /// <summary>
-        /// Recovered learning informations.
+        /// Recovered learning informations. Bool value indicates if it has to be relearned.
         /// </summary>
-        public static List<string> learningHistory;
+        public static Tuple<bool, List<string>> learningHistory;
 
         /// <summary>
         /// Dump the current state of SPLConqueror to Files.
@@ -83,7 +83,7 @@ namespace CommandLine
                 List<SamplingStrategies> toSample = PersistSampling.recoverFromDump(pathArray[2]);
                 List<SamplingStrategies> toSampleValidation = PersistSampling.recoverFromDump(pathArray[3]);
                 List<List<string>> learningRounds = PersistLearning.recoverFromPersistentDump(pathArray[4]);
-                learningHistory = learningRounds.Last();
+                learningHistory = Tuple.Create(true, learningRounds.Last());
                 history = PersistCommandHistory.recoverFromDump(pathArray[5]);
                 return Tuple.Create(mlSettings, toSample, toSampleValidation);
             }
@@ -362,6 +362,7 @@ namespace CommandLine
                         }
                         else
                         {
+                            learningHistory = Tuple.Create(false, learningHistory.Item2);
                             history.addCommand(line.Trim());
                         }
                         break;
@@ -402,12 +403,16 @@ namespace CommandLine
                         }
                         else
                         {
+                            learningHistory = Tuple.Create(false, learningHistory.Item2);
                             history.addCommand(line.Trim());
                         }
                         break;
                 }
             }
-            logReader.Close();
+            if (logReader.EndOfStream)
+            {
+                logReader.Close();
+            }
             return Tuple.Create(true, relevantCommands);
         }
 
@@ -567,17 +572,17 @@ namespace CommandLine
             string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
-                learningHistory = new List<string>();
+                learningHistory = Tuple.Create(false, new List<string>());
                 while (!logReader.EndOfStream)
                 {
                     string line = logReader.ReadLine();
                     if (line.Contains(";"))
                     {
-                        learningHistory.Add(line);
+                        learningHistory.Item2.Add(line);
                     }
                     else if (line.StartsWith("Finished"))
                     {
-                        addOrReplace(relevantCommands, task, commandLine);
+                        addOrReplace(relevantCommands, command, commandLine);
                         return true;
                     }
                     else if (!(line.Contains("Elapsed") || line.Contains("NumberOfConfigurations")))
@@ -735,17 +740,17 @@ namespace CommandLine
             string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
-                learningHistory = new List<string>();
+                learningHistory = Tuple.Create(true, new List<string>());
                 while (!logReader.EndOfStream)
                 {
                     string line = logReader.ReadLine();
                     if (line.Contains(";"))
                     {
-                        learningHistory.Add(line);
+                        learningHistory.Item2.Add(line);
                     }
-                    else if (line.StartsWith("Error: "))
+                    else if (line.Contains("Finished"))
                     {
-                        addOrReplace(relevantCommands, task, commandLine);
+                        addOrReplace(relevantCommands, command, commandLine);
                         return true;
                     }
                 }

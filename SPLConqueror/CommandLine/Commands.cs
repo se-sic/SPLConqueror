@@ -183,7 +183,7 @@ namespace CommandLine
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
-                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Count > 0)
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
                         {
                             //restore exp
                             hasLearnData = true;
@@ -227,12 +227,12 @@ namespace CommandLine
                         string logBuffer = null;
                         foreach (KeyValuePair<string, string> kv in reachedEndAndRelevantCommands.Item2)
                         {
-                            if(!kv.Key.Equals(COMMAND_SUBSCRIPT))
+                            if (!kv.Key.Equals(COMMAND_SUBSCRIPT))
                             {
-                                if(kv.Key.Equals(COMMAND_LOG))
+                                if (kv.Key.Equals(COMMAND_LOG))
                                 {
                                     logBuffer = kv.Value.Split()[1].Trim();
-                                } else
+                                } else if (!(kv.Key.Equals(COMMAND_START_LEARNING) || kv.Key.Equals(COMMAND_START_ALLMEASUREMENTS)))
                                 {
                                     performOneCommand(kv.Value);
                                 }
@@ -240,7 +240,7 @@ namespace CommandLine
                         }
                         GlobalState.logInfo = new InfoLogger(logBuffer, true);
 
-                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Count > 0)
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
                         {
                             //restore exp
                             hasLearnData = true;
@@ -252,7 +252,7 @@ namespace CommandLine
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
-                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Count > 0)
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
                         {
                             //restore exp
                             co.hasLearnData = true;
@@ -645,7 +645,7 @@ namespace CommandLine
                             exp.metaModel = infMod;
                             exp.mLsettings = this.mlSettings;
                             List<LearningRound> lr = new List<LearningRound>();
-                            foreach(string lrAsString in CommandPersistence.learningHistory)
+                            foreach(string lrAsString in CommandPersistence.learningHistory.Item2)
                             {
                                 lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
                             }
@@ -663,6 +663,7 @@ namespace CommandLine
                         }
 
                         GlobalState.logInfo.logLine("Error :" + relativeError);
+                        GlobalState.logInfo.logLine("Finished");
                     }
                     break;
 
