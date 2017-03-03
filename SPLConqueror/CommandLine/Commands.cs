@@ -190,6 +190,7 @@ namespace CommandLine
                     toSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
+                    GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
                     GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
 
@@ -332,7 +333,12 @@ namespace CommandLine
                 case COMMAND_VARIABILITYMODEL:
                     GlobalState.varModel = VariabilityModel.loadFromXML(task);
                     if (GlobalState.varModel == null)
+                    {
                         GlobalState.logError.logLine("No variability model found at " + task);
+                    } else if (mlSettings.blacklisted.Count > 0)
+                    {
+                        mlSettings.checkAndCleanBlacklisted();
+                    }
                     break;
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
@@ -523,6 +529,7 @@ namespace CommandLine
 
         private List<Configuration> buildSet(List<SamplingStrategies> strats)
         {
+            ConfigurationBuilder.setBlacklisted(mlSettings.blacklisted);
             List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, strats);
             //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
             if (trueModel != null)
@@ -557,7 +564,7 @@ namespace CommandLine
             List<Configuration> configurationsLearning = new List<Configuration>();
             List<Configuration> configurationsValidation = new List<Configuration>();
 
-            if (isAllMeasurementsToSample() && allMeasurementsValid())
+            if (isAllMeasurementsToSample() && allMeasurementsValid() && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
             {
                 measurementsValid = true;
                 configurationsLearning = GlobalState.allMeasurements.Configurations;
@@ -567,7 +574,7 @@ namespace CommandLine
                 configurationsLearning = buildSet(this.toSample);
             }
 
-            if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()))
+            if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()) && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
             {
                 configurationsValidation = GlobalState.allMeasurements.Configurations;
             }

@@ -74,13 +74,19 @@ namespace SPLConqueror_Core
 
         private void createIndex()
         {
-            optionValues = new double[GlobalState.varModel.indexToOption.Count];
+            int diff = 0;
+            if (GlobalState.allMeasurements != null && GlobalState.allMeasurements.blacklisted != null)
+            {
+                diff = GlobalState.allMeasurements.blacklisted.Count;
+            }
+            optionValues = new double[GlobalState.varModel.indexToOption.Count - diff];
 
             foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
             {
-                if (option.Value is NumericOption)
-                    optionValues[option.Key] = numericOptions[option.Value as NumericOption];
-                else
+                if (option.Value is NumericOption) {
+                    if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name))
+                        optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                } else
                     if (binaryOptions.ContainsKey(option.Value as BinaryOption))
                         optionValues[option.Key] = 1.0;
             }
