@@ -21,7 +21,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Turns the parallel execution of model candidates on/off.
         /// </summary>
-        public bool parallelization = false;
+        public bool parallelization = true;
 
         /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
@@ -151,6 +151,8 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool outputRoundsToStdout = false;
 
+        public List<string> blacklisted = new List<string>();
+
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
@@ -171,6 +173,11 @@ namespace MachineLearning.Learning
                     GlobalState.logError.logLine("MlSetting " + nameAndValue[0] + " not found!");
                 }
 
+            }
+
+            if (GlobalState.varModel != null && mls.blacklisted.Count > 0)
+            {
+                mls.checkAndCleanBlacklisted();
             }
 
             return mls;
@@ -201,6 +208,11 @@ namespace MachineLearning.Learning
             }
             file.Close();
 
+            if (GlobalState.varModel != null && mls.blacklisted.Count > 0)
+            {
+                mls.checkAndCleanBlacklisted();
+            }
+
             return mls;
         }
 
@@ -225,6 +237,16 @@ namespace MachineLearning.Learning
 
             string asa = fi.FieldType.FullName;
 
+            // The processing of the blacklist
+            if (name.ToLower().Equals("blacklisted"))
+            {
+                String[] optionsToBlacklist = value.Split(',');
+                foreach (String option in optionsToBlacklist)
+                {
+                    this.blacklisted.Add(option);
+                }
+                return true;
+            }
             if (fi.FieldType.FullName.Equals("System.Boolean"))
             {
                 if (value.ToLowerInvariant() == "true" || value.ToLowerInvariant() == "false")
@@ -330,6 +352,33 @@ namespace MachineLearning.Learning
 
 
             return false;
+        }
+
+        /// <summary>
+        /// Checks if the blacklisted features are valid features in the current variability model.
+        /// Removes the features that are not valid.
+        /// </summary>
+        public void checkAndCleanBlacklisted()
+        {
+            List<string> toRemove = new List<string>();
+            foreach (string blacklistedFeature in blacklisted)
+            {
+                bool isValidFeature = false;
+                foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                {
+                    if (binOpt.ToString().Equals(blacklistedFeature))
+                    {
+                        isValidFeature = true;
+                    }
+                }
+
+                if (!isValidFeature)
+                {
+                    GlobalState.logError.logLine(blacklistedFeature + " is not a valid feature in the current variability model");
+                    toRemove.Add(blacklistedFeature);
+                }
+            }
+            blacklisted = blacklisted.Except(toRemove).ToList();
         }
 
 
