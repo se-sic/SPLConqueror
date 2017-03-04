@@ -372,6 +372,14 @@ namespace MachineLearning.Learning
                     }
                 }
 
+                foreach (NumericOption numOpt in GlobalState.varModel.NumericOptions)
+                {
+                    if (numOpt.ToString().Equals(blacklistedFeature))
+                    {
+                        isValidFeature = true;
+                    }
+                }
+
                 if (!isValidFeature)
                 {
                     GlobalState.logError.logLine(blacklistedFeature + " is not a valid feature in the current variability model");
