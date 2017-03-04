@@ -81,14 +81,32 @@ namespace SPLConqueror_Core
             }
             optionValues = new double[GlobalState.varModel.indexToOption.Count - diff];
 
+            int shift = 0;
             foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
             {
-                if (option.Value is NumericOption) {
+                if (option.Value is NumericOption)
+                {
                     if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name))
-                        optionValues[option.Key] = numericOptions[option.Value as NumericOption];
-                } else
-                    if (binaryOptions.ContainsKey(option.Value as BinaryOption))
-                        optionValues[option.Key] = 1.0;
+                    {
+                        optionValues[option.Key - shift] = numericOptions[option.Value as NumericOption];
+                    } else
+                    {
+                        shift++;
+                    }
+                }
+                else
+                {
+                    if (GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name))
+                    {
+                        shift++;
+                    } else
+                    {
+                        if (binaryOptions.ContainsKey(option.Value as BinaryOption))
+                        {
+                            optionValues[option.Key - shift] = 1.0;
+                        }
+                    }
+                }
             }
         }
 
@@ -246,6 +264,11 @@ namespace SPLConqueror_Core
         {
             if (other == null)
                 return false;
+
+            if (this.optionValues.Count() != other.optionValues.Count())
+            {
+                return false;
+            }
 
             for (int i = 0; i < optionValues.Count(); i++)
             {
