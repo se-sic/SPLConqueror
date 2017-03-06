@@ -245,6 +245,7 @@ namespace MachineLearning.Learning
                 {
                     this.blacklisted.Add(option.ToLower());
                 }
+                this.blacklisted = this.blacklisted.Distinct().ToList();
                 return true;
             }
             if (fi.FieldType.FullName.Equals("System.Boolean"))
