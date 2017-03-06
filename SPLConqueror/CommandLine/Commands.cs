@@ -414,6 +414,8 @@ namespace CommandLine
                         if (para.Length >= 1 && (para[0].Trim()).Length > 0)
                         {
                             ConfigurationPrinter printer = null;
+
+                            ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
                             var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
                             if (para.Length >= 3)
                             {

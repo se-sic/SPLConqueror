@@ -240,10 +240,10 @@ namespace MachineLearning.Learning
             // The processing of the blacklist
             if (name.ToLower().Equals("blacklisted"))
             {
-                String[] optionsToBlacklist = value.Split(',');
+                String[] optionsToBlacklist = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (String option in optionsToBlacklist)
                 {
-                    this.blacklisted.Add(option);
+                    this.blacklisted.Add(option.ToLower());
                 }
                 return true;
             }
@@ -366,15 +366,15 @@ namespace MachineLearning.Learning
                 bool isValidFeature = false;
                 foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
                 {
-                    if (binOpt.ToString().Equals(blacklistedFeature))
+                    if (binOpt.ToString().ToLower().Equals(blacklistedFeature))
                     {
-                        isValidFeature = true;
+                        GlobalState.logError.logLine(binOpt.ToString() + ": Cannot blacklist binary features.");
                     }
                 }
 
                 foreach (NumericOption numOpt in GlobalState.varModel.NumericOptions)
                 {
-                    if (numOpt.ToString().Equals(blacklistedFeature))
+                    if (numOpt.ToString().ToLower().Equals(blacklistedFeature))
                     {
                         isValidFeature = true;
                     }
@@ -382,7 +382,7 @@ namespace MachineLearning.Learning
 
                 if (!isValidFeature)
                 {
-                    GlobalState.logError.logLine(blacklistedFeature + " is not a valid feature in the current variability model");
+                    GlobalState.logError.logLine("\"" + blacklistedFeature + "\"" + " is not a valid feature to blacklist.");
                     toRemove.Add(blacklistedFeature);
                 }
             }
