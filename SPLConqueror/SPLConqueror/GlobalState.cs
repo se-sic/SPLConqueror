@@ -221,7 +221,7 @@ namespace SPLConqueror_Core
                 int distance = 0;
                 foreach (var numOpt in conf.NumericOptions.Keys)
                 {
-                    if (allMeasurements.blacklisted.Contains(numOpt.Name))
+                    if (allMeasurements.blacklisted.Contains(numOpt.Name.ToLower()))
                     {
                         continue;
                     }

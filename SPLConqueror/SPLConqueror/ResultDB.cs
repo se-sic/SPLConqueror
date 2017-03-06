@@ -114,7 +114,7 @@ namespace SPLConqueror_Core
                 foreach (NumericOption opt in GlobalState.varModel.NumericOptions)
                 {             
                     
-                    if (this.blacklisted.Contains(opt.Name))
+                    if (this.blacklisted.Contains(opt.Name.ToLower()))
                     {
                         continue;
                     }

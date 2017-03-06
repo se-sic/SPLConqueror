@@ -82,7 +82,13 @@ namespace SPLConqueror_Core
 
             foreach (NumericOption opt in this.numericOptions)
             {
-                if (!blacklist.Contains(opt.Name))
+                if (blacklist != null)
+                {
+                    if (!blacklist.Contains(opt.Name.ToLower()))
+                    {
+                        result.Add(opt);
+                    }
+                } else
                 {
                     result.Add(opt);
                 }
