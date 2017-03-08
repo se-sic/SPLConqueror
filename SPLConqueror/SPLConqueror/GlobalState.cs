@@ -21,12 +21,20 @@ namespace SPLConqueror_Core
         /// The variability model of the case study. 
         /// </summary>
         public static VariabilityModel varModel = null;
+        /// <summary>
+        /// Path the variablity model is located.
+        /// </summary>
+        public static string vmSource;
 
         /// <summary>
         /// The property being considered. 
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
+        /// <summary>
+        /// Path the measurements are located at.
+        /// </summary>
+        public static string measurementSource;
 
         public static ResultDB evalutionSet = new ResultDB();
 
@@ -36,6 +44,11 @@ namespace SPLConqueror_Core
         /// If we require a configuration for learning, but haven't measured it, shall we use a similar one instead?
         /// </summary>
         public static bool takeSimilarConfig = true;
+
+        /// <summary>
+        /// Indication that the system is currently trying to recover a previous state.
+        /// </summary>
+        public static bool rollback = false;
 
         /// <summary>
         /// All properties of the current case study. 

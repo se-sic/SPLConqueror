@@ -102,6 +102,7 @@ namespace MachineLearning.Learning.Regression
             }
             else
             {
+                GlobalState.logInfo.logLine("Learning progress:");
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                 FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
                 this.models.Add(sel);
@@ -110,6 +111,41 @@ namespace MachineLearning.Learning.Regression
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 sel.learn();
+                sw.Stop();
+                Console.WriteLine("Elapsed={0}", sw.Elapsed);
+            }
+        }
+
+
+        /// <summary>
+        /// Continues learning with recovered learning data.
+        /// </summary>
+        /// <param name="recoveredLr">Learning rounds that were already performed.</param>
+        public void continueLearning(List<LearningRound> recoveredLr)
+        {
+            if (!hasNecessaryData())
+                return;
+            if (this.mLsettings.bagging)
+            {
+                throw new NotImplementedException("Recovering with bagging currently dosent work");
+            }
+            else
+            {
+                ObservableCollection<LearningRound> learningRounds = new ObservableCollection<LearningRound>();
+                GlobalState.logInfo.logLine("Learning progress:");
+                foreach(LearningRound lr in recoveredLr)
+                {
+                    GlobalState.logInfo.logLine(lr.ToString());
+                    learningRounds.Add(lr);
+                }
+                InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                this.models.Add(sel);
+                sel.setLearningSet(testSet);
+                sel.setValidationSet(this.validationSet);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                sel.continueLearn(learningRounds);
                 sw.Stop();
                 Console.WriteLine("Elapsed={0}", sw.Elapsed);
             }
