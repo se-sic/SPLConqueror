@@ -264,7 +264,14 @@ namespace SPLConqueror_Core
         {
             foreach (XmlElement mixedConstraint in xmlNode.ChildNodes)
             {
-                this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value));
+                if (mixedConstraint.Attributes.Count == 1)
+                {
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value));
+                }
+                else
+                {
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
+                }
             }
         }
 
