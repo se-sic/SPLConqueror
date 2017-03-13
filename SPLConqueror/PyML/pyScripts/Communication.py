@@ -27,8 +27,14 @@ FINISHED_LEARNING = "learn_finished"
 
 REQUESTING_LEARNING_SETTINGS = "req_settings"
 
+CONFIG_PARTIAL_STREAM_START = "partial_start"
 
-# Output finction to pass strings to C#, flushing the output buffer is required to make sure the string is written
+CONFIG_PARTIAL_STREAM_END = "partial_end"
+
+PARTIAL_ACK = "partial_ack"
+
+
+# Output function to pass strings to C#, flushing the output buffer is required to make sure the string is written
 #  in the stream
 def print_line(string):
     print string
@@ -37,7 +43,7 @@ def print_line(string):
 
 
 # format and print a list
-def print_lineArray(array):
+def print_line_array(array):
     output = ""
     for item in array:
         output += str(item)
@@ -72,23 +78,44 @@ def get_configurations(container, stream_start_arg, stream_end_arg):
 
 
 # Request and return the configurations used to train.
-def get_configurationsLearn(container):
+def get_configurations_learn(container):
     return get_configurations(container, CONFIG_LEARN_STREAM_START, CONFIG_LEARN_STREAM_END)
 
 
-# Request and return the configurations used to preidct.
-def get_configurationsPredict(container):
+def conf_partial(learner):
+
+    cs_input = raw_input()
+    configs = Configurations()
+    while cs_input != CONFIG_PARTIAL_STREAM_END:
+        if cs_input == CONFIG_LEARN_STREAM_START:
+            cs_input = raw_input()
+            while cs_input != CONFIG_LEARN_STREAM_END:
+                data = cs_input.split(",")
+                nfp_value = float(data.pop())
+                configuration_values = []
+                for value in data:
+                    configuration_values.append(int(value))
+                configs.append(nfp_value, configuration_values)
+                print_line(PASS_OK)
+                cs_input = raw_input()
+            print_line(PARTIAL_ACK)
+            cs_input = raw_input()
+    learner.learn(configs.features, configs.results)
+
+
+# Request and return the configurations used to predict.
+def get_configurations_predict(container):
     return get_configurations(container, CONFIG_PREDICT_STREAM_START, CONFIG_PREDICT_STREAM_END)
 
 
 # Main method, that will be executed when executing this script.
 def main():
-    configurationsLearn = Configurations()
-    configurationsPredict = Configurations()
+    configurations_learn = Configurations()
+    configurations_predict = Configurations()
     learning_strategy = ""
     learner_settings = []
 
-    # Sequenz for getting the basic learning settings from C#
+    # Sequence for getting the basic learning settings from C#
     print_line(REQUESTING_LEARNING_SETTINGS)
     csharp_response = raw_input()
     if csharp_response == SETTING_STREAM_START:
@@ -99,29 +126,33 @@ def main():
             learner_settings.append(learner_setting)
             learner_setting = raw_input()
 
-    configurationsLearn = get_configurationsLearn(configurationsLearn)
-
-    configurationsPredict = get_configurationsPredict(configurationsPredict)
-
+    print_line(REQUESTING_CONFIGURATION)
     task = raw_input()
     # perform prediction
     if task == START_LEARN:
+
         model = learning.Learner(learning_strategy, learner_settings)
-        model.learn(configurationsLearn.features, configurationsLearn.results)
-        predictions = model.predict(configurationsPredict.features)
+        task = raw_input()
+        if task == CONFIG_PARTIAL_STREAM_START:
+            conf_partial(model)
+
+        configurations_predict = get_configurations_predict(configurations_predict)
+        predictions = model.predict(configurations_predict.features)
 
         print_line(FINISHED_LEARNING)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
-            print_lineArray(predictions)
+            print_line_array(predictions)
     # perform parameter tuning
     elif task == START_PARAM_TUNING:
+        configurations_learn = get_configurations_learn(configurations_learn)
+        configurations_predict = get_configurations_predict(configurations_predict)
         print_line(FINISHED_LEARNING)
         target_path = raw_input()
         parameterTuning.setOutputPath(target_path)
-        optimalParameters = parameterTuning.optimizeParameter(learning_strategy, configurationsLearn.features,
-                                                              configurationsLearn.results, learner_settings)
+        optimal_parameters = parameterTuning.optimizeParameter(learning_strategy, configurations_learn.features,
+                                                               configurations_learn.results, learner_settings)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
-            print_line(optimalParameters)
+            print_line(optimal_parameters)
 
 
 # class to hold values passed by c#
@@ -141,13 +172,13 @@ def test_function():
     model = learning.Learner("svr", "")
     model.learn([[0, 0]], [1])
     pred = model.predict([[0, 0]])
-    print_lineArray(pred)
+    print_line_array(pred)
     model = learning.Learner("ssvr", "")
     model.learn([[0, 0]], [1])
     pred = model.predict([[0, 0]])
-    print_lineArray(pred)
+    print_line_array(pred)
     model = learning.Learner("svr", ["C=\'bogus\'"])
     model.learn([[0, 0]], [1])
-    print_lineArray(model.predict([[0, 0]]))
+    print_line_array(model.predict([[0, 0]]))
     model = learning.Learner("svr", [])
-    print_lineArray(model.predict([[0, 0]]))
+    print_line_array(model.predict([[0, 0]]))
