@@ -449,8 +449,6 @@ namespace SPLConqueror_Core
                             {
                                 if (token.Equals("true") || token.Equals("1"))
                                     binOptions.Add((BinaryOption)option, BinaryOption.BinaryValue.Selected);
-                                else
-                                    binOptions.Add((BinaryOption)option, BinaryOption.BinaryValue.Deselected);
                             }
                             else
                             {
