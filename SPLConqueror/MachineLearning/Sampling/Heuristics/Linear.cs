@@ -1,5 +1,4 @@
-﻿using Microsoft.SolverFoundation.Solvers;
-using SPLConqueror_Core;
+﻿using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
