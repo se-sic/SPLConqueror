@@ -500,7 +500,8 @@ namespace SPLConqueror_Core
                 {
                     foreach (BinaryOption option in config.BinaryOptions.Keys)
                     {
-                        if (option.Name == binOpt.Name )
+                        // option has to be selected in the configuration
+                        if (option.Name == binOpt.Name && config.BinaryOptions[option] == BinaryOption.BinaryValue.Selected)
                         {
                             return 1.0;
                         }
