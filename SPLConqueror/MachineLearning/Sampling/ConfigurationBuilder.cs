@@ -139,25 +139,22 @@ namespace MachineLearning.Sampling
                         }
 
                     case SamplingStrategies.T_WISE:
+                        foreach (Dictionary<string, string> ParamSet in parametersOfExpDesigns[SamplingStrategies.T_WISE])
                         {
-                            foreach (Dictionary<string, string> ParamSet in parametersOfExpDesigns[SamplingStrategies.T_WISE])
+                            TWise tw = new TWise();
+                            int t = 3;
+
+                            foreach (KeyValuePair<String, String> param in ParamSet)
                             {
-                                TWise tw = new TWise();
-
-                                int t = 3;
-
-                                foreach (KeyValuePair<String, String> param in ParamSet)
+                                if (param.Key.Equals(TWise.PARAMETER_T_NAME))
                                 {
-                                    if (param.Key.Equals(TWise.PARAMETER_T_NAME))
-                                    {
-                                        t = Convert.ToInt16(param.Value);
-                                    }
-
-                                    binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
+                                    t = Convert.ToInt16(param.Value);
+                                    found = true;
                                 }
+                                binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
                             }
-                            break;
                         }
+                        break;
 
                     //Experimental designs for numeric options
                     case SamplingStrategies.BOXBEHNKEN:

@@ -196,7 +196,7 @@ namespace CommandLine
                     break;
                 case COMMAND_EVALUATION_SET:
                     {
-                        GlobalState.evalutionSet.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
+                        GlobalState.evaluationSet.Configurations = ConfigurationReader.readConfigurations(task, GlobalState.varModel);
                         GlobalState.logInfo.logLine("Evaluation set loaded.");
                     }
                     break;
@@ -328,9 +328,9 @@ namespace CommandLine
                                 foreach (LearningRound lr in learnedModel.LearningHistory)
                                 {
                                     double relativeError = 0;
-                                    if (GlobalState.evalutionSet.Configurations.Count > 0)
+                                    if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError);
                                     }
                                     else
                                     {
@@ -353,9 +353,9 @@ namespace CommandLine
                             foreach (LearningRound lr in learnedModel.LearningHistory)
                             {
                                 double relativeError = 0;
-                                if (GlobalState.evalutionSet.Configurations.Count > 0)
+                                if (GlobalState.evaluationSet.Configurations.Count > 0)
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evalutionSet.Configurations, out relativeError);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError);
                                 }
                                 else
                                 {
@@ -733,9 +733,9 @@ namespace CommandLine
                         exp.learn();
                         GlobalState.logInfo.logLine("average model: \n" + exp.metaModel.printModelAsFunction());
                         double relativeerror = 0;
-                        if (GlobalState.evalutionSet.Configurations.Count > 0)
+                        if (GlobalState.evaluationSet.Configurations.Count > 0)
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evalutionSet.Configurations, ML_Settings.LossFunction.RELATIVE);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE);
                         }
                         else
                         {

@@ -13,7 +13,7 @@ namespace MachineLearning.Sampling.Heuristics
         public const string PARAMETER_T_NAME = "t";
 
         /// <summary>
-        /// 
+        /// Creates the t-wise sampling according to the given t-value.
         /// </summary>
         /// <param name="vm">The variability model containing the binary options for which we want to generate the pair-wise configurations.</param>
         /// <param name="t"> The t of the t-wise</param>
@@ -28,13 +28,13 @@ namespace MachineLearning.Sampling.Heuristics
 
         }
 
-        private List<List<BinaryOption>> generatePowerSet(VariabilityModel vm, List<BinaryOption> candidates, int t, List<List<BinaryOption>> result, int index)
+        private void generatePowerSet(VariabilityModel vm, List<BinaryOption> candidates, int t, List<List<BinaryOption>> result, int index)
         {
             if (candidates.Count == t)
             {
                 candidates = generator.minimizeConfig(candidates, vm, true, null);
                 result.Add(candidates);
-                return null;
+                return;
             }
 
             for (int i = index; i < GlobalState.varModel.BinaryOptions.Count; i++)
@@ -50,21 +50,13 @@ namespace MachineLearning.Sampling.Heuristics
                         if (newOptionIsValidForCandidate(candidates, GlobalState.varModel.BinaryOptions[i]))
                         {
                             generatePowerSet(vm, newCand, t, result, i + 1);
-
-                            if (candidates.Count == t)
-                            {
-                                candidates = generator.minimizeConfig(candidates, vm, true, null);
-                                result.Add(candidates);
-                                break;
-                            }
-
                         }
                     }
 
                 }
 
             }
-            return null;
+            return;
         }
 
         private bool newOptionIsValidForCandidate(List<BinaryOption> candidates, BinaryOption binaryOption)

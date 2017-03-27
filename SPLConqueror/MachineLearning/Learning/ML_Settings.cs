@@ -73,7 +73,7 @@ namespace MachineLearning.Learning
 
 
         /// <summary>
-        /// If true, the learn algorithm can learn logarithmic functions auch as log(soption1). 
+        /// If true, the learn algorithm can learn logarithmic functions such as log(soption1). 
         /// </summary>
         public bool learn_logFunction = false;
 
