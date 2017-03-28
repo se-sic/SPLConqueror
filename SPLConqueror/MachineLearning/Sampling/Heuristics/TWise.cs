@@ -33,7 +33,10 @@ namespace MachineLearning.Sampling.Heuristics
             if (candidates.Count == t)
             {
                 candidates = generator.minimizeConfig(candidates, vm, true, null);
-                result.Add(candidates);
+                if (candidates.Count != 0)
+                {
+                    result.Add(candidates);
+                }
                 return;
             }
 
