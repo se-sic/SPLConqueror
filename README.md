@@ -9,7 +9,7 @@ The project SolverFoundationWrapper implements SAT checking and CSP tasks (optim
 
 ## How to install SPLConqueror
 
-######On a Mac (OS X (10.11.6))
+###### On a Mac (OS X (10.11.6))
 1. Clone git repository
 
 2. Download and install latest Xamarin-IDE from https://www.xamarin.com
