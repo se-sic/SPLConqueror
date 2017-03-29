@@ -7,3 +7,32 @@ The machine-learning project defines different algorithms to learn the influence
 
 The project SolverFoundationWrapper implements SAT checking and CSP tasks (optimization, linear programming) based on the Microsoft Solver Foundation. The project is linked to the SolverFoundation.dll. You have to install the [redestribution package]{/SPLConqueror/SolverFoundationWrapper/en_solver_foundation_academic_edition_redistributable_installation_v3.1_x64_742237.msi} first so that the wrapper can find the required dll.
 
+## How to install SPLConqueror
+
+####On a Mac (OS X (10.11.6))
+1. Clone git repository
+
+2. Download and install latest Xamarin-IDE from https://www.xamarin.com
+
+3. mkdir "<SPLConquerer-GitRoot>/SPLConqueror/dll"
+
+4. Copy "Microsoft.Solver.Foundation.dll" (>= v3.0.0) to "<SPLConquerer-GitRoot>/SPLConqueror/dll"
+
+5. mkdir "<SPLConquerer-GitRoot>/SPLConqueror/packages"
+
+6. cd "<SPLConquerer-GitRoot>/SPLConqueror/packages"
+
+7. Install dependencies:
+
+nuget install Accord -version 2.12.0.0
+nuget install Accord.Math -version 2.12.0.0
+nuget install AForge -version 2.2.5
+nuget install AForge.Math -version 2.2.5
+nuget install ILNumerics -version 3.3.3.0
+
+
+8. Open root project "<SPLConquerer-GitRoot>/SPLConquerorSPLConqueror.sln" in Xamarin
+
+9. In subproject "SolverFoundationWrapper" double click on references and point entry "Microsoft.Solver.Foundation.dll" to "<SPLConquerer-GitRoot>/SPLConqueror/dll/Microsoft.Solver.Foundation.dll"
+
+10. Build root project
