@@ -9,7 +9,7 @@ The project SolverFoundationWrapper implements SAT checking and CSP tasks (optim
 
 ## How to install SPLConqueror
 
-####On a Mac (OS X (10.11.6))
+######On a Mac (OS X (10.11.6))
 1. Clone git repository
 
 2. Download and install latest Xamarin-IDE from https://www.xamarin.com
@@ -24,11 +24,11 @@ The project SolverFoundationWrapper implements SAT checking and CSP tasks (optim
 
 7. Install dependencies:
 
-nuget install Accord -version 2.12.0.0
-nuget install Accord.Math -version 2.12.0.0
-nuget install AForge -version 2.2.5
-nuget install AForge.Math -version 2.2.5
-nuget install ILNumerics -version 3.3.3.0
+  * nuget install Accord -version 2.12.0.0
+  * nuget install Accord.Math -version 2.12.0.0
+  * nuget install AForge -version 2.2.5
+  * nuget install AForge.Math -version 2.2.5
+  * nuget install ILNumerics -version 3.3.3.0
 
 
 8. Open root project "<SPLConquerer-GitRoot>/SPLConquerorSPLConqueror.sln" in Xamarin
