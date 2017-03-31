@@ -28,7 +28,7 @@ namespace SPLConqueror_Core
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
 
-        public static ResultDB evalutionSet = new ResultDB();
+        public static ResultDB evaluationSet = new ResultDB();
 
         public static InfluenceModel infModel = null;
 
@@ -56,7 +56,7 @@ namespace SPLConqueror_Core
             varModel = null;
             currentNFP = null;
             allMeasurements = new ResultDB();
-            evalutionSet = new ResultDB();
+            evaluationSet = new ResultDB();
             infModel = null;
             nfProperties = new Dictionary<string,NFProperty>();
             optionOrder = new List<ConfigurationOption>();
