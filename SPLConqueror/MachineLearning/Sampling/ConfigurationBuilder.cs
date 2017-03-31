@@ -149,7 +149,6 @@ namespace MachineLearning.Sampling
                                 if (param.Key.Equals(TWise.PARAMETER_T_NAME))
                                 {
                                     t = Convert.ToInt16(param.Value);
-                                    found = true;
                                 }
                                 binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
                             }
