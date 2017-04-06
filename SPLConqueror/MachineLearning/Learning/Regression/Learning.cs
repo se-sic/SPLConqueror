@@ -63,11 +63,7 @@ namespace MachineLearning.Learning.Regression
             if (this.mLsettings.bagging)
             {
                 //Get number of cores
-                int coreCount = 0;
-                foreach (var item in new System.Management.ManagementObjectSearcher("Select NumberOfCores from Win32_Processor").Get())
-                {
-                    coreCount += int.Parse(item["NumberOfCores"].ToString());
-                }
+                int coreCount = System.Environment.ProcessorCount;
                 createThreadPool(coreCount);
 
                 this.nbBaggings = this.mLsettings.baggingNumbers;
