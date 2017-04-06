@@ -90,6 +90,23 @@
             this.subscriptEachVM = new System.Windows.Forms.CheckBox();
             this.subscriptEachNfp = new System.Windows.Forms.CheckBox();
             this.logForEachSubscript = new System.Windows.Forms.CheckBox();
+            this.pythonLearnerGroupBox = new System.Windows.Forms.GroupBox();
+            this.parametersTextBox = new System.Windows.Forms.TextBox();
+            this.parametersLabel = new System.Windows.Forms.Label();
+            this.pythonPanel = new System.Windows.Forms.Panel();
+            this.addPythonLearning = new System.Windows.Forms.Button();
+            this.kernelridgeRadioButton = new System.Windows.Forms.RadioButton();
+            this.KNeighborsRadioButton = new System.Windows.Forms.RadioButton();
+            this.baggingSVRRadioButton = new System.Windows.Forms.RadioButton();
+            this.randomForestRadioButton = new System.Windows.Forms.RadioButton();
+            this.decisionTreeRegression = new System.Windows.Forms.RadioButton();
+            this.strategyLabel = new System.Windows.Forms.Label();
+            this.svrRadioButton = new System.Windows.Forms.RadioButton();
+            this.definePythonPath = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.learnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sPLConquerorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MlSettings_Box.SuspendLayout();
             this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
@@ -98,6 +115,8 @@
             this.expDasign_group.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.subscriptGroupBox.SuspendLayout();
+            this.pythonLearnerGroupBox.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // GenerateScript
@@ -115,7 +134,7 @@
             // 
             this.MlSettings_Box.Controls.Add(this.AddMlSetting);
             this.MlSettings_Box.Controls.Add(this.mlSettingsPanel);
-            this.MlSettings_Box.Location = new System.Drawing.Point(671, 15);
+            this.MlSettings_Box.Location = new System.Drawing.Point(671, 29);
             this.MlSettings_Box.Margin = new System.Windows.Forms.Padding(4);
             this.MlSettings_Box.Name = "MlSettings_Box";
             this.MlSettings_Box.Padding = new System.Windows.Forms.Padding(4);
@@ -187,7 +206,7 @@
             // 
             // varModel_button
             // 
-            this.varModel_button.Location = new System.Drawing.Point(17, 16);
+            this.varModel_button.Location = new System.Drawing.Point(17, 39);
             this.varModel_button.Margin = new System.Windows.Forms.Padding(4);
             this.varModel_button.Name = "varModel_button";
             this.varModel_button.Size = new System.Drawing.Size(141, 28);
@@ -201,7 +220,7 @@
             this.addResultFile_Group.Controls.Add(this.addResultFile);
             this.addResultFile_Group.Controls.Add(this.defineVMforResultcheckedListBox);
             this.addResultFile_Group.Controls.Add(this.locateResultFile_button);
-            this.addResultFile_Group.Location = new System.Drawing.Point(17, 53);
+            this.addResultFile_Group.Location = new System.Drawing.Point(17, 75);
             this.addResultFile_Group.Margin = new System.Windows.Forms.Padding(4);
             this.addResultFile_Group.Name = "addResultFile_Group";
             this.addResultFile_Group.Padding = new System.Windows.Forms.Padding(4);
@@ -283,7 +302,7 @@
             this.bsamp_group.Controls.Add(this.bsamp_FW_box);
             this.bsamp_group.Controls.Add(this.bsamp_ForValidation);
             this.bsamp_group.Controls.Add(this.bsamp_addButton);
-            this.bsamp_group.Location = new System.Drawing.Point(17, 294);
+            this.bsamp_group.Location = new System.Drawing.Point(17, 308);
             this.bsamp_group.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_group.Name = "bsamp_group";
             this.bsamp_group.Padding = new System.Windows.Forms.Padding(4);
@@ -416,7 +435,7 @@
             this.expDasign_group.Controls.Add(this.num_BoxBehnken_check);
             this.expDasign_group.Controls.Add(this.num_forValidationCheckBox);
             this.expDasign_group.Controls.Add(this.expDesign_addButton);
-            this.expDasign_group.Location = new System.Drawing.Point(292, 16);
+            this.expDasign_group.Location = new System.Drawing.Point(292, 32);
             this.expDasign_group.Margin = new System.Windows.Forms.Padding(4);
             this.expDasign_group.Name = "expDasign_group";
             this.expDasign_group.Padding = new System.Windows.Forms.Padding(4);
@@ -697,7 +716,7 @@
             // 
             // logFile_Button
             // 
-            this.logFile_Button.Location = new System.Drawing.Point(167, 17);
+            this.logFile_Button.Location = new System.Drawing.Point(167, 39);
             this.logFile_Button.Margin = new System.Windows.Forms.Padding(4);
             this.logFile_Button.Name = "logFile_Button";
             this.logFile_Button.Size = new System.Drawing.Size(117, 28);
@@ -793,11 +812,188 @@
             this.logForEachSubscript.Text = "Automatically generate new log file for each generated subscript";
             this.logForEachSubscript.UseVisualStyleBackColor = true;
             // 
+            // pythonLearnerGroupBox
+            // 
+            this.pythonLearnerGroupBox.Controls.Add(this.parametersTextBox);
+            this.pythonLearnerGroupBox.Controls.Add(this.parametersLabel);
+            this.pythonLearnerGroupBox.Controls.Add(this.pythonPanel);
+            this.pythonLearnerGroupBox.Controls.Add(this.addPythonLearning);
+            this.pythonLearnerGroupBox.Controls.Add(this.kernelridgeRadioButton);
+            this.pythonLearnerGroupBox.Controls.Add(this.KNeighborsRadioButton);
+            this.pythonLearnerGroupBox.Controls.Add(this.baggingSVRRadioButton);
+            this.pythonLearnerGroupBox.Controls.Add(this.randomForestRadioButton);
+            this.pythonLearnerGroupBox.Controls.Add(this.decisionTreeRegression);
+            this.pythonLearnerGroupBox.Controls.Add(this.strategyLabel);
+            this.pythonLearnerGroupBox.Controls.Add(this.svrRadioButton);
+            this.pythonLearnerGroupBox.Controls.Add(this.definePythonPath);
+            this.pythonLearnerGroupBox.Enabled = false;
+            this.pythonLearnerGroupBox.Location = new System.Drawing.Point(671, 29);
+            this.pythonLearnerGroupBox.Name = "pythonLearnerGroupBox";
+            this.pythonLearnerGroupBox.Size = new System.Drawing.Size(398, 280);
+            this.pythonLearnerGroupBox.TabIndex = 15;
+            this.pythonLearnerGroupBox.TabStop = false;
+            this.pythonLearnerGroupBox.Text = "Python Setting";
+            this.pythonLearnerGroupBox.Visible = false;
+            // 
+            // parametersTextBox
+            // 
+            this.parametersTextBox.Location = new System.Drawing.Point(9, 197);
+            this.parametersTextBox.Name = "parametersTextBox";
+            this.parametersTextBox.Size = new System.Drawing.Size(380, 22);
+            this.parametersTextBox.TabIndex = 26;
+            // 
+            // parametersLabel
+            // 
+            this.parametersLabel.AutoSize = true;
+            this.parametersLabel.Location = new System.Drawing.Point(9, 171);
+            this.parametersLabel.Name = "parametersLabel";
+            this.parametersLabel.Size = new System.Drawing.Size(138, 17);
+            this.parametersLabel.TabIndex = 25;
+            this.parametersLabel.Text = "Learner parameters:";
+            // 
+            // pythonPanel
+            // 
+            this.pythonPanel.AutoScroll = true;
+            this.pythonPanel.Location = new System.Drawing.Point(671, 29);
+            this.pythonPanel.Name = "pythonPanel";
+            this.pythonPanel.Size = new System.Drawing.Size(398, 280);
+            this.pythonPanel.TabIndex = 24;
+            // 
+            // addPythonLearning
+            // 
+            this.addPythonLearning.Location = new System.Drawing.Point(300, 28);
+            this.addPythonLearning.Name = "addPythonLearning";
+            this.addPythonLearning.Size = new System.Drawing.Size(75, 28);
+            this.addPythonLearning.TabIndex = 8;
+            this.addPythonLearning.Text = "add";
+            this.addPythonLearning.UseVisualStyleBackColor = true;
+            this.addPythonLearning.Click += new System.EventHandler(this.addPythonLearning_Click);
+            // 
+            // kernelridgeRadioButton
+            // 
+            this.kernelridgeRadioButton.AutoSize = true;
+            this.kernelridgeRadioButton.Location = new System.Drawing.Point(204, 132);
+            this.kernelridgeRadioButton.Name = "kernelridgeRadioButton";
+            this.kernelridgeRadioButton.Size = new System.Drawing.Size(102, 21);
+            this.kernelridgeRadioButton.TabIndex = 7;
+            this.kernelridgeRadioButton.TabStop = true;
+            this.kernelridgeRadioButton.Text = "Kernelridge";
+            this.kernelridgeRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // KNeighborsRadioButton
+            // 
+            this.KNeighborsRadioButton.AutoSize = true;
+            this.KNeighborsRadioButton.Location = new System.Drawing.Point(9, 132);
+            this.KNeighborsRadioButton.Name = "KNeighborsRadioButton";
+            this.KNeighborsRadioButton.Size = new System.Drawing.Size(103, 21);
+            this.KNeighborsRadioButton.TabIndex = 6;
+            this.KNeighborsRadioButton.TabStop = true;
+            this.KNeighborsRadioButton.Text = "KNeighbors";
+            this.KNeighborsRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // baggingSVRRadioButton
+            // 
+            this.baggingSVRRadioButton.AutoSize = true;
+            this.baggingSVRRadioButton.Location = new System.Drawing.Point(204, 108);
+            this.baggingSVRRadioButton.Name = "baggingSVRRadioButton";
+            this.baggingSVRRadioButton.Size = new System.Drawing.Size(109, 21);
+            this.baggingSVRRadioButton.TabIndex = 5;
+            this.baggingSVRRadioButton.TabStop = true;
+            this.baggingSVRRadioButton.Text = "BaggingSVR";
+            this.baggingSVRRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // randomForestRadioButton
+            // 
+            this.randomForestRadioButton.AutoSize = true;
+            this.randomForestRadioButton.Location = new System.Drawing.Point(204, 84);
+            this.randomForestRadioButton.Name = "randomForestRadioButton";
+            this.randomForestRadioButton.Size = new System.Drawing.Size(194, 21);
+            this.randomForestRadioButton.TabIndex = 4;
+            this.randomForestRadioButton.TabStop = true;
+            this.randomForestRadioButton.Text = "RandomForestRegression";
+            this.randomForestRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // decisionTreeRegression
+            // 
+            this.decisionTreeRegression.AutoSize = true;
+            this.decisionTreeRegression.Location = new System.Drawing.Point(9, 108);
+            this.decisionTreeRegression.Name = "decisionTreeRegression";
+            this.decisionTreeRegression.Size = new System.Drawing.Size(185, 21);
+            this.decisionTreeRegression.TabIndex = 3;
+            this.decisionTreeRegression.TabStop = true;
+            this.decisionTreeRegression.Text = "DecisionTreeRegression";
+            this.decisionTreeRegression.UseVisualStyleBackColor = true;
+            // 
+            // strategyLabel
+            // 
+            this.strategyLabel.AutoSize = true;
+            this.strategyLabel.Location = new System.Drawing.Point(9, 63);
+            this.strategyLabel.Name = "strategyLabel";
+            this.strategyLabel.Size = new System.Drawing.Size(65, 17);
+            this.strategyLabel.TabIndex = 2;
+            this.strategyLabel.Text = "Strategy:";
+            // 
+            // svrRadioButton
+            // 
+            this.svrRadioButton.AutoSize = true;
+            this.svrRadioButton.Location = new System.Drawing.Point(9, 84);
+            this.svrRadioButton.Name = "svrRadioButton";
+            this.svrRadioButton.Size = new System.Drawing.Size(57, 21);
+            this.svrRadioButton.TabIndex = 1;
+            this.svrRadioButton.TabStop = true;
+            this.svrRadioButton.Text = "SVR";
+            this.svrRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // definePythonPath
+            // 
+            this.definePythonPath.Location = new System.Drawing.Point(9, 28);
+            this.definePythonPath.Name = "definePythonPath";
+            this.definePythonPath.Size = new System.Drawing.Size(219, 28);
+            this.definePythonPath.TabIndex = 0;
+            this.definePythonPath.Text = "define Python interpreter path";
+            this.definePythonPath.UseVisualStyleBackColor = true;
+            this.definePythonPath.Click += new System.EventHandler(this.definePythonPath_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.learnerToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1081, 28);
+            this.menuStrip1.TabIndex = 16;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // learnerToolStripMenuItem
+            // 
+            this.learnerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sPLConquerorToolStripMenuItem,
+            this.pythonToolStripMenuItem});
+            this.learnerToolStripMenuItem.Name = "learnerToolStripMenuItem";
+            this.learnerToolStripMenuItem.Size = new System.Drawing.Size(70, 24);
+            this.learnerToolStripMenuItem.Text = "Learner";
+            // 
+            // sPLConquerorToolStripMenuItem
+            // 
+            this.sPLConquerorToolStripMenuItem.Name = "sPLConquerorToolStripMenuItem";
+            this.sPLConquerorToolStripMenuItem.Size = new System.Drawing.Size(176, 26);
+            this.sPLConquerorToolStripMenuItem.Text = "SPLConqueror";
+            this.sPLConquerorToolStripMenuItem.Click += new System.EventHandler(this.sPLConquerorToolStripMenuItem_Click);
+            // 
+            // pythonToolStripMenuItem
+            // 
+            this.pythonToolStripMenuItem.Name = "pythonToolStripMenuItem";
+            this.pythonToolStripMenuItem.Size = new System.Drawing.Size(176, 26);
+            this.pythonToolStripMenuItem.Text = "Python";
+            this.pythonToolStripMenuItem.Click += new System.EventHandler(this.pythonToolStripMenuItem_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1081, 573);
+            this.ClientSize = new System.Drawing.Size(1081, 615);
+            this.Controls.Add(this.pythonLearnerGroupBox);
             this.Controls.Add(this.logForEachSubscript);
             this.Controls.Add(this.subscriptEachNfp);
             this.Controls.Add(this.subscriptEachVM);
@@ -814,6 +1010,8 @@
             this.Controls.Add(this.addedElementsBox);
             this.Controls.Add(this.MlSettings_Box);
             this.Controls.Add(this.GenerateScript);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -829,6 +1027,10 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.subscriptGroupBox.ResumeLayout(false);
+            this.pythonLearnerGroupBox.ResumeLayout(false);
+            this.pythonLearnerGroupBox.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -898,6 +1100,23 @@
         private System.Windows.Forms.CheckBox subscriptEachVM;
         private System.Windows.Forms.CheckBox subscriptEachNfp;
         private System.Windows.Forms.CheckBox logForEachSubscript;
+        private System.Windows.Forms.GroupBox pythonLearnerGroupBox;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem learnerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sPLConquerorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pythonToolStripMenuItem;
+        private System.Windows.Forms.Button definePythonPath;
+        private System.Windows.Forms.Label strategyLabel;
+        private System.Windows.Forms.RadioButton svrRadioButton;
+        private System.Windows.Forms.RadioButton decisionTreeRegression;
+        private System.Windows.Forms.RadioButton randomForestRadioButton;
+        private System.Windows.Forms.RadioButton baggingSVRRadioButton;
+        private System.Windows.Forms.RadioButton KNeighborsRadioButton;
+        private System.Windows.Forms.RadioButton kernelridgeRadioButton;
+        private System.Windows.Forms.Button addPythonLearning;
+        private System.Windows.Forms.Panel pythonPanel;
+        private System.Windows.Forms.Label parametersLabel;
+        private System.Windows.Forms.TextBox parametersTextBox;
     }
 }
 
