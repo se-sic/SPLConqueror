@@ -28,6 +28,10 @@ namespace ScriptGenerator
         public const string CONTAINERKEY_NUMERIC_VALIDATION = "numeric validation";
         public const string CONTAINERKEY_LOGFILE = "logFile";
 
+        private bool splconqueror_learner = true;
+        private string interpreter_Path = null;
+        private string learnPythonCommand = "learn-python";
+
         public Form1()
         {
             InitializeComponent();
@@ -365,7 +369,11 @@ namespace ScriptGenerator
                         break;
                 }
             }
-
+            if (!splconqueror_learner)
+            {
+                mlSettings = new List<MachineLearning.Learning.ML_Settings>();
+                mlSettings.Add(new MachineLearning.Learning.ML_Settings());
+            }
             generateScript(mlSettings, runs);
 
 
@@ -378,7 +386,7 @@ namespace ScriptGenerator
         /// <param name="e"></param>
         private void generateScript(List<MachineLearning.Learning.ML_Settings> mlSettings, Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
-            if (mlSettings.Count == 0)
+            if (mlSettings.Count == 0 && splconqueror_learner)
             {
                 informatioLabel.Text = "No mlSettings specified!";
                 return;
@@ -386,23 +394,25 @@ namespace ScriptGenerator
 
             StringBuilder scriptContent = new StringBuilder();
             List<StringBuilder> subscripts = new List<StringBuilder>();
-
-            foreach (Container c in addedElementsList.Items)
+            if (splconqueror_learner)
             {
-
-                switch (c.Type.Trim())
+                foreach (Container c in addedElementsList.Items)
                 {
-                    case CONTAINERKEY_LOGFILE:
-                        scriptContent.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content) + "\n");
-                        break;
 
-                    case Commands.COMMAND_SUBSCRIPT:
-                        scriptContent.Append(Commands.COMMAND_SUBSCRIPT + " " + c.Content + System.Environment.NewLine);
-                        if (clearGlobalAfterSubscript.Checked)
-                        {
-                            scriptContent.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
-                        }
-                        break;
+                    switch (c.Type.Trim())
+                    {
+                        case CONTAINERKEY_LOGFILE:
+                            scriptContent.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content) + "\n");
+                            break;
+
+                        case Commands.COMMAND_SUBSCRIPT:
+                            scriptContent.Append(Commands.COMMAND_SUBSCRIPT + " " + c.Content + System.Environment.NewLine);
+                            if (clearGlobalAfterSubscript.Checked)
+                            {
+                                scriptContent.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -434,6 +444,10 @@ namespace ScriptGenerator
                             }
                         }
                         subscript.Append(mlSettingsContent(setting));
+                        if (!splconqueror_learner && !(interpreter_Path == null || interpreter_Path.Equals("")))
+                        {
+                            subscript.Append("define-python-path " + interpreter_Path + System.Environment.NewLine);
+                        }
                         foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
                         {
                             List<Container> nfpContainer = measurementContainer.AdditionalInformation;
@@ -490,6 +504,10 @@ namespace ScriptGenerator
                                     scriptContent.Append("$" + i + System.Environment.NewLine);
                                     i++;
                                     StringBuilder subscript = new StringBuilder();
+                                    if (!splconqueror_learner && !(interpreter_Path == null || interpreter_Path.Equals("")))
+                                    {
+                                        subscript.Append("define-python-path " + interpreter_Path + System.Environment.NewLine);
+                                    }
                                     if (logForEachSubscript.Checked)
                                     {
                                         foreach (Container c in addedElementsList.Items)
@@ -535,6 +553,10 @@ namespace ScriptGenerator
                 foreach (ML_Settings setting in mlSettings)
                 {
                     scriptContent.Append(mlSettingsContent(setting));
+                    if (!splconqueror_learner && !(interpreter_Path == null || interpreter_Path.Equals("")))
+                    {
+                        scriptContent.Append("define-python-path " + interpreter_Path + System.Environment.NewLine);
+                    }
 
                     foreach (Container varModelContainer in runs["variabilityModel"])
                     {
@@ -692,9 +714,21 @@ namespace ScriptGenerator
                             }
                             if (learn_button.Checked)
                             {
-                                sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
-                                sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
-                                sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                                if (splconqueror_learner)
+                                {
+                                    sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
+                                    sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
+                                    sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                                } else
+                                {
+                                    foreach (Container cont in addedElementsList.Items)
+                                    {
+                                        if (cont.Type.Equals(learnPythonCommand))
+                                        {
+                                            sb.Append(cont.Content);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -731,7 +765,7 @@ namespace ScriptGenerator
 
         private string mlSettingsContent(ML_Settings settings)
         {
-            return CommandLine.Commands.COMMAND_SET_MLSETTINGS + " " + settings.ToString();
+            return CommandLine.Commands.COMMAND_SET_MLSETTING + " " + settings.ToString();
         }
 
         private void logFile_Button_Click(object sender, EventArgs e)
@@ -792,5 +826,83 @@ namespace ScriptGenerator
                 informatioLabel.Text = "Information";
             }
         }
+
+        private void pythonToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (splconqueror_learner)
+            {
+                splconqueror_learner = false;
+                MlSettings_Box.Enabled = false;
+                MlSettings_Box.Visible = false;
+                print_button.Enabled = false;
+                learn_button.Checked = true;
+                pythonLearnerGroupBox.Enabled = true;
+                pythonLearnerGroupBox.Visible = true;
+            }
+        }
+
+        private void sPLConquerorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!splconqueror_learner)
+            {
+                splconqueror_learner = true;
+                MlSettings_Box.Enabled = true;
+                MlSettings_Box.Visible = true;
+                print_button.Enabled = true;
+                pythonLearnerGroupBox.Enabled = false;
+                pythonLearnerGroupBox.Visible = false;
+            }
+        }
+
+        private void definePythonPath_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog pfd = new OpenFileDialog();
+            pfd.Filter = "exe files (*.exe)|*.exe|All files (*.*)|*.*";
+            if (pfd.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(pfd.FileName);
+                interpreter_Path = fi.Directory.ToString() + Path.DirectorySeparatorChar + fi.Name;
+            }
+        }
+
+        private void addPythonLearning_Click(object sender, EventArgs e)
+        {
+            StringBuilder parameters = new StringBuilder();
+            bool canContinue = true;
+            parameters.Append(learnPythonCommand + " ");
+            if (svrRadioButton.Checked)
+            {
+                parameters.Append("SVR");
+            } else if (randomForestRadioButton.Checked)
+            {
+                parameters.Append("randomforestregressor");
+            } else if (decisionTreeRegression.Checked)
+            {
+                parameters.Append("decisiontreeregression");
+            } else if (baggingSVRRadioButton.Checked)
+            {
+                parameters.Append("baggingsvr");
+            } else if (KNeighborsRadioButton.Checked)
+            {
+                parameters.Append("kneighborsregressor");
+            } else if (kernelridgeRadioButton.Checked)
+            {
+                parameters.Append("kernelridge");
+            } else
+            {
+                canContinue = false;
+                MessageBox.Show("No learner selected!", "Error");
+            }
+
+            if (canContinue)
+            {
+                if (parametersTextBox.Text != null && !parametersTextBox.Text.Equals(""))
+                {
+                    parameters.Append(" " + parametersTextBox.Text + "\n");
+                }
+                addedElementsList.Items.Add(new Container(learnPythonCommand, parameters.ToString()));
+            }
+        }
     }
-}
+
+    }
