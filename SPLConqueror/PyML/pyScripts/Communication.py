@@ -33,11 +33,13 @@ CONFIG_PARTIAL_STREAM_END = "partial_end"
 
 PARTIAL_ACK = "partial_ack"
 
+number_of_configurations = 0
+
 
 # Output function to pass strings to C#, flushing the output buffer is required to make sure the string is written
 #  in the stream
 def print_line(string):
-    print string
+    print(string)
     # flushing output buffer
     sys.stdout.flush()
 
@@ -48,7 +50,7 @@ def print_line_array(array):
     for item in array:
         output += str(item)
         output += ","
-    print output
+    print(output)
     sys.stdout.flush()
 
 
@@ -131,6 +133,8 @@ def main():
     # perform prediction
     if task == START_LEARN:
 
+        global number_of_configurations
+        number_of_configurations = len(configurations_learn)
         model = learning.Learner(learning_strategy, learner_settings)
         task = raw_input()
         if task == CONFIG_PARTIAL_STREAM_START:
