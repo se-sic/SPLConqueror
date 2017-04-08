@@ -470,5 +470,98 @@ namespace VariabilitModel_GUI
             DialogResult dialogResult = form.ShowDialog();
             return new Tuple<DialogResult, string>(dialogResult, textBox.Text);
         }
+
+        private void convertNumericOptionsToBinaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        
+        }
+
+        private void exportToDimacsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private VariabilityModel transformVarModel()
+        {
+            VariabilityModel transformedVarModel = new VariabilityModel(GlobalState.varModel.Name);
+            foreach (BinaryOption toCopy in GlobalState.varModel.BinaryOptions)
+            {
+                transformedVarModel.addConfigurationOption(toCopy);
+            }
+            transformedVarModel.BooleanConstraints = GlobalState.varModel.BooleanConstraints.ToList();
+
+            foreach (NumericOption currNumOpt in GlobalState.varModel.NumericOptions)
+            {
+                // Create Binary Options for each numeric Option( #Steps)
+                List<ConfigurationOption> allChildren = new List<ConfigurationOption>();
+                foreach (double step in currNumOpt.Values)
+                {
+                    BinaryOption toAdd = new BinaryOption(GlobalState.varModel, currNumOpt.Name + "_" + step);
+                    toAdd.Optional = false;
+                    toAdd.OutputString = currNumOpt.Prefix + step + currNumOpt.Postfix;
+                    allChildren.Add(toAdd);
+                    transformedVarModel.addConfigurationOption(toAdd);
+                }
+
+                // Add a exclude statement so that it isnt possible to select 2 values for a numeric option at the same time
+                foreach (ConfigurationOption currentOption in allChildren)
+                {
+                    List<List<ConfigurationOption>> excluded = new List<List<ConfigurationOption>>();
+                    List<ConfigurationOption> currentOptionWrapper = new List<ConfigurationOption>();
+                    currentOptionWrapper.Add(currentOption);
+                    excluded.Add(allChildren.Except(currentOptionWrapper).ToList());
+                    currentOption.Excluded_Options = excluded;
+                }
+
+               
+            }
+            return transformedVarModel;
+
+        }
+
+        private void transformNumericConstraintsToBoolean(VariabilityModel newVariabilityModel)
+        {
+            foreach (NonBooleanConstraint constraintToTransform in GlobalState.varModel.NonBooleanConstraints)
+            {
+                String constraintAsExpression = constraintToTransform.ToString();
+                String literal;
+                String comparator = "";
+                if (constraintAsExpression.Contains(">="))
+                {
+                    comparator = ">=";
+                }
+                else if (constraintAsExpression.Contains("<="))
+                {
+                    comparator = "<=";
+                }
+                else if (constraintAsExpression.Contains("="))
+                {
+                    comparator = "=";
+                }
+                else if (constraintAsExpression.Contains(">"))
+                {
+                    comparator = ">";
+                }
+                else if (constraintAsExpression.Contains("<"))
+                {
+                    comparator = "<";
+                }
+
+                string[] parts = constraintAsExpression.Split(comparator.ToCharArray());
+                InfluenceFunction leftHandSide = new InfluenceFunction(parts[0], GlobalState.varModel);
+                InfluenceFunction rightHandSide = new InfluenceFunction(parts[parts.Length - 1], GlobalState.varModel);
+                // Find all possible assignments for the participating numeric options to turn it into a DNF clause
+                // TODO: Maybe use a solver 
+                List<NumericOption> allNumericOptions = leftHandSide.participatingNumOptions.ToList()
+                                                            .Union(rightHandSide.participatingNumOptions.ToList()).Distinct().ToList();
+                List<List<int>> allPossibleValues = new List<List<int>>();
+            }
+        }
+
+        private bool expressionIsToken(string toTest)
+        {
+            return toTest.Equals("+") || toTest.Equals("-") || toTest.Equals("*") || toTest.Equals("/") || toTest.Equals("(")
+                || toTest.Equals(")") || toTest.Equals("[") || toTest.Equals("]");
+        }
     }
 }
