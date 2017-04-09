@@ -102,7 +102,7 @@ namespace VariabilitModel_GUI
         {
             if (!dataSaved && handleUnsavedData() == DialogResult.Cancel)
                 return;
-            
+
             Tuple<DialogResult, string> result = CreationDialog();
 
             if (result.Item1 == DialogResult.Cancel)
@@ -138,7 +138,8 @@ namespace VariabilitModel_GUI
 
                 dataSaved = true;
             }
-            else {
+            else
+            {
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
@@ -473,7 +474,34 @@ namespace VariabilitModel_GUI
 
         private void convertNumericOptionsToBinaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-        
+            SaveFileDialog fbd = new SaveFileDialog();
+            fbd.Title = "Save all binary variability Model";
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                String path = fbd.FileName;
+                System.Threading.Thread transformThread = new System.Threading.Thread(() => saveTransformedVM(path));
+                transformThread.Start();
+            }
+        }
+
+        private static void saveTransformedVM(string path)
+        {
+            VariabilityModel transformedModel = transformVarModel();
+            String modelName = Path.GetFileNameWithoutExtension(path);
+            if (!path.EndsWith(".xml"))
+            {
+                path += ".xml";
+            }
+
+            if (modelName.EndsWith(".xml"))
+            {
+                modelName = modelName.Remove(modelName.Length - 4);
+            }
+
+            transformedModel.Name = modelName;
+            transformedModel.Path = path;
+            transformedModel.saveXML();
+            MessageBox.Show("Model successfully converted");
         }
 
         private void exportToDimacsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -481,20 +509,19 @@ namespace VariabilitModel_GUI
 
         }
 
-        private VariabilityModel transformVarModel()
+        #region parse to allbinary model
+        private static VariabilityModel transformVarModel()
         {
             VariabilityModel transformedVarModel = new VariabilityModel(GlobalState.varModel.Name);
-            foreach (BinaryOption toCopy in GlobalState.varModel.BinaryOptions)
-            {
-                transformedVarModel.addConfigurationOption(toCopy);
-            }
+
+            GlobalState.varModel.BinaryOptions.ForEach(x => transformedVarModel.addConfigurationOption(x));
             transformedVarModel.BooleanConstraints = GlobalState.varModel.BooleanConstraints.ToList();
 
             foreach (NumericOption currNumOpt in GlobalState.varModel.NumericOptions)
             {
                 // Create Binary Options for each numeric Option( #Steps)
                 List<ConfigurationOption> allChildren = new List<ConfigurationOption>();
-                foreach (double step in currNumOpt.Values)
+                foreach (double step in currNumOpt.getAllValues())
                 {
                     BinaryOption toAdd = new BinaryOption(GlobalState.varModel, currNumOpt.Name + "_" + step);
                     toAdd.Optional = false;
@@ -509,59 +536,72 @@ namespace VariabilitModel_GUI
                     List<List<ConfigurationOption>> excluded = new List<List<ConfigurationOption>>();
                     List<ConfigurationOption> currentOptionWrapper = new List<ConfigurationOption>();
                     currentOptionWrapper.Add(currentOption);
-                    excluded.Add(allChildren.Except(currentOptionWrapper).ToList());
+                    allChildren.Except(currentOptionWrapper).ToList().ForEach(x => excluded.Add(new ConfigurationOption[] { x }.ToList()));
                     currentOption.Excluded_Options = excluded;
                 }
-
-               
             }
+            transformNumericConstraintsToBoolean(transformedVarModel);
             return transformedVarModel;
 
         }
 
-        private void transformNumericConstraintsToBoolean(VariabilityModel newVariabilityModel)
+        private static void transformNumericConstraintsToBoolean(VariabilityModel newVariabilityModel)
         {
             foreach (NonBooleanConstraint constraintToTransform in GlobalState.varModel.NonBooleanConstraints)
             {
                 String constraintAsExpression = constraintToTransform.ToString();
-                String literal;
-                String comparator = "";
-                if (constraintAsExpression.Contains(">="))
-                {
-                    comparator = ">=";
-                }
-                else if (constraintAsExpression.Contains("<="))
-                {
-                    comparator = "<=";
-                }
-                else if (constraintAsExpression.Contains("="))
-                {
-                    comparator = "=";
-                }
-                else if (constraintAsExpression.Contains(">"))
-                {
-                    comparator = ">";
-                }
-                else if (constraintAsExpression.Contains("<"))
-                {
-                    comparator = "<";
-                }
 
-                string[] parts = constraintAsExpression.Split(comparator.ToCharArray());
+                string[] parts = constraintAsExpression.Split(new String[] { "=", "<", ">", "<=", ">=" }, StringSplitOptions.None);
                 InfluenceFunction leftHandSide = new InfluenceFunction(parts[0], GlobalState.varModel);
                 InfluenceFunction rightHandSide = new InfluenceFunction(parts[parts.Length - 1], GlobalState.varModel);
+
                 // Find all possible assignments for the participating numeric options to turn it into a DNF clause
                 // TODO: Maybe use a solver 
-                List<NumericOption> allNumericOptions = leftHandSide.participatingNumOptions.ToList()
+                List<NumericOption> allParticipatingNumericOptions = leftHandSide.participatingNumOptions.ToList()
                                                             .Union(rightHandSide.participatingNumOptions.ToList()).Distinct().ToList();
-                List<List<int>> allPossibleValues = new List<List<int>>();
+
+                List<List<double>> allPossibleValues = new List<List<double>>();
+                allParticipatingNumericOptions.ForEach(x => allPossibleValues.Add(x.getAllValues()));
+
+                var cartesianProduct = allPossibleValues.First().Select(x => x.ToString());
+                foreach(List<double> possibleValue in allPossibleValues.Skip(1))
+                {
+                    cartesianProduct = from product in cartesianProduct
+                                       from newValue in possibleValue
+                                       select product + "$" + newValue;
+                }
+
+                IEnumerable<string> validConfigs = cartesianProduct
+                    .Where(x => testIfValidConfiguration(x, allParticipatingNumericOptions, constraintToTransform));
+                StringBuilder nonBooleanConstraintAsBoolean = new StringBuilder();
+                foreach (string validConfig in validConfigs)
+                {
+                    List<string> binaryRepresentation = validConfig.Split(new char[] { '$' }).Zip(allParticipatingNumericOptions, (x, y) => y.Name + "_" + x)
+                        .ToList();
+                    nonBooleanConstraintAsBoolean.Append(binaryRepresentation.First());
+                    for (int i = 1; i < binaryRepresentation.Count; i++)
+                    {
+                        nonBooleanConstraintAsBoolean.Append(" & " + binaryRepresentation.ElementAt(i));
+                    }
+                    nonBooleanConstraintAsBoolean.Append(" | ");
+                }
+                // Remove trailing ' | '
+                nonBooleanConstraintAsBoolean.Length = nonBooleanConstraintAsBoolean.Length - 3;
+                newVariabilityModel.BooleanConstraints.Add(nonBooleanConstraintAsBoolean.ToString());
             }
         }
 
-        private bool expressionIsToken(string toTest)
+        private static bool testIfValidConfiguration(string configuration, List<NumericOption> participatingOptions, NonBooleanConstraint constraintToTest)
         {
-            return toTest.Equals("+") || toTest.Equals("-") || toTest.Equals("*") || toTest.Equals("/") || toTest.Equals("(")
-                || toTest.Equals(")") || toTest.Equals("[") || toTest.Equals("]");
+            Dictionary<NumericOption, double> numericSelection = new Dictionary<NumericOption, double>();
+            string[] values = configuration.Split(new char[] { '$' });
+            for (int i = 0; i < participatingOptions.Count; i++)
+            {
+                numericSelection.Add(participatingOptions.ElementAt(i), Double.Parse(values[i]));
+            }
+            return constraintToTest.configIsValid(numericSelection);
         }
+        #endregion parse to allbinary model
+
     }
 }
