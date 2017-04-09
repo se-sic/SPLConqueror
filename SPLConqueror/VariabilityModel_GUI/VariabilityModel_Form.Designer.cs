@@ -223,9 +223,9 @@
             // 
             // exportAsDimexToolStripMenuItem
             // 
-            this.exportToDimacsToolStripMenuItem.Name = "exportToDimaceToolStripMenuItem";
+            this.exportToDimacsToolStripMenuItem.Name = "exportToDimacsToolStripMenuItem";
             this.exportToDimacsToolStripMenuItem.Size = new System.Drawing.Size(309, 26);
-            this.exportToDimacsToolStripMenuItem.Text = "Export to dimace";
+            this.exportToDimacsToolStripMenuItem.Text = "Export to dimacs";
             this.exportToDimacsToolStripMenuItem.Click += new System.EventHandler(this.exportToDimacsToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
