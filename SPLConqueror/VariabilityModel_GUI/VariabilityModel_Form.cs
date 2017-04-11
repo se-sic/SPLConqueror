@@ -537,7 +537,8 @@ namespace VariabilitModel_GUI
                     List<List<ConfigurationOption>> excluded = new List<List<ConfigurationOption>>();
                     List<ConfigurationOption> currentOptionWrapper = new List<ConfigurationOption>();
                     currentOptionWrapper.Add(currentOption);
-                    allChildren.Except(currentOptionWrapper).ToList().ForEach(x => excluded.Add(new ConfigurationOption[] { x }.ToList()));
+                    allChildren.Except(currentOptionWrapper).ToList()
+                        .ForEach(x => excluded.Add(new ConfigurationOption[] { x }.ToList()));
                     currentOption.Excluded_Options = excluded;
                 }
             }
@@ -578,8 +579,8 @@ namespace VariabilitModel_GUI
                 StringBuilder nonBooleanConstraintAsBoolean = new StringBuilder();
                 foreach (string validConfig in invalidConfigs)
                 {
-                    List<string> binaryRepresentation = validConfig.Split(new char[] { '$' }).Zip(allParticipatingNumericOptions, (x, y) => "!" + y.Name + "_" + x)
-                        .ToList();
+                    List<string> binaryRepresentation = validConfig.Split(new char[] { '$' })
+                        .Zip(allParticipatingNumericOptions, (x, y) => "!" + y.Name + "_" + x).ToList();
                     nonBooleanConstraintAsBoolean.Append(binaryRepresentation.First());
                     for (int i = 1; i < binaryRepresentation.Count; i++)
                     {
@@ -598,7 +599,8 @@ namespace VariabilitModel_GUI
 
         }
 
-        private static bool testIfValidConfiguration(string configuration, List<NumericOption> participatingOptions, NonBooleanConstraint constraintToTest)
+        private static bool testIfValidConfiguration(string configuration
+            , List<NumericOption> participatingOptions, NonBooleanConstraint constraintToTest)
         {
             Dictionary<NumericOption, double> numericSelection = new Dictionary<NumericOption, double>();
             string[] values = configuration.Split(new char[] { '$' });
@@ -628,6 +630,172 @@ namespace VariabilitModel_GUI
 
         }
         #endregion parse to allbinary model
+
+        #region parser dimacs
+        private string parseToDimacs(VariabilityModel toParse)
+        {
+            if (toParse.NumericOptions.Count > 0 || toParse.NonBooleanConstraints.Count > 0)
+            {
+                throw new ArgumentException();
+            }
+            StringBuilder parsedModel = new StringBuilder();
+            Dictionary<string, int> nameToIndex = binaryOptionsToIndex(toParse.BinaryOptions);
+            foreach (KeyValuePair<string, int> nameAndIndex in nameToIndex)
+            {
+                parsedModel.Append("c " + nameAndIndex.Value + " " + nameAndIndex.Key + System.Environment.NewLine);
+            }
+            List<string> parsedNonOptionNonExclusive = parseNonOptionalAndNotExcluded(nameToIndex, toParse);
+            List<string> parsedParentExpressions = parseParentExpressions(nameToIndex, toParse);
+            List<string> parsedImplicationExpressions = parseImplicationExpressions(nameToIndex, toParse);
+            List<string> parsedAlternativeGroupExpressions = parseAlternativeGroupExpression(nameToIndex, toParse);
+            List<string> parsedBooleanConstraints = parseBooleanConstraint(nameToIndex, toParse);
+            int numberOfClauses = parsedNonOptionNonExclusive.Count + parsedParentExpressions.Count +
+                parsedImplicationExpressions.Count + parsedAlternativeGroupExpressions.Count + parsedBooleanConstraints.Count;
+            parsedModel.Append("p cnf " + toParse.BinaryOptions.Count + " " + numberOfClauses + System.Environment.NewLine);
+            parsedNonOptionNonExclusive.ForEach(expression => parsedModel.Append(expression));
+            parsedParentExpressions.ForEach(expression => parsedModel.Append(expression));
+            parsedImplicationExpressions.ForEach(expression => parsedModel.Append(expression));
+            parsedAlternativeGroupExpressions.ForEach(expression => parsedModel.Append(expression));
+            parsedBooleanConstraints.ForEach(expression => parsedModel.Append(expression));
+            return parsedModel.ToString();
+        }
+
+        private Dictionary<string, int> binaryOptionsToIndex(List<BinaryOption> options)
+        {
+            Dictionary<string, int> nameToIndex = new Dictionary<string, int>();
+            for (int i = 0; i < options.Count; i++)
+            {
+                nameToIndex.Add(options.ElementAt(i).Name, i);
+            }
+            return nameToIndex;
+        }
+
+        private List<string> parseNonOptionalAndNotExcluded(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
+        {
+            List<BinaryOption> nonOptionalAndNotExcluded = toParse.BinaryOptions
+                .Where(x => x.Excluded_Options.Count == 0 && x.Optional == false).ToList();
+            List<string> parsedExpressions = new List<string>();
+            foreach (BinaryOption optionToParse in nonOptionalAndNotExcluded)
+            {
+                int i = getIndex(nameToIndex, optionToParse.Name);
+                parsedExpressions.Add(i + " 0" + System.Environment.NewLine);
+            }
+            return parsedExpressions;
+        }
+
+        private List<string> parseParentExpressions(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
+        {
+            List<string> parsedParentExpression = new List<string>();
+            foreach (BinaryOption toCheck in toParse.BinaryOptions)
+            {
+                if (toCheck.Parent != null)
+                {
+                    int thisOption = getIndex(nameToIndex, toCheck.Name);
+                    int parentOption = getIndex(nameToIndex, toCheck.ParentName);
+                    parsedParentExpression.Add(parentOption + " -" + thisOption + " 0" + System.Environment.NewLine);
+                }
+            }
+            return parsedParentExpression;
+        }
+
+        private List<string> parseImplicationExpressions(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
+        {
+            List<string> parsedImplicationExpressions = new List<string>();
+            foreach (BinaryOption toCheck in toParse.BinaryOptions)
+            {
+                if (toCheck.Implied_Options.Count > 0)
+                {
+                    foreach (List<ConfigurationOption> impliedOption in toCheck.Implied_Options)
+                    {
+                        foreach (ConfigurationOption option in impliedOption)
+                        {
+                            int thisOptionIndex = getIndex(nameToIndex, toCheck.Name);
+                            int impliedOptionIndex = getIndex(nameToIndex, toCheck.Name);
+                            parsedImplicationExpressions.Add("-" + thisOptionIndex + " " 
+                                + impliedOptionIndex + " 0" + System.Environment.NewLine);
+                        }
+                    }
+                }
+            }
+            return parsedImplicationExpressions;
+        }
+
+        private List<string> parseBooleanConstraint(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
+        {
+            List<string> parsedBooleanConstraints = new List<string>();
+            foreach (string booleanConstraint in toParse.BooleanConstraints)
+            {
+                StringBuilder booleanConstraintInDimacs = new StringBuilder();
+                string parsedConstraint = booleanConstraint.Replace("|", "");
+                string[] participatingOptions = parsedConstraint.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string participatingOption in participatingOptions)
+                {
+                    if (participatingOption.Contains("!"))
+                    {
+                        booleanConstraintInDimacs.Append("-");
+                        booleanConstraintInDimacs.Append(getIndex(nameToIndex, participatingOption.Replace("!", "").Trim()));
+                        booleanConstraintInDimacs.Append(" ");
+                    } else
+                    {
+                        booleanConstraintInDimacs.Append(getIndex(nameToIndex, participatingOption.Trim()));
+                        booleanConstraintInDimacs.Append(" ");
+                    }
+                }
+                booleanConstraintInDimacs.Append("0");
+                booleanConstraintInDimacs.Append(System.Environment.NewLine);
+                parsedBooleanConstraints.Add(booleanConstraintInDimacs.ToString());
+            }
+            return parsedBooleanConstraints;
+        }
+
+        private List<string> parseAlternativeGroupExpression(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
+        {
+            List<string> parsedAlternativeGroupExpressions = new List<string>();
+            List<string> alreadyHandled = new List<string>();
+            foreach (BinaryOption optionToParse in toParse.BinaryOptions)
+            {
+                if (!alreadyHandled.Contains(optionToParse.Name))
+                {
+                    List<ConfigurationOption> alternativeOptions = new List<ConfigurationOption>();
+                    optionToParse.Excluded_Options
+                        .ForEach(optionGroup => optionGroup.ForEach(option => alternativeOptions.Add(option)));
+                    ConfigurationOption parent = alternativeOptions.First().Parent;
+                    StringBuilder sb = new StringBuilder();
+                    alternativeOptions.ForEach(option => sb.Append(getIndex(nameToIndex, option.Name) + " "));
+                    if (parent != null)
+                    {
+                        sb.Append("-" + getIndex(nameToIndex, parent.Name) + " ");
+                    }
+                    sb.Append("0" + System.Environment.NewLine);
+                    parsedAlternativeGroupExpressions.Add(sb.ToString());
+
+                    for(int i = 0; i < alternativeOptions.Count - 1; i++)
+                    {
+                        ConfigurationOption firstAlternative = alternativeOptions.First();
+                        foreach(ConfigurationOption otherAlternative in alternativeOptions.Skip(i + 1))
+                        {
+                            StringBuilder mutualExclusive = new StringBuilder("-");
+                            mutualExclusive.Append(getIndex(nameToIndex, firstAlternative.Name));
+                            mutualExclusive.Append(" -");
+                            mutualExclusive.Append(getIndex(nameToIndex, otherAlternative.Name));
+                            mutualExclusive.Append(" 0");
+                            mutualExclusive.Append(System.Environment.NewLine);
+                            parsedAlternativeGroupExpressions.Add(mutualExclusive.ToString());
+                        }
+                    }
+                    alternativeOptions.ForEach(option => alreadyHandled.Add(option.Name));
+                }
+            }
+            return parsedAlternativeGroupExpressions;
+        }
+
+        private static int getIndex(Dictionary<string, int> nameToIndex, String option)
+        {
+            int i;
+            nameToIndex.TryGetValue(option, out i);
+            return i;
+        }
+#endregion parser dimacs
 
     }
 }
