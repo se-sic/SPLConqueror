@@ -506,7 +506,30 @@ namespace VariabilitModel_GUI
 
         private void exportToDimacsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SaveFileDialog fbd = new SaveFileDialog();
+            fbd.Title = "Save variability Model in dimacs format.";
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                String path = fbd.FileName;
+                System.Threading.Thread transformThread = new System.Threading.Thread(() => saveDimacs(path));
+                transformThread.Start();
+            }
+        }
 
+        private void saveDimacs(string path)
+        {
+            VariabilityModel allbinaryModel = transformVarModel();
+            String modelAsDimacs = parseToDimacs(allbinaryModel);
+            if (!path.EndsWith(".dimacs"))
+            {
+                path += ".dimacs";
+            }
+
+            StreamWriter sw = new StreamWriter(path);
+            sw.Write(modelAsDimacs);
+            sw.Flush();
+            sw.Close();
+            MessageBox.Show("Model successfully converted");
         }
 
         #region parse to allbinary model
@@ -663,9 +686,9 @@ namespace VariabilitModel_GUI
         private Dictionary<string, int> binaryOptionsToIndex(List<BinaryOption> options)
         {
             Dictionary<string, int> nameToIndex = new Dictionary<string, int>();
-            for (int i = 0; i < options.Count; i++)
+            for (int i = 1; i <= options.Count; i++)
             {
-                nameToIndex.Add(options.ElementAt(i).Name, i);
+                nameToIndex.Add(options.ElementAt(i - 1).Name, i);
             }
             return nameToIndex;
         }
@@ -691,7 +714,7 @@ namespace VariabilitModel_GUI
                 if (toCheck.Parent != null)
                 {
                     int thisOption = getIndex(nameToIndex, toCheck.Name);
-                    int parentOption = getIndex(nameToIndex, toCheck.ParentName);
+                    int parentOption = getIndex(nameToIndex, toCheck.Parent.Name);
                     parsedParentExpression.Add(parentOption + " -" + thisOption + " 0" + System.Environment.NewLine);
                 }
             }
@@ -707,6 +730,7 @@ namespace VariabilitModel_GUI
                 {
                     foreach (List<ConfigurationOption> impliedOption in toCheck.Implied_Options)
                     {
+                        // a->b <=> -a b
                         foreach (ConfigurationOption option in impliedOption)
                         {
                             int thisOptionIndex = getIndex(nameToIndex, toCheck.Name);
@@ -725,6 +749,7 @@ namespace VariabilitModel_GUI
             List<string> parsedBooleanConstraints = new List<string>();
             foreach (string booleanConstraint in toParse.BooleanConstraints)
             {
+                // replace each option name with their index, ! with - and remove |, since boolean expressions are already in CNF
                 StringBuilder booleanConstraintInDimacs = new StringBuilder();
                 string parsedConstraint = booleanConstraint.Replace("|", "");
                 string[] participatingOptions = parsedConstraint.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
@@ -754,11 +779,17 @@ namespace VariabilitModel_GUI
             List<string> alreadyHandled = new List<string>();
             foreach (BinaryOption optionToParse in toParse.BinaryOptions)
             {
-                if (!alreadyHandled.Contains(optionToParse.Name))
+                if (!alreadyHandled.Contains(optionToParse.Name) && optionToParse.hasAlternatives())
                 {
+                    // Add all configurations of an alternative group to a list
                     List<ConfigurationOption> alternativeOptions = new List<ConfigurationOption>();
                     optionToParse.Excluded_Options
                         .ForEach(optionGroup => optionGroup.ForEach(option => alternativeOptions.Add(option)));
+                    alternativeOptions.Add(optionToParse);
+
+                    // Write expression that indicates that at least one has to be selected or the parent has to be deselected
+                    // Eg. -1 2 3 4 5 0
+                    // With 2,3,4,5 forming a alternative group and 1 being the parent of them
                     ConfigurationOption parent = alternativeOptions.First().Parent;
                     StringBuilder sb = new StringBuilder();
                     alternativeOptions.ForEach(option => sb.Append(getIndex(nameToIndex, option.Name) + " "));
@@ -769,9 +800,14 @@ namespace VariabilitModel_GUI
                     sb.Append("0" + System.Environment.NewLine);
                     parsedAlternativeGroupExpressions.Add(sb.ToString());
 
+                    // Write a expression that indicates that at most one option in a alternative group can be selected
+                    // E.g if 1,2,3 form a alternative group
+                    // -1 -2 0
+                    // -1 -3 0
+                    // -2 -3 0
                     for(int i = 0; i < alternativeOptions.Count - 1; i++)
                     {
-                        ConfigurationOption firstAlternative = alternativeOptions.First();
+                        ConfigurationOption firstAlternative = alternativeOptions.ElementAt(i);
                         foreach(ConfigurationOption otherAlternative in alternativeOptions.Skip(i + 1))
                         {
                             StringBuilder mutualExclusive = new StringBuilder("-");
