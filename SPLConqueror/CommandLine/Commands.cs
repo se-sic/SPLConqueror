@@ -217,7 +217,7 @@ namespace CommandLine
                     break;
 
                 case RESUME_FROM_LOG:
-                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = CommandPersistence.findRelevantCommandsLogFiles(task, new Dictionary<string, string>());
+                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = CommandPersistence.findRelevantCommandsLogFiles(task.TrimEnd(), new Dictionary<string, string>());
                     if (reachedEndAndRelevantCommands.Item1)
                     {
                         GlobalState.logInfo.logLine("The end of the script was already reached");
@@ -245,7 +245,7 @@ namespace CommandLine
                             //restore exp
                             hasLearnData = true;
                         }
-                        FileInfo fi = new FileInfo(task);
+                        FileInfo fi = new FileInfo(task.TrimEnd());
                         StreamReader reader = null;
                         if (!fi.Exists)
                             throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
@@ -273,7 +273,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_TRUEMODEL:
-                    StreamReader readModel = new StreamReader(task);
+                    StreamReader readModel = new StreamReader(task.TrimEnd());
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
                     this.trueModel = new InfluenceFunction(model.Replace(',', '.'), GlobalState.varModel);
@@ -285,7 +285,7 @@ namespace CommandLine
                 case COMMAND_SUBSCRIPT:
                     {
 
-                        FileInfo fi = new FileInfo(task);
+                        FileInfo fi = new FileInfo(task.TrimEnd());
                         StreamReader reader = null;
                         if (!fi.Exists)
                             throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
@@ -334,8 +334,8 @@ namespace CommandLine
                     toSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
-                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
-                    GlobalState.measurementSource = task;
+                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+                    GlobalState.measurementSource = task.TrimEnd();
                     GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
 
                     break;
@@ -475,8 +475,8 @@ namespace CommandLine
                     break;
 
                 case COMMAND_VARIABILITYMODEL:
-                    GlobalState.vmSource = task;
-                    GlobalState.varModel = VariabilityModel.loadFromXML(task);
+                    GlobalState.vmSource = task.TrimEnd();
+                    GlobalState.varModel = VariabilityModel.loadFromXML(task.TrimEnd());
                     if (GlobalState.varModel == null)
                         GlobalState.logError.logLine("No variability model found at " + task);
                     break;
