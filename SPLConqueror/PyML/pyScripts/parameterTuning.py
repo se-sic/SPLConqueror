@@ -85,37 +85,37 @@ def scoreFunction(estimator, configurations, measurements):
 
 
 def optimize_SVR(X_train, y_train):
-    opt = modelSel.GridSearchCV(sk.SVR(), param_SVR, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(sk.SVR(cache_size=500), param_SVR, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_DecisionTree(X_train, y_train):
-    opt = modelSel.GridSearchCV(skTr.DecisionTreeRegressor(), param_DecisionTree, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skTr.DecisionTreeRegressor(cache_size=500), param_DecisionTree, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_RandomForestRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(skEn.RandomForestRegressor(), param_RandomForest, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skEn.RandomForestRegressor(cache_size=500), param_RandomForest, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_KNNeighborsRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(skNE.KNeighborsRegressor(), param_kNNRegressor, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skNE.KNeighborsRegressor(cache_size=500), param_kNNRegressor, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_KernelRidge(X_train, y_train):
-    opt = modelSel.GridSearchCV(skKR.KernelRidge(), param_kernelRidge, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skKR.KernelRidge(cache_size=500), param_kernelRidge, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_BaggingSVR(X_train, y_train):
-    opt = modelSel.GridSearchCV(skEn.BaggingRegressor(base_estimator=sk.SVR()), param_baggingSVR, cv=5,
+    opt = modelSel.GridSearchCV(skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500)), param_baggingSVR, cv=5,
                                 scoring=scoreFunction)
     opt.fit(X_train, y_train)
 
@@ -136,9 +136,10 @@ def formatOptimal(optimalParams):
 def format_parameter_space(parameter_space):
     formated_space = ""
     for parameter in parameter_space:
-        name_value_pair = parameter.split("=")
-        formated_space += " '" + name_value_pair[0] + "' : "
-        formated_space += str(name_value_pair[1]) + ","
+        if "=" in parameter:
+		    name_value_pair = parameter.split("=")
+		    formated_space += " '" + name_value_pair[0] + "' : "
+		    formated_space += str(name_value_pair[1]) + ","
     formated_space += formated_space[:-1]
     formated_space += "}]"
     return formated_space
