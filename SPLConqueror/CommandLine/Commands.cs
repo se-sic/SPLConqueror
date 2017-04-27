@@ -476,7 +476,7 @@ namespace CommandLine
 
                 case COMMAND_VARIABILITYMODEL:
                     GlobalState.vmSource = task.TrimEnd();
-                    GlobalState.varModel = VariabilityModel.loadFromXML(task.TrimEnd());
+		     GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
                     if (GlobalState.varModel == null)
                         GlobalState.logError.logLine("No variability model found at " + task);
                     break;
