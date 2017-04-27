@@ -323,8 +323,8 @@ namespace VariabilitModel_GUI
 
             newOption.Parent.Children.Add(newOption);
 
-            this.Dispose();
             GlobalState.varModel.addConfigurationOption(newOption);
+            this.Close();
         }
     }
 }
