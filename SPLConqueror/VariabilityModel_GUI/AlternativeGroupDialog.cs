@@ -53,7 +53,7 @@ namespace VariabilitModel_GUI
                     opts.Add(o);
             }
 
-            selectedOptionComboBox.Items.AddRange(opts.ToArray());
+            selectedOptionComboBox.Items.AddRange(opts.Where(x => x is BinaryOption).ToArray());
             selectedOptionComboBox.SelectedIndex = 0;
 
             foreach (string c in GlobalState.varModel.BooleanConstraints)
@@ -96,7 +96,14 @@ namespace VariabilitModel_GUI
         {
             ConfigurationOption selectedOption = (ConfigurationOption)selectedOptionComboBox.SelectedItem;
             List<ConfigurationOption> opts = selectedOption.Children;
-
+            List<ConfigurationOption> temp = new List<ConfigurationOption>();
+            foreach (ConfigurationOption opt in opts)
+            {
+                if (opt is BinaryOption)
+                {
+                    temp.Add(opt);
+                }
+            }
             foreach (ConfigurationOption thisOpt in opts)
             {
                 foreach (ConfigurationOption otherOpt in opts)

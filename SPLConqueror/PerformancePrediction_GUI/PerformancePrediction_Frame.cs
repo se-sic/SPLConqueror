@@ -111,6 +111,8 @@ namespace PerformancePrediction_GUI
             if (filePath == "")
                 return;
 
+            nfpSelection.Items.Clear();
+            cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + filePath);
         }
 
