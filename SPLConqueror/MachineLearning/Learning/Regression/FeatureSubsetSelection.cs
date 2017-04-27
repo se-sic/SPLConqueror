@@ -966,6 +966,11 @@ namespace MachineLearning.Learning.Regression
                 }
                 error_sum += error;
             }
+
+            if (configs.Count == skips)
+            {
+                return 0.0;
+            }
             relativeError = relativeError / (configs.Count - skips);
             return error_sum / (configs.Count - skips);
         }

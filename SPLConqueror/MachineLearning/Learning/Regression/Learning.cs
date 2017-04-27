@@ -289,9 +289,21 @@ namespace MachineLearning.Learning.Regression
         public void clearSampling()
         {
             if (this.testSet != null)
-                this.testSet.Clear();
+                if (this.testSet.Count == GlobalState.allMeasurements.Configurations.Count)
+                {
+                    this.testSet = new List<Configuration>();
+                } else
+                {
+                    this.testSet.Clear();
+                }
             if (this.validationSet != null)
-                this.validationSet.Clear();
+                if (this.validationSet.Count == GlobalState.allMeasurements.Configurations.Count)
+                {
+                    this.validationSet = new List<Configuration>();
+                } else
+                {
+                    this.validationSet.Clear();
+                }
 
             ConfigurationBuilder.parametersOfExpDesigns.Clear();
         }
