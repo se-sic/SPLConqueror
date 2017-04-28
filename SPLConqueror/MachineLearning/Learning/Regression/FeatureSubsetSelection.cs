@@ -969,6 +969,7 @@ namespace MachineLearning.Learning.Regression
 
             if (configs.Count == skips)
             {
+                GlobalState.logInfo.logLine("All features have an error < 1.");
                 return 0.0;
             }
             relativeError = relativeError / (configs.Count - skips);
