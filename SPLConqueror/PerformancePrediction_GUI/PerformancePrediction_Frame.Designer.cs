@@ -1,4 +1,6 @@
-﻿namespace PerformancePrediction_GUI
+﻿using System.Windows.Forms;
+
+namespace PerformancePrediction_GUI
 {
     partial class PerformancePrediction_Frame
     {
@@ -13,6 +15,10 @@
         /// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
         protected override void Dispose(bool disposing)
         {
+            if (executionThread != null && executionThread.IsAlive)
+            {
+                executionThread.Abort();
+            }
             if (disposing && (components != null))
             {
                 components.Dispose();

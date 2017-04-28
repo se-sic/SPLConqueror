@@ -22,6 +22,7 @@ namespace PerformancePrediction_GUI
         Commands cmd = new Commands();
 
         public const string ERROR = "an error occurred";
+        private static System.Threading.Thread executionThread;
 
         public PerformancePrediction_Frame()
         {
@@ -138,9 +139,8 @@ namespace PerformancePrediction_GUI
             bool ableToStart = createSamplingCommands();
 
             if(ableToStart){
-                System.Threading.Thread myThread;
-                myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
-                myThread.Start();
+                executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
+                executionThread.Start();
                 InitDataGridView();
             }   
         }
@@ -195,8 +195,14 @@ namespace PerformancePrediction_GUI
 
         private void startWithAllMeasurements()
         {
-            cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
-            cmd.performOneCommand(Commands.COMMAND_START_ALLMEASUREMENTS);
+            try
+            {
+                cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
+                cmd.performOneCommand(Commands.COMMAND_START_ALLMEASUREMENTS);
+            } catch (System.Threading.ThreadAbortException)
+            {
+                return;
+            }
         }
 
 
@@ -386,9 +392,8 @@ namespace PerformancePrediction_GUI
             button1.Enabled = true;
             setMLSettings();
           
-            System.Threading.Thread myThread;
-            myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
-            myThread.Start();
+            executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
+            executionThread.Start();
             InitDataGridView();
                
         }
