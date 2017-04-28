@@ -58,7 +58,7 @@ namespace VariabilitModel_GUI
         /// <param name="e">Event</param>
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.Dispose();
+            this.Close();
         }
 
         /// <summary>
