@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.Heuristics
     public class PairWise
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
 
         
 

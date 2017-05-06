@@ -583,7 +583,7 @@ namespace CommandLine
                         ConfigurationBuilder.binaryThreshold = Convert.ToInt32(para[0]);
                         ConfigurationBuilder.binaryModulu = Convert.ToInt32(para[1]);
 
-                        VariantGenerator vg = new VariantGenerator(null);
+                        VariantGenerator vg = new VariantGenerator();
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.toSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
@@ -772,7 +772,7 @@ namespace CommandLine
         /// </summary>
         private void computeEvaluationDataSetBasedOnTrueModel()
         {
-         /*   VariantGenerator vg = new VariantGenerator(null);
+         /*   VariantGenerator vg = new VariantGenerator();
             List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
             //take only 10k

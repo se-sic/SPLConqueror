@@ -139,6 +139,7 @@ namespace PerformancePrediction_GUI
             bool ableToStart = createSamplingCommands();
 
             if(ableToStart){
+                if (executionThread != null && executionThread.IsAlive) executionThread.Abort();
                 executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
                 executionThread.Start();
                 InitDataGridView();
@@ -188,9 +189,14 @@ namespace PerformancePrediction_GUI
 
         private void startLearning()
         {
-            
-            cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
-            cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            try
+            {
+                cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
+                cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            } catch (System.Threading.ThreadAbortException)
+            {
+                return;
+            }
         }
 
         private void startWithAllMeasurements()
@@ -391,7 +397,8 @@ namespace PerformancePrediction_GUI
             cleanButton_Click(null, null);
             button1.Enabled = true;
             setMLSettings();
-          
+
+            if (executionThread != null && executionThread.IsAlive) executionThread.Abort();
             executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
             executionThread.Start();
             InitDataGridView();
