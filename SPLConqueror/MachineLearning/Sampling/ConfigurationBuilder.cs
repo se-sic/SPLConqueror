@@ -19,7 +19,7 @@ namespace MachineLearning.Sampling
         public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> strategies)
         {
             List<Configuration> result = new List<Configuration>();
-            VariantGenerator vg = new VariantGenerator(null);
+            VariantGenerator vg = new VariantGenerator();
             ExperimentalDesign design = null;
 
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();

@@ -45,8 +45,8 @@ namespace MachineLearning.Sampling.Heuristics
                         optionalFirstLevelElements.Add(binOpt);
                 }
             }
-            Solver.CheckConfigSAT checkSAT = new Solver.CheckConfigSAT(null);
-            Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+            Solver.CheckConfigSAT checkSAT = new Solver.CheckConfigSAT();
+            Solver.VariantGenerator generator = new Solver.VariantGenerator();
             //Generating new configurations: one per option
             if (checkSAT.checkConfigurationSAT(firstLevelMandatoryFeatures, vm, false))
                 this.configurations.Add(firstLevelMandatoryFeatures);
@@ -85,7 +85,7 @@ namespace MachineLearning.Sampling.Heuristics
         public List<List<BinaryOption>> generateFeatureWiseConfigsCSP(VariabilityModel vm)
         {
             this.configurations.Clear();
-            Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+            Solver.VariantGenerator generator = new Solver.VariantGenerator();
             foreach (var opt in vm.BinaryOptions)
             {
                 if (opt == vm.Root)
