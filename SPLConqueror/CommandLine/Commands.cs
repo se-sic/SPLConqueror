@@ -53,6 +53,8 @@ namespace CommandLine
 
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
 
+        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
+        public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
 
@@ -407,6 +409,53 @@ namespace CommandLine
 
                         break;
                     }
+
+                case COMMAND_PREDICT_ALL_CONFIGURATIONS:
+                    {
+                        if (this.exp.models.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("Can't predict configurations. No learning was performed");
+                        }
+                        else if (this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("Can't predict configurations. No model was learned.");
+                        }
+                        else if (task.Length == 0)
+                        {
+                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
+                        }
+                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
+                        {
+                            GlobalState.logError.logLine("No measurements loaded.");
+                        }
+                        else
+                        {
+                            predict(task);
+                        }
+                        break;
+                    }
+
+                case COMMAND_PREDICT_TRUEMODEL:
+                    {
+                        if (this.trueModel == null)
+                        {
+                            GlobalState.logInfo.logLine("No trueModel is loaded.");
+                        }
+                        else if (task.Length == 0)
+                        {
+                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
+                        }
+                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
+                        {
+                            GlobalState.logError.logLine("No measurements loaded.");
+                        }
+                        else
+                        {
+                            predict(task, useTrueModel:true);
+                    }
+                    break;
+                    }
+
                 case COMMAND_ANALYZE_LEARNING:
                     {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
@@ -1059,6 +1108,37 @@ namespace CommandLine
             }
 
             return "";
+        }
+
+        private void predict( string task, bool useTrueModel = false)
+        {
+            StreamWriter sw = new StreamWriter(task);
+            sw.Write("configuration;real value;prediction;deviation;precentage;" + Environment.NewLine);
+            for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
+            {
+                Configuration currentConfiguration = GlobalState.allMeasurements.Configurations.ElementAt(i);
+                double realValue = GlobalState.allMeasurements.Configurations.ElementAt(i).GetNFPValue();
+                double prediction;
+
+                if (useTrueModel)
+                {
+                    prediction = trueModel.eval(currentConfiguration);
+                }
+                else
+                {
+                    prediction = FeatureSubsetSelection
+                    .predict(this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
+                }
+                double difference = Math.Abs(realValue - prediction);
+                double percentage = 0;
+                if (difference != 0)
+                {
+                    percentage = difference / realValue;
+                }
+                sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + difference + ";" + percentage + ";" + Environment.NewLine);
+            }
+            sw.Flush();
+            sw.Close();
         }
     }
 }

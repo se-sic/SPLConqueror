@@ -902,6 +902,17 @@ namespace MachineLearning.Learning.Regression
         }
 
         /// <summary>
+        /// Predict the value of a configuration using a learned model.
+        /// </summary>
+        /// <param name="model">The learned model.</param>
+        /// <param name="config">The configuration that will be predicted.</param>
+        /// <returns>Prediction value.</returns>
+        public static double predict(List<Feature> model, Configuration config)
+        {
+            return estimate(model, config);
+        }
+
+        /// <summary>
         /// This methods computes the error for the given configuration based on the given model. It queries the ML settings to used the configured loss function.
         /// As the actual value, it uses the non-functional property stored in the global model. If this is not available in the configuration, it uses the default NFP of the configuration.
         /// </summary>
