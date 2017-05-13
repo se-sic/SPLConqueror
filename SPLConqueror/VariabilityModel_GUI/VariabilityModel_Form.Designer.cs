@@ -42,14 +42,15 @@
             this.editConstraintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editAlternativeGroupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertNumericOptionsToBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAlternativeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertNumericOptionsToBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -166,6 +167,30 @@
             this.helpToolStripMenuItem.Text = "?";
             this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.convertNumericOptionsToBinaryToolStripMenuItem,
+            this.exportToDimacsToolStripMenuItem,
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem});
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(64, 24);
+            this.exportToolStripMenuItem.Text = "Export";
+            // 
+            // convertNumericOptionsToBinaryToolStripMenuItem
+            // 
+            this.convertNumericOptionsToBinaryToolStripMenuItem.Name = "convertNumericOptionsToBinaryToolStripMenuItem";
+            this.convertNumericOptionsToBinaryToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
+            this.convertNumericOptionsToBinaryToolStripMenuItem.Text = "Convert numeric options to binary";
+            this.convertNumericOptionsToBinaryToolStripMenuItem.Click += new System.EventHandler(this.convertNumericOptionsToBinaryToolStripMenuItem_Click);
+            // 
+            // exportToDimacsToolStripMenuItem
+            // 
+            this.exportToDimacsToolStripMenuItem.Name = "exportToDimacsToolStripMenuItem";
+            this.exportToDimacsToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
+            this.exportToDimacsToolStripMenuItem.Text = "Export to dimacs";
+            this.exportToDimacsToolStripMenuItem.Click += new System.EventHandler(this.exportToDimacsToolStripMenuItem_Click);
+            // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -205,28 +230,12 @@
             this.addAlternativeGroupToolStripMenuItem.Text = "Add Alternative Group";
             this.addAlternativeGroupToolStripMenuItem.Click += new System.EventHandler(this.addAlternativeGroupToolStripMenuItem_Click);
             // 
-            // exportToolStripMenuItem
+            // convertMeasurementsToBinaryOnlyToolStripMenuItem
             // 
-            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.convertNumericOptionsToBinaryToolStripMenuItem,
-            this.exportToDimacsToolStripMenuItem});
-            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(64, 24);
-            this.exportToolStripMenuItem.Text = "Export";
-            // 
-            // convertNumericOptionsToBinaryToolStripMenuItem
-            // 
-            this.convertNumericOptionsToBinaryToolStripMenuItem.Name = "convertNumericOptionsToBinaryToolStripMenuItem";
-            this.convertNumericOptionsToBinaryToolStripMenuItem.Size = new System.Drawing.Size(309, 26);
-            this.convertNumericOptionsToBinaryToolStripMenuItem.Text = "Convert numeric options to binary";
-            this.convertNumericOptionsToBinaryToolStripMenuItem.Click += new System.EventHandler(this.convertNumericOptionsToBinaryToolStripMenuItem_Click);
-            // 
-            // exportAsDimexToolStripMenuItem
-            // 
-            this.exportToDimacsToolStripMenuItem.Name = "exportToDimacsToolStripMenuItem";
-            this.exportToDimacsToolStripMenuItem.Size = new System.Drawing.Size(309, 26);
-            this.exportToDimacsToolStripMenuItem.Text = "Export to dimacs";
-            this.exportToDimacsToolStripMenuItem.Click += new System.EventHandler(this.exportToDimacsToolStripMenuItem_Click);
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Name = "convertMeasurementsToBinaryOnlyToolStripMenuItem";
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Text = "Convert measurements to binary only";
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Click += new System.EventHandler(this.convertMeasurementsToBinaryOnlyToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 
@@ -237,7 +246,7 @@
             this.Controls.Add(this.menuStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "VariabilityModel_Form";
@@ -271,6 +280,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertNumericOptionsToBinaryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToDimacsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertMeasurementsToBinaryOnlyToolStripMenuItem;
     }
 }
 

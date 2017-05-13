@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using SPLConqueror_Core;
 using System.IO;
+using System.Xml;
 
 namespace VariabilitModel_GUI
 {
@@ -831,7 +832,58 @@ namespace VariabilitModel_GUI
             nameToIndex.TryGetValue(option, out i);
             return i;
         }
-#endregion parser dimacs
+        #endregion parser dimacs
 
+        private void convertMeasurementsToBinaryOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog measurementsOFD = new OpenFileDialog();
+            measurementsOFD.CheckPathExists = true;
+            measurementsOFD.CheckFileExists = true;
+            measurementsOFD.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*";
+            measurementsOFD.Title = "Select measurement file";
+            if (measurementsOFD.ShowDialog() == DialogResult.OK)
+            {
+                SaveFileDialog convertedSFD = new SaveFileDialog();
+                convertedSFD.OverwritePrompt = true;
+                convertedSFD.AddExtension = true;
+                convertedSFD.CheckPathExists = true;
+                convertedSFD.DefaultExt = "xml";
+                convertedSFD.Title = "Save converted measurements file.";
+                if (convertedSFD.ShowDialog() == DialogResult.OK)
+                {
+                    System.Threading.Thread converterThread = new System.Threading
+                        .Thread(() => convertMeasurements(measurementsOFD.FileName, convertedSFD.FileName));
+                    converterThread.Start();
+                }
+            }
+        }
+
+        private static void convertMeasurements(string source, string target)
+        {
+            XmlDocument sourceMeasurements = new XmlDocument();
+            sourceMeasurements.Load(source);
+            XmlElement resultNode = sourceMeasurements.DocumentElement;
+            foreach (XmlNode rowNode in resultNode.ChildNodes)
+            {
+                string binaryFeatures = "";
+                XmlNode binaryNode = null;
+                foreach(XmlNode data in rowNode)
+                {
+                    if (data.Attributes[0].Value.Equals("Configuration") || data.Attributes[0].Value.Equals("BinaryOptions"))
+                    {
+                        binaryFeatures += data.InnerText.TrimEnd();
+                        binaryNode = data;
+                    } else if (data.Attributes[0].Value.Equals("Variable Features") || data.Attributes[0].Value.Equals("NumericOptions"))
+                    {
+                        binaryFeatures += "," + data.InnerText.Replace(';', '_').Trim() + System.Environment.NewLine;
+                        data.InnerText = "";
+                    }
+                }
+                binaryNode.InnerText = binaryFeatures;
+            }
+            sourceMeasurements.Save(target);
+            sourceMeasurements = null;
+            MessageBox.Show("Converted measurements.");
+        }
     }
 }
