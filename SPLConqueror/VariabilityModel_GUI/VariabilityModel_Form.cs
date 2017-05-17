@@ -544,6 +544,8 @@ namespace VariabilitModel_GUI
 
             foreach (NumericOption currNumOpt in GlobalState.varModel.NumericOptions)
             {
+                BinaryOption parent = new BinaryOption(GlobalState.varModel, currNumOpt.Name);
+                transformedVarModel.addConfigurationOption(parent);
                 // Create Binary Options for each numeric Option( #Steps)
                 List<ConfigurationOption> allChildren = new List<ConfigurationOption>();
                 foreach (double step in currNumOpt.getAllValues())
@@ -551,9 +553,11 @@ namespace VariabilitModel_GUI
                     BinaryOption toAdd = new BinaryOption(GlobalState.varModel, currNumOpt.Name + "_" + step);
                     toAdd.Optional = false;
                     toAdd.OutputString = currNumOpt.Prefix + step + currNumOpt.Postfix;
+                    toAdd.Parent = parent;
                     allChildren.Add(toAdd);
                     transformedVarModel.addConfigurationOption(toAdd);
                 }
+                parent.Children = allChildren;
 
                 // Add a exclude statement so that it isnt possible to select 2 values for a numeric option at the same time
                 foreach (ConfigurationOption currentOption in allChildren)
@@ -872,10 +876,17 @@ namespace VariabilitModel_GUI
                     if (data.Attributes[0].Value.Equals("Configuration") || data.Attributes[0].Value.Equals("BinaryOptions"))
                     {
                         binaryFeatures += data.InnerText.TrimEnd();
+                        if (binaryFeatures.EndsWith(","))
+                        {
+                            binaryFeatures = binaryFeatures.Substring(0, binaryFeatures.Length - 1);
+                        }
                         binaryNode = data;
                     } else if (data.Attributes[0].Value.Equals("Variable Features") || data.Attributes[0].Value.Equals("NumericOptions"))
                     {
-                        binaryFeatures += "," + data.InnerText.Replace(';', '_').Trim() + System.Environment.NewLine;
+                        StringBuilder artificialParents = new StringBuilder();
+                        data.InnerText.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList()
+                            .ForEach(x => artificialParents.Append(x.Trim().Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0] + ","));
+                        binaryFeatures += "," + artificialParents.ToString() + data.InnerText.Replace(';', '_').Trim() + System.Environment.NewLine;
                         data.InnerText = "";
                     }
                 }
