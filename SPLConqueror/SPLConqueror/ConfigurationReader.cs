@@ -76,6 +76,7 @@ namespace SPLConqueror_Core
 
         private const string decimalDelimiterTag = "decimalDelimiter";
         private const string separatorTag = "separator";
+        private const string abortDeviation = "deviation";
 
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
@@ -86,6 +87,15 @@ namespace SPLConqueror_Core
         public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
             XmlElement currentElemt = dat.DocumentElement;
+
+            if (currentElemt.HasAttribute(abortDeviation))
+            {
+                GlobalState.measurementDeviation = getHighestDeviationValue(currentElemt.GetAttribute(abortDeviation)
+                    .Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
+            } else
+            {
+                GlobalState.measurementDeviation = Double.MinValue;
+            }
 
             // Retrieve the decimal delimiter and the separator sign if included
             if (currentElemt.HasAttribute(decimalDelimiterTag) && currentElemt.HasAttribute(separatorTag))
@@ -536,6 +546,21 @@ namespace SPLConqueror_Core
             }
             sr.Close();
             return result;
+        }
+
+        private static double getHighestDeviationValue(string[] deviationsAsString)
+        {
+            double highestValue = Double.MinValue;
+            foreach(string deviationValue in deviationsAsString)
+            {
+                double currentValue;
+                if (Double.TryParse(deviationValue, out currentValue))
+                {
+                    if (currentValue > highestValue) highestValue = currentValue;
+                }
+            }
+
+            return highestValue;
         }
     }
 }
