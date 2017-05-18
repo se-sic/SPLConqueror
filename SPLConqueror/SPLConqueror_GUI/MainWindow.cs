@@ -70,12 +70,8 @@ namespace SPLConqueror_GUI
         protected Dictionary<NumericOption, float> numericSettings = new Dictionary<NumericOption, float>();
         private Dictionary<ConfigurationOption, double> factorizationPriorities =
             new Dictionary<ConfigurationOption, double>();
-        private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT(
-            Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(
-            System.IO.Directory.GetCurrentDirectory()))) + DLL_LOCATION);
-        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator(
-                Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())))
-                + DLL_LOCATION);
+        private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT();
+        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator();
 
         // Everything for the measurements
         private bool measurementsLoaded = false;

@@ -28,6 +28,9 @@ namespace ScriptGenerator
         public const string CONTAINERKEY_NUMERIC_VALIDATION = "numeric validation";
         public const string CONTAINERKEY_LOGFILE = "logFile";
 
+        private bool splconqueror_learner = true;
+        private string interpreter_Path = null;
+        private string learnPythonCommand = "learn-python";
 
         public Form1()
         {
@@ -211,28 +214,28 @@ namespace ScriptGenerator
 
             if (bsamp_FW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_OPTIONWISE+" " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
                 keyInfo += "FW ";
             }
             if (bsamp_PW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_PAIRWISE+" " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);
                 keyInfo += "PW ";
             }
             if (bsamp_negFW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE+" " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
                 keyInfo += "negFW ";
             }
             if (bsamp_all_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_ALLBINARY+" " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
                 keyInfo += "all ";
             }
             if (bsamp_random_box.Checked)
             {
                 // TODO text of the textField should contain numeric characters only.
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_BINARY_RANDOM+" " + bsamp_random_textBox.Text + " " + bsamp_random__modulo_textBox.Text + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_BINARY_RANDOM + " " + bsamp_random_textBox.Text + " " + bsamp_random__modulo_textBox.Text + " " + validation);
                 keyInfo += "random " + bsamp_random_textBox.Text;
             }
             Container cont = new Container(containerKey, samplingNames);
@@ -259,7 +262,7 @@ namespace ScriptGenerator
 
             if (num_BoxBehnken_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN+ " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
                 keyInfo += "BoxBehnken ";
             }
             if (num_CentralComposite_check.Checked)
@@ -366,7 +369,11 @@ namespace ScriptGenerator
                         break;
                 }
             }
-
+            if (!splconqueror_learner)
+            {
+                mlSettings = new List<MachineLearning.Learning.ML_Settings>();
+                mlSettings.Add(new MachineLearning.Learning.ML_Settings());
+            }
             generateScript(mlSettings, runs);
 
 
@@ -379,53 +386,206 @@ namespace ScriptGenerator
         /// <param name="e"></param>
         private void generateScript(List<MachineLearning.Learning.ML_Settings> mlSettings, Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
-            if (mlSettings.Count == 0)
+            if (mlSettings.Count == 0 && splconqueror_learner)
             {
                 informatioLabel.Text = "No mlSettings specified!";
                 return;
             }
 
             StringBuilder scriptContent = new StringBuilder();
-
-            foreach (Container c in addedElementsList.Items)
+            List<StringBuilder> subscripts = new List<StringBuilder>();
+            if (splconqueror_learner)
             {
-
-                switch (c.Type.Trim())
+                foreach (Container c in addedElementsList.Items)
                 {
-                    case CONTAINERKEY_LOGFILE:
-                        scriptContent.Append(CommandLine.Commands.COMMAND_LOG+" " + (c.Content) + "\n");
-                        break;
+
+                    switch (c.Type.Trim())
+                    {
+                        case CONTAINERKEY_LOGFILE:
+                            scriptContent.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content) + "\n");
+                            break;
+
+                        case Commands.COMMAND_SUBSCRIPT:
+                            scriptContent.Append(Commands.COMMAND_SUBSCRIPT + " " + c.Content + System.Environment.NewLine);
+                            if (clearGlobalAfterSubscript.Checked)
+                            {
+                                scriptContent.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                            }
+                            break;
+                    }
                 }
             }
 
 
-
-            foreach (ML_Settings setting in mlSettings)
+            if (subscriptEachVM.Checked)
             {
-                scriptContent.Append(mlSettingsContent(setting));
-
-                foreach (Container varModelContainer in runs["variabilityModel"])
-                {
-                    foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
+                int i = 0;
+                foreach (ML_Settings setting in mlSettings)
+                { 
+                    foreach (Container varModelContainer in runs["variabilityModel"])
                     {
-                        List<Container> nfpContainer = measurementContainer.AdditionalInformation;
+                        // Placeholder variable
+                        scriptContent.Append("$" + i + System.Environment.NewLine);
+                        i++;
+                        StringBuilder subscript = new StringBuilder();
 
-                        foreach (Container nfp in nfpContainer)
+                        if (logForEachSubscript.Checked)
                         {
-                            List<NFProperty> prop = (List<NFProperty>)nfp.Content;
-
-                            foreach (NFProperty pro in prop)
+                            foreach (Container c in addedElementsList.Items)
                             {
 
-                                System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
-                                System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
-                                NFProperty nfpName = (NFProperty)pro;
+                                switch (c.Type.Trim())
+                                {
+                                    case CONTAINERKEY_LOGFILE:
+                                        subscript.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content).ToString().Split(new char[] { '.' })[0] 
+                                            + "_subscript" + (i - 1) + ".log" + "\n");
+                                        break;
+                                }
+                            }
+                        }
+                        subscript.Append(mlSettingsContent(setting));
+                        if (!splconqueror_learner && !(interpreter_Path == null || interpreter_Path.Equals("")))
+                        {
+                            subscript.Append("define-python-path " + interpreter_Path + System.Environment.NewLine);
+                        }
+                        foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
+                        {
+                            List<Container> nfpContainer = measurementContainer.AdditionalInformation;
+
+                            foreach (Container nfp in nfpContainer)
+                            {
+                                List<NFProperty> prop = (List<NFProperty>)nfp.Content;
+
+                                foreach (NFProperty pro in prop)
+                                {
+
+                                    System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                                    System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
+                                    NFProperty nfpName = (NFProperty)pro;
 
 
-                                scriptContent.Append(Commands.COMMAND_VARIABILITYMODEL + " " + varModel + System.Environment.NewLine);
-                                scriptContent.Append(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurement + System.Environment.NewLine);
-                                scriptContent.Append(Commands.COMMAND_SET_NFP + " " + pro.Name + System.Environment.NewLine);
-                                scriptContent.Append(samplingsToConsider(runs, varModel.Directory.FullName));
+                                    subscript.Append(Commands.COMMAND_VARIABILITYMODEL + " " + varModel + System.Environment.NewLine);
+                                    subscript.Append(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurement + System.Environment.NewLine);
+                                    subscript.Append(Commands.COMMAND_SET_NFP + " " + pro.Name + System.Environment.NewLine);
+                                    subscript.Append(samplingsToConsider(runs, varModel.Directory.FullName));
+                                }
+                            }
+                            if (cleanGlobalAfterVM.Checked)
+                            {
+                                subscript.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                            }
+                        }
+                        if (clearGlobalAfterSubscript.Checked)
+                        {
+                            subscript.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                        }
+                        subscripts.Add(subscript);
+                    }
+                }
+                scriptContent.Append(Commands.COMMAND_CLEAR_LEARNING + System.Environment.NewLine);
+            } else if (subscriptEachNfp.Checked)
+            {
+                int i = 0;
+                foreach (ML_Settings setting in mlSettings)
+                {
+                    foreach (Container varModelContainer in runs["variabilityModel"])
+                    {
+                        foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
+                        {
+                            List<Container> nfpContainer = measurementContainer.AdditionalInformation;
+
+                            foreach (Container nfp in nfpContainer)
+                            {
+                                List<NFProperty> prop = (List<NFProperty>)nfp.Content;
+
+                                foreach (NFProperty pro in prop)
+                                {
+                                    // Placeholder variable
+                                    scriptContent.Append("$" + i + System.Environment.NewLine);
+                                    i++;
+                                    StringBuilder subscript = new StringBuilder();
+                                    if (!splconqueror_learner && !(interpreter_Path == null || interpreter_Path.Equals("")))
+                                    {
+                                        subscript.Append("define-python-path " + interpreter_Path + System.Environment.NewLine);
+                                    }
+                                    if (logForEachSubscript.Checked)
+                                    {
+                                        foreach (Container c in addedElementsList.Items)
+                                        {
+
+                                            switch (c.Type.Trim())
+                                            {
+                                                case CONTAINERKEY_LOGFILE:
+                                                    subscript.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content).ToString().Split(new char[] { '.' })[0]
+                                                        + "_subscript" + (i - 1) + ".log" + "\n");
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                    subscript.Append(mlSettingsContent(setting));
+                                    System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                                    System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
+                                    NFProperty nfpName = (NFProperty)pro;
+
+
+                                    subscript.Append(Commands.COMMAND_VARIABILITYMODEL + " " + varModel + System.Environment.NewLine);
+                                    subscript.Append(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurement + System.Environment.NewLine);
+                                    subscript.Append(Commands.COMMAND_SET_NFP + " " + pro.Name + System.Environment.NewLine);
+                                    subscript.Append(samplingsToConsider(runs, varModel.Directory.FullName));
+                                    if (clearGlobalAfterSubscript.Checked)
+                                    {
+                                        subscript.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                                    }
+                                    subscripts.Add(subscript);
+
+                                }
+                            }
+                            if (cleanGlobalAfterVM.Checked)
+                            {
+                                scriptContent.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                            }
+                        }
+                    }
+                }
+                scriptContent.Append(Commands.COMMAND_CLEAR_LEARNING + System.Environment.NewLine);
+            } else
+            {
+                foreach (ML_Settings setting in mlSettings)
+                {
+                    scriptContent.Append(mlSettingsContent(setting));
+                    if (!splconqueror_learner && !(interpreter_Path == null || interpreter_Path.Equals("")))
+                    {
+                        scriptContent.Append("define-python-path " + interpreter_Path + System.Environment.NewLine);
+                    }
+
+                    foreach (Container varModelContainer in runs["variabilityModel"])
+                    {
+                        foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
+                        {
+                            List<Container> nfpContainer = measurementContainer.AdditionalInformation;
+
+                            foreach (Container nfp in nfpContainer)
+                            {
+                                List<NFProperty> prop = (List<NFProperty>)nfp.Content;
+
+                                foreach (NFProperty pro in prop)
+                                {
+
+                                    System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                                    System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
+                                    NFProperty nfpName = (NFProperty)pro;
+
+
+                                    scriptContent.Append(Commands.COMMAND_VARIABILITYMODEL + " " + varModel + System.Environment.NewLine);
+                                    scriptContent.Append(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurement + System.Environment.NewLine);
+                                    scriptContent.Append(Commands.COMMAND_SET_NFP + " " + pro.Name + System.Environment.NewLine);
+                                    scriptContent.Append(samplingsToConsider(runs, varModel.Directory.FullName));
+                                }
+                            }
+                            if (cleanGlobalAfterVM.Checked)
+                            {
+                                scriptContent.Append(Commands.COMMAND_CLEAR_GLOBAL + System.Environment.NewLine);
+                                scriptContent.Append(mlSettingsContent(setting));
                             }
                         }
                     }
@@ -442,10 +602,38 @@ namespace ScriptGenerator
                 System.IO.FileStream fs =
                    (System.IO.FileStream)saveFileDialog1.OpenFile();
 
-                StreamWriter s = new StreamWriter(fs);
-                s.WriteLine(scriptContent.ToString());
-                s.Flush();
-                fs.Close();
+                if (subscriptEachVM.Checked || subscriptEachNfp.Checked)
+                {
+                    string filepathWithoutEnding = saveFileDialog1.FileName;
+                    string ending = "";
+                    string mainScriptAsString = scriptContent.ToString();
+                    if (saveFileDialog1.FileName.Contains("."))
+                    {
+                        ending = saveFileDialog1.FileName.Split(new char[] { '.' }).Last();
+                        filepathWithoutEnding = saveFileDialog1.FileName.Replace("." + ending, "");
+                    }
+
+                    for (int i = 0; i < subscripts.Count; ++i)
+                    {
+                        string currentLocation = filepathWithoutEnding + "_subscript_" + i + "." + ending;
+                        StreamWriter sw = new StreamWriter(currentLocation);
+                        sw.WriteLine(subscripts.ElementAt(i).ToString());
+                        sw.Flush();
+                        sw.Close();
+                        mainScriptAsString = mainScriptAsString.Replace("$" + i, Commands.COMMAND_SUBSCRIPT + " " + currentLocation);
+                    }
+                    StreamWriter s = new StreamWriter(fs);
+                    s.WriteLine(mainScriptAsString);
+                    s.Flush();
+                    fs.Close();
+                }
+                else
+                {
+                    StreamWriter s = new StreamWriter(fs);
+                    s.WriteLine(scriptContent.ToString());
+                    s.Flush();
+                    fs.Close();
+                }
             }
 
 
@@ -526,9 +714,21 @@ namespace ScriptGenerator
                             }
                             if (learn_button.Checked)
                             {
-                                sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
-                                sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
-                                sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                                if (splconqueror_learner)
+                                {
+                                    sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
+                                    sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
+                                    sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
+                                } else
+                                {
+                                    foreach (Container cont in addedElementsList.Items)
+                                    {
+                                        if (cont.Type.Equals(learnPythonCommand))
+                                        {
+                                            sb.Append(cont.Content);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -540,7 +740,7 @@ namespace ScriptGenerator
 
         private Dictionary<string, List<ScriptGenerator.Container>> enrichSamplings(Dictionary<string, List<ScriptGenerator.Container>> runs)
         {
-            if(!runs.ContainsKey(CONTAINERKEY_BINARY))
+            if (!runs.ContainsKey(CONTAINERKEY_BINARY))
             {
                 runs.Add(CONTAINERKEY_BINARY, new List<Container>() { new Container() });
             }
@@ -560,12 +760,12 @@ namespace ScriptGenerator
             return runs;
         }
 
-    
+
 
 
         private string mlSettingsContent(ML_Settings settings)
         {
-            return CommandLine.Commands.COMMAND_LOAD_MLSETTINGS+" " + settings.ToString();
+            return CommandLine.Commands.COMMAND_SET_MLSETTING + " " + settings.ToString();
         }
 
         private void logFile_Button_Click(object sender, EventArgs e)
@@ -575,13 +775,134 @@ namespace ScriptGenerator
             saveFileDialog1.ShowDialog();
 
             if (saveFileDialog1.FileName != "")
-            {                
+            {
                 // TODO what happen if there are multiple logFiles defined?
                 addedElementsList.Items.Add(new Container(CONTAINERKEY_LOGFILE, saveFileDialog1.FileName));
 
             }
         }
 
+        private void addSubscript_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog pfd = new OpenFileDialog();
+            pfd.Filter = "a scripts (*.a)|*.a|All files (*.*)|*.*";
+            if (pfd.ShowDialog() == DialogResult.OK)
+            {
+                resultFile = new System.IO.FileInfo(pfd.FileName);
+                addedElementsList.Items.Add(new Container(Commands.COMMAND_SUBSCRIPT, resultFile.Directory.ToString() + Path.DirectorySeparatorChar + resultFile.Name));
+            }
+        }
+
+        private void subscriptEachNfp_CheckedChanged(object sender, EventArgs e)
+        {
+            if (subscriptEachVM.Checked && subscriptEachNfp.Checked)
+            {
+                subscriptEachVM.Checked = false;
+            }
+
+            if (!clearGlobalAfterSubscript.Checked)
+            {
+                informatioLabel.Text = "It is advised to also selected clean-global after subscript when automatically generating subscripts to avoid unwanted side effects.";
+            }
+        }
+
+        private void subscriptEachVM_CheckedChanged(object sender, EventArgs e)
+        {
+            if (subscriptEachVM.Checked && subscriptEachNfp.Checked)
+            {
+                subscriptEachNfp.Checked = false;
+            }
+
+            if (!clearGlobalAfterSubscript.Checked)
+            {
+                informatioLabel.Text = "It is advised to also selected clean-global after subscript when automatically generating subscripts to avoid unwanted side effects.";
+            }
+        }
+
+        private void clearGlobalAfterSubscript_CheckedChanged(object sender, EventArgs e)
+        {
+            if (informatioLabel.Text.Equals("It is advised to also selected clean-global after subscript when automatically generating subscripts to avoid unwanted side effects."))
+            {
+                informatioLabel.Text = "Information";
+            }
+        }
+
+        private void pythonToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (splconqueror_learner)
+            {
+                splconqueror_learner = false;
+                MlSettings_Box.Enabled = false;
+                MlSettings_Box.Visible = false;
+                print_button.Enabled = false;
+                learn_button.Checked = true;
+                pythonLearnerGroupBox.Enabled = true;
+                pythonLearnerGroupBox.Visible = true;
+            }
+        }
+
+        private void sPLConquerorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!splconqueror_learner)
+            {
+                splconqueror_learner = true;
+                MlSettings_Box.Enabled = true;
+                MlSettings_Box.Visible = true;
+                print_button.Enabled = true;
+                pythonLearnerGroupBox.Enabled = false;
+                pythonLearnerGroupBox.Visible = false;
+            }
+        }
+
+        private void definePythonPath_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog pfd = new OpenFileDialog();
+            pfd.Filter = "exe files (*.exe)|*.exe|All files (*.*)|*.*";
+            if (pfd.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(pfd.FileName);
+                interpreter_Path = fi.Directory.ToString() + Path.DirectorySeparatorChar + fi.Name;
+            }
+        }
+
+        private void addPythonLearning_Click(object sender, EventArgs e)
+        {
+            StringBuilder parameters = new StringBuilder();
+            bool canContinue = true;
+            parameters.Append(learnPythonCommand + " ");
+            if (svrRadioButton.Checked)
+            {
+                parameters.Append("SVR");
+            } else if (randomForestRadioButton.Checked)
+            {
+                parameters.Append("randomforestregressor");
+            } else if (decisionTreeRegression.Checked)
+            {
+                parameters.Append("decisiontreeregression");
+            } else if (baggingSVRRadioButton.Checked)
+            {
+                parameters.Append("baggingsvr");
+            } else if (KNeighborsRadioButton.Checked)
+            {
+                parameters.Append("kneighborsregressor");
+            } else if (kernelridgeRadioButton.Checked)
+            {
+                parameters.Append("kernelridge");
+            } else
+            {
+                canContinue = false;
+                MessageBox.Show("No learner selected!", "Error");
+            }
+
+            if (canContinue)
+            {
+                if (parametersTextBox.Text != null && !parametersTextBox.Text.Equals(""))
+                {
+                    parameters.Append(" " + parametersTextBox.Text + "\n");
+                }
+                addedElementsList.Items.Add(new Container(learnPythonCommand, parameters.ToString()));
+            }
+        }
+    }
 
     }
-}

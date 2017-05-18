@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.Heuristics
     public class NegFeatureWise
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
 
         //get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question
         /// <summary>
