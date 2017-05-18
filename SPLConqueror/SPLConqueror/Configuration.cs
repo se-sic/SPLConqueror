@@ -74,15 +74,39 @@ namespace SPLConqueror_Core
 
         private void createIndex()
         {
-            optionValues = new double[GlobalState.varModel.indexToOption.Count];
+            int diff = 0;
+            if (GlobalState.allMeasurements != null && GlobalState.allMeasurements.blacklisted != null)
+            {
+                diff = GlobalState.allMeasurements.blacklisted.Count;
+            }
+            optionValues = new double[GlobalState.varModel.indexToOption.Count - diff];
 
+            int shift = 0;
             foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
             {
                 if (option.Value is NumericOption)
-                    optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                {
+                    if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    {
+                        optionValues[option.Key - shift] = numericOptions[option.Value as NumericOption];
+                    } else
+                    {
+                        shift++;
+                    }
+                }
                 else
-                    if (binaryOptions.ContainsKey(option.Value as BinaryOption))
-                        optionValues[option.Key] = 1.0;
+                {
+                    if (GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    {
+                        shift++;
+                    } else
+                    {
+                        if (binaryOptions.ContainsKey(option.Value as BinaryOption))
+                        {
+                            optionValues[option.Key - shift] = 1.0;
+                        }
+                    }
+                }
             }
         }
 
@@ -240,6 +264,11 @@ namespace SPLConqueror_Core
         {
             if (other == null)
                 return false;
+
+            if (this.optionValues.Count() != other.optionValues.Count())
+            {
+                return false;
+            }
 
             for (int i = 0; i < optionValues.Count(); i++)
             {
