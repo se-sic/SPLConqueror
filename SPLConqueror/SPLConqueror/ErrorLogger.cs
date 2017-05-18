@@ -5,13 +5,16 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class is used to log all error messages in a given file.
+    /// </summary>
     public class ErrorLogger : Logger
     {
         readonly object loggerLock = new Object();
         public ErrorLogger(String location, bool mode=false) :base(location, mode)
         {
             if(writer!=null)
-            Console.SetError(writer);
+                Console.SetError(writer);
         }
        
         /// <summary>

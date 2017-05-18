@@ -47,6 +47,11 @@ namespace SPLConqueror_Core
 
         }
 
+        /// <summary>
+        /// Tests whether a configuration holds for the given non-boolean constraint.
+        /// </summary>
+        /// <param name="config">The configuration of interest.</param>
+        /// <returns>True is the configuration holds for the constraint.</returns>
         public bool configIsValid(Configuration config)
         {
             if (!configHasOptionsOfConstraint(config))

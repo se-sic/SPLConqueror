@@ -6,6 +6,9 @@ using System.IO;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class writes a set of configurations to a given file.
+    /// </summary>
     public class ConfigurationPrinter
     {
 

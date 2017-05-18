@@ -76,7 +76,10 @@ namespace SPLConqueror_Core
             set { nonBooleanConstraints = value; }
         }
 
-
+        /// <summary>
+        /// Creastes a new variability model with a given name that consists only of a binary root option.
+        /// </summary>
+        /// <param name="name">The name of the variability model.</param>
         public VariabilityModel(String name)
         {
             this.name = name;

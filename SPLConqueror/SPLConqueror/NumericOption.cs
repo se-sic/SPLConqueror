@@ -181,7 +181,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="doc">The XML document to which the node will be added</param>
         /// <returns>The XML node containing the information of numeric option</returns>
-        internal XmlNode saveXML(System.Xml.XmlDocument doc)
+        internal new XmlNode saveXML(System.Xml.XmlDocument doc)
         {
             XmlNode node = base.saveXML(doc);
 

@@ -138,7 +138,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// Checks whether the interaction occurs in the configuration. Checks only for binary options, because numeric options are assumed to be always present
         /// </summary>
-        /// <param name="c">The configuration for which we check whether it contains the interaction.</param>
+        /// <param name="selectedBinOptions">The configuration for which we check whether it contains the interaction.</param>
         /// <returns>True if the interaction is present in the configuration, false otherwise.</returns>
         public bool isInConfiguration(List<BinaryOption> selectedBinOptions)
         {

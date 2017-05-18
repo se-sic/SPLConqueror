@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace SPLConqueror_Core
 {
+
     public class InfluenceFunction
     {
 

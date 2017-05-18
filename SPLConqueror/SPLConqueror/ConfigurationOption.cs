@@ -6,6 +6,9 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class encapsulates all properties that have binary and numeric options in common.  
+    /// </summary>
     public abstract class ConfigurationOption : IComparable<ConfigurationOption>, IEquatable<ConfigurationOption>
     {
         private String name = "";

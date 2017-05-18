@@ -7,6 +7,9 @@ using System.IO;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class offers the functionality to read a set of measured configurations that can be used in SPL Conqueror for later experiments.
+    /// </summary>
     public class ConfigurationReader
     {
 
