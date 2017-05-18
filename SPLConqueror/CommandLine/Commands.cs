@@ -336,6 +336,7 @@ namespace CommandLine
                     toSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
+                    GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
                     GlobalState.measurementSource = task.TrimEnd();
                     string attachement = "";
@@ -345,7 +346,6 @@ namespace CommandLine
                         attachement = " abortError set to highest deviation value: " + GlobalState.measurementDeviation + ".";
                     }
                     GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded." + attachement);
-
                     break;
 
                 case COMMAND_MEASUREMENTS_TO_CSV:
@@ -533,7 +533,12 @@ namespace CommandLine
                     GlobalState.vmSource = task.TrimEnd();
 		     GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
                     if (GlobalState.varModel == null)
+                    {
                         GlobalState.logError.logLine("No variability model found at " + task);
+                    } else if (mlSettings.blacklisted.Count > 0)
+                    {
+                        mlSettings.checkAndCleanBlacklisted();
+                    }
                     break;
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
@@ -609,6 +614,8 @@ namespace CommandLine
                         if (para.Length >= 1 && (para[0].Trim()).Length > 0)
                         {
                             ConfigurationPrinter printer = null;
+
+                            ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
                             var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
                             if (para.Length >= 3)
                             {
@@ -744,6 +751,7 @@ namespace CommandLine
 
         private List<Configuration> buildSet(List<SamplingStrategies> strats)
         {
+            ConfigurationBuilder.setBlacklisted(mlSettings.blacklisted);
             List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, strats);
             //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
             if (trueModel != null)
@@ -778,7 +786,7 @@ namespace CommandLine
             List<Configuration> configurationsLearning = new List<Configuration>();
             List<Configuration> configurationsValidation = new List<Configuration>();
 
-            if (isAllMeasurementsToSample() && allMeasurementsValid())
+            if (isAllMeasurementsToSample() && allMeasurementsValid() && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
             {
                 measurementsValid = true;
                 configurationsLearning = GlobalState.allMeasurements.Configurations;
@@ -788,7 +796,7 @@ namespace CommandLine
                 configurationsLearning = buildSet(this.toSample);
             }
 
-            if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()))
+            if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()) && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
             {
                 configurationsValidation = GlobalState.allMeasurements.Configurations;
             }

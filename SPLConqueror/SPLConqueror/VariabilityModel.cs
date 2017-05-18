@@ -76,6 +76,27 @@ namespace SPLConqueror_Core
             set { nonBooleanConstraints = value; }
         }
 
+        public List<NumericOption> getNonBlacklistedNumericFeatures(List<String> blacklist)
+        {
+            List<NumericOption> result = new List<NumericOption>();
+
+            foreach (NumericOption opt in this.numericOptions)
+            {
+                if (blacklist != null)
+                {
+                    if (!blacklist.Contains(opt.Name.ToLower()))
+                    {
+                        result.Add(opt);
+                    }
+                } else
+                {
+                    result.Add(opt);
+                }
+            }
+
+            return result;
+        }
+
 
         public VariabilityModel(String name)
         {

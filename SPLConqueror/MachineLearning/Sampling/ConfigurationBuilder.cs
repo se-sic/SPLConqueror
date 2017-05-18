@@ -16,6 +16,14 @@ namespace MachineLearning.Sampling
         public static Dictionary<SamplingStrategies, List<NumericOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<NumericOption>>();
         public static Dictionary<SamplingStrategies, List<Dictionary<String, String>>> parametersOfExpDesigns = new Dictionary<SamplingStrategies, List<Dictionary<string, string>>>();
 
+        // Added by Ch.K.
+        private static List<String> blacklisted;
+
+        public static void setBlacklisted(List<String> blacklist)
+        {
+            ConfigurationBuilder.blacklisted = blacklist;
+        }
+
         public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> strategies)
         {
             List<Configuration> result = new List<Configuration>();
@@ -53,7 +61,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.BOXBEHNKEN))
                             design = new BoxBehnkenDesign(optionsToConsider[SamplingStrategies.BOXBEHNKEN]);
                         else
-                            design = new BoxBehnkenDesign(vm.NumericOptions);
+                            design = new BoxBehnkenDesign(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.BOXBEHNKEN])
                         {
@@ -66,7 +74,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.CENTRALCOMPOSITE))
                             design = new CentralCompositeInscribedDesign(optionsToConsider[SamplingStrategies.CENTRALCOMPOSITE]);
                         else
-                            design = new CentralCompositeInscribedDesign(vm.NumericOptions);
+                            design = new CentralCompositeInscribedDesign(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE])
                         {
@@ -79,7 +87,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.FULLFACTORIAL))
                             design = new FullFactorialDesign(optionsToConsider[SamplingStrategies.FULLFACTORIAL]);
                         else
-                            design = new FullFactorialDesign(vm.NumericOptions);
+                            design = new FullFactorialDesign(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.FULLFACTORIAL])
                         {
@@ -93,7 +101,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.HYPERSAMPLING))
                             design = new HyperSampling(optionsToConsider[SamplingStrategies.HYPERSAMPLING]);
                         else
-                            design = new HyperSampling(vm.NumericOptions);
+                            design = new HyperSampling(vm.getNonBlacklistedNumericFeatures(blacklisted));
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.HYPERSAMPLING])
                         {
                             design.computeDesign(expDesignParamSet);
@@ -105,7 +113,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.ONEFACTORATATIME))
                             design = new OneFactorAtATime(optionsToConsider[SamplingStrategies.ONEFACTORATATIME]);
                         else
-                            design = new OneFactorAtATime(vm.NumericOptions);
+                            design = new OneFactorAtATime(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.ONEFACTORATATIME])
                         {
@@ -118,7 +126,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.KEXCHANGE))
                             design = new KExchangeAlgorithm(optionsToConsider[SamplingStrategies.KEXCHANGE]);
                         else
-                            design = new KExchangeAlgorithm(vm.NumericOptions);
+                            design = new KExchangeAlgorithm(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.KEXCHANGE])
                         {
@@ -131,7 +139,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.PLACKETTBURMAN))
                             design = new PlackettBurmanDesign(optionsToConsider[SamplingStrategies.PLACKETTBURMAN]);
                         else
-                            design = new PlackettBurmanDesign(vm.NumericOptions);
+                            design = new PlackettBurmanDesign(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN])
                         {
@@ -144,7 +152,7 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.RANDOM))
                             design = new RandomSampling(optionsToConsider[SamplingStrategies.RANDOM]);
                         else
-                            design = new RandomSampling(vm.NumericOptions);
+                            design = new RandomSampling(vm.getNonBlacklistedNumericFeatures(blacklisted));
 
                         foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.RANDOM])
                         {
