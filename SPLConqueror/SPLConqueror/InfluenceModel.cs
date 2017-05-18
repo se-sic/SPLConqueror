@@ -23,6 +23,9 @@ namespace SPLConqueror_Core
 
         Dictionary<BinaryOption, InfluenceFunction> binaryOptionsInfluence = new Dictionary<BinaryOption, InfluenceFunction>();
 
+        /// <summary>
+        /// The set of the individual influences identified for binary configration options.
+        /// </summary>
         public Dictionary<BinaryOption, InfluenceFunction> BinaryOptionsInfluence
         {
             get { return binaryOptionsInfluence; }

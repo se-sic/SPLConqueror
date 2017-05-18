@@ -596,13 +596,13 @@ namespace SPLConqueror_GUI
         {
             constraintTextbox.Clear();
 
-            if (currentModel.BooleanConstraints.Count != 0)
+            if (currentModel.BinaryConstraints.Count != 0)
             {
                 constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Bold);
                 constraintTextbox.AppendText("Boolean constraints:\n\n");
                 constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Regular);
 
-                foreach (string constraint in currentModel.BooleanConstraints)
+                foreach (string constraint in currentModel.BinaryConstraints)
                     constraintTextbox.AppendText(constraint + "\n");
 
                 constraintTextbox.AppendText("\n");

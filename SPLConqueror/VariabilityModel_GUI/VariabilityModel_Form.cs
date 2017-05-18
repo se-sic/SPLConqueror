@@ -539,8 +539,8 @@ namespace VariabilitModel_GUI
             VariabilityModel transformedVarModel = new VariabilityModel(GlobalState.varModel.Name);
 
             GlobalState.varModel.BinaryOptions.ForEach(x => transformedVarModel.addConfigurationOption(x));
-            GlobalState.varModel.BooleanConstraints.ForEach(constraint =>
-                convertToCNF(constraint).ForEach(convertedConstraint => transformedVarModel.BooleanConstraints.Add(convertedConstraint)));
+            GlobalState.varModel.BinaryConstraints.ForEach(constraint =>
+                convertToCNF(constraint).ForEach(convertedConstraint => transformedVarModel.BinaryConstraints.Add(convertedConstraint)));
 
             foreach (NumericOption currNumOpt in GlobalState.varModel.NumericOptions)
             {
@@ -621,7 +621,7 @@ namespace VariabilitModel_GUI
                 {
                     // Remove trailing ' & '
                     nonBooleanConstraintAsBoolean.Length = nonBooleanConstraintAsBoolean.Length - 3;
-                    convertToCNF(nonBooleanConstraintAsBoolean.ToString()).ForEach(clause => newVariabilityModel.BooleanConstraints.Add(clause.Trim()));
+                    convertToCNF(nonBooleanConstraintAsBoolean.ToString()).ForEach(clause => newVariabilityModel.BinaryConstraints.Add(clause.Trim()));
                 }
             }
 
@@ -752,7 +752,7 @@ namespace VariabilitModel_GUI
         private List<string> parseBooleanConstraint(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
         {
             List<string> parsedBooleanConstraints = new List<string>();
-            foreach (string booleanConstraint in toParse.BooleanConstraints)
+            foreach (string booleanConstraint in toParse.BinaryConstraints)
             {
                 // replace each option name with their index, ! with - and remove |, since boolean expressions are already in CNF
                 StringBuilder booleanConstraintInDimacs = new StringBuilder();

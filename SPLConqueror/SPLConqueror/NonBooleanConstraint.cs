@@ -12,7 +12,7 @@ namespace SPLConqueror_Core
         private String comparator = "";
 
         /// <summary>
-        /// Creates a new NonBooleanConstraint for a expression. The expression have to consist binary and numeric options and operators such as "+,*,>=,<=,>,<, and =" only. 
+        /// Creates a new NonBooleanConstraint for a expression. The expression have to consist binary and numeric options and operators such as +, *, &lt;=, &lt;, &gt;=, &gt;, and = only. 
         /// Where all binary and numeric options have to be defined in the variability model. 
         /// </summary>
         /// <param name="unparsedExpression"></param>
@@ -98,6 +98,12 @@ namespace SPLConqueror_Core
             return false;
         }
 
+        /// <summary>
+        /// Tests whether the given partial configuraion (consistsing only of the numeric-configuration options and their selected value) holds
+        /// for the given non-functional constraint.
+        /// </summary>
+        /// <param name="config">A parial configuration consisting of the numeric-configurations options and their selected values.</param>
+        /// <returns>True if the partial configuration holds for the non-functional property.</returns>
         public bool configIsValid(Dictionary<NumericOption,double> config)
         {
             if (!configHasOptionsOfConstraint(config))

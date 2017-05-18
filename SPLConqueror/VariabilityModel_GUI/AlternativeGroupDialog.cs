@@ -56,7 +56,7 @@ namespace VariabilitModel_GUI
             selectedOptionComboBox.Items.AddRange(opts.Where(x => x is BinaryOption).ToArray());
             selectedOptionComboBox.SelectedIndex = 0;
 
-            foreach (string c in GlobalState.varModel.BooleanConstraints)
+            foreach (string c in GlobalState.varModel.BinaryConstraints)
             {
                 ConfigurationOption opt = getAltGroup(c);
 
