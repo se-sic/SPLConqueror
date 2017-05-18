@@ -31,6 +31,8 @@ namespace SPLConqueror_Core
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
+
+        public static double measurementDeviation = Double.MinValue;
         /// <summary>
         /// Path the measurements are located at.
         /// </summary>

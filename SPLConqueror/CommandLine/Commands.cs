@@ -338,7 +338,13 @@ namespace CommandLine
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
                     GlobalState.measurementSource = task.TrimEnd();
-                    GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
+                    string attachement = "";
+                    if (GlobalState.measurementDeviation > 0 && this.mlSettings != null && mlSettings.abortError == 1)
+                    {
+                        this.mlSettings.abortError = GlobalState.measurementDeviation;
+                        attachement = " abortError set to highest deviation value: " + GlobalState.measurementDeviation + ".";
+                    }
+                    GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded." + attachement);
 
                     break;
 
