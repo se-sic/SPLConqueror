@@ -34,6 +34,7 @@
             this.currAltGroupsListBox = new System.Windows.Forms.ListBox();
             this.currAltGroupsDeleteButton = new System.Windows.Forms.Button();
             this.currAltGroupsLabel = new System.Windows.Forms.Label();
+            this.helpProvider1 = new System.Windows.Forms.HelpProvider();
             this.SuspendLayout();
             // 
             // selectedOptionLabel
@@ -49,17 +50,23 @@
             // 
             this.selectedOptionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.selectedOptionComboBox.FormattingEnabled = true;
+            this.helpProvider1.SetHelpString(this.selectedOptionComboBox, "List of all binary features that have at least two children and therefore qualify" +
+        " as a parent of an alternative group..");
             this.selectedOptionComboBox.Location = new System.Drawing.Point(118, 6);
             this.selectedOptionComboBox.Name = "selectedOptionComboBox";
+            this.helpProvider1.SetShowHelp(this.selectedOptionComboBox, true);
             this.selectedOptionComboBox.Size = new System.Drawing.Size(121, 21);
             this.selectedOptionComboBox.TabIndex = 1;
-            this.selectedOptionComboBox.SelectedIndexChanged += selectedOptionComboBox_SelectedIndexChanged;
             // 
             // selectedOptionAddButton
             // 
-            this.selectedOptionAddButton.Location = new System.Drawing.Point(164, 33);
+            this.helpProvider1.SetHelpString(this.selectedOptionAddButton, "All binary children of the currently selected feature will be added to an alterna" +
+        "tive group.");
+            this.selectedOptionAddButton.Location = new System.Drawing.Point(219, 41);
+            this.selectedOptionAddButton.Margin = new System.Windows.Forms.Padding(4);
             this.selectedOptionAddButton.Name = "selectedOptionAddButton";
-            this.selectedOptionAddButton.Size = new System.Drawing.Size(75, 23);
+            this.helpProvider1.SetShowHelp(this.selectedOptionAddButton, true);
+            this.selectedOptionAddButton.Size = new System.Drawing.Size(100, 28);
             this.selectedOptionAddButton.TabIndex = 2;
             this.selectedOptionAddButton.Text = "Add option";
             this.selectedOptionAddButton.UseVisualStyleBackColor = true;
@@ -68,16 +75,19 @@
             // currAltGroupsListBox
             // 
             this.currAltGroupsListBox.FormattingEnabled = true;
-            this.currAltGroupsListBox.Location = new System.Drawing.Point(15, 93);
+            this.currAltGroupsListBox.ItemHeight = 16;
+            this.currAltGroupsListBox.Location = new System.Drawing.Point(20, 114);
+            this.currAltGroupsListBox.Margin = new System.Windows.Forms.Padding(4);
             this.currAltGroupsListBox.Name = "currAltGroupsListBox";
-            this.currAltGroupsListBox.Size = new System.Drawing.Size(224, 173);
+            this.currAltGroupsListBox.Size = new System.Drawing.Size(297, 212);
             this.currAltGroupsListBox.TabIndex = 3;
             // 
             // currAltGroupsDeleteButton
             // 
-            this.currAltGroupsDeleteButton.Location = new System.Drawing.Point(164, 272);
+            this.currAltGroupsDeleteButton.Location = new System.Drawing.Point(219, 335);
+            this.currAltGroupsDeleteButton.Margin = new System.Windows.Forms.Padding(4);
             this.currAltGroupsDeleteButton.Name = "currAltGroupsDeleteButton";
-            this.currAltGroupsDeleteButton.Size = new System.Drawing.Size(75, 23);
+            this.currAltGroupsDeleteButton.Size = new System.Drawing.Size(100, 28);
             this.currAltGroupsDeleteButton.TabIndex = 4;
             this.currAltGroupsDeleteButton.Text = "Delete";
             this.currAltGroupsDeleteButton.UseVisualStyleBackColor = true;
@@ -86,23 +96,28 @@
             // currAltGroupsLabel
             // 
             this.currAltGroupsLabel.AutoSize = true;
-            this.currAltGroupsLabel.Location = new System.Drawing.Point(12, 64);
+            this.currAltGroupsLabel.Location = new System.Drawing.Point(16, 79);
+            this.currAltGroupsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.currAltGroupsLabel.Name = "currAltGroupsLabel";
-            this.currAltGroupsLabel.Size = new System.Drawing.Size(135, 13);
+            this.currAltGroupsLabel.Size = new System.Drawing.Size(183, 17);
             this.currAltGroupsLabel.TabIndex = 5;
             this.currAltGroupsLabel.Text = "Current alternate groups at:";
             // 
             // AlternativeGroupDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(251, 307);
+            this.ClientSize = new System.Drawing.Size(335, 378);
             this.Controls.Add(this.currAltGroupsLabel);
             this.Controls.Add(this.currAltGroupsDeleteButton);
             this.Controls.Add(this.currAltGroupsListBox);
             this.Controls.Add(this.selectedOptionAddButton);
             this.Controls.Add(this.selectedOptionComboBox);
             this.Controls.Add(this.selectedOptionLabel);
+            this.HelpButton = true;
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AlternativeGroupDialog";
             this.Text = "Creating groups...";
             this.ResumeLayout(false);
@@ -118,5 +133,6 @@
         private System.Windows.Forms.ListBox currAltGroupsListBox;
         private System.Windows.Forms.Button currAltGroupsDeleteButton;
         private System.Windows.Forms.Label currAltGroupsLabel;
+        private System.Windows.Forms.HelpProvider helpProvider1;
     }
 }

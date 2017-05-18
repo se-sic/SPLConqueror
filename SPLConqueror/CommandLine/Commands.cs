@@ -10,6 +10,7 @@ using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
+using Persistence;
 using MachineLearning;
 
 namespace CommandLine
@@ -29,6 +30,17 @@ namespace CommandLine
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
 
+        public const string RESUME_FROM_DUMP = "resume-dump";
+
+        //resume a A script with only log files. 
+        public const string RESUME_FROM_LOG = "resume-log";
+
+        //save current SPLConqueror state to a file.
+        public const string COMMAND_SAVE = "save";
+
+        // shouldnt be used by user.
+        public const string COMMAND_ROLLBACK = "rollback";
+
         public const string COMMAND_VALIDATION = "validation";
 
         public const string COMMAND_EVALUATION_SET = "evaluationset";
@@ -41,6 +53,8 @@ namespace CommandLine
 
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
 
+        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
+        public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
         public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
 
@@ -72,6 +86,9 @@ namespace CommandLine
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
+        private CommandHistory currentHistory = new CommandHistory();
+        private bool hasLearnData = false;
+
         public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
 
         /// <summary>
@@ -81,22 +98,35 @@ namespace CommandLine
         /// <returns>Returns an empty string if the command could be performed by the method. If the command could not be performed by the method, the original command is returned.</returns>
         public string performOneCommand(string line)
         {
-            GlobalState.logInfo.logLine(COMMAND + line);
-
+            string command;
 
             // remove comment part of the line (the comment starts with an #)
             line = line.Split(new Char[] { '#' }, 2)[0];
             if (line.Length == 0)
                 return "";
 
+            currentHistory.addCommand(line);
+
             // split line in command and parameters of the command
             string[] components = line.Split(new Char[] { ' ' }, 2);
-            string command = components[0];
+
             string task = "";
             if (components.Length > 1)
                 task = components[1];
 
             string[] taskAsParameter = task.Split(new Char[] { ' ' });
+            if (!GlobalState.rollback)
+            {
+                GlobalState.logInfo.logLine(COMMAND + line);
+
+                command = components[0];
+            } else
+            {
+                command = components[0];
+                if (!command.Equals(COMMAND_SUBSCRIPT)) {
+                    command = COMMAND_ROLLBACK;
+                }
+            }
 
             switch (command.ToLower())
             {
@@ -135,11 +165,117 @@ namespace CommandLine
                         exp.metaModel = infMod;
                         exp.mLsettings = this.mlSettings;
                         exp.learn();
+                        GlobalState.logInfo.logLine("Finished");
+                    }
+                    break;
+
+                case RESUME_FROM_DUMP:
+                    Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoveredData = CommandPersistence.recoverDataFromDump(taskAsParameter);
+                    if (recoveredData == null) {
+                        GlobalState.logError.logLine("Couldnt recover.");
+                    } else {
+                        this.mlSettings = recoveredData.Item1;
+                        this.toSample = recoveredData.Item2;
+                        this.toSampleValidation = recoveredData.Item3;
+
+                        FileInfo fi = new FileInfo(taskAsParameter[7]);
+                        StreamReader reader = null;
+                        if (!fi.Exists)
+                            throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
+
+                        reader = fi.OpenText();
+                        Commands co = new Commands();
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
+                        {
+                            //restore exp
+                            hasLearnData = true;
+                        }
+                        co.exp = this.exp;
+                        co.toSample = this.toSample;
+                        co.toSampleValidation = this.toSampleValidation;
+                        co.mlSettings = this.mlSettings;
+                        GlobalState.rollback = true;
+
+                        while (!reader.EndOfStream)
+                        {
+                            String oneLine = reader.ReadLine().Trim();
+                            co.performOneCommand(oneLine);
+
+                        }
+                    }
+                    break;
+
+                case COMMAND_SAVE:
+                    CommandPersistence.dump(taskAsParameter, this.mlSettings, this.toSample, 
+                        this.toSampleValidation, this.exp, this.currentHistory);
+                    break;
+
+                case COMMAND_ROLLBACK:
+                    if (currentHistory.Equals(CommandPersistence.history))
+                    {
+                        GlobalState.rollback = false;
+                        GlobalState.logInfo.logLine("Performed rollback");
+                    }
+                    break;
+
+                case RESUME_FROM_LOG:
+                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = CommandPersistence.findRelevantCommandsLogFiles(task.TrimEnd(), new Dictionary<string, string>());
+                    if (reachedEndAndRelevantCommands.Item1)
+                    {
+                        GlobalState.logInfo.logLine("The end of the script was already reached");
+                    }
+                    else
+                    {
+                        string logBuffer = null;
+                        foreach (KeyValuePair<string, string> kv in reachedEndAndRelevantCommands.Item2)
+                        {
+                            if (!kv.Key.Equals(COMMAND_SUBSCRIPT))
+                            {
+                                if (kv.Key.Equals(COMMAND_LOG))
+                                {
+                                    logBuffer = kv.Value.Split()[1].Trim();
+                                } else if (!(kv.Key.Equals(COMMAND_START_LEARNING) || kv.Key.Equals(COMMAND_START_ALLMEASUREMENTS)))
+                                {
+                                    performOneCommand(kv.Value);
+                                }
+                            }
+                        }
+                        GlobalState.logInfo = new InfoLogger(logBuffer, true);
+
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
+                        {
+                            //restore exp
+                            hasLearnData = true;
+                        }
+                        FileInfo fi = new FileInfo(task.TrimEnd());
+                        StreamReader reader = null;
+                        if (!fi.Exists)
+                            throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
+
+                        reader = fi.OpenText();
+                        Commands co = new Commands();
+                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
+                        {
+                            //restore exp
+                            co.hasLearnData = true;
+                        }
+                        co.exp = this.exp;
+                        co.toSample = this.toSample;
+                        co.toSampleValidation = this.toSampleValidation;
+                        co.mlSettings = this.mlSettings;
+                        GlobalState.rollback = true;
+
+                        while (!reader.EndOfStream)
+                        {
+                            String oneLine = reader.ReadLine().Trim();
+                            co.performOneCommand(oneLine);
+
+                        }
                     }
                     break;
 
                 case COMMAND_TRUEMODEL:
-                    StreamReader readModel = new StreamReader(task);
+                    StreamReader readModel = new StreamReader(task.TrimEnd());
                     String model = readModel.ReadLine().Trim();
                     readModel.Close();
                     this.trueModel = new InfluenceFunction(model.Replace(',', '.'), GlobalState.varModel);
@@ -151,13 +287,22 @@ namespace CommandLine
                 case COMMAND_SUBSCRIPT:
                     {
 
-                        FileInfo fi = new FileInfo(task);
+                        FileInfo fi = new FileInfo(task.TrimEnd());
                         StreamReader reader = null;
                         if (!fi.Exists)
                             throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
+                        co.currentHistory = this.currentHistory;
+                        if (GlobalState.rollback)
+                        {
+                            co.toSample = this.toSample;
+                            co.toSampleValidation = this.toSampleValidation;
+                            co.mlSettings = this.mlSettings;
+                        }
+
+                        co.hasLearnData = this.hasLearnData;
                         co.exp = this.exp;
 
                         while (!reader.EndOfStream)
@@ -166,6 +311,7 @@ namespace CommandLine
                             co.performOneCommand(oneLine);
 
                         }
+                        this.hasLearnData = co.hasLearnData;
                     }
                     break;
                 case COMMAND_EVALUATION_SET:
@@ -191,9 +337,15 @@ namespace CommandLine
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
-                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task, GlobalState.varModel))).ToList();
-                    GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded.");
-
+                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+                    GlobalState.measurementSource = task.TrimEnd();
+                    string attachement = "";
+                    if (GlobalState.measurementDeviation > 0 && this.mlSettings != null && mlSettings.abortError == 1)
+                    {
+                        this.mlSettings.abortError = GlobalState.measurementDeviation;
+                        attachement = " abortError set to highest deviation value: " + GlobalState.measurementDeviation + ".";
+                    }
+                    GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded." + attachement);
                     break;
 
                 case COMMAND_MEASUREMENTS_TO_CSV:
@@ -263,6 +415,53 @@ namespace CommandLine
 
                         break;
                     }
+
+                case COMMAND_PREDICT_ALL_CONFIGURATIONS:
+                    {
+                        if (this.exp.models.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("Can't predict configurations. No learning was performed");
+                        }
+                        else if (this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Count == 0)
+                        {
+                            GlobalState.logInfo.logLine("Can't predict configurations. No model was learned.");
+                        }
+                        else if (task.Length == 0)
+                        {
+                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
+                        }
+                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
+                        {
+                            GlobalState.logError.logLine("No measurements loaded.");
+                        }
+                        else
+                        {
+                            predict(task);
+                        }
+                        break;
+                    }
+
+                case COMMAND_PREDICT_TRUEMODEL:
+                    {
+                        if (this.trueModel == null)
+                        {
+                            GlobalState.logInfo.logLine("No trueModel is loaded.");
+                        }
+                        else if (task.Length == 0)
+                        {
+                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
+                        }
+                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
+                        {
+                            GlobalState.logError.logLine("No measurements loaded.");
+                        }
+                        else
+                        {
+                            predict(task, useTrueModel:true);
+                    }
+                    break;
+                    }
+
                 case COMMAND_ANALYZE_LEARNING:
                     {//TODO: Analyzation is not supported in the case of bagging
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
@@ -318,7 +517,7 @@ namespace CommandLine
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
                             }
                         }
-                       
+                        GlobalState.logInfo.logLine("Analyze finished");
 
                         break;
                     }
@@ -331,7 +530,8 @@ namespace CommandLine
                     break;
 
                 case COMMAND_VARIABILITYMODEL:
-                    GlobalState.varModel = VariabilityModel.loadFromXML(task);
+                    GlobalState.vmSource = task.TrimEnd();
+		     GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
                     if (GlobalState.varModel == null)
                     {
                         GlobalState.logError.logLine("No variability model found at " + task);
@@ -445,7 +645,7 @@ namespace CommandLine
                         ConfigurationBuilder.binaryThreshold = Convert.ToInt32(para[0]);
                         ConfigurationBuilder.binaryModulu = Convert.ToInt32(para[1]);
 
-                        VariantGenerator vg = new VariantGenerator(null);
+                        VariantGenerator vg = new VariantGenerator();
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.toSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
@@ -486,14 +686,33 @@ namespace CommandLine
                         //+ " UnionNumberOfConfigurations:" + (configurationsLearning.Union(configurationsValidation)).Count()); too costly to compute
 
                         // We have to reuse the list of models because of NotifyCollectionChangedEventHandlers that might be attached to the list of models.  
-                        exp.models.Clear();
-                        var mod = exp.models;
-                        exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                        exp.models = mod;
+                        if (!hasLearnData)
+                        {
+                            exp.models.Clear();
+                            var mod = exp.models;
+                            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                            exp.models = mod;
 
-                        exp.metaModel = infMod;
-                        exp.mLsettings = this.mlSettings;
-                        exp.learn();
+                            exp.metaModel = infMod;
+                            exp.mLsettings = this.mlSettings;
+                            exp.learn();
+                        }
+                        else
+                        {
+                            GlobalState.logInfo.logLine("Continue learning");
+                            exp.models.Clear();
+                            var mod = exp.models;
+                            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                            exp.models = mod;
+                            exp.metaModel = infMod;
+                            exp.mLsettings = this.mlSettings;
+                            List<LearningRound> lr = new List<LearningRound>();
+                            foreach(string lrAsString in CommandPersistence.learningHistory.Item2)
+                            {
+                                lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
+                            }
+                            exp.continueLearning(lr);
+                        }
                         GlobalState.logInfo.logLine("Average model: \n" + exp.metaModel.printModelAsFunction());
                         double relativeError = 0;
                         if (GlobalState.evalutionSet.Configurations.Count > 0)
@@ -506,6 +725,7 @@ namespace CommandLine
                         }
 
                         GlobalState.logInfo.logLine("Error :" + relativeError);
+                        GlobalState.logInfo.logLine("Finished");
                     }
                     break;
 
@@ -615,7 +835,7 @@ namespace CommandLine
         /// </summary>
         private void computeEvaluationDataSetBasedOnTrueModel()
         {
-         /*   VariantGenerator vg = new VariantGenerator(null);
+         /*   VariantGenerator vg = new VariantGenerator();
             List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
             //take only 10k
@@ -693,7 +913,6 @@ namespace CommandLine
             return "";
 
         }
-
 
 
         /// <summary>
@@ -903,6 +1122,37 @@ namespace CommandLine
             }
 
             return "";
+        }
+
+        private void predict( string task, bool useTrueModel = false)
+        {
+            StreamWriter sw = new StreamWriter(task);
+            sw.Write("configuration;real value;prediction;deviation;precentage;" + Environment.NewLine);
+            for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
+            {
+                Configuration currentConfiguration = GlobalState.allMeasurements.Configurations.ElementAt(i);
+                double realValue = GlobalState.allMeasurements.Configurations.ElementAt(i).GetNFPValue();
+                double prediction;
+
+                if (useTrueModel)
+                {
+                    prediction = trueModel.eval(currentConfiguration);
+                }
+                else
+                {
+                    prediction = FeatureSubsetSelection
+                    .predict(this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
+                }
+                double difference = Math.Abs(realValue - prediction);
+                double percentage = 0;
+                if (difference != 0)
+                {
+                    percentage = difference / realValue;
+                }
+                sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + difference + ";" + percentage + ";" + Environment.NewLine);
+            }
+            sw.Flush();
+            sw.Close();
         }
     }
 }

@@ -16,6 +16,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace MachineLearning.Learning.Regression
 {
@@ -152,6 +153,38 @@ namespace MachineLearning.Learning.Regression
             }
         }
 
+        /// <summary>
+        /// Continue learning with recovered learning data.
+        /// </summary>
+        /// <param name="recoveredHistory">The learning rounds, that were already successfully performed.</param>
+        public void continueLearn(ObservableCollection<LearningRound> recoveredHistory)
+        {
+            this.learningHistory = recoveredHistory;
+            if (!allInformationAvailable())
+                return;
+            this.startTime = System.DateTime.Now;
+            LearningRound current = learningHistory.Last();
+            LearningRound previous;
+            do
+            {
+                previous = current;
+                current = performForwardStep(previous);
+                if (current == null)
+                    return;
+                learningHistory.Add(current);
+                GlobalState.logInfo.logLine(current.ToString());
+
+                if (this.MLsettings.useBackward)
+                {
+                    current = performBackwardStep(current);
+                    learningHistory.Add(current);
+                    GlobalState.logInfo.logLine(current.ToString());
+                }
+            } while (!abortLearning(current, previous));
+            updateInfluenceModel();
+            this.finalError = evaluateError(this.validationSet, out this.finalError);
+        }
+
         #region learning algorithm
 
         /// <summary>
@@ -175,11 +208,13 @@ namespace MachineLearning.Learning.Regression
                 if (current == null)
                     return;
                 learningHistory.Add(current);
+                GlobalState.logInfo.logLine(current.ToString());
 
                 if (this.MLsettings.useBackward)
                 {
                     current = performBackwardStep(current);
                     learningHistory.Add(current);
+                    GlobalState.logInfo.logLine(current.ToString());
                 }
             } while (!abortLearning(current, previous));
             updateInfluenceModel();
@@ -867,6 +902,17 @@ namespace MachineLearning.Learning.Regression
         }
 
         /// <summary>
+        /// Predict the value of a configuration using a learned model.
+        /// </summary>
+        /// <param name="model">The learned model.</param>
+        /// <param name="config">The configuration that will be predicted.</param>
+        /// <returns>Prediction value.</returns>
+        public static double predict(List<Feature> model, Configuration config)
+        {
+            return estimate(model, config);
+        }
+
+        /// <summary>
         /// This methods computes the error for the given configuration based on the given model. It queries the ML settings to used the configured loss function.
         /// As the actual value, it uses the non-functional property stored in the global model. If this is not available in the configuration, it uses the default NFP of the configuration.
         /// </summary>
@@ -930,6 +976,12 @@ namespace MachineLearning.Learning.Regression
                         break;
                 }
                 error_sum += error;
+            }
+
+            if (configs.Count == skips)
+            {
+                GlobalState.logInfo.logLine("All features have an error < 1.");
+                return 0.0;
             }
             relativeError = relativeError / (configs.Count - skips);
             return error_sum / (configs.Count - skips);
