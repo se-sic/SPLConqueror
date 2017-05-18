@@ -33,6 +33,8 @@ namespace SPLConqueror_Core
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
         public static ResultDB allMeasurements = new ResultDB();
+
+        public static double measurementDeviation = Double.MinValue;
         /// <summary>
         /// Path the measurements are located at.
         /// </summary>
@@ -236,6 +238,10 @@ namespace SPLConqueror_Core
                 int distance = 0;
                 foreach (var numOpt in conf.NumericOptions.Keys)
                 {
+                    if (allMeasurements.blacklisted.Contains(numOpt.Name.ToLower()))
+                    {
+                        continue;
+                    }
                     if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
                         continue;
                     //distance += Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);

@@ -11,7 +11,9 @@ namespace SPLConqueror_Core
         private IDictionary<string, IDictionary<string, List<Configuration>>> configsMapping =
             new Dictionary<string, IDictionary<string, List<Configuration>>>();
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
-        private static int splitFactor = 2;
+        private static int splitFactor = 4;
+        // Added by Ch.K.
+        public List<String> blacklisted;
 
         public List<Configuration> Configurations
         {
@@ -20,6 +22,11 @@ namespace SPLConqueror_Core
                 configsMapping.Clear();
                 updateMapping();
             }
+        }
+
+        public void setBlackList(List<String> blacklist)
+        {
+            this.blacklisted = blacklist;
         }
 
         public void add(Configuration configuration)
@@ -105,7 +112,13 @@ namespace SPLConqueror_Core
             if (splitFactor > 0)
             {
                 foreach (NumericOption opt in GlobalState.varModel.NumericOptions)
-                {
+                {             
+                    
+                    if (this.blacklisted.Contains(opt.Name.ToLower()))
+                    {
+                        continue;
+                    }
+                           
                     List<double> elems = opt.getAllValues();
                     int amountOfElemsInParts = elems.Count >= amountOfParts ? (int)Math.Round((double)elems.Count / amountOfParts, 0) : 1;
                     List<double> currentElems = null;
