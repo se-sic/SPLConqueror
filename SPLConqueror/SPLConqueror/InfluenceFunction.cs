@@ -11,8 +11,6 @@ namespace SPLConqueror_Core
     {
 
         double noise = 0.0;
-
-
         private VariabilityModel varModel = null;
 
         protected string wellFormedExpression = "";
@@ -166,6 +164,10 @@ namespace SPLConqueror_Core
             return parts[0] + newLeftBracket + secondPart.ToString();
         }
 
+        /// <summary>
+        /// Returns an copy of the influence function in reverse polish notation, where an operator or operand is stored in one element of the array.
+        /// </summary>
+        /// <returns>The reverse polish notation of the influence function.</returns>
         public string[] getExpressionTree()
         {
             string[] copy = new string[expressionArray.Length];
@@ -650,6 +652,10 @@ namespace SPLConqueror_Core
             return isOperator(token);
         }
 
+        /// <summary>
+        /// Returns the variability model the influence function is defined for.
+        /// </summary>
+        /// <returns>The variability model of the influence function.</returns>
         public VariabilityModel getVariabilityModel()
         {
             return this.varModel;
