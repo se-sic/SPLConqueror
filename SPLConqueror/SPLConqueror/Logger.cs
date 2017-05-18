@@ -6,6 +6,9 @@ using System.IO;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// The abstract logger class that provides the possibility of writing information to a given file.
+    /// </summary>
     public abstract class Logger
     {
 

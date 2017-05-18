@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// A valid configuration option the case study.
+    /// </summary>
     public class Configuration : IEquatable<Configuration>
     {
 
@@ -429,6 +432,11 @@ namespace SPLConqueror_Core
             return configurations.ToList();
         }
 
+        /// <summary>
+        /// Desines a measured value for a non-functional property.
+        /// </summary>
+        /// <param name="prop">The non-functional property the measuremed value is defined for.</param>
+        /// <param name="val">The value for the non-functional property.</param>
         public void setMeasuredValue(NFProperty prop, double val)
         {
             if (prop == null) {

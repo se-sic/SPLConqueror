@@ -6,6 +6,9 @@ using System.IO;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// An influence model describes all identified influences of the configuration options on the non-functional property that is considered.
+    /// </summary>
     public class InfluenceModel
     {
         private VariabilityModel vm = null;

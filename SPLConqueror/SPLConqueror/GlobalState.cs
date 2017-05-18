@@ -12,7 +12,9 @@ namespace SPLConqueror_Core
     /// </summary>
     public class GlobalState
     {
-
+        /// <summary>
+        /// The logger instance that is used to log general information.
+        /// </summary>
         public static Logger logInfo = new InfoLogger(null);
 
         public static Logger logError = new ErrorLogger(null);

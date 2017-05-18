@@ -6,6 +6,10 @@ using SPLConqueror_Core;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// A feature is part of a performance-influence model. Features consist of a set of partitcipating configuration options and a constant
+    /// describing the influence of the participating options on the non-functial property that is considered.
+    /// </summary>
     public class Feature : InfluenceFunction , IEquatable<Feature>, IComparer<Feature>
     {
         private double constant = 1.0;
