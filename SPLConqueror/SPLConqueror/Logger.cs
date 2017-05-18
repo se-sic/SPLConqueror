@@ -69,6 +69,9 @@ namespace SPLConqueror_Core
             stdout.Flush();
         }
 
+        /// <summary>
+        /// Closes the logger instance.
+        /// </summary>
         public void close()
         {
             if (writer != null)
@@ -78,6 +81,10 @@ namespace SPLConqueror_Core
             }
         }
 
+        /// <summary>
+        /// Returns the file location of the logger.
+        /// </summary>
+        /// <returns>File location of the logger.</returns>
         override public string ToString()
         {
             if (outputLocation == null)

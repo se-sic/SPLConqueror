@@ -5,16 +5,27 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class stores and provides access to all configurations of the case study. 
+    /// </summary>
     public class ResultDB
     {
         private List<Configuration> configurations = new List<Configuration>();
         private IDictionary<string, IDictionary<string, List<Configuration>>> configsMapping =
             new Dictionary<string, IDictionary<string, List<Configuration>>>();
+
+        /// <summary>
+        /// This structre provides the maximum of the measured values for each non-functional property. 
+        /// </summary>
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
         private static int splitFactor = 4;
         // Added by Ch.K.
         public List<String> blacklisted;
 
+
+        /// <summary>
+        /// The set of all configurations of the current case study.
+        /// </summary>
         public List<Configuration> Configurations
         {
             get { return configurations; }
@@ -29,6 +40,10 @@ namespace SPLConqueror_Core
             this.blacklisted = blacklist;
         }
 
+        /// <summary>
+        /// Adds a configuration to the set of all configuration. 
+        /// </summary>
+        /// <param name="configuration">The configuration to add.</param>
         public void add(Configuration configuration)
         {
             this.configurations.Add(configuration);

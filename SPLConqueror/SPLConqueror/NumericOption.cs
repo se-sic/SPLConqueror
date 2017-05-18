@@ -154,6 +154,11 @@ namespace SPLConqueror_Core
 
         private long numberOfSteps = -1;
 
+
+        /// <summary>
+        /// Returns the number of distinct values of the numeric option.
+        /// </summary>
+        /// <returns>Number of distinct values of the option.</returns>
         public long getNumberOfSteps()
         {
             if (stepFunction == null)
@@ -313,12 +318,14 @@ namespace SPLConqueror_Core
             return upperValue;
         }
 
-
+        /// <summary>
+        /// Returns the center value of the value domain of the numeric configuration option. 
+        /// </summary>
+        /// <returns>The center value of the value domain.</returns>
         public double getCenterValue()
         {
             if (stepFunction == null)
                 return values[(int)values.Count() / 2];
-           // return getAllValues()[(int)getAllValues().Count / 2];
             return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
         }
 
@@ -350,16 +357,12 @@ namespace SPLConqueror_Core
             }
             return allValues;
         }
-
-        public double getRandomValue()
-        {
-            Random r = new Random();
-
-            if (stepFunction == null)
-                return values[r.Next(values.Count())];     
-            return getValueForStep(r.Next((int)this.numberOfSteps));
-        }
-
+        
+        /// <summary>
+        /// Provides a random value of the value domain of the numeric configuration option.
+        /// </summary>
+        /// <param name="seed">The seed for the random generator.</param>
+        /// <returns>The random value of the value domain.</returns>
         public double getRandomValue(int seed)
         {
             Random r = new Random(seed);

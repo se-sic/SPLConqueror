@@ -142,7 +142,7 @@ namespace MicrosoftSolverFoundation
 
             //Handle global cross-tree constraints involving multiple options at a time
             // the constraints should be in conjunctive normal form 
-            foreach (string constraint in vm.BooleanConstraints)
+            foreach (string constraint in vm.BinaryConstraints)
             {
                 bool and = false;
                 string[] terms;

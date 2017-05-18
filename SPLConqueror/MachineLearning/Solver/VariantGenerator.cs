@@ -63,7 +63,6 @@ namespace MachineLearning.Solver
             ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
             List<List<BinaryOption>> erglist = new List<List<BinaryOption>>();
             ConstraintSolverSolution soln = S.Solve();
-            int mod = 0;
 
             List<List<BinaryOption>> allConfigs = new List<List<BinaryOption>>();
 

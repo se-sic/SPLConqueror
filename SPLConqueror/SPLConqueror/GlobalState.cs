@@ -32,6 +32,10 @@ namespace SPLConqueror_Core
         /// The property being considered. 
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
+
+        /// <summary>
+        /// This object provides access to all measurements of the case study.
+        /// </summary>
         public static ResultDB allMeasurements = new ResultDB();
 
         public static double measurementDeviation = Double.MinValue;

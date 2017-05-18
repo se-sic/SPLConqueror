@@ -14,27 +14,38 @@ namespace SPLConqueror_Core
     {
         private List<NumericOption> numericOptions = new List<NumericOption>();
 
+        /// <summary>
+        /// The set of numeric configuration options of the variability model.
+        /// </summary>
         public List<NumericOption> NumericOptions
         {
             get { return numericOptions; }
-            //set { numericOptions = value; }
         }
 
         private List<BinaryOption> binaryOptions = new List<BinaryOption>();
 
+        /// <summary>
+        /// The set of all binary configuration options of the system.
+        /// </summary>
         public List<BinaryOption> BinaryOptions
         {
             get { return binaryOptions; }
-          //  set { binaryOptions = value; }
         }
 
+        /// <summary>
+        /// A mapping from the index of an option to the object providing all information of the configuratio option.
+        /// </summary>
         public Dictionary<int, ConfigurationOption> optionToIndex = new Dictionary<int, ConfigurationOption>();
+
+        /// <summary>
+        /// A mapping from a configuration option to its index.
+        /// </summary>
         public Dictionary<ConfigurationOption, int> indexToOption = new Dictionary<ConfigurationOption, int>();
 
         String name = "empty";
 
         /// <summary>
-        /// Name of the variability model or configurable program
+        /// Name of the variability model or configurable system.
         /// </summary>
         public String Name
         {
@@ -55,21 +66,31 @@ namespace SPLConqueror_Core
 
         private BinaryOption root = null;
 
+        /// <summary>
+        /// The root binary configuration option.
+        /// </summary>
         public BinaryOption Root
         {
             get { return root; }
         }
 
-        private List<String> booleanConstraints = new List<string>();
+        private List<String> binaryConstraints = new List<string>();
 
-        public List<String> BooleanConstraints
+        /// <summary>
+        /// The set of all constraints among the binary configuration options.
+        /// </summary>
+        public List<String> BinaryConstraints
         {
-            get { return booleanConstraints; }
-            set { booleanConstraints = value; }
+            get { return binaryConstraints; }
+            set { binaryConstraints = value; }
         }
 
         private List<NonBooleanConstraint> nonBooleanConstraints = new List<NonBooleanConstraint>();
 
+        /// <summary>
+        /// The list of all non-boolean constraints of the variability model. Non-boolean constraints are constraints among different numeric 
+        /// options or binary and numeric options.
+        /// </summary>
         public List<NonBooleanConstraint> NonBooleanConstraints
         {
             get { return nonBooleanConstraints; }
@@ -160,7 +181,7 @@ namespace SPLConqueror_Core
 
             //Add boolean constraints
             XmlNode boolConstraints = doc.CreateNode(XmlNodeType.Element, "booleanConstraints", "");
-            foreach (var constraint in this.booleanConstraints)
+            foreach (var constraint in this.binaryConstraints)
             {
                 XmlNode conNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
                 conNode.InnerText = constraint;
@@ -262,7 +283,7 @@ namespace SPLConqueror_Core
         {
             foreach (XmlElement boolConstr in xmlNode.ChildNodes)
             {
-                this.booleanConstraints.Add(boolConstr.InnerText);
+                this.binaryConstraints.Add(boolConstr.InnerText);
             }
         }
 
@@ -442,7 +463,7 @@ namespace SPLConqueror_Core
             }
 
             // Removing option from constraints
-            booleanConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
+            binaryConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
             nonBooleanConstraints.RemoveAll(x => x.ToString().Contains(toDelete.ToString()));
 
             toDelete.Parent.Children.Remove(toDelete);
