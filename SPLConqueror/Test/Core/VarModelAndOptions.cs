@@ -57,7 +57,6 @@ namespace Test.Core
             // -------------------- NUMERIC OPTIONS ----------------
 
             NumericOption numOpt1 = new NumericOption(varMod, "numOpt1");
-            numOpt1.DefaultValue = 0.0;
             numOpt1.Prefix = "num1-";
             numOpt1.Postfix = "--";
             numOpt1.Min_value = 0;
@@ -66,7 +65,6 @@ namespace Test.Core
             varMod.addConfigurationOption(numOpt1);
 
             NumericOption numOpt2 = new NumericOption(varMod, "numOpt2");
-            numOpt2.DefaultValue = 0.8;
             numOpt2.Prefix = "";
             numOpt2.Postfix = "";
             numOpt2.Min_value = 0.1;

@@ -141,7 +141,7 @@ namespace SPLConqueror_Core
                     double val = 0;
 
                     if (!config.NumericOptions.TryGetValue(opt, out val))
-                        val = opt.DefaultValue;
+                        val = opt.getCenterValue();
 
                     for (int i = 0; i < amountOfParts && !found; i++)
                     {
