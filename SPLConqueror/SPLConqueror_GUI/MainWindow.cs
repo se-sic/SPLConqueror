@@ -514,7 +514,7 @@ namespace SPLConqueror_GUI
             numericSettings.Clear();
 
             foreach (NumericOption option in currentModel.NumericOptions)
-                numericSettings.Add(option, (float) option.DefaultValue);
+                numericSettings.Add(option, (float) option.getCenterValue());
 
             // Evaluation configuration
             calculationResultLabel.Text = BUTTON_PRESS_REQUEST;
