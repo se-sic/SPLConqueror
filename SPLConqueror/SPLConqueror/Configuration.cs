@@ -33,6 +33,9 @@ namespace SPLConqueror_Core
 
         private Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
 
+        /// <summary>
+        /// All measured values of the non-functional properties. 
+        /// </summary>
         public Dictionary<NFProperty, double> nfpValues = new Dictionary<NFProperty, double>();
 
         private string identifier;

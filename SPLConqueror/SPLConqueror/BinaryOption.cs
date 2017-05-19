@@ -24,7 +24,9 @@ namespace SPLConqueror_Core
         /// </summary>
         public BinaryValue DefaultValue { get; set; }
 
-
+        /// <summary>
+        /// States whether an binary option is optional or not.
+        /// </summary>
         public bool Optional { get; set; }
 
         /// <summary>

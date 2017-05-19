@@ -13,7 +13,9 @@ namespace SPLConqueror_Core
     {
         private VariabilityModel vm = null;
 
-
+        /// <summary>
+        /// The varaibility model the influence model is learned for.
+        /// </summary>
         public VariabilityModel Vm
         {
             get { return vm; }
