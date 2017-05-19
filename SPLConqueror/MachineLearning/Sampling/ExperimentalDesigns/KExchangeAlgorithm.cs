@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ILNumerics;
-using System.IO;
 using Accord.Math;
-using Accord.Math.Decompositions;
 using SPLConqueror_Core;
-using ILNumerics;
 
 namespace MachineLearning.Sampling.ExperimentalDesigns
 {

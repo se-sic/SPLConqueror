@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// Representation of an interaction among two or more configuration option that was identified in the learning process. 
+    /// </summary>
     public class Interaction : IEquatable<Interaction>
     {
         private List<BinaryOption> binaryOptions = new List<BinaryOption>();
