@@ -99,7 +99,8 @@ namespace SPLConqueror_Core
                 }
                 else
                 {
-                    if (GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    if (GlobalState.allMeasurements.blacklisted != null && 
+                        GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
                     {
                         shift++;
                     } else
