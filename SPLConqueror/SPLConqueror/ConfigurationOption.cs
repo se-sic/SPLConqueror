@@ -89,6 +89,10 @@ namespace SPLConqueror_Core
         private ConfigurationOption parent = null;
         private String parentName = "";
 
+
+        /// <summary>
+        /// Restuns the name of the parent feature.
+        /// </summary>
         public String ParentName
         {
             get { return parentName; }
@@ -334,6 +338,10 @@ namespace SPLConqueror_Core
             return sb.ToString();
         }
 
+        /// <summary>
+        /// String reprensentation of the configuration option.
+        /// </summary>
+        /// <returns>String representation.</returns>
         public override string ToString()
         {
             return this.Name;
@@ -350,7 +358,11 @@ namespace SPLConqueror_Core
             }
         }
 
-
+        /// <summary>
+        /// Compares this configuration option with the option given as parameter.
+        /// </summary>
+        /// <param name="other">The configuration option to compare to.</param>
+        /// <returns>True if both options are the same.</returns>
         public bool Equals(ConfigurationOption other)
         {
             return this.name.Equals(other.name);

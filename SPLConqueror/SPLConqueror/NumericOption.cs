@@ -6,23 +6,34 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
+
+    /// <summary>
+    /// Represents a numeric configuration option that can be used to customize the case study.
+    /// </summary>
     public class NumericOption : ConfigurationOption
     {
         private double min_value = 0;
 
+        /// <summary>
+        /// The minimal value of the value domain of the option.
+        /// </summary>
         public double Min_value
         {
             get { return min_value; }
             set { min_value = value; }
         }
+
         private double max_value = 10;
 
+        /// <summary>
+        /// The maximal value of the value domain of the option.
+        /// </summary>
         public double Max_value
         {
             get { return max_value; }
             set { max_value = value; }
         }
-
+        
         private double defaultValue = 0;
 
         public double DefaultValue
@@ -30,10 +41,11 @@ namespace SPLConqueror_Core
             get { return defaultValue; }
             set { defaultValue = value; }
         }
-
         private double[] values = null;
-
-
+        
+        /// <summary>
+        /// All valid values of the value domain of the numeric option.
+        /// </summary>
         public double[] Values
         {
             get { return values; }
@@ -246,7 +258,11 @@ namespace SPLConqueror_Core
             return numOpt;
         }
 
-        internal void loadFromXML(XmlElement node)
+        /// <summary>
+        /// Loads all information about the numeric connfiguration option from the XML file consisting of the variability model. 
+        /// </summary>
+        /// <param name="node">The root note of the numeric configuration option.</param>
+        internal new void loadFromXML(XmlElement node)
         {
             base.loadFromXML(node);
             foreach (XmlElement xmlInfo in node.ChildNodes)
@@ -263,12 +279,13 @@ namespace SPLConqueror_Core
                         this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "stepFunction":
-                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',','.'),this);
+                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',', '.'), this);
                         break;
                     case "values":
                         String[] valueArray = xmlInfo.InnerText.Replace(',', '.').Split(';');
                         double[] values_As_Double = new double[valueArray.Count()];
-                        for(int i = 0; i < valueArray.Count(); i++){
+                        for (int i = 0; i < valueArray.Count(); i++)
+                        {
                             values_As_Double[i] = Convert.ToDouble(valueArray[i]);
                         }
                         this.values = values_As_Double;

@@ -15,11 +15,15 @@ namespace SPLConqueror_Core
         private double constant = 1.0;
         private String name = "";
 
+        
         public String Name
         {
             get { return name; }
         }
 
+        /// <summary>
+        /// The constant describing the identified influence on a non-functional property for this feature.
+        /// </summary>
         public double Constant
         {
             get { return constant; }
@@ -28,6 +32,11 @@ namespace SPLConqueror_Core
 
         private int hashCode;
 
+        /// <summary>
+        /// Tests whether two features consider the same configuration options.
+        /// </summary>
+        /// <param name="f">The feature to compare to.</param>
+        /// <returns>True if both features consider the same configuration options with the same exponents.</returns>
         public bool Equals(Feature f)
         {
             return base.ToString().Equals(f.getPureString());
@@ -94,11 +103,20 @@ namespace SPLConqueror_Core
             hashCode = initHashCode();
         }
 
-
+        /// <summary>
+        /// Creates a new feature based on the given expression. 
+        /// </summary>
+        /// <param name="expression">The string represenation of the feature.</param>
+        /// <param name="vm">The variability model the expression is defined for.</param>
         public Feature(String expression, VariabilityModel vm) : base(expression, vm) {
             hashCode = initHashCode();
         }
 
+        /// <summary>
+        /// Resturns the string representation of the feature consisiting of the pariticipating configuration options and a constant describing
+        /// the influence of the feature.
+        /// </summary>
+        /// <returns>String representation of the feature.</returns>
         public override string ToString()
         {
             return this.Constant + " * " + base.ToString();

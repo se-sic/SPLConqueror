@@ -49,7 +49,7 @@ namespace SPLConqueror_Core
         /// Creates an influence function based on the expression. Only the name of the numeric option, numbers, operators, 
         /// and " n " should exist in the expression. 
         /// </summary>
-        /// <param name="expression">A function consisting of numbers, operators and the configuration-option name.</param></param>
+        /// <param name="expression">A function consisting of numbers, operators and the configuration-option name.</param>
         /// <param name="option">A configuration option.</param>
         public InfluenceFunction(String expression, NumericOption option)
         {
