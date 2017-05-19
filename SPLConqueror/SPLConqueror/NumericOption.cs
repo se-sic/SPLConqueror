@@ -34,13 +34,6 @@ namespace SPLConqueror_Core
             set { max_value = value; }
         }
         
-        private double defaultValue = 0;
-
-        public double DefaultValue
-        {
-            get { return defaultValue; }
-            set { defaultValue = value; }
-        }
         private double[] values = null;
         
         /// <summary>
@@ -234,13 +227,7 @@ namespace SPLConqueror_Core
 
                 valuesNode.InnerText = valuesAsString;
                 node.AppendChild(valuesNode);
-            }
-
-            //DefaultValue
-            XmlNode defNode = doc.CreateNode(XmlNodeType.Element, "defaultValue", "");
-            defNode.InnerText = this.defaultValue.ToString();
-            node.AppendChild(defNode);
-            
+            }            
             return node;
         }
 
@@ -274,9 +261,6 @@ namespace SPLConqueror_Core
                         break;
                     case "maxValue":
                         this.max_value = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
-                        break;
-                    case "defaultValue":
-                        this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
                     case "stepFunction":
                         this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',', '.'), this);
