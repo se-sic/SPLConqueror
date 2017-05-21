@@ -286,11 +286,13 @@ namespace CommandLine
 
                 case COMMAND_SUBSCRIPT:
                     {
-
                         FileInfo fi = new FileInfo(task.TrimEnd());
                         StreamReader reader = null;
                         if (!fi.Exists)
                             throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
+
+                        String filePath = fi.DirectoryName;
+                        Directory.SetCurrentDirectory(filePath.Substring(0, filePath.LastIndexOf(Path.DirectorySeparatorChar)));
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
