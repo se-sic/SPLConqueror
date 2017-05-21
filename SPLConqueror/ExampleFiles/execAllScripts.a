@@ -1,0 +1,4 @@
+script ./printConfigScript.a
+clean-global
+script ./learnScript.a
+clean-global
