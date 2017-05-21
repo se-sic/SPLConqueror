@@ -1,0 +1,7 @@
+log ./out.txt
+load_MLsettings ./MlSettings.txt
+vm ./VariabilityModel.xml
+printSettings 
+pairWise
+expDesign random
+#printConfigs ./ConfigurationsByPrinter.txt PREFIX POSTFIX
