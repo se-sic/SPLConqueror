@@ -5,6 +5,11 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+
+
+    /// <summary>
+    /// This class represents a non boolean constraint contraining the configuration space of the variability model. 
+    /// </summary>
     public class NonBooleanConstraint
     {
         private InfluenceFunction leftHandSide = null;

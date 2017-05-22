@@ -143,6 +143,10 @@ namespace SPLConqueror_Core
             return x.name.CompareTo(y.name);
         }
 
+        /// <summary>
+        /// Returns the hash code of the configuration. 
+        /// </summary>
+        /// <returns>Hash code of the configuration.</returns>
         public override int GetHashCode()
         {
             return this.name.GetHashCode();

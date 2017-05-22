@@ -16,11 +16,11 @@ namespace SPLConqueror_Core
             if(writer!=null)
                 Console.SetError(writer);
         }
-       
+
         /// <summary>
-        /// Logs the error depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at file
+        /// Logs the error message and appends a line break to it.
         /// </summary>
-        /// <param name="msg">The error message to be printed or logged</param>
+        /// <param name="msg">The error message to be logged.</param>
         public override void logLine(String msg)
         {
             lock (loggerLock)
@@ -37,6 +37,10 @@ namespace SPLConqueror_Core
             }
         }
 
+        /// <summary>
+        /// Logs the given error message.
+        /// </summary>
+        /// <param name="msg">The error message to be logged.</param>
         public override void log(String msg)
         {
             lock (loggerLock)
