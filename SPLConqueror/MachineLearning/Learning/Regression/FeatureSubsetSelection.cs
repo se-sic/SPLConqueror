@@ -15,7 +15,6 @@ using MachineLearning.Solver;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Collections.Generic;
 
 namespace MachineLearning.Learning.Regression
 {
