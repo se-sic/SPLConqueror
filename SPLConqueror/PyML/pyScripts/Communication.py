@@ -134,7 +134,7 @@ def main():
     if task == START_LEARN:
 
         global number_of_configurations
-        number_of_configurations = len(configurations_learn)
+        number_of_configurations = len(configurations_learn.results)
         model = learning.Learner(learning_strategy, learner_settings)
         task = raw_input()
         if task == CONFIG_PARTIAL_STREAM_START:
