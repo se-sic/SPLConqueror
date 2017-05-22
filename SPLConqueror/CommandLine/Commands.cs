@@ -286,11 +286,15 @@ namespace CommandLine
 
                 case COMMAND_SUBSCRIPT:
                     {
-
                         FileInfo fi = new FileInfo(task.TrimEnd());
                         StreamReader reader = null;
                         if (!fi.Exists)
                             throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
+
+                        // Set the root directory to the location of the referenced file
+                        String previousRootDirectory = Directory.GetCurrentDirectory();
+                        String filePath = fi.DirectoryName;
+                        Directory.SetCurrentDirectory(filePath);
 
                         reader = fi.OpenText();
                         Commands co = new Commands();
@@ -312,6 +316,9 @@ namespace CommandLine
 
                         }
                         this.hasLearnData = co.hasLearnData;
+
+                        // Reset the root directory after the execution of the sub-script
+                        Directory.SetCurrentDirectory(previousRootDirectory);
                     }
                     break;
                 case COMMAND_EVALUATION_SET:
@@ -530,8 +537,9 @@ namespace CommandLine
                     break;
 
                 case COMMAND_VARIABILITYMODEL:
+                    String debug = Directory.GetCurrentDirectory();
                     GlobalState.vmSource = task.TrimEnd();
-		     GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
+		            GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
                     if (GlobalState.varModel == null)
                     {
                         GlobalState.logError.logLine("No variability model found at " + task);

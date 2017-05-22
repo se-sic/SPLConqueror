@@ -76,7 +76,7 @@
       <impliedOptions />
       <excludedOptions />
       <minValue>0</minValue>
-      <maxValue>10</maxValue>
+      <maxValue>2</maxValue>
       <stepFunction>n + 2</stepFunction>
       <defaultValue>0</defaultValue>
     </configurationOption>
@@ -91,9 +91,9 @@
       <impliedOptions />
       <excludedOptions />
       <minValue>0.1</minValue>
-      <maxValue>5</maxValue>
+      <maxValue>0.4</maxValue>
       <stepFunction>n * 2</stepFunction>
-      <defaultValue>0.8</defaultValue>
+      <defaultValue>0.2</defaultValue>
     </configurationOption>
   </numericOptions>
   <booleanConstraints />

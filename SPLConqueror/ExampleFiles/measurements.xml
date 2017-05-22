@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<results>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		10
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		11
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		12
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		14
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		15
+	</data>
+  </row>
+   <row>
+    <data columname="Configuration">
+		root,binOpt1,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		20
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		21
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		22
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		23
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.1,
+    </data>
+    <data columname="Performance">
+		25
+	</data>
+  </row>
+    <row>
+    <data columname="Configuration">
+		root,binOpt1,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		15
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		16
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		12
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		19
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;0,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		20
+	</data>
+  </row>
+    <row>
+    <data columname="Configuration">
+		root,binOpt1,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		25
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		26
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		27
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt2,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		28
+	</data>
+  </row>
+  <row>
+    <data columname="Configuration">
+		root,binOpt1,binOpt3,binOpt4,
+	</data>
+	<data columname="NumericOptions">
+		numOpt1;2,numOpt2;0.2,
+    </data>
+    <data columname="Performance">
+		30
+	</data>
+  </row>
+</results>
