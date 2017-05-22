@@ -116,6 +116,10 @@ namespace SPLConqueror_Core
             }
         }
 
+        /// <summary>
+        /// Updates the identifyer of the configuration, it also adds the configuration to a index structre that is used to access 
+        /// the configurations as fast as possible. 
+        /// </summary>
         public void update()
         {
             identifier = generateIdentifier(DEFAULT_SEPARATOR);

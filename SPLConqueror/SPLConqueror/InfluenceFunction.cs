@@ -14,8 +14,18 @@ namespace SPLConqueror_Core
         private VariabilityModel varModel = null;
 
         protected string wellFormedExpression = "";
+
+
+        /// <summary>
+        /// All binary configuration options that are considered in the influence function. 
+        /// </summary>
         public HashSet<BinaryOption> participatingBoolOptions = new HashSet<BinaryOption>();
+
+        /// <summary>
+        /// All numeric configuration options that are considered in the influence function. 
+        /// </summary>
         public HashSet<NumericOption> participatingNumOptions = new HashSet<NumericOption>();
+
         protected int numberOfParticipatingFeatures = 0;
         protected string[] expressionArray = null;
 

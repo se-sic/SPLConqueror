@@ -97,7 +97,12 @@ namespace SPLConqueror_Core
             set { nonBooleanConstraints = value; }
         }
 
-        public List<NumericOption> getNonBlacklistedNumericFeatures(List<String> blacklist)
+        /// <summary>
+        /// Retuns a list containing all numeric configuration options that are considered in the learning process.
+        /// </summary>
+        /// <param name="blacklist">A list containing all numeric options that should not be considered in the learning process.</param>
+        /// <returns>A list containing all numeric configuartion options that are considered in the learning process.</returns>
+        public List<NumericOption> getNonBlacklistedNumericOptions(List<String> blacklist)
         {
             List<NumericOption> result = new List<NumericOption>();
 
@@ -423,7 +428,11 @@ namespace SPLConqueror_Core
             return options;
         }
 
-
+        /// <summary>
+        /// Tests whether a configuration is valid with respect to all non-boolean constraints.
+        /// </summary>
+        /// <param name="c">The configuration to test.</param>
+        /// <returns>True if the configuration is valid.</returns>
         public bool configurationIsValid(Configuration c)
         {
             foreach (NonBooleanConstraint nonBC in this.nonBooleanConstraints)
@@ -435,6 +444,10 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        /// <summary>
+        /// Removes a configuration from the variability model.
+        /// </summary>
+        /// <param name="toDelete"></param>
         public void deleteOption(ConfigurationOption toDelete)
         {
             // Removing all children

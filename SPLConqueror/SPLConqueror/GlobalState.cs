@@ -39,14 +39,16 @@ namespace SPLConqueror_Core
         public static ResultDB allMeasurements = new ResultDB();
 
         public static double measurementDeviation = Double.MinValue;
+
         /// <summary>
         /// Path the measurements are located at.
         /// </summary>
         public static string measurementSource;
 
+        /// <summary>
+        /// The object that encapsulates the configurations that can be used to evalue the learned predictor.
+        /// </summary>
         public static ResultDB evalutionSet = new ResultDB();
-
-        public static InfluenceModel infModel = null;
 
         /// <summary>
         /// If we require a configuration for learning, but haven't measured it, shall we use a similar one instead?
@@ -78,7 +80,6 @@ namespace SPLConqueror_Core
             currentNFP = null;
             allMeasurements = new ResultDB();
             evalutionSet = new ResultDB();
-            infModel = null;
             nfProperties = new Dictionary<string,NFProperty>();
             optionOrder = new List<ConfigurationOption>();
         }
