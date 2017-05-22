@@ -5,7 +5,6 @@ import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
 import numpy as np
 import ast
-import Communication
 
 
 # setup the learner with the right settings.
@@ -375,6 +374,7 @@ def setup_KNeighborsRegressor(learner_settings):
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
         if setting_value_pair[0] == "n_neighbors":
+            import Communication
             if int(setting_value_pair[1]) <= Communication.number_of_configurations:
                 n_neighbors = int(setting_value_pair[1])
             else:
