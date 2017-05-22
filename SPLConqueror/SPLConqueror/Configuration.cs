@@ -92,7 +92,8 @@ namespace SPLConqueror_Core
             {
                 if (option.Value is NumericOption)
                 {
-                    if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    if (GlobalState.allMeasurements.blacklisted != null &&
+                        !GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
                     {
                         optionValues[option.Key - shift] = numericOptions[option.Value as NumericOption];
                     } else
