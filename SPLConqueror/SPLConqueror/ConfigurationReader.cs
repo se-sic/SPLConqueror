@@ -7,6 +7,9 @@ using System.IO;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class offers the functionality to read a set of measured configurations that can be used in SPL Conqueror for later experiments.
+    /// </summary>
     public class ConfigurationReader
     {
 
@@ -68,11 +71,12 @@ namespace SPLConqueror_Core
         }
 
         // The default symbols for multiple measurements of the same configuration and nfp.
-        private static char decimalDelimiter = '.';
+        private static char decimalDelimiter = ',';
         private static char separator = ',';
 
         private const string decimalDelimiterTag = "decimalDelimiter";
         private const string separatorTag = "separator";
+        private const string abortDeviation = "deviation";
 
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
@@ -83,6 +87,15 @@ namespace SPLConqueror_Core
         public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
         {
             XmlElement currentElemt = dat.DocumentElement;
+
+            if (currentElemt.HasAttribute(abortDeviation))
+            {
+                GlobalState.measurementDeviation = getHighestDeviationValue(currentElemt.GetAttribute(abortDeviation)
+                    .Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
+            } else
+            {
+                GlobalState.measurementDeviation = Double.MinValue;
+            }
 
             // Retrieve the decimal delimiter and the separator sign if included
             if (currentElemt.HasAttribute(decimalDelimiterTag) && currentElemt.HasAttribute(separatorTag))
@@ -282,7 +295,6 @@ namespace SPLConqueror_Core
                         // if (GlobalState.currentNFP != null && c.nfpValues.Keys.Contains(GlobalState.currentNFP) && c.nfpValues[GlobalState.currentNFP] != -1)
                         configurations.Add(c);
                     }
-                cont: { }
                     continue;
                 }
 
@@ -444,8 +456,6 @@ namespace SPLConqueror_Core
                             {
                                 if (token.Equals("true") || token.Equals("1"))
                                     binOptions.Add((BinaryOption)option, BinaryOption.BinaryValue.Selected);
-                                else
-                                    binOptions.Add((BinaryOption)option, BinaryOption.BinaryValue.Deselected);
                             }
                             else
                             {
@@ -530,6 +540,21 @@ namespace SPLConqueror_Core
             }
             sr.Close();
             return result;
+        }
+
+        private static double getHighestDeviationValue(string[] deviationsAsString)
+        {
+            double highestValue = Double.MinValue;
+            foreach(string deviationValue in deviationsAsString)
+            {
+                double currentValue;
+                if (Double.TryParse(deviationValue, out currentValue))
+                {
+                    if (currentValue > highestValue) highestValue = currentValue;
+                }
+            }
+
+            return highestValue;
         }
     }
 }

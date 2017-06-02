@@ -12,17 +12,22 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         public int distinctValuesPerOption = 3;
 
         private static Dictionary<string, string> parameter = new Dictionary<string, string>();
-        private List<NumericOption> optionsToConsider;
+
         static OneFactorAtATime()
         {
             parameter.Add("distinctValuesPerOption", "int");
         }
+
 
         public override Dictionary<string, string> getParameterTypes()
         {
             return OneFactorAtATime.parameter;
         }
 
+        /// <summary>
+        /// Creates a new istance considering the provided numeric configuration options.
+        /// </summary>
+        /// <param name="optionsToConsider">The set of configuration options that are considered in this design.</param>
         public OneFactorAtATime(List<NumericOption> optionsToConsider)
             : base(optionsToConsider)
         {

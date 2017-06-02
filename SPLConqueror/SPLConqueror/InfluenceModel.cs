@@ -6,11 +6,16 @@ using System.IO;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// An influence model describes all identified influences of the configuration options on the non-functional property that is considered.
+    /// </summary>
     public class InfluenceModel
     {
         private VariabilityModel vm = null;
 
-
+        /// <summary>
+        /// The varaibility model the influence model is learned for.
+        /// </summary>
         public VariabilityModel Vm
         {
             get { return vm; }
@@ -20,6 +25,9 @@ namespace SPLConqueror_Core
 
         Dictionary<BinaryOption, InfluenceFunction> binaryOptionsInfluence = new Dictionary<BinaryOption, InfluenceFunction>();
 
+        /// <summary>
+        /// The set of the individual influences identified for binary configration options.
+        /// </summary>
         public Dictionary<BinaryOption, InfluenceFunction> BinaryOptionsInfluence
         {
             get { return binaryOptionsInfluence; }

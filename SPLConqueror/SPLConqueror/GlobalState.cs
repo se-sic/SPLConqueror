@@ -12,7 +12,9 @@ namespace SPLConqueror_Core
     /// </summary>
     public class GlobalState
     {
-
+        /// <summary>
+        /// The logger instance that is used to log general information.
+        /// </summary>
         public static Logger logInfo = new InfoLogger(null);
 
         public static Logger logError = new ErrorLogger(null);
@@ -21,21 +23,44 @@ namespace SPLConqueror_Core
         /// The variability model of the case study. 
         /// </summary>
         public static VariabilityModel varModel = null;
+        /// <summary>
+        /// Path the variablity model is located.
+        /// </summary>
+        public static string vmSource;
 
         /// <summary>
         /// The property being considered. 
         /// </summary>
         public static NFProperty currentNFP = NFProperty.DefaultProperty;
+
+        /// <summary>
+        /// This object provides access to all measurements of the case study.
+        /// </summary>
         public static ResultDB allMeasurements = new ResultDB();
 
         public static ResultDB evaluationSet = new ResultDB();
 
-        public static InfluenceModel infModel = null;
+        public static double measurementDeviation = Double.MinValue;
+
+        /// <summary>
+        /// Path the measurements are located at.
+        /// </summary>
+        public static string measurementSource;
+
+        /// <summary>
+        /// The object that encapsulates the configurations that can be used to evalue the learned predictor.
+        /// </summary>
+        public static ResultDB evalutionSet = new ResultDB();
 
         /// <summary>
         /// If we require a configuration for learning, but haven't measured it, shall we use a similar one instead?
         /// </summary>
         public static bool takeSimilarConfig = true;
+
+        /// <summary>
+        /// Indication that the system is currently trying to recover a previous state.
+        /// </summary>
+        public static bool rollback = false;
 
         /// <summary>
         /// All properties of the current case study. 
@@ -57,7 +82,6 @@ namespace SPLConqueror_Core
             currentNFP = null;
             allMeasurements = new ResultDB();
             evaluationSet = new ResultDB();
-            infModel = null;
             nfProperties = new Dictionary<string,NFProperty>();
             optionOrder = new List<ConfigurationOption>();
         }
@@ -221,6 +245,11 @@ namespace SPLConqueror_Core
                 int distance = 0;
                 foreach (var numOpt in conf.NumericOptions.Keys)
                 {
+                    if (allMeasurements.blacklisted != null &&
+                        allMeasurements.blacklisted.Contains(numOpt.Name.ToLower()))
+                    {
+                        continue;
+                    }
                     if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
                         continue;
                     //distance += Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);

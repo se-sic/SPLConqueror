@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// A valid configuration option the case study.
+    /// </summary>
     public class Configuration : IEquatable<Configuration>
     {
 
@@ -30,6 +33,9 @@ namespace SPLConqueror_Core
 
         private Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
 
+        /// <summary>
+        /// All measured values of the non-functional properties. 
+        /// </summary>
         public Dictionary<NFProperty, double> nfpValues = new Dictionary<NFProperty, double>();
 
         private string identifier;
@@ -74,18 +80,48 @@ namespace SPLConqueror_Core
 
         private void createIndex()
         {
-            optionValues = new double[GlobalState.varModel.indexToOption.Count];
+            int diff = 0;
+            if (GlobalState.allMeasurements != null && GlobalState.allMeasurements.blacklisted != null)
+            {
+                diff = GlobalState.allMeasurements.blacklisted.Count;
+            }
+            optionValues = new double[GlobalState.varModel.indexToOption.Count - diff];
 
+            int shift = 0;
             foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
             {
                 if (option.Value is NumericOption)
-                    optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                {
+                    if (GlobalState.allMeasurements.blacklisted != null &&
+                        !GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    {
+                        optionValues[option.Key - shift] = numericOptions[option.Value as NumericOption];
+                    } else
+                    {
+                        shift++;
+                    }
+                }
                 else
-                    if (binaryOptions.ContainsKey(option.Value as BinaryOption))
-                        optionValues[option.Key] = 1.0;
+                {
+                    if (GlobalState.allMeasurements.blacklisted != null && 
+                        GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    {
+                        shift++;
+                    } else
+                    {
+                        if (binaryOptions.ContainsKey(option.Value as BinaryOption))
+                        {
+                            optionValues[option.Key - shift] = 1.0;
+                        }
+                    }
+                }
             }
         }
 
+        /// <summary>
+        /// Updates the identifyer of the configuration, it also adds the configuration to a index structre that is used to access 
+        /// the configurations as fast as possible. 
+        /// </summary>
         public void update()
         {
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
@@ -240,6 +276,11 @@ namespace SPLConqueror_Core
         {
             if (other == null)
                 return false;
+
+            if (this.optionValues.Count() != other.optionValues.Count())
+            {
+                return false;
+            }
 
             for (int i = 0; i < optionValues.Count(); i++)
             {
@@ -429,6 +470,11 @@ namespace SPLConqueror_Core
             return configurations.ToList();
         }
 
+        /// <summary>
+        /// Desines a measured value for a non-functional property.
+        /// </summary>
+        /// <param name="prop">The non-functional property the measuremed value is defined for.</param>
+        /// <param name="val">The value for the non-functional property.</param>
         public void setMeasuredValue(NFProperty prop, double val)
         {
             if (prop == null) {

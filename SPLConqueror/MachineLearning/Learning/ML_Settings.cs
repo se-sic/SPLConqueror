@@ -77,6 +77,11 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool learn_logFunction = false;
 
+        /// <summary>
+        /// Allows the creation of logarithmic functions with multiple features such as log(soption1 * soption2).
+        /// </summary>
+        public bool learn_accumulatedLogFunction = false;
+
         public bool learn_asymFunction = false;
 
         public bool learn_ratioFunction = false;
@@ -148,6 +153,8 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool outputRoundsToStdout = false;
 
+        public List<string> blacklisted = new List<string>();
+
         /// <summary>
         /// Returns a new settings object with the settings specified in the file as key value pair. Settings not beeing specified in this file will have the default value. 
         /// </summary>
@@ -168,6 +175,11 @@ namespace MachineLearning.Learning
                     GlobalState.logError.logLine("MlSetting " + nameAndValue[0] + " not found!");
                 }
 
+            }
+
+            if (GlobalState.varModel != null && mls.blacklisted.Count > 0)
+            {
+                mls.checkAndCleanBlacklisted();
             }
 
             return mls;
@@ -198,6 +210,11 @@ namespace MachineLearning.Learning
             }
             file.Close();
 
+            if (GlobalState.varModel != null && mls.blacklisted.Count > 0)
+            {
+                mls.checkAndCleanBlacklisted();
+            }
+
             return mls;
         }
 
@@ -222,6 +239,17 @@ namespace MachineLearning.Learning
 
             string asa = fi.FieldType.FullName;
 
+            // The processing of the blacklist
+            if (name.ToLower().Equals("blacklisted"))
+            {
+                String[] optionsToBlacklist = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (String option in optionsToBlacklist)
+                {
+                    this.blacklisted.Add(option.ToLower());
+                }
+                this.blacklisted = this.blacklisted.Distinct().ToList();
+                return true;
+            }
             if (fi.FieldType.FullName.Equals("System.Boolean"))
             {
                 if (value.ToLowerInvariant() == "true" || value.ToLowerInvariant() == "false")
@@ -327,6 +355,41 @@ namespace MachineLearning.Learning
 
 
             return false;
+        }
+
+        /// <summary>
+        /// Checks if the blacklisted features are valid features in the current variability model.
+        /// Removes the features that are not valid.
+        /// </summary>
+        public void checkAndCleanBlacklisted()
+        {
+            List<string> toRemove = new List<string>();
+            foreach (string blacklistedFeature in blacklisted)
+            {
+                bool isValidFeature = false;
+                foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                {
+                    if (binOpt.ToString().ToLower().Equals(blacklistedFeature))
+                    {
+                        GlobalState.logError.logLine(binOpt.ToString() + ": Cannot blacklist binary features.");
+                    }
+                }
+
+                foreach (NumericOption numOpt in GlobalState.varModel.NumericOptions)
+                {
+                    if (numOpt.ToString().ToLower().Equals(blacklistedFeature))
+                    {
+                        isValidFeature = true;
+                    }
+                }
+
+                if (!isValidFeature)
+                {
+                    GlobalState.logError.logLine("\"" + blacklistedFeature + "\"" + " is not a valid feature to blacklist.");
+                    toRemove.Add(blacklistedFeature);
+                }
+            }
+            blacklisted = blacklisted.Except(toRemove).ToList();
         }
 
 

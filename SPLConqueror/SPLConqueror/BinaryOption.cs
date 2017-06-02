@@ -6,6 +6,9 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class defines a BinaryOption that can either be selected or deselected in an configuration of the system.
+    /// </summary>
     public class BinaryOption : ConfigurationOption
     {
         /// <summary>
@@ -21,7 +24,9 @@ namespace SPLConqueror_Core
         /// </summary>
         public BinaryValue DefaultValue { get; set; }
 
-
+        /// <summary>
+        /// States whether an binary option is optional or not.
+        /// </summary>
         public bool Optional { get; set; }
 
         /// <summary>
@@ -78,6 +83,10 @@ namespace SPLConqueror_Core
             return option;
         }
 
+        /// <summary>
+        /// Loads and strores all binary option specific information of an binary option.
+        /// </summary>
+        /// <param name="node">The base node of the binary option.</param>
         internal void loadFromXML(XmlElement node)
         {
             base.loadFromXML(node);

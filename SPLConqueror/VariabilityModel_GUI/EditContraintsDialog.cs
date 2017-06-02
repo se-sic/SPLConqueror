@@ -43,7 +43,7 @@ namespace VariabilitModel_GUI
                 nbOptionComboBox.SelectedIndex = 0;
 
             // Inserting all existing constraints into the right list box
-            foreach (string boolConstraint in GlobalState.varModel.BooleanConstraints)
+            foreach (string boolConstraint in GlobalState.varModel.BinaryConstraints)
                 boolConstraintListBox.Items.Add(boolConstraint);
 
             foreach (NonBooleanConstraint nbConstraint in GlobalState.varModel.NonBooleanConstraints)
@@ -148,7 +148,7 @@ namespace VariabilitModel_GUI
         private void boolAddConstraintButton_Click(object sender, EventArgs e)
         {
             boolConstraintListBox.Items.Add(String.Join(" ", boolConstraintList));
-            GlobalState.varModel.BooleanConstraints.Add(String.Join(" ", boolConstraintList));
+            GlobalState.varModel.BinaryConstraints.Add(String.Join(" ", boolConstraintList));
 
             boolConstraintList.Clear();
 
@@ -186,7 +186,7 @@ namespace VariabilitModel_GUI
 
             if (selIndex > -1)
             {
-                GlobalState.varModel.BooleanConstraints.RemoveAt(selIndex);
+                GlobalState.varModel.BinaryConstraints.RemoveAt(selIndex);
                 boolConstraintListBox.Items.RemoveAt(selIndex);
 
                 updateBoolConstraintBox();

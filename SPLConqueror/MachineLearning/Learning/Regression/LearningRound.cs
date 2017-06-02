@@ -66,6 +66,46 @@ namespace MachineLearning.Learning.Regression
             return sb.ToString();
         }
 
+
+        /// <summary>
+        /// Parse string representation of a learning round to a LearningRound object.
+        /// </summary>
+        /// <param name="learningRoundAsString">LearningRound as string.</param>
+        /// <param name="vm">Variability model the LearningRound belongs to.</param>
+        /// <returns>LearningRound object that has the data of the string representation.</returns>
+        public static LearningRound FromString(string learningRoundAsString, VariabilityModel vm)
+        {
+            LearningRound learningRound = new LearningRound();
+            string[] data = learningRoundAsString.Split(new char[] { ';' });
+            learningRound.round = int.Parse(data[0].Trim());
+            List<Feature> featureSetFromString = new List<Feature>();
+            string[] featureExpressions = data[1].Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach(string featureExpression in featureExpressions)
+            {
+                Feature toAdd = new Feature(featureExpression.Split(new char[] { '*' }, 2)[1], vm);
+                toAdd.Constant = double.Parse(featureExpression.Split(new char[] { '*' }, 2)[0].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+                featureSetFromString.Add(toAdd);
+            }
+            learningRound.featureSet = featureSetFromString;
+            learningRound.learningError = double.Parse(data[2].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.learningError_relative = double.Parse(data[3].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.validationError = double.Parse(data[4].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.validationError_relative = double.Parse(data[5].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            learningRound.elapsedTime = TimeSpan.FromSeconds(double.Parse(data[6].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us")));
+            Feature bestCandidateFromString = new Feature(data[8], vm);
+            learningRound.bestCandidate = bestCandidateFromString;
+            learningRound.bestCandidateSize = int.Parse(data[9].Trim());
+            try
+            {
+                learningRound.bestCandidateScore = double.Parse(data[10].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+            }
+            catch(OverflowException overF)
+            {
+                learningRound.bestCandidateScore = Double.MaxValue;
+            }
+            return learningRound;
+        }
+
         internal LearningRound(List<Feature> featureSet, double learningError, double validationError, int round)
         {
             this.featureSet = featureSet;
