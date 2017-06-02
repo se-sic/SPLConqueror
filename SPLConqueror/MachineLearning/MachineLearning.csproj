@@ -102,15 +102,12 @@
     <Compile Include="Sampling\ExperimentalDesigns\KExchangeAlgorithm.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\OneFactorAtATime.cs" />
     <Compile Include="Sampling\Heuristics\FeatureWise.cs" />
-    <Compile Include="Sampling\Heuristics\Linear.cs" />
-    <Compile Include="Sampling\Heuristics\MinMax.cs" />
     <Compile Include="Sampling\Heuristics\NegFeatureWise.cs" />
     <Compile Include="Sampling\Heuristics\PairWise.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\FullFactorialDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\HyperSampling.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\PlackettBurmanDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\RandomSampling.cs" />
-    <Compile Include="Sampling\Heuristics\Quadratic.cs" />
     <Compile Include="Sampling\Heuristics\TWise.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
