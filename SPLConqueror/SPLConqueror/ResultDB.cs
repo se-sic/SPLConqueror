@@ -18,7 +18,7 @@ namespace SPLConqueror_Core
         /// This structre provides the maximum of the measured values for each non-functional property. 
         /// </summary>
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
-        private static int splitFactor = 4;
+        private static int splitFactor = 2;
         // Added by Ch.K.
         public List<String> blacklisted;
 

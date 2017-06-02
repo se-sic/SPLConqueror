@@ -26,12 +26,12 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
         /// </summary>
-        public bool bagging = false;
+        public bool bagging = true;
 
         /// <summary>
         /// Specifies how often an influence model is learned based on a subset of the measurement data
         /// </summary>
-        public int baggingNumbers = 100;
+        public int baggingNumbers = 3;
 
         /// <summary>
         /// Specifies the percentage of data taken from the test set to be used in one learning run
@@ -69,9 +69,11 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool crossValidation = false;
 
+        public int crossValidation_k = 5;
+
 
         /// <summary>
-        /// If true, the learn algorithm can learn logarithmic functions auch as log(soption1). 
+        /// If true, the learn algorithm can learn logarithmic functions such as log(soption1). 
         /// </summary>
         public bool learn_logFunction = false;
 

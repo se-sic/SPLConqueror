@@ -25,8 +25,6 @@ namespace MachineLearning.Sampling.Heuristics
             List<BinaryOption> measuredElements = new List<BinaryOption>();
             foreach (BinaryOption current in vm.BinaryOptions)
             {
-                //if (!activeLearning.Contains(current.Name))
-                //    continue;
                 measuredElements.Add(current);
                 foreach (BinaryOption pair in vm.BinaryOptions)
                 {
