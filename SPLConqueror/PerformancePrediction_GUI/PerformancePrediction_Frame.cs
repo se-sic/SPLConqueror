@@ -22,6 +22,7 @@ namespace PerformancePrediction_GUI
         Commands cmd = new Commands();
 
         public const string ERROR = "an error occurred";
+        private static System.Threading.Thread executionThread;
 
         public PerformancePrediction_Frame()
         {
@@ -111,6 +112,8 @@ namespace PerformancePrediction_GUI
             if (filePath == "")
                 return;
 
+            nfpSelection.Items.Clear();
+            cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + filePath);
         }
 
@@ -136,9 +139,9 @@ namespace PerformancePrediction_GUI
             bool ableToStart = createSamplingCommands();
 
             if(ableToStart){
-                System.Threading.Thread myThread;
-                myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
-                myThread.Start();
+                if (executionThread != null && executionThread.IsAlive) executionThread.Abort();
+                executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
+                executionThread.Start();
                 InitDataGridView();
             }   
         }
@@ -167,24 +170,45 @@ namespace PerformancePrediction_GUI
 
         }
 
+        private NotifyCollectionChangedEventHandler notifyer = null;
+
         void initLearning(object sender, NotifyCollectionChangedEventArgs e)
         {
             Console.WriteLine();
-            if(cmd.exp.models.Count > 0)
-                cmd.exp.models[cmd.exp.models.Count-1].LearningHistory.CollectionChanged += new NotifyCollectionChangedEventHandler(roundFinished);
+            if (cmd.exp.models.Count > 0)
+            {
+                if(notifyer == null)
+                   notifyer =  new NotifyCollectionChangedEventHandler(roundFinished);
+
+                cmd.exp.models[cmd.exp.models.Count - 1].LearningHistory.CollectionChanged -= notifyer;
+                cmd.exp.models[cmd.exp.models.Count - 1].LearningHistory.CollectionChanged += notifyer;
+            
+            }
+
         }
 
         private void startLearning()
         {
-            
-            cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
-            cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            try
+            {
+                cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
+                cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            } catch (System.Threading.ThreadAbortException)
+            {
+                return;
+            }
         }
 
         private void startWithAllMeasurements()
         {
-            cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
-            cmd.performOneCommand(Commands.COMMAND_START_ALLMEASUREMENTS);
+            try
+            {
+                cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
+                cmd.performOneCommand(Commands.COMMAND_START_ALLMEASUREMENTS);
+            } catch (System.Threading.ThreadAbortException)
+            {
+                return;
+            }
         }
 
 
@@ -244,11 +268,7 @@ namespace PerformancePrediction_GUI
             bool numSelected = false;
             string validation = "";
 
-            if (this.OW.Checked)
-            {
-                binarySelected = true;
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
-            }
+            // Binary sampling strategies
             if (this.OW.Checked)
             {
                 binarySelected = true;
@@ -267,6 +287,9 @@ namespace PerformancePrediction_GUI
                 binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
             }
+
+
+            // Numeric sampling strategies
             if (num_BoxBehnken_check.Checked)
             {
                 numSelected = true;
@@ -374,12 +397,54 @@ namespace PerformancePrediction_GUI
             cleanButton_Click(null, null);
             button1.Enabled = true;
             setMLSettings();
-          
-            System.Threading.Thread myThread;
-            myThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
-            myThread.Start();
+
+            if (executionThread != null && executionThread.IsAlive) executionThread.Abort();
+            executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
+            executionThread.Start();
             InitDataGridView();
                
+        }
+
+        private void printConfigs(string path)
+        {
+            string prefix = PrefixTextBox.Text;
+            string postfix = PostFixTextBox.Text;
+            if (prefix.Trim().Equals("") && postfix.Trim().Equals(""))
+            {
+                cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path);
+            }
+            else if (postfix.Trim().Equals(""))
+            {
+                cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path + " " + prefix);
+            } else
+            {
+                cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path + " " + prefix + " " + postfix);
+            }
+            MessageBox.Show("Configurations printed", "Finished");
+        }
+
+        private void PrintconfigsButton_Click(object sender, EventArgs e)
+        {
+            bool ableToStart = createSamplingCommands();
+            if (!ableToStart)
+            {
+                MessageBox.Show("No sampling selected!", "Error");
+
+            } else
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+                if (sfd.CheckPathExists)
+                {
+                    System.Threading.Thread printConfigsThread = new System.Threading.Thread(() => printConfigs(sfd.FileName));
+                    printConfigsThread.Start();
+ 
+                } else
+                {
+                    MessageBox.Show("Invalid path!", "Error");
+                }
+            }
         }
     }
 }

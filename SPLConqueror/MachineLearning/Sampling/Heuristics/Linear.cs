@@ -28,41 +28,41 @@ namespace MachineLearning.Sampling.Heuristics
         /// <returns></returns>
         public List<List<BinaryOption>> GenerateRLinear(VariabilityModel vm, int treshold, int timeout)
         {
-            Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+            //Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
 
             List<List<BinaryOption>> erglist = new List<List<BinaryOption>>();
 
-            var tasks = new Task[vm.BinaryOptions.Count];
-            var mylock = new object();
+            //var tasks = new Task[vm.BinaryOptions.Count];
+            //var mylock = new object();
 
-            for (var i = 1; i <= vm.BinaryOptions.Count; i++)
-            {
-                var i1 = i;
-                tasks[i - 1] = Task.Factory.StartNew(() =>
-                {
-                    var size = LinearSize(vm.BinaryOptions.Count, treshold, i1);
-                    return generator.generateTilSize(i1, size, timeout, vm);
+            //for (var i = 1; i <= vm.BinaryOptions.Count; i++)
+            //{
+            //    var i1 = i;
+            //    tasks[i - 1] = Task.Factory.StartNew(() =>
+            //    {
+            //        var size = LinearSize(vm.BinaryOptions.Count, treshold, i1);
+            //        return generator.generateTilSize(i1, size, timeout, vm);
 
-                }).ContinueWith(task =>
-                {
-                    if (!task.Status.Equals(TaskStatus.Faulted))
-                    {
-                        lock (mylock)
-                        {
-                            if (task != null) { 
+            //    }).ContinueWith(task =>
+            //    {
+            //        if (!task.Status.Equals(TaskStatus.Faulted))
+            //        {
+            //            lock (mylock)
+            //            {
+            //                if (task != null) { 
 
-                                erglist.AddRange(task.Result);
-                                counter++;
-                            }
-                        }
+            //                    erglist.AddRange(task.Result);
+            //                    counter++;
+            //                }
+            //            }
 
-                    }
+            //        }
                    
-                });
+            //    });
 
-            }
+            //}
 
-            Task.WaitAll(tasks);
+            //Task.WaitAll(tasks);
 
             return erglist;
         }

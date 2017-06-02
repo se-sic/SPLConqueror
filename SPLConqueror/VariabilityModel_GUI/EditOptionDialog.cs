@@ -172,7 +172,7 @@ namespace VariabilitModel_GUI
                 }
 
                 // Adjusting all boolean constraints
-                foreach (string boolConst in GlobalState.varModel.BooleanConstraints)
+                foreach (string boolConst in GlobalState.varModel.BinaryConstraints)
                 {
                     string[] constParts = boolConst.Split(' ');
 
@@ -193,7 +193,7 @@ namespace VariabilitModel_GUI
                     editedNonBooleanConstraints.Add(new NonBooleanConstraint(String.Join(" ", constParts), GlobalState.varModel));
                 }
 
-                GlobalState.varModel.BooleanConstraints = editedBooleanConstraints;
+                GlobalState.varModel.BinaryConstraints = editedBooleanConstraints;
                 GlobalState.varModel.NonBooleanConstraints = editedNonBooleanConstraints;
                 currentOption.Name = result.Item2;
 

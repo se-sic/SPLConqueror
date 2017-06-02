@@ -20,36 +20,36 @@ namespace MachineLearning.Sampling.Heuristics
 
         public List<List<BinaryOption>> GenerateRQuadratic(VariabilityModel vm, int treshold, double scale, int timeout)
         {
-            Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+            //Solver.VariantGenerator generator = new Solver.VariantGenerator();
             var resultList = new List<List<BinaryOption>>();
 
-            var tasks = new Task[vm.BinaryOptions.Count];
-            var mylock = new object();
+            //var tasks = new Task[vm.BinaryOptions.Count];
+            //var mylock = new object();
 
-            for (var i = 1; i <= vm.BinaryOptions.Count; i++)
-            {
-                var i1 = i;
-                tasks[i - 1] = Task.Factory.StartNew(() =>
-                {
+            //for (var i = 1; i <= vm.BinaryOptions.Count; i++)
+            //{
+            //    var i1 = i;
+            //    tasks[i - 1] = Task.Factory.StartNew(() =>
+            //    {
 
-                    var size = QuadraticSize(vm.BinaryOptions.Count, i1, scale);
-                    return generator.generateTilSize(i1, size, timeout, vm);
+            //        var size = QuadraticSize(vm.BinaryOptions.Count, i1, scale);
+            //        return generator.generateTilSize(i1, size, timeout, vm);
 
-                }).ContinueWith(task =>
-                {
-                    if (!task.Status.Equals(TaskStatus.Faulted))
-                    {
+            //    }).ContinueWith(task =>
+            //    {
+            //        if (!task.Status.Equals(TaskStatus.Faulted))
+            //        {
 
-                        lock (mylock)
-                        {
-                            resultList.AddRange(task.Result);
-                            counter++;
-                        }
-                    }
-                });
+            //            lock (mylock)
+            //            {
+            //                resultList.AddRange(task.Result);
+            //                counter++;
+            //            }
+            //        }
+            //    });
 
-            }
-            Task.WaitAll(tasks);
+            //}
+            //Task.WaitAll(tasks);
 
             return resultList;
         }

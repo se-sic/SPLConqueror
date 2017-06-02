@@ -8,7 +8,7 @@ namespace MachineLearning.Sampling.Heuristics
 {
     class TWise
     {
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator(null);
+        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
 
         public const string PARAMETER_T_NAME = "t";
 

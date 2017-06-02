@@ -6,34 +6,39 @@ using System.Xml;
 
 namespace SPLConqueror_Core
 {
+
+    /// <summary>
+    /// Represents a numeric configuration option that can be used to customize the case study.
+    /// </summary>
     public class NumericOption : ConfigurationOption
     {
         private double min_value = 0;
 
+        /// <summary>
+        /// The minimal value of the value domain of the option.
+        /// </summary>
         public double Min_value
         {
             get { return min_value; }
             set { min_value = value; }
         }
+
         private double max_value = 10;
 
+        /// <summary>
+        /// The maximal value of the value domain of the option.
+        /// </summary>
         public double Max_value
         {
             get { return max_value; }
             set { max_value = value; }
         }
-
-        private double defaultValue = 0;
-
-        public double DefaultValue
-        {
-            get { return defaultValue; }
-            set { defaultValue = value; }
-        }
-
+        
         private double[] values = null;
-
-
+        
+        /// <summary>
+        /// All valid values of the value domain of the numeric option.
+        /// </summary>
         public double[] Values
         {
             get { return values; }
@@ -154,6 +159,11 @@ namespace SPLConqueror_Core
 
         private long numberOfSteps = -1;
 
+
+        /// <summary>
+        /// Returns the number of distinct values of the numeric option.
+        /// </summary>
+        /// <returns>Number of distinct values of the option.</returns>
         public long getNumberOfSteps()
         {
             if (stepFunction == null)
@@ -181,7 +191,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="doc">The XML document to which the node will be added</param>
         /// <returns>The XML node containing the information of numeric option</returns>
-        internal XmlNode saveXML(System.Xml.XmlDocument doc)
+        internal new XmlNode saveXML(System.Xml.XmlDocument doc)
         {
             XmlNode node = base.saveXML(doc);
 
@@ -217,13 +227,7 @@ namespace SPLConqueror_Core
 
                 valuesNode.InnerText = valuesAsString;
                 node.AppendChild(valuesNode);
-            }
-
-            //DefaultValue
-            XmlNode defNode = doc.CreateNode(XmlNodeType.Element, "defaultValue", "");
-            defNode.InnerText = this.defaultValue.ToString();
-            node.AppendChild(defNode);
-            
+            }            
             return node;
         }
 
@@ -241,7 +245,11 @@ namespace SPLConqueror_Core
             return numOpt;
         }
 
-        internal void loadFromXML(XmlElement node)
+        /// <summary>
+        /// Loads all information about the numeric connfiguration option from the XML file consisting of the variability model. 
+        /// </summary>
+        /// <param name="node">The root note of the numeric configuration option.</param>
+        internal new void loadFromXML(XmlElement node)
         {
             base.loadFromXML(node);
             foreach (XmlElement xmlInfo in node.ChildNodes)
@@ -254,16 +262,14 @@ namespace SPLConqueror_Core
                     case "maxValue":
                         this.max_value = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
                         break;
-                    case "defaultValue":
-                        this.defaultValue = Double.Parse(xmlInfo.InnerText.Replace(',', '.'));
-                        break;
                     case "stepFunction":
-                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',','.'),this);
+                        this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',', '.'), this);
                         break;
                     case "values":
                         String[] valueArray = xmlInfo.InnerText.Replace(',', '.').Split(';');
                         double[] values_As_Double = new double[valueArray.Count()];
-                        for(int i = 0; i < valueArray.Count(); i++){
+                        for (int i = 0; i < valueArray.Count(); i++)
+                        {
                             values_As_Double[i] = Convert.ToDouble(valueArray[i]);
                         }
                         this.values = values_As_Double;
@@ -313,12 +319,14 @@ namespace SPLConqueror_Core
             return upperValue;
         }
 
-
+        /// <summary>
+        /// Returns the center value of the value domain of the numeric configuration option. 
+        /// </summary>
+        /// <returns>The center value of the value domain.</returns>
         public double getCenterValue()
         {
             if (stepFunction == null)
                 return values[(int)values.Count() / 2];
-           // return getAllValues()[(int)getAllValues().Count / 2];
             return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
         }
 
@@ -350,16 +358,12 @@ namespace SPLConqueror_Core
             }
             return allValues;
         }
-
-        public double getRandomValue()
-        {
-            Random r = new Random();
-
-            if (stepFunction == null)
-                return values[r.Next(values.Count())];     
-            return getValueForStep(r.Next((int)this.numberOfSteps));
-        }
-
+        
+        /// <summary>
+        /// Provides a random value of the value domain of the numeric configuration option.
+        /// </summary>
+        /// <param name="seed">The seed for the random generator.</param>
+        /// <returns>The random value of the value domain.</returns>
         public double getRandomValue(int seed)
         {
             Random r = new Random(seed);

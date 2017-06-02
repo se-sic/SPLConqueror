@@ -14,27 +14,38 @@ namespace SPLConqueror_Core
     {
         private List<NumericOption> numericOptions = new List<NumericOption>();
 
+        /// <summary>
+        /// The set of numeric configuration options of the variability model.
+        /// </summary>
         public List<NumericOption> NumericOptions
         {
             get { return numericOptions; }
-            //set { numericOptions = value; }
         }
 
         private List<BinaryOption> binaryOptions = new List<BinaryOption>();
 
+        /// <summary>
+        /// The set of all binary configuration options of the system.
+        /// </summary>
         public List<BinaryOption> BinaryOptions
         {
             get { return binaryOptions; }
-          //  set { binaryOptions = value; }
         }
 
+        /// <summary>
+        /// A mapping from the index of an option to the object providing all information of the configuratio option.
+        /// </summary>
         public Dictionary<int, ConfigurationOption> optionToIndex = new Dictionary<int, ConfigurationOption>();
+
+        /// <summary>
+        /// A mapping from a configuration option to its index.
+        /// </summary>
         public Dictionary<ConfigurationOption, int> indexToOption = new Dictionary<ConfigurationOption, int>();
 
         String name = "empty";
 
         /// <summary>
-        /// Name of the variability model or configurable program
+        /// Name of the variability model or configurable system.
         /// </summary>
         public String Name
         {
@@ -55,21 +66,31 @@ namespace SPLConqueror_Core
 
         private BinaryOption root = null;
 
+        /// <summary>
+        /// The root binary configuration option.
+        /// </summary>
         public BinaryOption Root
         {
             get { return root; }
         }
 
-        private List<String> booleanConstraints = new List<string>();
+        private List<String> binaryConstraints = new List<string>();
 
-        public List<String> BooleanConstraints
+        /// <summary>
+        /// The set of all constraints among the binary configuration options.
+        /// </summary>
+        public List<String> BinaryConstraints
         {
-            get { return booleanConstraints; }
-            set { booleanConstraints = value; }
+            get { return binaryConstraints; }
+            set { binaryConstraints = value; }
         }
 
         private List<NonBooleanConstraint> nonBooleanConstraints = new List<NonBooleanConstraint>();
 
+        /// <summary>
+        /// The list of all non-boolean constraints of the variability model. Non-boolean constraints are constraints among different numeric 
+        /// options or binary and numeric options.
+        /// </summary>
         public List<NonBooleanConstraint> NonBooleanConstraints
         {
             get { return nonBooleanConstraints; }
@@ -83,7 +104,36 @@ namespace SPLConqueror_Core
             get { return mixedConstraints; }
             set { mixedConstraints = value; }
         }
+     
+        /// <summary>
+        /// Retuns a list containing all numeric configuration options that are considered in the learning process.
+        /// </summary>
+        /// <param name="blacklist">A list containing all numeric options that should not be considered in the learning process.</param>
+        /// <returns>A list containing all numeric configuartion options that are considered in the learning process.</returns>
+        public List<NumericOption> getNonBlacklistedNumericOptions(List<String> blacklist)
+        {
+            List<NumericOption> result = new List<NumericOption>();            foreach (NumericOption opt in this.numericOptions)
+            {
+                if (blacklist != null)
+                {
+                    if (!blacklist.Contains(opt.Name.ToLower()))
+                    {
+                        result.Add(opt);
+                    }
+                } else
+                {
+                    result.Add(opt);
+                }
+            }
 
+            return result;
+        }
+
+        /// <summary>
+        /// Creastes a new variability model with a given name that consists only of a binary root option.
+        /// </summary>
+        /// <param name="name">The name of the variability model.</param>        
+        
         public VariabilityModel(String name)
         {
             this.name = name;
@@ -143,7 +193,7 @@ namespace SPLConqueror_Core
 
             //Add boolean constraints
             XmlNode boolConstraints = doc.CreateNode(XmlNodeType.Element, "booleanConstraints", "");
-            foreach (var constraint in this.booleanConstraints)
+            foreach (var constraint in this.binaryConstraints)
             {
                 XmlNode conNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
                 conNode.InnerText = constraint;
@@ -248,7 +298,7 @@ namespace SPLConqueror_Core
         {
             foreach (XmlElement boolConstr in xmlNode.ChildNodes)
             {
-                this.booleanConstraints.Add(boolConstr.InnerText);
+                this.binaryConstraints.Add(boolConstr.InnerText);
             }
         }
 
@@ -401,7 +451,11 @@ namespace SPLConqueror_Core
             return options;
         }
 
-
+        /// <summary>
+        /// Tests whether a configuration is valid with respect to all non-boolean constraints.
+        /// </summary>
+        /// <param name="c">The configuration to test.</param>
+        /// <returns>True if the configuration is valid.</returns>
         public bool configurationIsValid(Configuration c)
         {
             foreach (NonBooleanConstraint nonBC in this.nonBooleanConstraints)
@@ -413,6 +467,10 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        /// <summary>
+        /// Removes a configuration from the variability model.
+        /// </summary>
+        /// <param name="toDelete"></param>
         public void deleteOption(ConfigurationOption toDelete)
         {
             // Removing all children
@@ -441,7 +499,7 @@ namespace SPLConqueror_Core
             }
 
             // Removing option from constraints
-            booleanConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
+            binaryConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
             nonBooleanConstraints.RemoveAll(x => x.ToString().Contains(toDelete.ToString()));
 
             toDelete.Parent.Children.Remove(toDelete);

@@ -22,6 +22,8 @@ namespace CommandLine
 
             reader = fi.OpenText();
 
+            Directory.SetCurrentDirectory(file.Substring(0, file.LastIndexOf(Path.DirectorySeparatorChar)));
+
             this.start();
 
 

@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="CommandLine.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="CommandPersistence.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script.cs" />
@@ -117,6 +118,10 @@
     <ProjectReference Include="..\PyML\ProcessWrapper.csproj">
       <Project>{2BF7A78C-C6F4-4AFB-BE09-48B2B13F45E7}</Project>
       <Name>ProcessWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Persistence\Persistence.csproj">
+      <Project>{3a0abb96-f33e-472a-998e-535a4f9668db}</Project>
+      <Name>Persistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
       <Project>{1F035958-15B1-450A-BFC5-BEBD95376C40}</Project>

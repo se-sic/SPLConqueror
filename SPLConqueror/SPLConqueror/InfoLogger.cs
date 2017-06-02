@@ -12,8 +12,8 @@ namespace SPLConqueror_Core
         {
         }
 
-        public InfoLogger(String location)
-            : base(location)
+        public InfoLogger(String location, bool mode=false)
+            : base(location, mode)
         {
             if(writer!=null)
                 Console.SetOut(writer);

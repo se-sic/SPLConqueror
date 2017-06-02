@@ -6,17 +6,26 @@ using System.Text.RegularExpressions;
 
 namespace SPLConqueror_Core
 {
+
     public class InfluenceFunction
     {
 
         double noise = 0.0;
-
-
         private VariabilityModel varModel = null;
 
         protected string wellFormedExpression = "";
+
+
+        /// <summary>
+        /// All binary configuration options that are considered in the influence function. 
+        /// </summary>
         public HashSet<BinaryOption> participatingBoolOptions = new HashSet<BinaryOption>();
+
+        /// <summary>
+        /// All numeric configuration options that are considered in the influence function. 
+        /// </summary>
         public HashSet<NumericOption> participatingNumOptions = new HashSet<NumericOption>();
+
         protected int numberOfParticipatingFeatures = 0;
         protected string[] expressionArray = null;
 
@@ -50,7 +59,7 @@ namespace SPLConqueror_Core
         /// Creates an influence function based on the expression. Only the name of the numeric option, numbers, operators, 
         /// and " n " should exist in the expression. 
         /// </summary>
-        /// <param name="expression">A function consisting of numbers, operators and the configuration-option name.</param></param>
+        /// <param name="expression">A function consisting of numbers, operators and the configuration-option name.</param>
         /// <param name="option">A configuration option.</param>
         public InfluenceFunction(String expression, NumericOption option)
         {
@@ -165,6 +174,10 @@ namespace SPLConqueror_Core
             return parts[0] + newLeftBracket + secondPart.ToString();
         }
 
+        /// <summary>
+        /// Returns an copy of the influence function in reverse polish notation, where an operator or operand is stored in one element of the array.
+        /// </summary>
+        /// <returns>The reverse polish notation of the influence function.</returns>
         public string[] getExpressionTree()
         {
             string[] copy = new string[expressionArray.Length];
@@ -500,7 +513,8 @@ namespace SPLConqueror_Core
                 {
                     foreach (BinaryOption option in config.BinaryOptions.Keys)
                     {
-                        if (option.Name == binOpt.Name )
+                        // option has to be selected in the configuration
+                        if (option.Name == binOpt.Name && config.BinaryOptions[option] == BinaryOption.BinaryValue.Selected)
                         {
                             return 1.0;
                         }
@@ -648,6 +662,10 @@ namespace SPLConqueror_Core
             return isOperator(token);
         }
 
+        /// <summary>
+        /// Returns the variability model the influence function is defined for.
+        /// </summary>
+        /// <returns>The variability model of the influence function.</returns>
         public VariabilityModel getVariabilityModel()
         {
             return this.varModel;

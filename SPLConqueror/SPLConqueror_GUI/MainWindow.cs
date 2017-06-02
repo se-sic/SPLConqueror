@@ -70,12 +70,8 @@ namespace SPLConqueror_GUI
         protected Dictionary<NumericOption, float> numericSettings = new Dictionary<NumericOption, float>();
         private Dictionary<ConfigurationOption, double> factorizationPriorities =
             new Dictionary<ConfigurationOption, double>();
-        private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT(
-            Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(
-            System.IO.Directory.GetCurrentDirectory()))) + DLL_LOCATION);
-        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator(
-                Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())))
-                + DLL_LOCATION);
+        private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT();
+        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator();
 
         // Everything for the measurements
         private bool measurementsLoaded = false;
@@ -518,7 +514,7 @@ namespace SPLConqueror_GUI
             numericSettings.Clear();
 
             foreach (NumericOption option in currentModel.NumericOptions)
-                numericSettings.Add(option, (float) option.DefaultValue);
+                numericSettings.Add(option, (float) option.getCenterValue());
 
             // Evaluation configuration
             calculationResultLabel.Text = BUTTON_PRESS_REQUEST;
@@ -600,13 +596,13 @@ namespace SPLConqueror_GUI
         {
             constraintTextbox.Clear();
 
-            if (currentModel.BooleanConstraints.Count != 0)
+            if (currentModel.BinaryConstraints.Count != 0)
             {
                 constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Bold);
                 constraintTextbox.AppendText("Boolean constraints:\n\n");
                 constraintTextbox.SelectionFont = new Font(constraintTextbox.Font, FontStyle.Regular);
 
-                foreach (string constraint in currentModel.BooleanConstraints)
+                foreach (string constraint in currentModel.BinaryConstraints)
                     constraintTextbox.AppendText(constraint + "\n");
 
                 constraintTextbox.AppendText("\n");
