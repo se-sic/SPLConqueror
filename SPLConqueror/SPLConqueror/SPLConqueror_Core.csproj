@@ -73,6 +73,7 @@
     <Compile Include="InfoLogger.cs" />
     <Compile Include="Interaction.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MixedConstraint.cs" />
     <Compile Include="NonBooleanConstraint.cs" />
     <Compile Include="NumericOption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

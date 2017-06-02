@@ -16,7 +16,7 @@ namespace MachineLearning.Learning.Regression
 {
     public class Learning : IDisposable
     {
-        public ML_Settings mLsettings = null;
+        public ML_Settings mlSettings = null;
         public List<Configuration> testSet, validationSet = null;
         int nbBaggings = 0;
         public ObservableCollection<FeatureSubsetSelection> models = new ObservableCollection<FeatureSubsetSelection>();
@@ -60,20 +60,20 @@ namespace MachineLearning.Learning.Regression
         {
             if (!hasNecessaryData())
                 return;
-            if (this.mLsettings.bagging)
+            if (this.mlSettings.bagging)
             {
                 //Get number of cores
                 int coreCount = System.Environment.ProcessorCount;
                 createThreadPool(coreCount);
 
-                this.nbBaggings = this.mLsettings.baggingNumbers;
+                this.nbBaggings = this.mlSettings.baggingNumbers;
                 iCount = this.nbBaggings;
                 Random rand = new Random();
-                int nbOfConfigs = (testSet.Count * this.mLsettings.baggingTestDataFraction) / 100;
+                int nbOfConfigs = (testSet.Count * this.mlSettings.baggingTestDataFraction) / 100;
                 for (int i = 0; i < nbBaggings; i++)
                 {
                     InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                    FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                    FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
                     this.models.Add(sel);
                     List<int> selection = new List<int>();
                     for (int r = 0; r <= nbOfConfigs; r++)
@@ -100,7 +100,7 @@ namespace MachineLearning.Learning.Regression
             {
                 GlobalState.logInfo.logLine("Learning progress:");
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
                 this.models.Add(sel);
                 sel.setLearningSet(testSet);
                 sel.setValidationSet(this.validationSet);
@@ -121,7 +121,7 @@ namespace MachineLearning.Learning.Regression
         {
             if (!hasNecessaryData())
                 return;
-            if (this.mLsettings.bagging)
+            if (this.mlSettings.bagging)
             {
                 throw new NotImplementedException("Recovering with bagging currently dosent work");
             }
@@ -135,7 +135,7 @@ namespace MachineLearning.Learning.Regression
                     learningRounds.Add(lr);
                 }
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mLsettings);
+                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
                 this.models.Add(sel);
                 sel.setLearningSet(testSet);
                 sel.setValidationSet(this.validationSet);
@@ -150,8 +150,10 @@ namespace MachineLearning.Learning.Regression
         private void averageModels()
         {
             List<FeatureSubsetSelection> sorted = this.models.OrderBy(o => o.finalError).ToList();
-            int avg = this.models.Count / 2;
-            for (int i = 0; i <= avg; i++)
+
+            int avg = this.models.Count;
+            //int avg = this.models.Count / 2;
+            for (int i = 0; i < avg; i++)
             {
                 updateInfluenceModel(sorted[i].infModel);
             }
@@ -305,13 +307,19 @@ namespace MachineLearning.Learning.Regression
                     this.validationSet.Clear();
                 }
 
+            this.info.binarySamplings_Learning = "";
+            this.info.binarySamplings_Validation = "";
+
+            this.info.numericSamplings_Learning = "";
+            this.info.numericSamplings_Validation = "";
+
             ConfigurationBuilder.parametersOfExpDesigns.Clear();
         }
 
         public void clear()
         {
             this.nbBaggings = 0;
-            this.mLsettings = new ML_Settings();
+            this.mlSettings = new ML_Settings();
             this.metaModel = null;
             this.models.Clear();
             clearSampling();

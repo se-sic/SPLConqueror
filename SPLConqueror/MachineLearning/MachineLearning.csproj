@@ -78,6 +78,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -88,7 +89,9 @@
   <ItemGroup>
     <Compile Include="Learning\LearningInfo.cs" />
     <Compile Include="Learning\ML_Settings.cs" />
+    <Compile Include="Learning\ML_SettingsGenerator.cs" />
     <Compile Include="Learning\Regression\FeatureSubsetSelection.cs" />
+    <Compile Include="Learning\Regression\KFoldCrossValidation.cs" />
     <Compile Include="Learning\Regression\Learning.cs" />
     <Compile Include="Learning\Regression\LearningRound.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,6 +108,7 @@
     <Compile Include="Sampling\ExperimentalDesigns\HyperSampling.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\PlackettBurmanDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\RandomSampling.cs" />
+    <Compile Include="Sampling\Heuristics\TWise.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />

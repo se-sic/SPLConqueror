@@ -15,7 +15,6 @@ using MachineLearning.Solver;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace MachineLearning.Learning.Regression
@@ -99,6 +98,12 @@ namespace MachineLearning.Learning.Regression
                 this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+
+            if (this.MLsettings.crossValidation)
+            {
+                // split the dataset in different test and trainingsets
+            }
+
         }
 
         /// <summary>
@@ -887,7 +892,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="c">The configuration for which the estimation should be performed.</param>
         /// <returns>The estimated value.</returns>
-        private static double estimate(List<Feature> currentModel, Configuration c)
+        public static double estimate(List<Feature> currentModel, Configuration c)
         {
             double prediction = 0;
             for (int i = 0; i < currentModel.Count; i++)
@@ -1010,9 +1015,10 @@ namespace MachineLearning.Learning.Regression
                 return computeValidationError(currentModel, out relativeError);
             else
             {
+                //todo k-fold
                 return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
             }
-            //todo k-fold
+
         }
 
         /// <summary>

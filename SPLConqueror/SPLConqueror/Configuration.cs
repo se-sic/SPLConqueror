@@ -523,7 +523,7 @@ namespace SPLConqueror_Core
                 else
                 {
                     if (this.numericOptions.ContainsKey((NumericOption)c))
-                        sb.Append(c.Prefix + this.NumericOptions[(NumericOption)c]+" ");
+                        sb.Append(c.Prefix + this.NumericOptions[(NumericOption)c] + c.Postfix + " ");
                 }
 
             }
@@ -600,6 +600,28 @@ namespace SPLConqueror_Core
                 }
             }
 
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Method to format the configuration into a numeric representation in order to pass it to Python.
+        /// </summary>
+        /// <returns>Numeric representation of the Configuration.</returns>
+        public string toNumeric()
+        {
+            StringBuilder sb = new StringBuilder();
+            var binarySelection = binaryOptions.Keys.ToList();
+            binarySelection.Sort();
+            var numericSelection = numericOptions.Keys.ToList();
+            numericSelection.Sort();
+
+            foreach (double optionValue in optionValues)
+            {
+                sb.Append(optionValue);
+                sb.Append(",");
+            }
+
+            sb.Append(GetNFPValue());
             return sb.ToString();
         }
     }

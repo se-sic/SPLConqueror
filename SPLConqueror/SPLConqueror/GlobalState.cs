@@ -38,6 +38,8 @@ namespace SPLConqueror_Core
         /// </summary>
         public static ResultDB allMeasurements = new ResultDB();
 
+        public static ResultDB evaluationSet = new ResultDB();
+
         public static double measurementDeviation = Double.MinValue;
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace SPLConqueror_Core
             varModel = null;
             currentNFP = null;
             allMeasurements = new ResultDB();
-            evalutionSet = new ResultDB();
+            evaluationSet = new ResultDB();
             nfProperties = new Dictionary<string,NFProperty>();
             optionOrder = new List<ConfigurationOption>();
         }

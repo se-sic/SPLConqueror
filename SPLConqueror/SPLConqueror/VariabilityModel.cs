@@ -97,6 +97,14 @@ namespace SPLConqueror_Core
             set { nonBooleanConstraints = value; }
         }
 
+        private List<MixedConstraint> mixedConstraints = new List<MixedConstraint>();
+
+        public List<MixedConstraint> MixedConstraints
+        {
+            get { return mixedConstraints; }
+            set { mixedConstraints = value; }
+        }
+     
         /// <summary>
         /// Retuns a list containing all numeric configuration options that are considered in the learning process.
         /// </summary>
@@ -104,9 +112,7 @@ namespace SPLConqueror_Core
         /// <returns>A list containing all numeric configuartion options that are considered in the learning process.</returns>
         public List<NumericOption> getNonBlacklistedNumericOptions(List<String> blacklist)
         {
-            List<NumericOption> result = new List<NumericOption>();
-
-            foreach (NumericOption opt in this.numericOptions)
+            List<NumericOption> result = new List<NumericOption>();            foreach (NumericOption opt in this.numericOptions)
             {
                 if (blacklist != null)
                 {
@@ -126,7 +132,8 @@ namespace SPLConqueror_Core
         /// <summary>
         /// Creastes a new variability model with a given name that consists only of a binary root option.
         /// </summary>
-        /// <param name="name">The name of the variability model.</param>
+        /// <param name="name">The name of the variability model.</param>        
+        
         public VariabilityModel(String name)
         {
             this.name = name;
@@ -263,6 +270,9 @@ namespace SPLConqueror_Core
                     case "nonBooleanConstraints":
                         loadNonBooleanConstraint(xmlNode);
                         break;
+                    case "mixedConstraints":
+                        loadMixedConstraints(xmlNode);
+                        break;
                 }
             }
 
@@ -300,7 +310,20 @@ namespace SPLConqueror_Core
             }
         }
 
-
+        private void loadMixedConstraints(XmlElement xmlNode)
+        {
+            foreach (XmlElement mixedConstraint in xmlNode.ChildNodes)
+            {
+                if (mixedConstraint.Attributes.Count == 1)
+                {
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value));
+                }
+                else
+                {
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
+                }
+            }
+        }
 
         private void loadNumericOptions(XmlElement xmlNode)
         {

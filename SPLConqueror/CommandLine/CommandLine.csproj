@@ -115,6 +115,10 @@
       <Project>{AEBDC4EA-60AD-4A95-8407-059B07150782}</Project>
       <Name>MachineLearning</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PyML\ProcessWrapper.csproj">
+      <Project>{2BF7A78C-C6F4-4AFB-BE09-48B2B13F45E7}</Project>
+      <Name>ProcessWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Persistence\Persistence.csproj">
       <Project>{3a0abb96-f33e-472a-998e-535a4f9668db}</Project>
       <Name>Persistence</Name>
@@ -126,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

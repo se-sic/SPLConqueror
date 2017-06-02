@@ -60,16 +60,19 @@ namespace MachineLearning.Solver
         List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm);
 
 
+        List<List<BinaryOption>> generateTilSize(int i1, int size, int timeout, VariabilityModel vm);
+
         //Old: Refactoring of VM
         //Determine the boundaries in terms of cardinality of a product at which (a) valid products can be generated (maxBoundary) and (b) the first invalid products can be generated (minBoundary)
         //int determineBoundary(VariabilityModel vm, RuntimeProperty rp, NFPConstraint constraint, bool min, bool withInteractions, bool invalidBoundary);//searching for invalid or valid products?
         //Computes Configurations that have a given number of features: it tries to find at least a configuration for each feature or #repetitions and at maximum a configuration for each feature or #repetitions
         //List<List<BinaryOption>> getConfigWithNbOfFeatures(int nbOfFeatures, VariabilityModel vm, bool withInteractions, int repetitions, List<BinaryOption> forbiddenOptions);
-        
+
         //Old: Refactoring of VM
         //List<Element> getInvalidVariantAtCardinality(int i, NFPConstraint constraint, FeatureModel fm, RuntimeProperty rp, Dictionary<int, List<List<Element>>> combiNotToBeSelected, bool findInvalid);
         //List<List<Element>> getAllConfigsForCardinality(int nbOfFeatures, FeatureModel fm, bool withDerivatives);
         //List<Element> determineSetOfValidNegativeFeatures(int nbOfFeatures, FeatureModel fm, bool withDerivatives, List<Element> forbiddenFeatures, RuntimeProperty rp, NFPConstraint constraint);
+
 
 
         //Old:
