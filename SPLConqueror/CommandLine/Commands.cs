@@ -52,9 +52,6 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_PAIRWISE = "pairwise";
         public const string COMMAND_SAMPLE_NEGATIVE_OPTIONWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
-        public const string COMMAND_SAMPLE_BINARY_LINEAR = "linear";
-        public const string COMMAND_SAMPLE_BINARY_QUADRATIC = "quadratic";
-        public const string COMMAND_SAMPLE_BINARY_MINMAX = "minmax";
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
 
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
@@ -632,55 +629,6 @@ namespace CommandLine
 
                     break;
 
-                //case COMMAND_SAMPLE_BINARY_LINEAR:
-                //    {
-                //        string[] para = task.Split(new char[] { ' ' });
-
-                //        Dictionary<String, String> prameters = parseParametersToLinearAndQuadraticBinarySampling(para);
-
-                //        if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                //        {
-                //            this.toSampleValidation.Add(SamplingStrategies.BINARY_LINEAR);
-                //            this.exp.info.binarySamplings_Validation = "BINARY_LINEAR " + task.Replace(":", "_");
-                //        }
-                //        else
-                //        {
-                //            this.toSample.Add(SamplingStrategies.BINARY_LINEAR);
-                //            this.exp.info.binarySamplings_Learning = "BINARY_LINEAR " + task.Replace(":", "_");
-                //        }
-                //        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_LINEAR))
-                //        {
-                //            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_LINEAR, new List<Dictionary<string, string>>());
-                //        }
-                //        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_LINEAR].Add(prameters);
-                //    }
-                //    break;
-
-                //case COMMAND_SAMPLE_BINARY_QUADRATIC:
-                //    {
-                //        string[] para = task.Split(new char[] { ' ' });
-
-                //        Dictionary<String, String> prameters = parseParametersToLinearAndQuadraticBinarySampling(para);
-
-                //        if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                //        {
-                //            this.toSampleValidation.Add(SamplingStrategies.BINARY_QUADRATIC);
-                //            this.exp.info.binarySamplings_Validation = "BINARY_QUADRATIC " + task.Replace(":", "_");
-                //        }
-                //        else
-                //        {
-                //            this.toSample.Add(SamplingStrategies.BINARY_QUADRATIC);
-                //            this.exp.info.binarySamplings_Learning = "BINARY_QUADRATIC " + task.Replace(":", "_");
-                //        }
-
-                //        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_QUADRATIC))
-                //        {
-                //            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_QUADRATIC, new List<Dictionary<string, string>>());
-                //        }
-                //        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_QUADRATIC].Add(prameters);
-                //    }
-                //    break;
-
                 case COMMAND_SAMPLE_BINARY_TWISE:
                     {
                         string[] para = task.Split(new char[] { ' ' });
@@ -706,21 +654,7 @@ namespace CommandLine
                         }
                         ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.T_WISE].Add(prameters);
                     }
-                    break;
-                case COMMAND_SAMPLE_BINARY_MINMAX:
-                    {
-                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                        {
-                            this.toSampleValidation.Add(SamplingStrategies.MINMAX);
-                            this.exp.info.binarySamplings_Validation = "MINMAX";
-                        }
-                        else
-                        {
-                            this.toSample.Add(SamplingStrategies.MINMAX);
-                            this.exp.info.binarySamplings_Learning = "MINMAX";
-                        }
-                    }
-                    break;
+                    break;  
 
                 case COMMAND_LOG:
 
