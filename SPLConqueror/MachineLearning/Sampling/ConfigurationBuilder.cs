@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SPLConqueror_Core;
 using MachineLearning.Solver;
 using MachineLearning.Sampling.Heuristics;
@@ -41,7 +40,12 @@ namespace MachineLearning.Sampling
                         binaryConfigs.AddRange(vg.generateAllVariantsFast(vm));
                         break;
                     case SamplingStrategies.BINARY_RANDOM:
-                        binaryConfigs.AddRange(vg.generateRandomVariants(GlobalState.varModel, binaryThreshold, binaryModulu));
+                        RandomBinary rb = new RandomBinary(vm);
+                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.BINARY_RANDOM])
+                        {
+                            binaryConfigs.AddRange(rb.getRandomConfigs(expDesignParamSet));
+                        }
+
                         break;
                     case SamplingStrategies.OPTIONWISE:
                         { 
@@ -70,79 +74,6 @@ namespace MachineLearning.Sampling
                             binaryConfigs.AddRange(neg.generateNegativeFW(GlobalState.varModel));
                         }
                         break;
-                    //case SamplingStrategies.BINARY_LINEAR:
-                    //    {
-                    //        foreach (Dictionary<string, string> ParamSet in parametersOfExpDesigns[SamplingStrategies.BINARY_LINEAR])
-                    //        {
-                    //            Linear lin = new Linear();
-                    //            int numberConfigs = 10;
-                    //            int timeout = 400000000;
-
-                    //            foreach (KeyValuePair<String, String> param in ParamSet)
-                    //            {
-                    //                if (param.Key.Equals(Linear.PARAMETER_NUMCONFIGS_NAME))
-                    //                {
-                    //                    if (param.Value.Equals(Linear.PARAMETER_NUMCONFIGS_AS_OW))
-                    //                    {
-                    //                        FeatureWise fw = new FeatureWise();
-                    //                        numberConfigs = (fw.generateFeatureWiseConfigurations(GlobalState.varModel)).Count;
-                    //                    }
-                    //                    if (param.Value.Equals(Linear.PARAMETER_NUMCONFIGS_AS_PW))
-                    //                    {
-                    //                        PairWise pw = new PairWise();
-                    //                        numberConfigs = (pw.generatePairWiseVariants(GlobalState.varModel)).Count;
-                    //                    }
-                    //                }
-                    //                List<List<BinaryOption>> resultUnfiltered = lin.GenerateRLinear(GlobalState.varModel, numberConfigs, timeout);
-                    //                List<List<BinaryOption>> selectedBinaryConfigs = new List<List<BinaryOption>>(); 
-                    //                int offset = resultUnfiltered.Count / numberConfigs;
-
-                    //                for(int i = 0; i < numberConfigs; i++)
-                    //                {
-                    //                    selectedBinaryConfigs.Add(resultUnfiltered[i * offset]);
-                    //                }
-                    //                binaryConfigs.AddRange(selectedBinaryConfigs);
-                    //            }
-                    //        }
-                    //    }
-                    //    break;
-                    //case SamplingStrategies.BINARY_QUADRATIC:
-                    //    {
-                    //        foreach (Dictionary<string, string> ParamSet in parametersOfExpDesigns[SamplingStrategies.BINARY_QUADRATIC])
-                    //        {
-                    //            Quadratic qr = new Quadratic();
-                    //            int numberConfigs = 10;
-                    //            int timeout = 400000000;
-                    //            double scale = 0.1;
-
-                    //            foreach (KeyValuePair<String, String> param in ParamSet)
-                    //            {
-                    //                if (param.Key.Equals(Quadratic.PARAMETER_NUMCONFIGS_NAME))
-                    //                {
-                    //                    if (param.Value.Equals(Quadratic.PARAMETER_NUMCONFIGS_AS_OW))
-                    //                    {
-                    //                        FeatureWise fw = new FeatureWise();
-                    //                        numberConfigs = (fw.generateFeatureWiseConfigurations(GlobalState.varModel)).Count;
-                    //                    }
-                    //                    if (param.Value.Equals(Quadratic.PARAMETER_NUMCONFIGS_AS_PW))
-                    //                    {
-                    //                        PairWise pw = new PairWise();
-                    //                        numberConfigs = (pw.generatePairWiseVariants(GlobalState.varModel)).Count;
-                    //                    }
-                    //                }
-                    //                List<List<BinaryOption>> resultUnfiltered = (qr.GenerateRQuadratic(GlobalState.varModel, numberConfigs, scale, timeout));
-                    //                List<List<BinaryOption>> selectedBinaryConfigs = new List<List<BinaryOption>>();
-                    //                int offset = resultUnfiltered.Count / numberConfigs;
-
-                    //                for (int i = 0; i < numberConfigs; i++)
-                    //                {
-                    //                    selectedBinaryConfigs.Add(resultUnfiltered[i * offset]);
-                    //                }
-                    //                binaryConfigs.AddRange(selectedBinaryConfigs);
-                    //            }
-                    //        }
-                    //        break;
-                    //    }
 
                     case SamplingStrategies.T_WISE:
                         foreach (Dictionary<string, string> ParamSet in parametersOfExpDesigns[SamplingStrategies.T_WISE])

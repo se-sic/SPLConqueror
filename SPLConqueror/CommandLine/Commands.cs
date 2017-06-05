@@ -747,11 +747,14 @@ namespace CommandLine
                     }
                 case COMMAND_SAMPLE_BINARY_RANDOM:
                     {
+                        Dictionary<String, String> parameter = new Dictionary<String, String>();
                         string[] para = task.Split(new char[] { ' ' });
-                        ConfigurationBuilder.binaryThreshold = Convert.ToInt32(para[0]);
-                        ConfigurationBuilder.binaryModulu = Convert.ToInt32(para[1]);
-
-                        VariantGenerator vg = new VariantGenerator();
+                        for(int i = 0; i < para.Length; i++)
+                        {
+                            String key = para[i].Split(':')[0];
+                            String value = para[i].Split(':')[1];
+                            parameter.Add(key, value);
+                        }
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.toSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
@@ -762,6 +765,14 @@ namespace CommandLine
                             this.toSample.Add(SamplingStrategies.BINARY_RANDOM);
                             this.exp.info.binarySamplings_Learning = "BINARY_RANDOM " + task;
                         }
+
+                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_RANDOM))
+                        {
+                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_RANDOM, new List<Dictionary<string, string>>());
+                        }
+                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_RANDOM].Add(parameter);
+
+
                         break;
                     }
 
