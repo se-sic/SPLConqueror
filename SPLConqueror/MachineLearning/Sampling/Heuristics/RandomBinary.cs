@@ -85,7 +85,7 @@ namespace MachineLearning.Sampling.Heuristics
             Random r = new Random(seed);
             for (int i = 0; i < numConfigs; i++)
             {
-                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count + 1)];
+                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count)];
 
                 if(configurations.Contains(selectedConfig))
                 {
