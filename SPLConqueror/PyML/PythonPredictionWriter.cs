@@ -29,7 +29,8 @@ namespace ProcessWrapper
             path += csvFilename + "_";
             path += learningSettings[0] + "_";
             path += identifier;
-            path += csv; 
+            path += csv;
+            path = path.Replace(":", "_");
 
             FileStream csvFileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
             csvWriter = new StreamWriter(csvFileStream);
