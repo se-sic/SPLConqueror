@@ -347,6 +347,13 @@ namespace CommandLine
 
                             this.hasLearnData = co.hasLearnData;
 
+                            while (!reader.EndOfStream)
+                            {
+                                String oneLine = reader.ReadLine().Trim();
+                                co.performOneCommand(oneLine);
+
+                            }
+
                             // Reset the root directory after the execution of the sub-script
                             Directory.SetCurrentDirectory(previousRootDirectory);
                         }
