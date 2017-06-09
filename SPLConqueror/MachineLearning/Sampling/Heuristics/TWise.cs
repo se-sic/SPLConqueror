@@ -24,7 +24,30 @@ namespace MachineLearning.Sampling.Heuristics
             List<List<BinaryOption>> result = new List<List<BinaryOption>>();
             generatePowerSet(vm, candidate, t, result, 0);
 
-            return result;
+            //remove double entries...
+            List<List<BinaryOption>> resultCleaned = new List<List<BinaryOption>>();
+            List<String> configs = new List<string>();
+
+            foreach (List<BinaryOption> options in result)
+            {
+                options.Sort(delegate (BinaryOption o1, BinaryOption o2) { return o1.Name.CompareTo(o2.Name); });
+
+                String currConfig = "";
+
+                foreach(BinaryOption binOpt in options)
+                {
+                    currConfig = currConfig + " " + binOpt.Name;
+                }
+
+                if (!configs.Contains(currConfig))
+                {
+                    resultCleaned.Add(options);
+                    configs.Add(currConfig);
+                }
+            }
+
+
+            return resultCleaned;
 
         }
 

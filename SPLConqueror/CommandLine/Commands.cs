@@ -637,6 +637,12 @@ namespace CommandLine
                         Dictionary<String, String> prameters = new Dictionary<string, string>();
                         //parseParametersToLinearAndQuadraticBinarySampling(para);
 
+                        for(int i = 0; i < para.Length; i++)
+                        {
+                            prameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
+                        }
+
+
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.toSampleValidation.Add(SamplingStrategies.T_WISE);
