@@ -636,12 +636,10 @@ namespace CommandLine
                         Dictionary<String, String> prameters = new Dictionary<string, string>();
                         //parseParametersToLinearAndQuadraticBinarySampling(para);
 
-                        for (int i = 0; i < para.Length; i++)
+ 						for(int i = 0; i < para.Length; i++)
                         {
                             prameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
-                        }
-
-                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        }                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
                             this.binaryToSampleValidation.Add(SamplingStrategies.T_WISE);
                             this.exp.info.binarySamplings_Validation = "T_WISE ";
@@ -759,7 +757,6 @@ namespace CommandLine
                             this.binaryToSample.Add(SamplingStrategies.BINARY_RANDOM);
                             this.exp.info.binarySamplings_Learning = "BINARY_RANDOM " + task;
                         }
-
                         ConfigurationBuilder.binaryParams.randomBinaryParameters.Add(parameter);
 
                         break;
