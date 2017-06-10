@@ -12,25 +12,18 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     /// </summary>
     public class RandomSampling : ExperimentalDesign
     {
-        private int seed = 0;
+        private int seed;
 
-        private int sampleSize = 10;
-
-        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
-        static RandomSampling()
-        {
-            parameter.Add("seed", "int");
-            parameter.Add("sampleSize", "int");
-        }
-       
-        public override Dictionary<string, string> getParameterTypes()
-        {
-            return RandomSampling.parameter;
-        }
+        private int sampleSize;
 
         public RandomSampling(List<NumericOption> options)
             : base(options)
         {
+        }
+
+        public RandomSampling(int seed = 0, int sampleSize = 10)
+        {
+
         }
 
         public void setSeed(int seed)
@@ -40,7 +33,19 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override string getName()
         {
-            return "RandomSampling";
+            return "RANDOM";
+        }
+
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue)
+        {
+            if (parameterNameToValue.ContainsKey("seed"))
+            {
+                seed = parseFromParameters(parameterNameToValue, "seed");
+            }
+            if (parameterNameToValue.ContainsKey("sampleSize"))
+            {
+                sampleSize = parseFromParameters(parameterNameToValue, "sampleSize");
+            }
         }
 
         /// <summary>
@@ -51,27 +56,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             return compute();
         }
-
-        /// <summary>
-        /// Computes random samplings of the numeric option value space. The parameters for this design are a "seed", defining the random seed and the "samplingSize" defining the number of generated samples. 
-        /// </summary>
-        /// <param name="designOptions">Parameters used during the generation of this design.</param>
-        /// <returns>True if the design could be computed using the desired parameters.</returns>
-        public override bool computeDesign(Dictionary<string, string> designOptions)
-        {
-            foreach (KeyValuePair<string, string> param in designOptions)
-            {
-                if (param.Key == "seed")
-                    seed = Convert.ToInt32(param.Value);
-                if (param.Key == "sampleSize")
-                    sampleSize = Convert.ToInt32(param.Value);
-            }
-
-            return compute();
-        }
         
-
-
         private bool compute()
         {
             Random rand = new Random(seed);
@@ -125,5 +110,9 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return true;
         }
 
+        public override string parameterIdentifier()
+        {
+            return "seed-" + seed + "_" + "sampleSize-" + sampleSize + "_";
+        }
     }
 }

@@ -11,70 +11,47 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     {
 
         private double[,] matrix;
-        private int sampleSize = 100;
+        private int sampleSize;
 
-        public int SampleSize
-        {
-            get { return sampleSize; }
-            set { sampleSize = value; }
-        }
         private Dictionary<NumericOption, int> numberOfLevels;
-        private int k = 5;
 
-        public int K
-        {
-            get { return k; }
-            set { k = value; }
-        }
+        private int k;
         private bool rescale = false;
         private double epsilon = 1E-5;
-
-        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
 
         private Dictionary<NumericOption, int> optionToIndex = new Dictionary<NumericOption, int>();
         private Dictionary<NumericOption, List<double>> optionToValues = new Dictionary<NumericOption, List<double>>();
 
-
-        static KExchangeAlgorithm()
-        {
-            parameter.Add("sampleSize", "int");
-            parameter.Add("k", "int");
-        }
-       
-        public override Dictionary<string, string> getParameterTypes()
-        {
-            return KExchangeAlgorithm.parameter;
-        }
-
-
         public override string getName()
         {
-            return "kExchangeAlgorithm";
+            return "KEXCHANGE";
         }
 
         public KExchangeAlgorithm(List<NumericOption> options) 
             : base(options){
         }
 
-
-        public override bool computeDesign(Dictionary<string, string> designOptions)
+        public KExchangeAlgorithm(int sampleSize = 100, int k = 5)
         {
-            foreach (KeyValuePair<string, string> param in designOptions)
-            {
-                if (param.Key == "k")
-                    k = Convert.ToInt32(param.Value);
-                if (param.Key == "sampleSize")
-                    sampleSize = Convert.ToInt32(param.Value);
-            }
-
-            return compute(sampleSize, k);
+            this.sampleSize = sampleSize;
+            this.k = k;
         }
 
         public override bool computeDesign() {
             return compute(this.sampleSize, this.k);
         }
 
-
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue)
+        {
+            if (parameterNameToValue.ContainsKey("sampleSize"))
+            {
+                sampleSize = parseFromParameters(parameterNameToValue, "sampleSize");
+            }
+            if (parameterNameToValue.ContainsKey("k"))
+            {
+                k = parseFromParameters(parameterNameToValue, "k");
+            }
+        }
 
         public bool compute(int _sampleSize, int _k)
         {
@@ -398,6 +375,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             }
 
             return deltas;
+        }
+
+        public override string parameterIdentifier()
+        {
+            return "sampleSize-" + sampleSize + "_" + "k-" + k + "_";
         }
     }
 }

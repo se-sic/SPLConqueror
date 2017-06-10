@@ -13,6 +13,7 @@ namespace MachineLearning.Sampling.Heuristics
     public class RandomBinary
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
+        private Dictionary<string, string> parameters = new Dictionary<string, string>();
 
         private VariabilityModel varModel;
 
