@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OrderedTest name="OrderedSamplingTest" storage="e:\hiwi\splconqueror\splconqueror\samplingunittest\orderedsamplingtest.orderedtest" id="ecb6e573-68ef-4216-9c88-11600a7ae757" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestLinks>
+    <TestLink id="4f50a839-a5c0-773f-030b-5eecf463d340" name="TestLoadingTestVM" storage="bin\debug\samplingunittest.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </TestLinks>
+</OrderedTest>

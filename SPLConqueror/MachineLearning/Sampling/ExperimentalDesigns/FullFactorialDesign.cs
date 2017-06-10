@@ -14,16 +14,17 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
         }
 
-        public override Dictionary<string, string> getParameterTypes()
+        public FullFactorialDesign()
         {
-            return new Dictionary<string, string>();
+
         }
 
         public override string getName()
         {
-            return "FullFactorialDesign";
+            return "FULLFACTORIAL";
         }
 
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue) { }
 
         public override bool computeDesign()
         {
@@ -39,11 +40,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
 
             return true;
-        }
-
-        public override bool computeDesign(Dictionary<string, string> options)
-        {
-            return computeDesign();
         }
 
         private List<Dictionary<NumericOption, double>> getAllPossibleCombinations(Dictionary<NumericOption, List<double>> elementValuePairs)
@@ -96,6 +92,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 numericOptions.Add(optionValuePairs.ElementAt(i).Key, optionValuePairs.ElementAt(i).Value[positions[i]]);
             }
             return numericOptions;
+        }
+
+        public override string parameterIdentifier()
+        {
+            return "";
         }
     }
 }

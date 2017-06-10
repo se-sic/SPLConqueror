@@ -313,7 +313,7 @@ namespace MachineLearning.Learning.Regression
             this.info.numericSamplings_Learning = "";
             this.info.numericSamplings_Validation = "";
 
-            ConfigurationBuilder.parametersOfExpDesigns.Clear();
+            ConfigurationBuilder.binaryParams = new BinaryParameters();
         }
 
         public void clear()
