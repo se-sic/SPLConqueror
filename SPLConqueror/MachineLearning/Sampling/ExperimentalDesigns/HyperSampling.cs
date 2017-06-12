@@ -9,25 +9,21 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 {
     public class HyperSampling : ExperimentalDesign
     {
-
-        private static Dictionary<string, string> parameter = new Dictionary<string, string>(); 
-        static HyperSampling(){
-            parameter.Add("precision", "double");
-        }
-       
-        public override Dictionary<string, string> getParameterTypes()
-        {
-            return HyperSampling.parameter;
-        }
+        private int precision = 50;
 
         public override string getName()
         {
-            return "HyperSampling";
+            return "HYPERSAMPLING";
         }
 
         public HyperSampling(List<NumericOption> options)
             : base(options)
         {
+        }
+
+        public HyperSampling(int precision = 50) : base()
+        {
+            this.precision = precision;
         }
 
         public HyperSampling(String s) : base (s)
@@ -36,15 +32,14 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 this.precision = Int32.Parse(this.designParameter["precision"]);
         }
 
-        private int precision = 50;
-
-        public int Precision
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue)
         {
-            get { return precision; }
-            set { precision = value; }
+            if (parameterNameToValue.ContainsKey("precision"))
+            {
+                precision = parseFromParameters(parameterNameToValue, "precision");
+            }
         }
-        
-        
+
         /*
          * in: int precision; defines the densitiy of the grid. range from 0 - 100. 100 means full variant space. 0 means 0 variants.
          * out: bool; whether the computation was sucessfull.
@@ -92,24 +87,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <returns></returns>
         public override bool computeDesign()
         {
-            return computeDesign(precision);
-        }
-
-        /// <summary>
-        /// This mehtod computes the samplings using the specified parameters. The option to specify is "precision". The value of this parameter specifies the percentage share of 
-        /// values of the cpnfiguration option considered. A int value of [0,100] is needed to specify this parameter.
-        /// </summary>
-        /// <param name="designOptions">Paremeter of the design. </param>
-        /// <returns>True if the design could be computed.</returns>
-        public override bool computeDesign(Dictionary<string, string> designOptions)
-        {
-            double precision = 50;
-
-            foreach (KeyValuePair<string, string> param in designOptions)
-            {
-                if (param.Key == "precision")
-                    precision = Convert.ToInt32(param.Value);
-            }
             return computeDesign(precision);
         }
 
@@ -162,6 +139,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 return this.minNumberOfSamplingsPerNumericOption;
             
             return Convert.ToInt32(number);
+        }
+
+        public override string parameterIdentifier()
+        {
+            return "precision-" + precision + "_";
         }
     }
 }
