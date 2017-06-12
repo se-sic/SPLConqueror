@@ -6,6 +6,11 @@ using System.Text;
 
 namespace MachineLearning.Sampling.Heuristics
 {
+
+    /// <summary>
+    /// This class performs a t-wise sampling on the binary configuration space defined by a  variability model.
+    /// To this end, the variability model as well as the t for the sampling have to be provided by a user.
+    /// </summary>
     class TWise
     {
         private Solver.VariantGenerator generator = new Solver.VariantGenerator();
@@ -92,8 +97,6 @@ namespace MachineLearning.Sampling.Heuristics
             {
                 BinaryOption inList = candidates[i];
 
-                //if (!activeLearning.Contains(pair.Name))
-                //    continue;
                 //Check parent-child relationship
                 if (inList.isAncestor(binaryOption) || binaryOption.isAncestor(inList) || inList == binaryOption)
                     return false;
@@ -121,8 +124,6 @@ namespace MachineLearning.Sampling.Heuristics
                 }
                 if (impliedOption)
                     return false;
-
-
             }
             return true;
         }
