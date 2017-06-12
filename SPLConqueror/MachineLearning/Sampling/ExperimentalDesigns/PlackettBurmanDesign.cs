@@ -13,17 +13,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     public class PlackettBurmanDesign : ExperimentalDesign
     {
 
-        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
-        static PlackettBurmanDesign()
-        {
-            parameter.Add("measurements", "int");
-            parameter.Add("level", "int");
-        }
-       
-        public override Dictionary<string, string> getParameterTypes()
-        {
-            return PlackettBurmanDesign.parameter;
-        }
+        private int level;
+        private int measurements;
 
 
         /// <summary>
@@ -32,7 +23,12 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         public enum Seed { seed9_3, seed27_3, seed81_3, seed25_5, seed125_5, seed49_7 };
 
-
+        public PlackettBurmanDesign(int measurements = 9, int level = 3) 
+        {
+            this.measurements = measurements;
+            this.level = level;
+            initSeeds();
+        }
         /// <summary>
         /// Return the number of measurements for one seed. 
         /// </summary>
@@ -89,7 +85,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override string getName()
         {
-            return "PlackettBurmanDesign";
+            return "PLACKETTBURMAN";
         }
 
 
@@ -98,6 +94,18 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             initSeeds();
             chosenSeed = chooseSeedDymamic();
+        }
+
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue)
+        {
+            if (parameterNameToValue.ContainsKey("level"))
+            {
+                level = parseFromParameters(parameterNameToValue, "level");
+            }
+            if (parameterNameToValue.ContainsKey("measurements"))
+            {
+                measurements = parseFromParameters(parameterNameToValue, "measurements");
+            }
         }
 
         private Seed chooseSeedDymamic()
@@ -152,6 +160,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override bool computeDesign()
         {
+            this.chosenSeed = getSeed(measurements, level);
             int numFeatures = options.Count;
 
             int[] seed = seeds[chosenSeed];
@@ -186,40 +195,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             }
 
             return compute();
-        }
-
-        /// <summary>
-        /// Computes the selected values combinations for the Plackett Burman design using the specific parameters. The two parameters are "level" and "measurements" defining a seed used during the
-        /// generation. 
-        /// 
-        /// Possible combinations of the level and measurements are: 
-        /// 3 9, 3 27, 81 3, 5 25, 5 125, and 7 49. 
-        /// 
-        /// If non of this combiantions is used, the method uses the seed with tree levels and 9 measurements.
-        /// 
-        /// </summary>
-        /// <param name="designOptions">The parameters used during computation of samplings.</param>
-        /// <returns>True if the samplings could be computed.</returns>
-        public override bool computeDesign(Dictionary<string, string> designOptions)
-        {
-            int level = 3;
-            int measurements = 9;
-
-            foreach (KeyValuePair<string, string> param in designOptions)
-            {
-                if (param.Key == "level")
-                    level = Convert.ToInt32(param.Value);
-                if (param.Key == "measurements")
-                    measurements = Convert.ToInt32(param.Value);
-
-            }
-
-            this.chosenSeed = getSeed(measurements, level);
-
-
-
-            return computeDesign();
-
         }
 
         private bool compute()
@@ -315,6 +290,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         public void setSeed(int measurements, int level)
         {
             chosenSeed = getSeed(measurements, level);
+        }
+
+        public override string parameterIdentifier()
+        {
+            return "level-" + level + "_" + "measurements-" + measurements + "_";
         }
     }
 }

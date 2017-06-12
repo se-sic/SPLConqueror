@@ -13,13 +13,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     public abstract class ExperimentalDesign
     {
 
-        /// <summary>
-        /// This method returns a dictionary holding a key value pair for each parameter of the 
-        /// experimental design. The name of the parameter is stored as key and the type of the parameter as value. 
-        /// </summary>
-        /// <returns>Dirctionary consisting of an key value pair for each parameter of the design.</returns>
-        public abstract Dictionary<string, string> getParameterTypes();
-
         protected Dictionary<string, string> designParameter = new Dictionary<string, string>();
         
         protected List<NumericOption> options = null;
@@ -44,6 +37,23 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="samplingDomain">Set of numeric options that are considered by the design.</param>
         public ExperimentalDesign(List<NumericOption> samplingDomain)
+        {
+            options = samplingDomain;
+        }
+
+        /// <summary>
+        /// Creates a new empty experimental design.
+        /// </summary>
+        public ExperimentalDesign()
+        {
+
+        }
+
+        /// <summary>
+        /// Sets the sampling domain of the experimental design.
+        /// </summary>
+        /// <param name="samplingDomain">Set of numeric options that are considered by the design.</param>
+        public void setSamplingDomain(List<NumericOption> samplingDomain)
         {
             options = samplingDomain;
         }
@@ -85,24 +95,41 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         }
 
         /// <summary>
+        /// Get the value of a given sampling parameter from a parameter dictionary.
+        /// </summary>
+        /// <param name="parameter">Dictionary with names of parameters and their value.</param>
+        /// <param name="key">Name of the requested parameter.</param>
+        /// <returns></returns>
+        protected static int parseFromParameters(Dictionary<String, String> parameter, String key)
+        {
+            String valueAsString;
+            parameter.TryGetValue(key, out valueAsString);
+            return Int32.Parse(valueAsString);
+        }
+
+        /// <summary>
+        /// Create a string representing the selected parameters.
+        /// </summary>
+        /// <returns>String representation of the parameters.</returns>
+        public abstract string parameterIdentifier();
+
+        /// <summary>
         /// The Methods returns the name of the experimental design.
         /// </summary>
         /// <returns>Name of the experimental design.</returns>
         public abstract string getName();
+
+        /// <summary>
+        /// Set the sampling parameters of the experimental design.
+        /// </summary>
+        /// <param name="parameterNameToValue">Dictionary with the parameter names and the values that will be set.</param>
+        public abstract void setSamplingParameters(Dictionary<String, String> parameterNameToValue);
        
         /// <summary>
         /// Computes the design using the default parameters. 
         /// </summary>
         /// <returns>True if the computation was successful.</returns>
         public abstract bool computeDesign();
-
-        /// <summary>
-        /// Computes the design using the experimental design specific parameters provided as parameter. 
-        /// </summary>
-        /// <param name="designOptions">Expeimental specific parameters. Keys of the dictionary are the names of the parameters and the values of the dictionary are the values of the parameters.</param>
-        /// <returns>True of the computation was successful</returns>
-        public abstract bool computeDesign(Dictionary<string, string> designOptions);
-
 
         /// <summary>
         /// Samples the value space of one numeric option. The values are equal distributed. The number of values is defined by the <see cref="minNumberOfSamplingsPerNumericOption"/> field. The minimal and 
