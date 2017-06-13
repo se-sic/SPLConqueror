@@ -1361,7 +1361,7 @@ namespace CommandLine
         private void predict(string task, bool useTrueModel = false)
         {
             StreamWriter sw = new StreamWriter(task);
-            sw.Write("configuration;real value;prediction;deviation;precentage;" + Environment.NewLine);
+            sw.Write("configuration;real value;prediction;deviation;percentage;" + Environment.NewLine);
             for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
             {
                 Configuration currentConfiguration = GlobalState.allMeasurements.Configurations.ElementAt(i);
