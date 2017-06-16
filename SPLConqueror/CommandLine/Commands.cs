@@ -914,11 +914,11 @@ namespace CommandLine
                         double relativeerror = 0;
                         if (GlobalState.evaluationSet.Configurations.Count > 0)
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings);
                         }
                         else
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings);
                         }
 
                         //    globalstate.loginfo.logline("error :" + relativeerror);

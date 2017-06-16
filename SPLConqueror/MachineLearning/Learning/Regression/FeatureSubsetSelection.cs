@@ -362,7 +362,7 @@ namespace MachineLearning.Learning.Regression
             sortedFeatures.Sort(sortedFeatures.First());
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
-                foreach (Feature candidate in errorOfFeature.Keys)
+				foreach (Feature candidate in sortedFeatures)
                 {
                     var candidateError = errorOfFeature[candidate];
                     var candidateScore = previousRound.validationError_relative - candidateError;
@@ -1329,7 +1329,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="configs">The configurations for which predictions should be made. The configurations must contain the measured/true value to compute the error.</param>
         /// <param name="loss">The loss functions used to compute the error.</param>
         /// <returns>The error of the model for the given configurations.</returns>
-        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss)
+        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss, ML_Settings mlSettingObject)
         {
             double error_sum = 0;
             int skips = 0;
@@ -1373,12 +1373,25 @@ namespace MachineLearning.Learning.Regression
                         }
                         else
                             error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+
+
+                        // Consider epsilon tube
+                        double percentageOfError = error / realValue;
+                        if (percentageOfError < mlSettingObject.epsilonTube)
+                        {
+                            error = 0.0;
+                        }
+                        
                         break;
                     case ML_Settings.LossFunction.LEASTSQUARES:
                         error = Math.Pow(realValue - estimatedValue, 2);
                         break;
                     case ML_Settings.LossFunction.ABSOLUTE:
                         error = Math.Abs(realValue - estimatedValue);
+
+                        if (error < mlSettingObject.epsilonTube)
+                            error = 0.0;
+
                         break;
                 }
                 error_sum += error;
