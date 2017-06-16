@@ -3,7 +3,7 @@ solution: SPLConqueror.sln
 mono:
   - latest
 install:
-  - nuget restore solution-name.sln
+  - nuget restore SPLConqueror.sln
   - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release SPLConqueror.sln
