@@ -362,7 +362,7 @@ namespace MachineLearning.Learning.Regression
             sortedFeatures.Sort(sortedFeatures.First());
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
-                foreach (Feature candidate in errorOfFeature.Keys)
+				foreach (Feature candidate in sortedFeatures)
                 {
                     var candidateError = errorOfFeature[candidate];
                     var candidateScore = previousRound.validationError_relative - candidateError;
