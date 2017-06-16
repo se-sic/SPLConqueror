@@ -6,5 +6,5 @@ install:
   - nuget restore ./SPLConqueror/SPLConqueror.sln
   - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
-  - xbuild /p:Configuration=Release ./SPLConqueror/SPLConqueror.sln
+  - msbuild ./SPLConqueror/SPLConqueror.sln /t:Build/p:Configuration=Release
   - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./SPLConqueror/SamplingUnitTest/bin/Release/SamplingUnitTest.dll
