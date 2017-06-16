@@ -1,0 +1,10 @@
+language: csharp
+solution: SPLConqueror.sln
+mono:
+  - latest
+install:
+  - nuget restore solution-name.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release SPLConqueror.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./SamplingUnitTest/bin/Release/SamplingUnitTest.dll
