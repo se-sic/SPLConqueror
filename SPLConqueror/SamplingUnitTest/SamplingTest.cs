@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
+using NUnit.Framework;
 using System.Collections.Generic;
 using MachineLearning.Sampling.ExperimentalDesigns;
 
 namespace SamplingUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class SamplingTest
     {
 
@@ -37,20 +37,20 @@ namespace SamplingUnitTest
         private const int EXPECTED_T_WISE_2 = 287;
         private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
 
-        [TestMethod]
+        [Test, Order(1)]
         public void TestLoadingTestVM()
         {
             Assert.IsTrue(model.loadXML(modelPath));
             GlobalState.varModel = model;
         }
 
-        [TestMethod]
+        [Test, Order(2)]
         public void TestWholePop()
         {
             testBinary(SamplingStrategies.ALLBINARY, EXPECTED_CENTRALCOMP_ALLBINARY);
         }
 
-        [TestMethod]
+        [Test, Order(3)]
         public void TestNegFeatureWise()
         {
             testBinary(SamplingStrategies.NEGATIVE_OPTIONWISE, EXPECTED_NEG_FEATURE_WISE);
@@ -66,13 +66,13 @@ namespace SamplingUnitTest
             Assert.AreEqual(expected, result.Count);
         }
 
-        [TestMethod]
+        [Test, Order(4)]
         public void TestPairWise()
         {
             testBinary(SamplingStrategies.PAIRWISE, EXPECTED_PAIRWISE);
         }
 
-        [TestMethod]
+        [Test, Order(5)]
         public void TestFeatureWise()
         {
             testBinary(SamplingStrategies.OPTIONWISE, EXPECTED_OPTIONWISE);
@@ -88,13 +88,13 @@ namespace SamplingUnitTest
             Assert.AreEqual(expected, result.Count);
         }
 
-        [TestMethod]
+        [Test, Order(6)]
         public void TestBoxBehnken()
         {
             testNumeric(new BoxBehnkenDesign(), EXPECTED_BOXBEHNKEN);
         }
 
-        [TestMethod]
+        [Test, Order(7)]
         public void TestHypersampling()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -108,7 +108,7 @@ namespace SamplingUnitTest
             testNumeric(sampling, EXPECTED_HYPERSAMPLING_40);
         }
 
-        [TestMethod]
+        [Test, Order(8)]
         public void TestOneFactorAtATime()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -123,7 +123,7 @@ namespace SamplingUnitTest
             testNumeric(sampling, EXPECTED_ONE_FACTOR_AT_A_TIME_3);
         }
 
-        [TestMethod]
+        [Test, Order(9)]
         public void TestNumericRandom()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -139,7 +139,7 @@ namespace SamplingUnitTest
             testNumeric(sampling, EXPECTED_RANDOM_10_0);
         }
 
-        [TestMethod]
+        [Test, Order(10)]
         public void TestPlackettBurman()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -155,7 +155,7 @@ namespace SamplingUnitTest
             testNumeric(sampling, EXPECTED_PLACKETT_BURMAN_5_125);
         }
 
-        [TestMethod]
+        [Test, Order(11)]
         public void TestKExchange()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -172,7 +172,7 @@ namespace SamplingUnitTest
             testNumeric(sampling, EXPECTED_KEXCHANGE_3_1);
         }
 
-        [TestMethod]
+        [Test, Order(12)]
         public void TestTWise()
         {
             List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
@@ -192,7 +192,7 @@ namespace SamplingUnitTest
             Assert.AreEqual(EXPECTED_T_WISE_2, result.Count);
         }
 
-        [TestMethod]
+        [Test, Order(13)]
         public void TestBinaryRandom()
         {
             List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
