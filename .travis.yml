@@ -4,7 +4,7 @@ mono:
   - latest
 install:
   - nuget restore ./SPLConqueror/SPLConqueror.sln
-  - nuget install NUnit.Runners -Version 3.7.1 -OutputDirectory testrunner
+  - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner
 script:
   - msbuild ./SPLConqueror/SPLConqueror.sln /t:Build
-  - mono ./testrunner/NUnit.Runners.3.7.1/tools/nunit-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll
+  - mono ./testrunner/NUnit.Runners.3.6.1/tools/nunit-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll
