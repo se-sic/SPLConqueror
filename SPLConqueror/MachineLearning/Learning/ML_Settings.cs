@@ -11,6 +11,8 @@ namespace MachineLearning.Learning
     public class ML_Settings
     {
 
+        public double epsilonTube = 5.0;
+
         public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
 
         /// <summary>
