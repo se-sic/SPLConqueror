@@ -40,6 +40,12 @@ namespace SamplingUnitTest
         [Test, Order(1)]
         public void TestLoadingTestVM()
         {
+            if (!File.Exists(modelPath))
+            {
+                // TODO: Find a better way to find the example files if app base is incorrect
+                modelPath = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
+                  + "Files/VariabilityModelSampling.xml";
+            }
             Assert.IsTrue(model.loadXML(modelPath));
             GlobalState.varModel = model;
         }
