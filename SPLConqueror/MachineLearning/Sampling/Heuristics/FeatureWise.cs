@@ -10,7 +10,6 @@ namespace MachineLearning.Sampling.Heuristics
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
 
-
         /// <summary>
         /// Generates configurations based on the feature-wise heuristic: The method utilizes the structure of the variability model by first determining the set of options that are always selected.
         /// In each iteration, it starts from this set of options (partial configuration) and adds a single option to this partial configurations. 

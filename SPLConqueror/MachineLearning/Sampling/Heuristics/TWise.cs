@@ -6,6 +6,11 @@ using System.Text;
 
 namespace MachineLearning.Sampling.Heuristics
 {
+
+    /// <summary>
+    /// This class performs a t-wise sampling on the binary configuration space defined by a  variability model.
+    /// To this end, the variability model as well as the t for the sampling have to be provided by a user.
+    /// </summary>
     class TWise
     {
         private Solver.VariantGenerator generator = new Solver.VariantGenerator();
@@ -24,7 +29,29 @@ namespace MachineLearning.Sampling.Heuristics
             List<List<BinaryOption>> result = new List<List<BinaryOption>>();
             generatePowerSet(vm, candidate, t, result, 0);
 
-            return result;
+            //remove double entries...
+            List<List<BinaryOption>> resultCleaned = new List<List<BinaryOption>>();
+            List<String> configs = new List<string>();
+
+			foreach (List<BinaryOption> options in result)
+            {
+                options.Sort(delegate (BinaryOption o1, BinaryOption o2) { return o1.Name.CompareTo(o2.Name); });
+
+                String currConfig = "";
+
+                foreach (BinaryOption binOpt in options)
+                {
+                    currConfig = currConfig + " " + binOpt.Name;                }
+
+                if (!configs.Contains(currConfig))
+                {
+                    resultCleaned.Add(options);
+                    configs.Add(currConfig);
+                }
+            }
+
+
+            return resultCleaned;
 
         }
 
@@ -69,8 +96,6 @@ namespace MachineLearning.Sampling.Heuristics
             {
                 BinaryOption inList = candidates[i];
 
-                //if (!activeLearning.Contains(pair.Name))
-                //    continue;
                 //Check parent-child relationship
                 if (inList.isAncestor(binaryOption) || binaryOption.isAncestor(inList) || inList == binaryOption)
                     return false;
@@ -98,8 +123,6 @@ namespace MachineLearning.Sampling.Heuristics
                 }
                 if (impliedOption)
                     return false;
-
-
             }
             return true;
         }

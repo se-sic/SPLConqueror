@@ -47,7 +47,9 @@ namespace SPLConqueror_Core
             this.postfix = postfix;
 
             if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > order.Count)
-                this.order = enrichWithAllOptions(order);
+                this.order = enrichWithAllOptions (order);
+            else 
+                this.order = order;
 
         }
 

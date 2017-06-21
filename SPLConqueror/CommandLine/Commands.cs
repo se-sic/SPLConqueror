@@ -89,8 +89,10 @@ namespace CommandLine
         public const string COMMAND_PYTHON_LEARN = "learn-python";
         public const string COMMAND_PYTHON_LEARN_OPT = "learn-python-opt";
 
-        List<SamplingStrategies> toSample = new List<SamplingStrategies>();
-        List<SamplingStrategies> toSampleValidation = new List<SamplingStrategies>();
+        List<SamplingStrategies> binaryToSample = new List<SamplingStrategies>();
+        List<SamplingStrategies> binaryToSampleValidation = new List<SamplingStrategies>();
+        List<ExperimentalDesign> numericToSample = new List<ExperimentalDesign>();
+        List<ExperimentalDesign> numericToSampleValidation = new List<ExperimentalDesign>();
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
@@ -204,8 +206,8 @@ namespace CommandLine
                         else
                         {
                             this.mlSettings = recoveredData.Item1;
-                            this.toSample = recoveredData.Item2;
-                            this.toSampleValidation = recoveredData.Item3;
+                            this.binaryToSample = recoveredData.Item2;
+                            this.binaryToSampleValidation = recoveredData.Item3;
 
                             FileInfo fi = new FileInfo(taskAsParameter[7]);
                             StreamReader reader = null;
@@ -220,8 +222,8 @@ namespace CommandLine
                                 hasLearnData = true;
                             }
                             co.exp = this.exp;
-                            co.toSample = this.toSample;
-                            co.toSampleValidation = this.toSampleValidation;
+                            co.binaryToSample = this.binaryToSample;
+                            co.binaryToSampleValidation = this.binaryToSampleValidation;
                             co.mlSettings = this.mlSettings;
                             GlobalState.rollback = true;
 
@@ -236,8 +238,8 @@ namespace CommandLine
                     }
                 case COMMAND_SAVE:
                     {
-                        CommandPersistence.dump(taskAsParameter, this.mlSettings, this.toSample,
-                            this.toSampleValidation, this.exp, this.currentHistory);
+                        CommandPersistence.dump(taskAsParameter, this.mlSettings, this.binaryToSample,
+                            this.binaryToSampleValidation, this.exp, this.currentHistory);
                         break;
                     }
                 case COMMAND_ROLLBACK:
@@ -291,8 +293,8 @@ namespace CommandLine
                             co.hasLearnData = true;
                         }
                         co.exp = this.exp;
-                        co.toSample = this.toSample;
-                        co.toSampleValidation = this.toSampleValidation;
+                        co.binaryToSample = this.binaryToSample;
+                        co.binaryToSampleValidation = this.binaryToSampleValidation;
                         co.mlSettings = this.mlSettings;
                         GlobalState.rollback = true;
 
@@ -337,8 +339,8 @@ namespace CommandLine
                             co.currentHistory = this.currentHistory;
                             if (GlobalState.rollback)
                             {
-                                co.toSample = this.toSample;
-                                co.toSampleValidation = this.toSampleValidation;
+                                co.binaryToSample = this.binaryToSample;
+                                co.binaryToSampleValidation = this.binaryToSampleValidation;
                                 co.mlSettings = this.mlSettings;
                             }
 
@@ -368,18 +370,20 @@ namespace CommandLine
                     break;
                 case COMMAND_CLEAR_GLOBAL:
                     SPLConqueror_Core.GlobalState.clear();
-                    toSample.Clear();
-                    toSampleValidation.Clear();
+                    binaryToSample.Clear();
+                    binaryToSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_SAMPLING:
                     exp.clearSampling();
-                    toSample.Clear();
-                    toSampleValidation.Clear();
+                    binaryToSample.Clear();
+                    binaryToSampleValidation.Clear();
+                    numericToSample.Clear();
+                    numericToSampleValidation.Clear();
                     break;
                 case COMMAND_CLEAR_LEARNING:
                     exp.clear();
-                    toSample.Clear();
-                    toSampleValidation.Clear();
+                    binaryToSample.Clear();
+                    binaryToSampleValidation.Clear();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
@@ -451,12 +455,12 @@ namespace CommandLine
                     {
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
-                            this.toSampleValidation.Add(SamplingStrategies.ALLBINARY);
+                            this.binaryToSampleValidation.Add(SamplingStrategies.ALLBINARY);
                             this.exp.info.binarySamplings_Validation = "ALLBINARY";
                         }
                         else
                         {
-                            this.toSample.Add(SamplingStrategies.ALLBINARY);
+                            this.binaryToSample.Add(SamplingStrategies.ALLBINARY);
                             this.exp.info.binarySamplings_Learning = "ALLBINARY";
                         }
 
@@ -620,18 +624,13 @@ namespace CommandLine
                 case COMMAND_SAMPLE_OPTIONWISE:
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.OPTIONWISE);
+                        this.binaryToSampleValidation.Add(SamplingStrategies.OPTIONWISE);
                         this.exp.info.binarySamplings_Validation = "OPTIONSWISE";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.OPTIONWISE);
+                        this.binaryToSample.Add(SamplingStrategies.OPTIONWISE);
                         this.exp.info.binarySamplings_Learning = "OPTIONSWISE";
-                    }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.OPTIONWISE))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.OPTIONWISE, new List<Dictionary<string, string>>());
-                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.OPTIONWISE].Add(new Dictionary<string, string>());
                     }
 
                     break;
@@ -644,22 +643,20 @@ namespace CommandLine
                         Dictionary<String, String> prameters = new Dictionary<string, string>();
                         //parseParametersToLinearAndQuadraticBinarySampling(para);
 
-                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+ 						for(int i = 0; i < para.Length; i++)
                         {
-                            this.toSampleValidation.Add(SamplingStrategies.T_WISE);
+                            prameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
+                        }                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                        {
+                            this.binaryToSampleValidation.Add(SamplingStrategies.T_WISE);
                             this.exp.info.binarySamplings_Validation = "T_WISE ";
                         }
                         else
                         {
-                            this.toSample.Add(SamplingStrategies.T_WISE);
+                            this.binaryToSample.Add(SamplingStrategies.T_WISE);
                             this.exp.info.binarySamplings_Learning = "T_WISE ";
                         }
-
-                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.T_WISE))
-                        {
-                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.T_WISE, new List<Dictionary<string, string>>());
-                        }
-                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.T_WISE].Add(prameters);
+                        ConfigurationBuilder.binaryParams.tWiseParameters.Add(prameters);
                     }
                     break;  
 
@@ -684,18 +681,13 @@ namespace CommandLine
 
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.PAIRWISE);
+                        this.binaryToSampleValidation.Add(SamplingStrategies.PAIRWISE);
                         this.exp.info.binarySamplings_Validation = "PAIRWISE";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.PAIRWISE);
+                        this.binaryToSample.Add(SamplingStrategies.PAIRWISE);
                         this.exp.info.binarySamplings_Learning = "PAIRWISE";
-                    }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.PAIRWISE))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.PAIRWISE, new List<Dictionary<string, string>>());
-                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.PAIRWISE].Add(new Dictionary<string, string>());
                     }
                     break;
 
@@ -729,7 +721,7 @@ namespace CommandLine
                             ConfigurationPrinter printer = null;
 
                             ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
-                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.toSample);
+                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample);
                             if (para.Length >= 3)
                             {
                                 printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1], para[2]);
@@ -764,21 +756,15 @@ namespace CommandLine
                         }
                         if (taskAsParameter.Contains(COMMAND_VALIDATION))
                         {
-                            this.toSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
+                            this.binaryToSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
                             this.exp.info.binarySamplings_Validation = "BINARY_RANDOM";
                         }
                         else
                         {
-                            this.toSample.Add(SamplingStrategies.BINARY_RANDOM);
+                            this.binaryToSample.Add(SamplingStrategies.BINARY_RANDOM);
                             this.exp.info.binarySamplings_Learning = "BINARY_RANDOM " + task;
                         }
-
-                        if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BINARY_RANDOM))
-                        {
-                            ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BINARY_RANDOM, new List<Dictionary<string, string>>());
-                        }
-                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BINARY_RANDOM].Add(parameter);
-
+                        ConfigurationBuilder.binaryParams.randomBinaryParameters.Add(parameter);
 
                         break;
                     }
@@ -935,11 +921,11 @@ namespace CommandLine
                         double relativeerror = 0;
                         if (GlobalState.evaluationSet.Configurations.Count > 0)
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings);
                         }
                         else
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings);
                         }
 
                         //    globalstate.loginfo.logline("error :" + relativeerror);
@@ -1005,18 +991,13 @@ namespace CommandLine
 
                     if (taskAsParameter.Contains(COMMAND_VALIDATION))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
+                        this.binaryToSampleValidation.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
                         this.exp.info.binarySamplings_Validation = "NEGATIVE_OPTIONWISE";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
+                        this.binaryToSample.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
                         this.exp.info.binarySamplings_Learning = "NEGATIVE_OPTIONWISE";
-                    }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.NEGATIVE_OPTIONWISE))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.NEGATIVE_OPTIONWISE, new List<Dictionary<string, string>>());
-                        ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.NEGATIVE_OPTIONWISE].Add(new Dictionary<string, string>());
                     }
                     break;
                 default:
@@ -1032,29 +1013,21 @@ namespace CommandLine
             sb.Append(this.exp.info.binarySamplings_Learning + "_");
 
             // add numeric sampling strategy to the identifier
-            foreach (KeyValuePair<SamplingStrategies, List<Dictionary<string, string>>> sampling in ConfigurationBuilder.parametersOfExpDesigns)
+            foreach (ExperimentalDesign sampling in numericToSample)
             {
-                foreach (Dictionary<string, string> allParameters in sampling.Value)
-                {
-                    StringBuilder parameterString = new StringBuilder();
-                    foreach (KeyValuePair<string, string> parameters in allParameters)
-                    {
-                        parameterString.Append(parameters.Key + "-" + parameters.Value + "_");
-                    }
-                    sb.Append("_" + sampling.Key + "--" + parameterString);
-                }
+                sb.Append("_" + sampling.getName() + "--" + sampling.parameterIdentifier());
             }
             return sb.ToString();
         }
 
         private bool isAllMeasurementsToSample()
         {
-            return this.toSample.Contains(SamplingStrategies.ALLBINARY) && this.toSample.Contains(SamplingStrategies.FULLFACTORIAL);
+            return this.binaryToSample.Contains(SamplingStrategies.ALLBINARY) && this.binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL);
         }
 
         private bool isAllMeasurementsValidation()
         {
-            return this.toSampleValidation.Contains(SamplingStrategies.ALLBINARY) && this.toSample.Contains(SamplingStrategies.FULLFACTORIAL);
+            return this.binaryToSampleValidation.Contains(SamplingStrategies.ALLBINARY) && this.binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL);
         }
 
         private bool allMeasurementsValid()
@@ -1067,10 +1040,10 @@ namespace CommandLine
             return true;
         }
 
-        private List<Configuration> buildSet(List<SamplingStrategies> strats)
+        private List<Configuration> buildSet(List<SamplingStrategies> binaryStrats, List<ExperimentalDesign> numericStrats)
         {
             ConfigurationBuilder.setBlacklisted(mlSettings.blacklisted);
-            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, strats);
+            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binaryStrats, numericStrats);
             //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
             if (trueModel != null)
             {
@@ -1101,7 +1074,7 @@ namespace CommandLine
             }
             else
             {
-                configurationsLearning = buildSet(this.toSample);
+                configurationsLearning = buildSet(this.binaryToSample, this.numericToSample);
             }
 
             if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()) && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
@@ -1110,7 +1083,7 @@ namespace CommandLine
             }
             else
             {
-                configurationsValidation = buildSet(this.toSampleValidation);
+                configurationsValidation = buildSet(this.binaryToSampleValidation, this.numericToSampleValidation);
             }
             return Tuple.Create(configurationsLearning, configurationsValidation);
         }
@@ -1273,146 +1246,116 @@ namespace CommandLine
                 case COMMAND_EXPDESIGN_BOXBEHNKEN:
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.BOXBEHNKEN);
+                        this.numericToSampleValidation.Add(new BoxBehnkenDesign());
                         this.exp.info.numericSamplings_Validation = "BOXBEHNKEN";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.BOXBEHNKEN);
+                        this.numericToSample.Add(new BoxBehnkenDesign());
                         this.exp.info.numericSamplings_Learning = "BOXBEHNKEN";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.BOXBEHNKEN))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.BOXBEHNKEN, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.BOXBEHNKEN].Add(parameter);
                     break;
                 case COMMAND_EXPDESIGN_CENTRALCOMPOSITE:
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.CENTRALCOMPOSITE);
+                        this.numericToSampleValidation.Add(new CentralCompositeInscribedDesign());
                         this.exp.info.numericSamplings_Validation = "CENTRALCOMPOSITE";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.CENTRALCOMPOSITE);
+                        this.numericToSample.Add(new CentralCompositeInscribedDesign());
                         this.exp.info.numericSamplings_Learning = "CENTRALCOMPOSITE";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.CENTRALCOMPOSITE))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.CENTRALCOMPOSITE, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE].Add(parameter);
                     break;
                 case COMMAND_EXPDESIGN_FULLFACTORIAL:
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.FULLFACTORIAL);
+                        this.numericToSampleValidation.Add(new FullFactorialDesign());
                         this.exp.info.numericSamplings_Validation = "FULLFACTORIAL";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.FULLFACTORIAL);
+                        this.numericToSample.Add(new FullFactorialDesign());
                         this.exp.info.numericSamplings_Learning = "FULLFACTORIAL";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.FULLFACTORIAL))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.FULLFACTORIAL, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.FULLFACTORIAL].Add(parameter);
                     break;
                 case "featureInteraction":
                     GlobalState.logError.logLine("not implemented yet");
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:
+                    HyperSampling hyperDesignToAdd = new HyperSampling();
+                    hyperDesignToAdd.setSamplingParameters(parameter);
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.HYPERSAMPLING);
+                        this.numericToSampleValidation.Add(hyperDesignToAdd);
                         this.exp.info.numericSamplings_Validation = "HYPERSAMPLING";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.HYPERSAMPLING);
+                        this.numericToSample.Add(hyperDesignToAdd);
                         this.exp.info.numericSamplings_Learning = "HYPERSAMPLING";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.HYPERSAMPLING))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.HYPERSAMPLING, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.HYPERSAMPLING].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
+                    OneFactorAtATime oneFactorDesignToAdd = new OneFactorAtATime();
+                    oneFactorDesignToAdd.setSamplingParameters(parameter);
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.ONEFACTORATATIME);
+                        this.numericToSampleValidation.Add(oneFactorDesignToAdd);
                         this.exp.info.numericSamplings_Validation = "ONEFACTORATATIME";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.ONEFACTORATATIME);
+                        this.numericToSample.Add(oneFactorDesignToAdd);
                         this.exp.info.numericSamplings_Learning = "ONEFACTORATATIME";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.ONEFACTORATATIME))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.ONEFACTORATATIME, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.ONEFACTORATATIME].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_KEXCHANGE:
+                    KExchangeAlgorithm kexchangeToAdd = new KExchangeAlgorithm();
+                    kexchangeToAdd.setSamplingParameters(parameter);
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.KEXCHANGE);
+                        this.numericToSampleValidation.Add(kexchangeToAdd);
                         this.exp.info.numericSamplings_Validation = "KEXCHANGE";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.KEXCHANGE);
+                        this.numericToSample.Add(kexchangeToAdd);
                         this.exp.info.numericSamplings_Learning = "KEXCHANGE";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.KEXCHANGE))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.KEXCHANGE, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.KEXCHANGE].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
+                    PlackettBurmanDesign plackettDesignToAdd = new PlackettBurmanDesign();
+                    plackettDesignToAdd.setSamplingParameters(parameter);
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.PLACKETTBURMAN);
+                        this.numericToSampleValidation.Add(plackettDesignToAdd);
                         this.exp.info.numericSamplings_Validation = "PLACKETTBURMAN";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.PLACKETTBURMAN);
+                        this.numericToSample.Add(plackettDesignToAdd);
                         this.exp.info.numericSamplings_Learning = "PLACKETTBURMAN";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.PLACKETTBURMAN))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.PLACKETTBURMAN, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN].Add(parameter);
                     break;
 
                 case COMMAND_EXPDESIGN_RANDOM:
+                    RandomSampling randomToAdd = new RandomSampling();
+                    randomToAdd.setSamplingParameters(parameter);
                     if (parameter.ContainsKey("validation"))
                     {
-                        this.toSampleValidation.Add(SamplingStrategies.RANDOM);
+                        this.numericToSampleValidation.Add(randomToAdd);
                         this.exp.info.numericSamplings_Validation = "RANDOM";
                     }
                     else
                     {
-                        this.toSample.Add(SamplingStrategies.RANDOM);
+                        this.numericToSample.Add(randomToAdd);
                         this.exp.info.numericSamplings_Learning = "RANDOM";
                     }
-                    if (!ConfigurationBuilder.parametersOfExpDesigns.ContainsKey(SamplingStrategies.RANDOM))
-                    {
-                        ConfigurationBuilder.parametersOfExpDesigns.Add(SamplingStrategies.RANDOM, new List<Dictionary<string, string>>());
-                    }
-                    ConfigurationBuilder.parametersOfExpDesigns[SamplingStrategies.RANDOM].Add(parameter);
                     break;
 
                 default:
@@ -1425,7 +1368,7 @@ namespace CommandLine
         private void predict(string task, bool useTrueModel = false)
         {
             StreamWriter sw = new StreamWriter(task);
-            sw.Write("configuration;real value;prediction;deviation;precentage;" + Environment.NewLine);
+            sw.Write("configuration;real value;prediction;deviation;percentage;" + Environment.NewLine);
             for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
             {
                 Configuration currentConfiguration = GlobalState.allMeasurements.Configurations.ElementAt(i);

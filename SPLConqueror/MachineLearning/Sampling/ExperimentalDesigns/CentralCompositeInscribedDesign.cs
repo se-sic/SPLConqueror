@@ -23,21 +23,18 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
         }
 
-        public override Dictionary<string, string> getParameterTypes()
-        {
-            return new Dictionary<string, string>();
-        }
+        /// <summary>
+        /// Creates a new Central Composite sampling design.
+        /// </summary>
+        public CentralCompositeInscribedDesign() { }
         
 
         public override string getName()
         {
-            return "CentralCompositeInscribedDesign";
+            return "CENTRALCOMPOSITE";
         }
 
-        public override bool computeDesign(Dictionary<string, string> options)
-        {
-            return computeDesign();
-        }
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue) { }
 
         public override bool computeDesign()
         {
@@ -165,5 +162,9 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return configs;
         }
 
+        public override string parameterIdentifier()
+        {
+            return "";
+        }
     }
 }
