@@ -203,8 +203,9 @@ namespace MachineLearning.Learning.Regression
                 return;
             this.startTime = System.DateTime.Now;
             LearningRound current = new LearningRound();
+
             if (this.strictlyMandatoryFeatures.Count > 0)
-                current.FeatureSet.AddRange(this.strictlyMandatoryFeatures);
+                current.FeatureSet.Add(this.strictlyMandatoryFeatures[0]);
             LearningRound previous;
             do
             {
@@ -282,7 +283,6 @@ namespace MachineLearning.Learning.Regression
         {
             //Error in this round (depends on crossvalidation)
             double minimalRoundError = Double.MaxValue;
-            double maximalWeightedAbsoluteRoundInfluence = 0.0;
             double maximalRoundScore = Double.MinValue;
             IDictionary<Feature, double> bfCandidateRate = null;
             List<Feature> bestModel = null;
@@ -362,7 +362,7 @@ namespace MachineLearning.Learning.Regression
             sortedFeatures.Sort(sortedFeatures.First());
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
-                foreach (Feature candidate in errorOfFeature.Keys)
+				foreach (Feature candidate in sortedFeatures)
                 {
                     var candidateError = errorOfFeature[candidate];
                     var candidateScore = previousRound.validationError_relative - candidateError;
@@ -521,6 +521,10 @@ namespace MachineLearning.Learning.Regression
                     if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
                         continue;
 
+                    if (this.strictlyMandatoryFeatures.Contains (feature)) {
+                        continue;
+                    }
+
                     //Binary times the same binary makes no sense
                     if (basicFeature.participatingBoolOptions.Count > 0)
                     {
@@ -549,6 +553,9 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
+                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
+                            continue;
+                        }
                         newCandidate = new Feature(feature, newCandidate, basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -568,6 +575,9 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
+                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
+                            continue;
+                        }
                         newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -600,6 +610,10 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
+                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
+                            continue;
+                        }
+
                         newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
                         if (newCandidate.participatingBoolOptions.Count == 0 && newCandidate.participatingNumOptions.All(x => x.Min_value > 0))
                         {
@@ -618,6 +632,9 @@ namespace MachineLearning.Learning.Regression
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                             continue;
+                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
+                            continue;
+                        }
 
                         if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
                         {
@@ -1329,7 +1346,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="configs">The configurations for which predictions should be made. The configurations must contain the measured/true value to compute the error.</param>
         /// <param name="loss">The loss functions used to compute the error.</param>
         /// <returns>The error of the model for the given configurations.</returns>
-        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss)
+        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss, ML_Settings mlSettingObject)
         {
             double error_sum = 0;
             int skips = 0;
@@ -1373,12 +1390,25 @@ namespace MachineLearning.Learning.Regression
                         }
                         else
                             error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+
+
+                        // Consider epsilon tube
+                        double percentageOfError = error / realValue;
+                        if (percentageOfError < mlSettingObject.epsilonTube)
+                        {
+                            error = 0.0;
+                        }
+                        
                         break;
                     case ML_Settings.LossFunction.LEASTSQUARES:
                         error = Math.Pow(realValue - estimatedValue, 2);
                         break;
                     case ML_Settings.LossFunction.ABSOLUTE:
                         error = Math.Abs(realValue - estimatedValue);
+
+                        if (error < mlSettingObject.epsilonTube)
+                            error = 0.0;
+
                         break;
                 }
                 error_sum += error;

@@ -13,7 +13,7 @@ namespace MachineLearning.Sampling
         public static int binaryThreshold = 0;
         public static int binaryModulu = 0;
         public static Dictionary<SamplingStrategies, List<NumericOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<NumericOption>>();
-        public static Dictionary<SamplingStrategies, List<Dictionary<String, String>>> parametersOfExpDesigns = new Dictionary<SamplingStrategies, List<Dictionary<string, string>>>();
+        public static BinaryParameters binaryParams = new BinaryParameters();
 
         // Added by Ch.K.
         private static List<String> blacklisted;
@@ -23,15 +23,15 @@ namespace MachineLearning.Sampling
             ConfigurationBuilder.blacklisted = blacklist;
         }
 
-        public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> strategies)
+        public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> binaryStrategies,
+            List<ExperimentalDesign> experimentalDesigns)
         {
             List<Configuration> result = new List<Configuration>();
             VariantGenerator vg = new VariantGenerator();
-            ExperimentalDesign design = null;
 
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
             List<Dictionary<NumericOption, Double>> numericConfigs = new List<Dictionary<NumericOption, double>>();
-            foreach (SamplingStrategies strat in strategies)
+            foreach (SamplingStrategies strat in binaryStrategies)
             {
                 switch (strat)
                 {
@@ -41,7 +41,7 @@ namespace MachineLearning.Sampling
                         break;
                     case SamplingStrategies.BINARY_RANDOM:
                         RandomBinary rb = new RandomBinary(vm);
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.BINARY_RANDOM])
+                        foreach (Dictionary<string, string> expDesignParamSet in binaryParams.randomBinaryParameters)
                         {
                             binaryConfigs.AddRange(rb.getRandomConfigs(expDesignParamSet));
                         }
@@ -76,7 +76,7 @@ namespace MachineLearning.Sampling
                         break;
 
                     case SamplingStrategies.T_WISE:
-                        foreach (Dictionary<string, string> ParamSet in parametersOfExpDesigns[SamplingStrategies.T_WISE])
+                        foreach (Dictionary<string, string> ParamSet in binaryParams.tWiseParameters)
                         {
                             TWise tw = new TWise();
                             int t = 3;
@@ -91,114 +91,15 @@ namespace MachineLearning.Sampling
                             }
                         }
                         break;
-
-
-                    //Experimental designs for numeric options
-                    case SamplingStrategies.BOXBEHNKEN:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.BOXBEHNKEN))
-                            design = new BoxBehnkenDesign(optionsToConsider[SamplingStrategies.BOXBEHNKEN]);
-                        else
-                            design = new BoxBehnkenDesign(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.BOXBEHNKEN])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }
-                        break;
-
-                    case SamplingStrategies.CENTRALCOMPOSITE:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.CENTRALCOMPOSITE))
-                            design = new CentralCompositeInscribedDesign(optionsToConsider[SamplingStrategies.CENTRALCOMPOSITE]);
-                        else
-                            design = new CentralCompositeInscribedDesign(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.CENTRALCOMPOSITE])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }   
-                        break;
-
-                    case SamplingStrategies.FULLFACTORIAL:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.FULLFACTORIAL))
-                            design = new FullFactorialDesign(optionsToConsider[SamplingStrategies.FULLFACTORIAL]);
-                        else
-                            design = new FullFactorialDesign(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.FULLFACTORIAL])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }   
-
-                        break;
-
-                    case SamplingStrategies.HYPERSAMPLING:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.HYPERSAMPLING))
-                            design = new HyperSampling(optionsToConsider[SamplingStrategies.HYPERSAMPLING]);
-                        else
-                            design = new HyperSampling(vm.getNonBlacklistedNumericOptions(blacklisted));
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.HYPERSAMPLING])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }   
-                        break;
-
-                    case SamplingStrategies.ONEFACTORATATIME:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.ONEFACTORATATIME))
-                            design = new OneFactorAtATime(optionsToConsider[SamplingStrategies.ONEFACTORATATIME]);
-                        else
-                            design = new OneFactorAtATime(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.ONEFACTORATATIME])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }
-                        break;
-
-                    case SamplingStrategies.KEXCHANGE:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.KEXCHANGE))
-                            design = new KExchangeAlgorithm(optionsToConsider[SamplingStrategies.KEXCHANGE]);
-                        else
-                            design = new KExchangeAlgorithm(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.KEXCHANGE])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }
-                        break;
-
-                    case SamplingStrategies.PLACKETTBURMAN:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.PLACKETTBURMAN))
-                            design = new PlackettBurmanDesign(optionsToConsider[SamplingStrategies.PLACKETTBURMAN]);
-                        else
-                            design = new PlackettBurmanDesign(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.PLACKETTBURMAN])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }    
-                        break;
-
-                    case SamplingStrategies.RANDOM:
-                        if (optionsToConsider.ContainsKey(SamplingStrategies.RANDOM))
-                            design = new RandomSampling(optionsToConsider[SamplingStrategies.RANDOM]);
-                        else
-                            design = new RandomSampling(vm.getNonBlacklistedNumericOptions(blacklisted));
-
-                        foreach (Dictionary<string, string> expDesignParamSet in parametersOfExpDesigns[SamplingStrategies.RANDOM])
-                        {
-                            design.computeDesign(expDesignParamSet);
-                            numericConfigs.AddRange(design.SelectedConfigurations);
-                        }    
-                        break;
                 }
             }
+
+            //Experimental designs for numeric options
+            if (experimentalDesigns.Count != 0)
+            {
+                handleDesigns(experimentalDesigns, numericConfigs, vm);
+            }
+
 
             foreach (List<BinaryOption> binConfig in binaryConfigs)
             {
@@ -239,6 +140,21 @@ namespace MachineLearning.Sampling
                 return filteredConfiguration;
             }
         }
+
+        private static void handleDesigns(List<ExperimentalDesign> samplingDesigns, List<Dictionary<NumericOption, Double>> numericOptions,
+            VariabilityModel vm)
+        {
+            foreach (ExperimentalDesign samplingDesign in samplingDesigns)
+            {
+                SamplingStrategies currentSamplingStrategy = (SamplingStrategies)System.Enum.Parse(typeof(SamplingStrategies), samplingDesign.getName());
+                if (optionsToConsider.ContainsKey(currentSamplingStrategy))
+                    samplingDesign.setSamplingDomain(optionsToConsider[currentSamplingStrategy]);
+                else
+                    samplingDesign.setSamplingDomain(vm.getNonBlacklistedNumericOptions(blacklisted));
+                samplingDesign.computeDesign();
+                numericOptions.AddRange(samplingDesign.SelectedConfigurations);
+            }
+        } 
 
         public static void printSelectetedConfigurations_expDesign(List<Dictionary<NumericOption, double>> configurations)
         {

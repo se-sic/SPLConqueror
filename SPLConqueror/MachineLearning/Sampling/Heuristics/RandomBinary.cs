@@ -13,6 +13,7 @@ namespace MachineLearning.Sampling.Heuristics
     public class RandomBinary
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
+        private Dictionary<string, string> parameters = new Dictionary<string, string>();
 
         private VariabilityModel varModel;
 
@@ -85,7 +86,7 @@ namespace MachineLearning.Sampling.Heuristics
             Random r = new Random(seed);
             for (int i = 0; i < numConfigs; i++)
             {
-                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count)];
+                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count + 1)];
 
                 if(configurations.Contains(selectedConfig))
                 {

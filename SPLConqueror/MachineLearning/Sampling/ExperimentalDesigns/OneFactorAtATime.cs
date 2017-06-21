@@ -9,20 +9,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 {
     public class OneFactorAtATime : ExperimentalDesign
     {
-        public int distinctValuesPerOption = 3;
-
-        private static Dictionary<string, string> parameter = new Dictionary<string, string>();
-
-        static OneFactorAtATime()
-        {
-            parameter.Add("distinctValuesPerOption", "int");
-        }
-
-
-        public override Dictionary<string, string> getParameterTypes()
-        {
-            return OneFactorAtATime.parameter;
-        }
+        private int distinctValuesPerOption;
 
         /// <summary>
         /// Creates a new istance considering the provided numeric configuration options.
@@ -33,23 +20,28 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
         }
 
-        public override bool computeDesign(Dictionary<string, string> designOptions)
+        /// <summary>
+        /// Creates a new instance considering the distinctValuePerOption parameter.
+        /// </summary>
+        /// <param name="distinctValuePerOption">Distince value per option parameter.</param>
+        public OneFactorAtATime(int distinctValuePerOption = 3) : base()
         {
-            int distinctValuesPerOption = 3;
-
-            foreach (KeyValuePair<string, string> param in designOptions)
-            {
-                if (param.Key == "distinctValuesPerOption")
-                    distinctValuesPerOption = Convert.ToInt32(param.Value);
-            }
-            return computeDesign(distinctValuesPerOption);
-        }
+            this.distinctValuesPerOption = 3;
+        } 
 
         public OneFactorAtATime(String s)
             : base(s)
         {
             if (this.designParameter.ContainsKey("distinctValuesPerOption"))
                 this.distinctValuesPerOption = Int32.Parse(this.designParameter["distinctValuesPerOption"]);
+        }
+
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue)
+        {
+            if (parameterNameToValue.ContainsKey("distinctValuesPerOption"))
+            {
+                this.distinctValuesPerOption = parseFromParameters(parameterNameToValue, "distinctValuesPerOption");
+            }
         }
 
         public override bool computeDesign()
@@ -59,7 +51,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override string getName()
         {
-            return "OneFactorAtATime";
+            return "ONEFACTORATATIME";
         }
 
         public Dictionary<NumericOption, double> computeCenterPoint()
@@ -103,5 +95,9 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return true;
         }
 
+        public override string parameterIdentifier()
+        {
+            return "";
+        }
     }
 }

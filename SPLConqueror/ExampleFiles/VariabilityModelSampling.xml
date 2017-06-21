@@ -1,0 +1,246 @@
+<vm name="testModel">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt1</name>
+      <prefix>--</prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt2</name>
+      <prefix>-?</prefix>
+      <postfix>kg</postfix>
+      <parent>binOpt1</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt3</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>binOpt1</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>binOpt2</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>group</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>member1</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>group</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>member2</options>
+		<options>member3</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>member2</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>group</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>member1</options>
+		<options>member3</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>member3</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>group</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>member1</options>
+		<options>member2</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+		<configurationOption>
+      <name>group2</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>member21</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>group2</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>member22</options>
+		<options>member23</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>member22</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>group2</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>member21</options>
+		<options>member23</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+	<configurationOption>
+      <name>member23</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>group2</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>member21</options>
+		<options>member22</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>binOpt4</name>
+      <prefix>4_</prefix>
+      <postfix>_4</postfix>
+      <parent>binOpt1</parent>
+      <children />
+      <impliedOptions>
+        <options>binOpt2</options>
+      </impliedOptions>
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+	  </configurationOption>
+	    <configurationOption>
+      <name>binOpt6</name>
+      <prefix>6</prefix>
+      <postfix>6</postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+	    <configurationOption>
+      <name>binOpt5</name>
+      <prefix>5</prefix>
+      <postfix>5</postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions>
+        <options>binOpt6</options>
+      </impliedOptions>
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <name>numOpt1</name>
+      <prefix>num1-</prefix>
+      <postfix>--</postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>0</minValue>
+      <maxValue>2</maxValue>
+      <stepFunction>n + 2</stepFunction>
+      <defaultValue>0</defaultValue>
+    </configurationOption>
+    <configurationOption>
+      <name>numOpt2</name>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>1</minValue>
+      <maxValue>8</maxValue>
+      <stepFunction>n * 2</stepFunction>
+      <defaultValue>0.2</defaultValue>
+    </configurationOption>
+  </numericOptions>
+  <booleanConstraints />
+</vm>

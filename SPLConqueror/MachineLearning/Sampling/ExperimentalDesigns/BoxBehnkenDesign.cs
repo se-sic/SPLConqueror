@@ -21,15 +21,17 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
         }
 
-        public override Dictionary<string, string> getParameterTypes()
+        public BoxBehnkenDesign() : base()
         {
-            return new Dictionary<string, string>();
+
         }
 
         public override string getName()
         {
-            return "BoxBehnkenDesign";
+            return "BOXBEHNKEN";
         }
+
+        public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue) { }
 
         public override bool computeDesign()
         {
@@ -85,11 +87,6 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return true;
         }
 
-        public override bool computeDesign(Dictionary<string, string> options)
-        {
-            return computeDesign();
-        }
-
         // Find all possible combinations - TODO > improve?
         private List<Tuple<int, int>> combinate(List<int> items)
         {
@@ -107,6 +104,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             }
 
             return combinations;
+        }
+
+        public override string parameterIdentifier()
+        {
+            return "";
         }
     }
 }
