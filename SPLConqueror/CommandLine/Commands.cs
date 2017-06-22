@@ -77,6 +77,7 @@ namespace CommandLine
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
         public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralcomposite";
         public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullfactorial";
+        public const string COMMAND_EXPDESIGN_FACTORIAL = "factorial";
         public const string COMMAND_EXPDESIGN_HYPERSAMPLING = "hypersampling";
         public const string COMMAND_EXPDESIGN_ONEFACTORATATIME = "onefactoratatime";
         public const string COMMAND_EXPDESIGN_KEXCHANGE = "kexchange";
@@ -1272,8 +1273,20 @@ namespace CommandLine
                         this.exp.info.numericSamplings_Learning = "FULLFACTORIAL";
                     }
                     break;
-                case "featureInteraction":
-                    GlobalState.logError.logLine("not implemented yet");
+
+            case COMMAND_EXPDESIGN_FACTORIAL:
+                    FactorialDesign factorialDesignToAdd = new FactorialDesign ();
+                    factorialDesignToAdd.setSamplingParameters (parameter);
+                    if (parameter.ContainsKey("validation"))
+                    {
+                        this.numericToSampleValidation.Add(factorialDesignToAdd);
+                        this.exp.info.numericSamplings_Validation = "HYPERSAMPLING";
+                    }
+                    else
+                    {
+                        this.numericToSample.Add(factorialDesignToAdd);
+                        this.exp.info.numericSamplings_Learning = "HYPERSAMPLING";
+                    }
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:

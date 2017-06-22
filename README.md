@@ -494,6 +494,7 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```expdesign centralcomposite``` | expdesign centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```expdesign random sampleSize:<size> seed:<seed>``` | expdesign random sampleSize:50 seed:2 |
 | Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```expdesign fullfactorial``` | expdesign fullfactorial |
+| Numeric | factorial | This design implements the 2^k factorial design. Additionally, 2 can be varied by setting n. | ```expdesign factorial n:<size>``` | expdesign factorial n:3 |
 | Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```expdesign boxbehnken``` | expdesign boxbehnken |
 | Numeric | hypersampling | | ```expdesign hypersampling precision:<precisionValue>``` | expdesign hypersampling precision:25 |
 | Numeric | onefactoratatime | | ```expdesign onefactoratatime distinctValuesPerOption:<values>``` | expdesign onefactoratatime distinctValuesPerOption:5 |
