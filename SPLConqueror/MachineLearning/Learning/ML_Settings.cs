@@ -11,7 +11,7 @@ namespace MachineLearning.Learning
     public class ML_Settings
     {
 
-        public double epsilonTube = 5.0;
+        public double epsilonTube = 0;
 
         public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
 
@@ -28,7 +28,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (requires probably larger amount of memory).
         /// </summary>
-        public bool bagging = true;
+        public bool bagging = false;
 
         /// <summary>
         /// Specifies how often an influence model is learned based on a subset of the measurement data
