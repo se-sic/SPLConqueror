@@ -1241,138 +1241,58 @@ namespace CommandLine
             if (optionsToConsider.Count == 0)
                 optionsToConsider = GlobalState.varModel.NumericOptions;
 
+            ExperimentalDesign expDesign = null;
 
             switch (designName.ToLower())
             {
                 case COMMAND_EXPDESIGN_BOXBEHNKEN:
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(new BoxBehnkenDesign());
-                        this.exp.info.numericSamplings_Validation = "BOXBEHNKEN";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(new BoxBehnkenDesign());
-                        this.exp.info.numericSamplings_Learning = "BOXBEHNKEN";
-                    }
+                    expDesign = new BoxBehnkenDesign ();
                     break;
                 case COMMAND_EXPDESIGN_CENTRALCOMPOSITE:
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(new CentralCompositeInscribedDesign());
-                        this.exp.info.numericSamplings_Validation = "CENTRALCOMPOSITE";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(new CentralCompositeInscribedDesign());
-                        this.exp.info.numericSamplings_Learning = "CENTRALCOMPOSITE";
-                    }
+                    expDesign = new CentralCompositeInscribedDesign ();
                     break;
                 case COMMAND_EXPDESIGN_FULLFACTORIAL:
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(new FullFactorialDesign());
-                        this.exp.info.numericSamplings_Validation = "FULLFACTORIAL";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(new FullFactorialDesign());
-                        this.exp.info.numericSamplings_Learning = "FULLFACTORIAL";
-                    }
+                    expDesign = new FullFactorialDesign ();
                     break;
 
-            case COMMAND_EXPDESIGN_FACTORIAL:
-                    FactorialDesign factorialDesignToAdd = new FactorialDesign ();
-                    factorialDesignToAdd.setSamplingParameters (parameter);
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(factorialDesignToAdd);
-                        this.exp.info.numericSamplings_Validation = "HYPERSAMPLING";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(factorialDesignToAdd);
-                        this.exp.info.numericSamplings_Learning = "HYPERSAMPLING";
-                    }
+                case COMMAND_EXPDESIGN_FACTORIAL:
+                    expDesign = new FactorialDesign ();
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:
-                    HyperSampling hyperDesignToAdd = new HyperSampling();
-                    hyperDesignToAdd.setSamplingParameters(parameter);
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(hyperDesignToAdd);
-                        this.exp.info.numericSamplings_Validation = "HYPERSAMPLING";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(hyperDesignToAdd);
-                        this.exp.info.numericSamplings_Learning = "HYPERSAMPLING";
-                    }
+                    expDesign = new HyperSampling();
                     break;
 
                 case COMMAND_EXPDESIGN_ONEFACTORATATIME:
-                    OneFactorAtATime oneFactorDesignToAdd = new OneFactorAtATime();
-                    oneFactorDesignToAdd.setSamplingParameters(parameter);
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(oneFactorDesignToAdd);
-                        this.exp.info.numericSamplings_Validation = "ONEFACTORATATIME";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(oneFactorDesignToAdd);
-                        this.exp.info.numericSamplings_Learning = "ONEFACTORATATIME";
-                    }
+                    expDesign = new OneFactorAtATime();
                     break;
 
                 case COMMAND_EXPDESIGN_KEXCHANGE:
-                    KExchangeAlgorithm kexchangeToAdd = new KExchangeAlgorithm();
-                    kexchangeToAdd.setSamplingParameters(parameter);
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(kexchangeToAdd);
-                        this.exp.info.numericSamplings_Validation = "KEXCHANGE";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(kexchangeToAdd);
-                        this.exp.info.numericSamplings_Learning = "KEXCHANGE";
-                    }
+                    expDesign = new KExchangeAlgorithm();
                     break;
 
                 case COMMAND_EXPDESIGN_PLACKETTBURMAN:
-                    PlackettBurmanDesign plackettDesignToAdd = new PlackettBurmanDesign();
-                    plackettDesignToAdd.setSamplingParameters(parameter);
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(plackettDesignToAdd);
-                        this.exp.info.numericSamplings_Validation = "PLACKETTBURMAN";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(plackettDesignToAdd);
-                        this.exp.info.numericSamplings_Learning = "PLACKETTBURMAN";
-                    }
+                    expDesign = new PlackettBurmanDesign();
                     break;
 
                 case COMMAND_EXPDESIGN_RANDOM:
-                    RandomSampling randomToAdd = new RandomSampling();
-                    randomToAdd.setSamplingParameters(parameter);
-                    if (parameter.ContainsKey("validation"))
-                    {
-                        this.numericToSampleValidation.Add(randomToAdd);
-                        this.exp.info.numericSamplings_Validation = "RANDOM";
-                    }
-                    else
-                    {
-                        this.numericToSample.Add(randomToAdd);
-                        this.exp.info.numericSamplings_Learning = "RANDOM";
-                    }
+                    expDesign = new RandomSampling();
                     break;
 
                 default:
                     return task;
+            }
+
+            expDesign.setSamplingParameters (parameter);
+            if (parameter.ContainsKey("validation"))
+            {
+                this.numericToSampleValidation.Add(expDesign);
+                this.exp.info.numericSamplings_Validation = expDesign.getName ();
+            }
+            else
+            {
+                this.numericToSample.Add(expDesign);
+                this.exp.info.numericSamplings_Learning = expDesign.getName();
             }
 
             return "";
