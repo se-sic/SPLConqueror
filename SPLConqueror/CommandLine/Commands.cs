@@ -547,11 +547,11 @@ namespace CommandLine
                                     double relativeError = 0;
                                     if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError);
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError, false);
                                     }
                                     else
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
                                     }
 
                                     GlobalState.logInfo.logLine(lr.ToString() + relativeError);
@@ -572,11 +572,11 @@ namespace CommandLine
                                 double relativeError = 0;
                                 if (GlobalState.evaluationSet.Configurations.Count > 0)
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError, false);
                                 }
                                 else
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
                                 }
 
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
@@ -914,11 +914,11 @@ namespace CommandLine
                         double relativeerror = 0;
                         if (GlobalState.evaluationSet.Configurations.Count > 0)
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings, false);
                         }
                         else
                         {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings);
+                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings, false);
                         }
 
                         //    globalstate.loginfo.logline("error :" + relativeerror);
