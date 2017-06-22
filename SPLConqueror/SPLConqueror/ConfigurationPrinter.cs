@@ -60,6 +60,13 @@ namespace SPLConqueror_Core
         /// <returns>True if the configurations can be printed in the file.</returns>
         public bool print(List<Configuration> configurations)
         {
+            if (!File.Exists(file))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(file));
+                //File.Create(file);
+            }
+
+
             if (order == null)
                 return print_noOrder(configurations);
 
@@ -70,6 +77,7 @@ namespace SPLConqueror_Core
 
         private bool print_noOrder(List<Configuration> configurations)
         {
+
             StringBuilder sb = new StringBuilder();
 
             foreach (Configuration c in configurations)
@@ -79,26 +87,21 @@ namespace SPLConqueror_Core
                 sb.Append(postfix + " " + System.Environment.NewLine);
 
             }
-
-            using (StreamWriter outfile = new StreamWriter(file))
-            {
-                outfile.Write(sb.ToString());
-            }
+            File.AppendAllText(file, sb.ToString());
+                        
             return true;
 
         }
 
         private bool print_order(List<Configuration> configurations)
         {
-            StreamWriter outfile = new StreamWriter(file);
+
             foreach (Configuration c in configurations)
             {
-                outfile.Write(prefix + " ");
-                outfile.Write("\"" + c.ToString(order) + "\"");
-                outfile.Write(c.OutputString(order) + " ");
-                outfile.Write(postfix + " " + System.Environment.NewLine);
-
-                outfile.Flush();
+                File.AppendAllText(file, prefix + " ");
+                File.AppendAllText(file, "\"" + c.ToString(order) + "\"");
+                File.AppendAllText(file, c.OutputString(order) + " ");
+                File.AppendAllText(file, postfix + " " + System.Environment.NewLine);                
             }
             return true;
         }
