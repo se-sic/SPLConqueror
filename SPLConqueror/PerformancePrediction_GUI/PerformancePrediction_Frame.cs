@@ -232,7 +232,7 @@ namespace PerformancePrediction_GUI
             row[0] = lastRound.round.ToString();
             row[1] = lastRound.learningError.ToString();
             double relativeError = 0.0;
-            cmd.exp.models[0].computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError);
+            cmd.exp.models[0].computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
             row[2] = relativeError.ToString();
 
 
