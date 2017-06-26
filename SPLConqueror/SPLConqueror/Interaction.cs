@@ -158,7 +158,12 @@ namespace SPLConqueror_Core
             return true;
         }
 
-
+        /// <summary>
+        /// This method returns <code>true</code> if the interaction is equal to the given one.
+        /// Therefore, both interactions have to contain the same binary and numeric features.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Interaction other)
         {
             if (this.binaryOptions.Count != other.binaryOptions.Count || this.numericOptions.Count != other.numericOptions.Count)

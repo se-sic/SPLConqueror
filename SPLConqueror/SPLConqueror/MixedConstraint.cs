@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This object contains a mixed constraint.
+    /// </summary>
     public class MixedConstraint : NonBooleanConstraint
     {
         private const string REQUIRE_ALL = "all";
@@ -57,6 +60,11 @@ namespace SPLConqueror_Core
             var = varMod;
         }
 
+        /// <summary>
+        /// Returns <code>true</code> iff the requirements are fulfilled by the given configuration; <code>false</code> otherwise.
+        /// </summary>
+        /// <param name="conf">The current configuration to check.</param>
+        /// <returns><code>true</code> iff the requirements are fulfilled by the given configuration; <code>false</code> otherwise.</returns>
         public bool requirementsFulfilled(Configuration conf)
         {
             if (negativeOrPositiveExpr.Equals(POSITIVE))
@@ -173,6 +181,10 @@ namespace SPLConqueror_Core
             return Tuple.Create(hasAllConfigs, hasAtLeastOne);
         }
 
+        /// <summary>
+        /// Returns the string-representation of the <code>MixedConstraint</code>-object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             return requirement + ": " + base.ToString();

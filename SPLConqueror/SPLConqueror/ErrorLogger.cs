@@ -11,7 +11,13 @@ namespace SPLConqueror_Core
     public class ErrorLogger : Logger
     {
         readonly object loggerLock = new Object();
-        public ErrorLogger(String location, bool mode=false) :base(location, mode)
+
+        /// <summary>
+        /// Creates an error logger.
+        /// </summary>
+        /// <param name="location">The file where the errors should be written to. This argument is <code>null</code> if the errors should be printed to the console.</param>
+        /// <param name="append"><code>true</code> iff the output should be appended to the given file;<code>false</code> otherwise.</param>
+        public ErrorLogger(String location, bool append=false) :base(location, append)
         {
             if(writer!=null)
                 Console.SetError(writer);
