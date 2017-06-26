@@ -72,7 +72,6 @@ namespace MachineLearningTest
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_FEATUREWISE);
             cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
-            Console.Error.Write(cmd.exp.info);
             Console.Error.Write(consoleOutput.ToString());
             string[] learningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1]
                 .Split(new string[] { "average model" }, StringSplitOptions.None)[0]
