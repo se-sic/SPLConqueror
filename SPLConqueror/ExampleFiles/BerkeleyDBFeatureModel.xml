@@ -1,0 +1,307 @@
+<vm name="BerkeleyDbC">
+  <binaryOptions>
+    <configurationOption>
+      <name>HAVE_CRYPTO</name>
+      <outputString>HAVE_CRYPTO</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>HAVE_HASH</name>
+      <outputString>HAVE_HASH</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>HAVE_REPLICATION</name>
+      <outputString>HAVE_REPLICATION</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>HAVE_VERIFY</name>
+      <outputString>HAVE_VERIFY</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>HAVE_SEQUENCE</name>
+      <outputString>HAVE_SEQUENCE</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>HAVE_STATISTICS</name>
+      <outputString>HAVE_STATISTICS</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>DIAGNOSTIC</name>
+      <outputString>DIAGNOSTIC</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>PAGESIZE</name>
+      <outputString>PAGESIZE</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>PS1K</name>
+      <outputString>PS1K</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PAGESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>PS4K</options>
+        <options>PS8K</options>
+        <options>PS16K</options>
+        <options>PS32K</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>PS4K</name>
+      <outputString>PS4K</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PAGESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>PS1K</options>
+        <options>PS32K</options>
+        <options>PS16K</options>
+        <options>PS8K</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>PS8K</name>
+      <outputString>PS8K</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PAGESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>PS1K</options>
+        <options>PS4K</options>
+        <options>PS16K</options>
+        <options>PS32K</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>PS16K</name>
+      <outputString>PS16K</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PAGESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>PS1K</options>
+        <options>PS4K</options>
+        <options>PS8K</options>
+        <options>PS32K</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>PS32K</name>
+      <outputString>PS32K</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PAGESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>PS1K</options>
+        <options>PS4K</options>
+        <options>PS8K</options>
+        <options>PS16K</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CACHESIZE</name>
+      <outputString>CACHESIZE</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CS32MB</name>
+      <outputString>CS32MB</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>CACHESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CS16MB</options>
+        <options>CS64MB</options>
+        <options>CS512MB</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CS16MB</name>
+      <outputString>CS16MB</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>CACHESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CS32MB</options>
+        <options>CS512MB</options>
+        <options>CS64MB</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CS64MB</name>
+      <outputString>CS64MB</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>CACHESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CS32MB</options>
+        <options>CS16MB</options>
+        <options>CS512MB</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CS512MB</name>
+      <outputString>CS512MB</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>CACHESIZE</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CS32MB</options>
+        <options>CS16MB</options>
+        <options>CS64MB</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions />
+</vm>
