@@ -5,15 +5,27 @@ using System.Text;
 
 namespace SPLConqueror_Core
 {
+    /// <summary>
+    /// This class is used to log all normal messages to the given output.
+    /// </summary>
     public class InfoLogger : Logger
     {
         readonly object loggerLock = new Object();
+
+        /// <summary>
+        /// The default constructor for the <code>InfoLogger</code>.
+        /// </summary>
         public InfoLogger()
         {
         }
 
-        public InfoLogger(String location, bool mode=false)
-            : base(location, mode)
+        /// <summary>
+        /// This constructor creates a new <code>InfoLogger</code>, which writes the messages to the given file.
+        /// </summary>
+        /// <param name="location">The file to write the logs.</param>
+        /// <param name="append"><code>true</code> iff the output should be appended to the given file;<code>false</code> otherwise.</param>
+        public InfoLogger(String location, bool append=false)
+            : base(location, append)
         {
             if(writer!=null)
                 Console.SetOut(writer);

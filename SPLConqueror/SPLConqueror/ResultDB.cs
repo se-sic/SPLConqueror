@@ -19,7 +19,10 @@ namespace SPLConqueror_Core
         /// </summary>
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
         private static int splitFactor = 2;
-        // Added by Ch.K.
+        
+        /// <summary>
+        /// A list containing the blacklisted features.
+        /// </summary>
         public List<String> blacklisted;
 
 
@@ -35,6 +38,10 @@ namespace SPLConqueror_Core
             }
         }
 
+        /// <summary>
+        /// Set the blacklisted features.
+        /// </summary>
+        /// <param name="blacklist">The features to ignore/blacklist.</param>
         public void setBlackList(List<String> blacklist)
         {
             this.blacklisted = blacklist;
@@ -74,6 +81,11 @@ namespace SPLConqueror_Core
             }
         }
 
+        /// <summary>
+        /// Get configurations that are similar to the given one.
+        /// </summary>
+        /// <param name="config">The configuration to search a similar configuration for.</param>
+        /// <returns>A list of configurations containing similar configurations.</returns>
         public List<Configuration> getSimilarConfigs(Configuration config)
         {
             IDictionary<string, List<Configuration>> numMapping = null;

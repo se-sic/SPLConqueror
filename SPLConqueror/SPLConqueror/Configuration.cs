@@ -506,6 +506,11 @@ namespace SPLConqueror_Core
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns an output string formated according to the given order.
+        /// </summary>
+        /// <param name="order">The order in which the configuration options should be printed.</param>
+        /// <returns>A string sorted according to the given order.</returns>
         public string OutputString(List<ConfigurationOption> order)
         {
             StringBuilder sb = new StringBuilder();
