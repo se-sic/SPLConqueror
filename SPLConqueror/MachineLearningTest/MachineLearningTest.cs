@@ -57,6 +57,7 @@ namespace MachineLearningTest
             Equals(consoleOutput.ToString()
                 .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[1], "");
             command = null;
+            Console.Error.Write("reached1");
             if (isCIEnvironment)
             {
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathCI;
@@ -65,6 +66,7 @@ namespace MachineLearningTest
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathVS;
             }
             cmd.performOneCommand(command);
+            Console.Error.Write("reached2");
             bool allConfigurationsLoaded = consoleOutput.ToString().Contains("2560 configurations loaded.");
             Assert.True(allConfigurationsLoaded);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
@@ -100,7 +102,7 @@ namespace MachineLearningTest
             isExpected &= Math.Round(coefficients[2], 2) == -14746.73;
             isExpected &= Math.Round(coefficients[3], 2) == -14742.73;
             isExpected &= Math.Round(coefficients[4], 2) == 4455.27;
-            return true;
+            return isExpected;
         }
     }
 }
