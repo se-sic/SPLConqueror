@@ -57,7 +57,6 @@ namespace MachineLearningTest
             Equals(consoleOutput.ToString()
                 .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[1], "");
             command = null;
-            Console.Error.Write("reached1");
             if (isCIEnvironment)
             {
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathCI;
@@ -66,13 +65,15 @@ namespace MachineLearningTest
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathVS;
             }
             cmd.performOneCommand(command);
-            Console.Error.Write("reached2");
+            Console.Error.Write(consoleOutput.ToString());
             bool allConfigurationsLoaded = consoleOutput.ToString().Contains("2560 configurations loaded.");
             Assert.True(allConfigurationsLoaded);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_FEATUREWISE);
             cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            Console.Error.Write(cmd.exp.info);
+            Console.Error.Write(consoleOutput.ToString());
             string[] learningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1]
                 .Split(new string[] { "average model" }, StringSplitOptions.None)[0]
                 .Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
