@@ -404,7 +404,7 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | bagging | Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (may require a larger amount of memory). | false | true, false |
 | baggingNumbers | Specifies how often an influence model is learned based on a subset of the measurement data. | 100 | int |
 | baggingTestDataFraction | Specifies the percentage of data taken from the test set to be used in one learning run. | 50 | int |
-| useBackward | Terms existing in the model can be removed during the learning procedure if removal leads to a better model. | 50 | int |
+| useBackward | Terms existing in the model can be removed during the learning procedure if removal leads to a better model. | false | true, false |
 | abortError | The threshold at which the learning process stops. | 1 | double |
 | limitFeatureSize | Terms considered during the learning procedure can not become arbitrary complex. | false | true, false |
 | featureSizeThreshold | The maximal number of options participating in one interaction. | 4 | int |
@@ -492,7 +492,7 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```featurewise``` | featurewise |
 | Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```pairwise``` | pairwise |
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```negfw``` | negfw |
-| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```random <binaryThreshold> <modulu>``` | random 50 3 |
+| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```random <numConfigs> <seed>``` | random numConfigs:50 seed:3 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```expdesign plackettburman measurements:<measurements> level:<level>``` | expdesign plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```expdesign centralcomposite``` | expdesign centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```expdesign random sampleSize:<size> seed:<seed>``` | expdesign random sampleSize:50 seed:2 |
