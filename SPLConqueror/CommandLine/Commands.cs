@@ -772,7 +772,18 @@ namespace CommandLine
 
                 case DEFINE_PYTHON_PATH:
                     {
-                        PythonWrapper.PYTHON_PATH = taskAsParameter[0] + "python.exe";
+                        // Append a slash if it is not included
+                        if (!taskAsParameter [0].EndsWith ("/") && !taskAsParameter [0].EndsWith ("\\")) {
+                            PythonWrapper.PYTHON_PATH = taskAsParameter [0] + "/";
+                        } else {
+                            PythonWrapper.PYTHON_PATH = taskAsParameter [0];
+                        }
+                            // Here, a differentiation of the operating system is required
+                        if (Environment.OSVersion.Platform == PlatformID.Win32Windows) {
+                            PythonWrapper.PYTHON_PATH += "python.exe";
+                        } else {
+                            PythonWrapper.PYTHON_PATH += "python";
+                        }
                         break;
                     }
 
