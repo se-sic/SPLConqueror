@@ -11,6 +11,20 @@ namespace SPLConqueror_Core
     /// </summary>
     public class ConfigurationPrinter
     {
+        /// <summary>
+        /// The symbol for the element delimiter of the .csv-file.
+        /// </summary>
+        public const string CSV_ELEMENT_DELIMITER = ";";
+
+        /// <summary>
+        /// The symbol for the row delimiter of the .csv-file.
+        /// </summary>
+        public const string CSV_ROW_DELIMITER = "\n";
+
+        /// <summary>
+        /// The file extension of .csv-files
+        /// </summary>
+        public const string CSV_FILE_EXTENSION = ".csv";
 
         string file = "";
 
@@ -66,6 +80,9 @@ namespace SPLConqueror_Core
                 //File.Create(file);
             }
 
+            if (file.EndsWith (CSV_FILE_EXTENSION) && order != null) {
+                return print_csv (configurations);
+            }
 
             if (order == null)
                 return print_noOrder(configurations);
@@ -73,6 +90,27 @@ namespace SPLConqueror_Core
 
             return print_order(configurations);
 
+        }
+
+        private bool print_csv(List<Configuration> configurations) {
+            StringBuilder csvContent = new StringBuilder ();
+
+            for (int i = 0; i< this.order.Count; i++) {
+                ConfigurationOption c = this.order[i];
+                if (i != 0) {
+                    csvContent.Append (CSV_ELEMENT_DELIMITER);
+                }
+                csvContent.Append (c.Name);
+            }
+            csvContent.Append (CSV_ROW_DELIMITER);
+
+            foreach (Configuration c in configurations) {
+                csvContent.Append (c.toCsv (this.order));
+            }
+
+            File.WriteAllText (file, csvContent.ToString());
+
+            return true;
         }
 
         private bool print_noOrder(List<Configuration> configurations)
