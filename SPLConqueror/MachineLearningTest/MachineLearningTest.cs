@@ -70,17 +70,14 @@ namespace MachineLearningTest
             bool allConfigurationsLoaded = consoleOutput.ToString().Contains("2560 configurations loaded.");
             Assert.True(allConfigurationsLoaded);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
-            cmd.performOneCommand(Commands.COMMAND_SAMPLE_FEATUREWISE);
+            cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
             Console.Error.Write(consoleOutput.ToString());
             string rawLearningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1];
-            Console.Error.Write(1);
             rawLearningRounds = rawLearningRounds.Split(new string[] { "average model" }, StringSplitOptions.None)[0];
-            Console.Error.Write(2);
             string[] learningRounds = rawLearningRounds.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            Console.Error.Write(3);
-            Assert.True(isExpectedResult(learningRounds[learningRounds.Length - 2].Split(new char[] { ';' })[1]));
+            Assert.True(isExpectedResult(learningRounds[0].Split(new char[] { ';' })[1]));
         }
 
         private bool isExpectedResult(string learningResult)
@@ -96,17 +93,11 @@ namespace MachineLearningTest
                 variables.Add(coefficientAndVariable[1].Trim());
                 coefficients.Add(Double.Parse(coefficientAndVariable[0].Trim()));
             }
-            isExpected &= variables.Count == 5;
+            isExpected &= variables.Count == 2;
             isExpected &= variables[0].Equals("PAGESIZE");
             isExpected &= variables[1].Equals("CS16MB");
-            isExpected &= variables[2].Equals("PS8K");
-            isExpected &= variables[3].Equals("PS16K");
-            isExpected &= variables[4].Equals("PS32K");
-            isExpected &= Math.Round(coefficients[0], 2) == 16328.73;
-            isExpected &= Math.Round(coefficients[1], 2) == -112.73;
-            isExpected &= Math.Round(coefficients[2], 2) == -14746.73;
-            isExpected &= Math.Round(coefficients[3], 2) == -14742.73;
-            isExpected &= Math.Round(coefficients[4], 2) == 4455.27;
+            isExpected &= Math.Round(coefficients[0], 2) == 1657.71;
+            isExpected &= Math.Round(coefficients[1], 2) == -36.11;
             return isExpected;
         }
     }
