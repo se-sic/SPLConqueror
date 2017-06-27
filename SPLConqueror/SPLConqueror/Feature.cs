@@ -15,7 +15,9 @@ namespace SPLConqueror_Core
         private double constant = 1.0;
         private String name = "";
 
-        
+        /// <summary>
+        /// The name of the feature.
+        /// </summary>
         public String Name
         {
             get { return name; }

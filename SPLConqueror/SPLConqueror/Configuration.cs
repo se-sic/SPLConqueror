@@ -506,6 +506,11 @@ namespace SPLConqueror_Core
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns an output string formated according to the given order.
+        /// </summary>
+        /// <param name="order">The order in which the configuration options should be printed.</param>
+        /// <returns>A string sorted according to the given order.</returns>
         public string OutputString(List<ConfigurationOption> order)
         {
             StringBuilder sb = new StringBuilder();
@@ -623,6 +628,43 @@ namespace SPLConqueror_Core
 
             sb.Append(GetNFPValue());
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns the csv-representation of the configuration.
+        /// </summary>
+        /// <returns>The csv-representation of the configuration.</returns>
+        /// <param name="order">The order of the configuration options.</param>
+        public string toCsv(List<ConfigurationOption> order) {
+            StringBuilder result = new StringBuilder ();
+
+            for (int i = 0; i < order.Count; i++)
+            {
+                ConfigurationOption c = order[i];
+
+                if (i != 0) {
+                    result.Append (ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+                }
+
+                if (c.GetType().Equals(typeof(BinaryOption)))
+                {
+                    if (this.BinaryOptions.ContainsKey ((BinaryOption)c)) {
+                        result.Append (1);
+                    } else {
+                        result.Append (0);
+                    }
+                }
+                else
+                {
+                    NumericOption n = (NumericOption)c;
+                    if (this.numericOptions.ContainsKey(n)) {
+                        result.Append (this.NumericOptions[n]);
+                    }
+                }
+
+            }
+            result.Append (ConfigurationPrinter.CSV_ROW_DELIMITER);
+            return result.ToString();
         }
     }
 }

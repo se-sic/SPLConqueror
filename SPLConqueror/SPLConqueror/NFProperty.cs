@@ -61,6 +61,9 @@ namespace SPLConqueror_Core
 
         static NFProperty defaultProp = new NFProperty("default");
 
+        /// <summary>
+        /// Returns the default NFP-property, whose name is 'default'.
+        /// </summary>
         public static NFProperty DefaultProperty { get {return defaultProp;} }
     }
 }
