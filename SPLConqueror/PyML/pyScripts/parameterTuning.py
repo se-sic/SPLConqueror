@@ -137,9 +137,9 @@ def format_parameter_space(parameter_space):
     formated_space = ""
     for parameter in parameter_space:
         if "=" in parameter:
-		    name_value_pair = parameter.split("=")
-		    formated_space += " '" + name_value_pair[0] + "' : "
-		    formated_space += str(name_value_pair[1]) + ","
+            name_value_pair = parameter.split("=")
+            formated_space += " '" + name_value_pair[0] + "' : "
+            formated_space += str(name_value_pair[1]) + ","
     formated_space += formated_space[:-1]
     formated_space += "}]"
     return formated_space
