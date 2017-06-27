@@ -121,7 +121,11 @@ namespace SPLConqueror_Core
         }
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <param name="name"></param>
         public ConfigurationOption(VariabilityModel vm, String name)
         {
             this.vm = vm;

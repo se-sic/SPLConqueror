@@ -15,7 +15,13 @@ namespace SPLConqueror_Core
         /// A binary option can either be selected or selected in a specific configuration of a programm.
         /// </summary>
         public enum BinaryValue {
-            Selected = 1,//"selected",
+            /// <summary>
+            /// The binary option is selected
+            /// </summary>
+            Selected = 1,
+            /// <summary>
+            /// The binary option is deselected
+            /// </summary>
             Deselected = 2//"deselected"
         };
 

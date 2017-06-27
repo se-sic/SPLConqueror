@@ -38,8 +38,14 @@ namespace SPLConqueror_Core
         /// </summary>
         public static ResultDB allMeasurements = new ResultDB();
 
+        /// <summary>
+        /// This object provides access to the set of measurements that is used for the evaluation.
+        /// </summary>
         public static ResultDB evaluationSet = new ResultDB();
 
+        /// <summary>
+        /// The deviation of the measurements.
+        /// </summary>
         public static double measurementDeviation = Double.MinValue;
 
         /// <summary>
