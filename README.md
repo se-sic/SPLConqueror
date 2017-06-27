@@ -561,7 +561,7 @@ An example would be as follows:
 
 ```printconfigs <file> <prefix> <postfix>```
 
-With the command ```printconfigs```, all sampled configurations are printed to a persistent file. The command requires a target file as first argument and optionally a prefix or prefix and postfix, that will be printed at the start or end of each configuration, respectively. A special usage of this command is printing all valid configurations of a variability model, using the ```allbinary``` and ```fullfactorial``` sampling strategies.
+With the command ```printconfigs```, all sampled configurations are printed to a persistent file. The command requires a target file as first argument and optionally a prefix or prefix and postfix, that will be printed at the start or end of each configuration, respectively. A special usage of this command is printing all valid configurations of a variability model, using the ```allbinary``` and ```fullfactorial``` sampling strategies. If a .csv-file is provided with this command, the configurations are written in csv-format without prefix and postfix.
 A short example using printconfigs to print all valid configurations into a text file:
 ```
 vm C:\exampleVM.xml
