@@ -3,8 +3,9 @@ solution: ./SPLConqueror/SPLConqueror.sln
 mono:
   - latest
 install:
-  - nuget restore ./SPLConqueror/SPLConqueror.sln
-  - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner
+  - nuget restore ./SPLConqueror/SPLConqueror.sln #Download all packaged
+  - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner #Additional to the Nunit test framework download the runner to execue the test.
 script:
-  - msbuild ./SPLConqueror/SPLConqueror.sln /t:Build
-  - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll
+  - msbuild ./SPLConqueror/SPLConqueror.sln /t:Build #Use msbuild to compile the project instead of mono.
+  - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
+  - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/MachineLearningTest/bin/Debug/MachineLearningTest.dll #Test machine learning and a few command line commands.
