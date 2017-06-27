@@ -44,6 +44,7 @@ namespace MachineLearningTest
         public void TestLoadVM()
         {
             consoleOutput.Flush();
+            consoleOutput.NewLine = "\r\n";
             string command = null;
             if (isCIEnvironment)
             {
@@ -55,7 +56,7 @@ namespace MachineLearningTest
             }
             cmd.performOneCommand(command);
             Equals(consoleOutput.ToString()
-                .Split(new string[] { "\r\n" }, StringSplitOptions.None)[1], "");
+                .Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None)[1], "");
             command = null;
             if (isCIEnvironment)
             {
@@ -73,14 +74,18 @@ namespace MachineLearningTest
             cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
             Console.Error.Write(consoleOutput.ToString());
-            string[] learningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1]
-                .Split(new string[] { "average model" }, StringSplitOptions.None)[0]
-                .Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string rawLearningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1];
+            Console.Error.Write(1);
+            rawLearningRounds = rawLearningRounds.Split(new string[] { "average model" }, StringSplitOptions.None)[0];
+            Console.Error.Write(2);
+            string[] learningRounds = rawLearningRounds.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            Console.Error.Write(3);
             Assert.True(isExpectedResult(learningRounds[learningRounds.Length - 2].Split(new char[] { ';' })[1]));
         }
 
         private bool isExpectedResult(string learningResult)
         {
+            Console.Error.Write(learningResult);
             bool isExpected = true;
             string[] polynoms = learningResult.Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             List<string> variables = new List<string>();
