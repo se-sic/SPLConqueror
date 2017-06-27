@@ -55,7 +55,7 @@ namespace MachineLearningTest
             }
             cmd.performOneCommand(command);
             Equals(consoleOutput.ToString()
-                .Split(new string[] { Environment.NewLine }, StringSplitOptions.None)[1], "");
+                .Split(new string[] { "\r\n" }, StringSplitOptions.None)[1], "");
             command = null;
             if (isCIEnvironment)
             {
@@ -75,7 +75,7 @@ namespace MachineLearningTest
             Console.Error.Write(consoleOutput.ToString());
             string[] learningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1]
                 .Split(new string[] { "average model" }, StringSplitOptions.None)[0]
-                .Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                .Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.True(isExpectedResult(learningRounds[learningRounds.Length - 2].Split(new char[] { ';' })[1]));
         }
 
