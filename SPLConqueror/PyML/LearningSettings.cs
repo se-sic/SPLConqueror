@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SPLConqueror_Core;
 
 namespace ProcessWrapper
 {
@@ -33,6 +34,7 @@ namespace ProcessWrapper
             }
             catch (ArgumentException e)
             {
+                GlobalState.logError.logLine("Command " + toTest + " is no learning strategy.");
                 return false;
             }
         }

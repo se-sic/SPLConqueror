@@ -122,10 +122,10 @@ namespace SPLConqueror_Core
 
 
         /// <summary>
-        /// 
+        /// Creates a new configuration option of the given name for the variability model. 
         /// </summary>
-        /// <param name="vm"></param>
-        /// <param name="name"></param>
+        /// <param name="vm">The variability model, the option is defined for.</param>
+        /// <param name="name">The name of the configuration option.</param>
         public ConfigurationOption(VariabilityModel vm, String name)
         {
             this.vm = vm;
@@ -135,6 +135,11 @@ namespace SPLConqueror_Core
                 this.name = name;
         }
 
+        /// <summary>
+        /// Compares two configuration option based on the names of the options.
+        /// </summary>
+        /// <param name="other">The configuration option ot compare with.</param>
+        /// <returns></returns>
         public int CompareTo(ConfigurationOption other)
         {
             return this.name.CompareTo(other.name);

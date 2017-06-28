@@ -99,6 +99,9 @@ namespace SPLConqueror_Core
 
         private List<MixedConstraint> mixedConstraints = new List<MixedConstraint>();
 
+        /// <summary>
+        /// The list of all constraints where binary and numeric options participate in.
+        /// </summary>
         public List<MixedConstraint> MixedConstraints
         {
             get { return mixedConstraints; }

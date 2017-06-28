@@ -99,6 +99,12 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        /// <summary>
+        /// Creates a new feature by concartinating two given features with a multiplication.
+        /// </summary>
+        /// <param name="original">The first feature to concatinate.</param>
+        /// <param name="toAdd">The second feature to concatinate.</param>
+        /// <param name="vm">The variability model, the two features are defined for.</param>
         public Feature(Feature original, Feature toAdd, VariabilityModel vm)
             : base(original.getPureString() + " * " + toAdd.getPureString(), vm)
         {
@@ -140,6 +146,12 @@ namespace SPLConqueror_Core
         }
 
 
+        /// <summary>
+        /// Compares two features based on their names.
+        /// </summary>
+        /// <param name="x">First feature to comare with.</param>
+        /// <param name="y">Second feature to compare with.</param>
+        /// <returns>0 if both feature are the same, 1 and -1 otherwise.</returns>
         public int Compare(Feature x, Feature y)
         {
             return x.name.CompareTo(y.name);
@@ -154,6 +166,12 @@ namespace SPLConqueror_Core
             return this.name.GetHashCode();
         }
 
+        
+        /// <summary>
+        /// The string reprensentaion of the feature consisting of the participating configuration options and the coefficient describing the influence
+        /// of the feature.
+        /// </summary>
+        /// <returns>String reprenstation of the feature.</returns>
         public String getPureString()
         {
             return base.ToString();
