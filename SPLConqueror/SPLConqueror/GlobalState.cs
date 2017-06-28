@@ -17,6 +17,9 @@ namespace SPLConqueror_Core
         /// </summary>
         public static Logger logInfo = new InfoLogger(null);
 
+        /// <summary>
+        /// The logger instance that is used to log error messages.
+        /// </summary>
         public static Logger logError = new ErrorLogger(null);
 
         /// <summary>
@@ -75,6 +78,9 @@ namespace SPLConqueror_Core
 
         private static Dictionary<Configuration, Configuration> substitutedConfigs = new Dictionary<Configuration, Configuration>();
 
+        /// <summary>
+        /// An partial or full order of the configuration options, that is used in the write configuration command.
+        /// </summary>
         public static List<ConfigurationOption> optionOrder = new List<ConfigurationOption>();
 
         private GlobalState(){ }
@@ -192,7 +198,6 @@ namespace SPLConqueror_Core
 
                     substitutedConfigs.Add(result.Item1, result.Item2);
                     configsWithValues.Add(result.Item2);
-                    // logError.log("Substituted a not found configuration with a similar one.");
                 }
             }
             return configsWithValues;
@@ -229,8 +234,6 @@ namespace SPLConqueror_Core
                 {
                     if (similarOnes.Count == 0)
                         logError.logLine("Required config: " + config.ToString() + " " + config.printConfigurationForMeasurement());
-
-                    // logError.log("Did not find a measured value for the configuration: " + config.ToString());
                 }
             }
 
@@ -238,13 +241,7 @@ namespace SPLConqueror_Core
         }
 
         private static Configuration findSimilarConfigNumeric(Configuration config, List<Configuration> similarOnes)
-        {
-            /*Dictionary<NumericOption, int> stepInValueRange = new Dictionary<NumericOption, int>();
-            foreach (var numOpt in config.NumericOptions.Keys)
-            {
-                stepInValueRange.Add(numOpt, numOpt.getStep(config.NumericOptions[numOpt]));
-            }*/
-            int minDistance = Int32.MaxValue;
+        {            int minDistance = Int32.MaxValue;
             Configuration best = null;
             foreach (var conf in similarOnes)
             {
@@ -257,11 +254,9 @@ namespace SPLConqueror_Core
                         continue;
                     }
                     if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
-                        continue;
-                    //distance += Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
+                        continue;            
                     double valDist = Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
                     distance += numOpt.getStepFast(valDist + numOpt.Min_value);
-                    //distance += Math.Abs(stepInValueRange[numOpt] - numOpt.getStep(conf.NumericOptions[numOpt]));
                     if (distance > minDistance)
                         break;
                 }
@@ -271,23 +266,6 @@ namespace SPLConqueror_Core
                     best = conf;
                 }
             }
-            /*
-            while (taskList.Count > 0)
-            {
-                int i = Task.WaitAny(taskList.ToArray());
-
-                Task<Tuple<Configuration, int>> task = taskList[i];
-                Tuple<Configuration, int> result = task.Result;
-
-                taskList.Remove(task);
-
-                if (result.Item2 < minDistance)
-                {
-                    minDistance = result.Item2;
-                    best = result.Item1;
-                }
-            }*/
-
             return best;
         }
 

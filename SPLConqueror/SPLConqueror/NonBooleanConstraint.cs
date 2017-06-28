@@ -155,6 +155,8 @@ namespace SPLConqueror_Core
             return false;
         }
 
+
+
         protected bool configIsValidNeg(Configuration config)
         {
             if (!configHasOptionsOfConstraint(config))
@@ -194,6 +196,12 @@ namespace SPLConqueror_Core
             return true;
         }
 
+
+        /// <summary>
+        /// Returns the string representation of the constraint consisting of the left hand side, the comparator and the right hand side of the 
+        /// constraint.
+        /// </summary>
+        /// <returns>The string representation of the constraint.</returns>
         public override string ToString()
         {
             return leftHandSide + " " + comparator + " " + rightHandSide; 

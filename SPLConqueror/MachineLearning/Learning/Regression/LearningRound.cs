@@ -101,6 +101,8 @@ namespace MachineLearning.Learning.Regression
             }
             catch(OverflowException overF)
             {
+                GlobalState.logError.logLine("Error in analysing of the learning round.");
+                GlobalState.logError.logLine(overF.Source + " -> " + overF.Message);
                 learningRound.bestCandidateScore = Double.MaxValue;
             }
             return learningRound;
