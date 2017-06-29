@@ -568,12 +568,14 @@ namespace CommandLine
                         }
                         else
                         {
-                            FeatureSubsetSelection learnedModel = exp.models[0];
-                            if (learnedModel == null)
+                            if (exp.models.Count == 0 || exp.models[0] == null)
                             {
                                 GlobalState.logError.logLine("Error... learning was not performed!");
                                 break;
                             }
+                            
+                            FeatureSubsetSelection learnedModel = exp.models[0];
+
                             GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
                             foreach (LearningRound lr in learnedModel.LearningHistory)
                             {
