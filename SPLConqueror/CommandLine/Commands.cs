@@ -725,6 +725,10 @@ namespace CommandLine
 
                             ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
                             var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample);
+
+                            // Clear the content of the file
+                            File.WriteAllText(para[0], string.Empty);
+
                             if (para.Length >= 3)
                             {
                                 printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1], para[2]);
