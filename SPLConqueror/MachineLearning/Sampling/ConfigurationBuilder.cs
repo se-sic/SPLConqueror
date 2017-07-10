@@ -116,7 +116,13 @@ namespace MachineLearning.Sampling
             }
             if (vm.MixedConstraints.Count == 0)
             {
-                return result.Distinct().ToList();
+                if (binaryStrategies.Count == 1 && binaryStrategies.Last().Equals(SamplingStrategies.ALLBINARY) && experimentalDesigns.Count == 1 && experimentalDesigns.Last() is FullFactorialDesign)
+                {
+                    return result.ToList();
+                } else
+                {
+                    return result.Distinct().ToList();
+                }
             } else
             {
                 List<Configuration> unfilteredList = result.Distinct().ToList();
