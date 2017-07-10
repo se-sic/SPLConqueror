@@ -42,29 +42,56 @@ namespace VariabilitModel_GUI
 
         /// <summary>
         /// Initializes the form and its data.
+        /// Therefore, this method checks which configuration options are alternative groups or not.
         /// </summary>
         private void initializeForm()
         {
-            List<ConfigurationOption> opts = new List<ConfigurationOption>();
+            // This list contains the options that are potential candidates as alternative groups
+            List<ConfigurationOption> remainingOptions = new List<ConfigurationOption>();
 
-            foreach (ConfigurationOption o in GlobalState.varModel.getOptions())
+            // If all children do exclude each other, the current option has to be an alternative option
+            List<ConfigurationOption> innerOpts = GlobalState.varModel.getOptions().Where(o => o.Children.Count > 0 && o is BinaryOption).ToList();
+
+            // Only inner nodes are potential alternative groups
+            foreach (ConfigurationOption innerOpt in innerOpts)
             {
-                if (o.Children.Count > 1)
-                    opts.Add(o);
+                List<ConfigurationOption> childOpts = innerOpt.Children;
+
+                bool addToSelection = true;
+                foreach (ConfigurationOption childOpt in childOpts)
+                {
+                    // This list contains the other options. If at least one feature misses one of the other options, the parent feature is
+                    // not declared as alternative group.
+                    List<ConfigurationOption> otherOpts = childOpts.Where(o => o != childOpt).ToList();
+                    foreach (List<ConfigurationOption> excludedOptions in childOpt.Excluded_Options)
+                    {
+                        if (excludedOptions.Count == 1 && otherOpts.Contains(excludedOptions[0]))
+                        {
+                            otherOpts.Remove(excludedOptions[0]);
+                        }
+                    }
+
+                    if (otherOpts.Count > 0)
+                    {
+                        addToSelection = false;
+                        break;
+                    }
+                }
+
+                if (addToSelection)
+                {
+                    currAltGroups.Add(innerOpt);
+                    currAltGroupsListBox.Items.Add(innerOpt);
+                } else
+                {
+                    remainingOptions.Add(innerOpt);
+                }
             }
 
-            selectedOptionComboBox.Items.AddRange(opts.Where(x => x is BinaryOption).ToArray());
-            selectedOptionComboBox.SelectedIndex = 0;
-
-            foreach (string c in GlobalState.varModel.BinaryConstraints)
-            {
-                ConfigurationOption opt = getAltGroup(c);
-
-                if (opt != null && !currAltGroups.Contains(opt))
-                {
-                    currAltGroups.Add(opt);
-                    currAltGroupsListBox.Items.Add(opt);
-                }
+            // Add the remaining options to the combo-box
+            selectedOptionComboBox.Items.AddRange(remainingOptions.ToArray());
+            if (selectedOptionComboBox.Items.Count > 0) {
+                selectedOptionComboBox.SelectedIndex = 0;
             }
         }
 
