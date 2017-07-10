@@ -26,7 +26,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// <param name="distinctValuePerOption">Distince value per option parameter.</param>
         public OneFactorAtATime(int distinctValuePerOption = 3) : base()
         {
-            this.distinctValuesPerOption = 3;
+            this.distinctValuesPerOption = distinctValuePerOption;
         } 
 
         public OneFactorAtATime(String s)
@@ -71,14 +71,18 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
             Dictionary<NumericOption, List<double>> values = new Dictionary<NumericOption, List<double>>();
 
+            this.selectedConfigurations.Add (centerPoints);
 
             foreach (NumericOption vf in this.options)
             {
                 //Getting values for learning the variable feature
-                List<double> valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption, vf.getNumberOfSteps()), false);
-                valuesOneOption.Remove(vf.getCenterValue());
-
-
+                List<double> valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption - 1, vf.getNumberOfSteps()), true);
+                if(valuesOneOption.Contains(vf.getCenterValue()))
+                {
+                    valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption, vf.getNumberOfSteps()), true);
+                    valuesOneOption.Remove(vf.getCenterValue());
+                }
+                    
                 foreach (double currValue in valuesOneOption)
                 {
                     Dictionary<NumericOption, double> oneSample = new Dictionary<NumericOption, double>();
