@@ -25,8 +25,8 @@ namespace SamplingUnitTest
         private const int EXPECTED_BOXBEHNKEN = 205;
         private const int EXPECTED_HYPERSAMPLING_50 = 164;
         private const int EXPECTED_HYPERSAMPLING_40 = 164;
-        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_5 = 164;
-        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_3 = 123;
+        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_5 = 205;
+        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_3 = 164;
         private const int EXPECTED_RANDOM_12_1 = 492;
         private const int EXPECTED_RANDOM_10_0 = 410;
         private const int EXPECTED_PLACKETT_BURMAN_3_9 = 246;
