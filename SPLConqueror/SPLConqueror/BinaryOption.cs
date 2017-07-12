@@ -26,11 +26,6 @@ namespace SPLConqueror_Core
         };
 
         /// <summary>
-        /// The default value of a binary option.
-        /// </summary>
-        public BinaryValue DefaultValue { get; set; }
-
-        /// <summary>
         /// States whether an binary option is optional or not.
         /// </summary>
         public bool Optional { get; set; }
@@ -44,7 +39,6 @@ namespace SPLConqueror_Core
             : base(vm, name)
         {
             this.Optional = false;
-            this.DefaultValue = BinaryValue.Selected;
         }
 
         /// <summary>
@@ -55,14 +49,6 @@ namespace SPLConqueror_Core
         internal XmlNode saveXML(System.Xml.XmlDocument doc)
         {
             XmlNode node = base.saveXML(doc);
-
-            //Default value
-            XmlNode defaultNode = doc.CreateNode(XmlNodeType.Element, "defaultValue", "");
-            if (this.DefaultValue == BinaryValue.Selected)
-                defaultNode.InnerText = "Selected";
-            else
-                defaultNode.InnerText = "Deselected";
-            node.AppendChild(defaultNode);
 
             //Optional
             XmlNode optionalNode = doc.CreateNode(XmlNodeType.Element, "optional", "");
@@ -100,12 +86,6 @@ namespace SPLConqueror_Core
             {
                 switch (xmlInfo.Name)
                 {
-                    case "defaultValue":
-                        if (xmlInfo.InnerText.Equals("Selected"))
-                            this.DefaultValue = BinaryValue.Selected;
-                        else
-                            this.DefaultValue = BinaryValue.Deselected;
-                        break;
                     case "optional":
                         if (xmlInfo.InnerText.Equals("True"))
                             this.Optional = true;
