@@ -12,7 +12,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -27,7 +26,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -42,7 +40,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -57,7 +54,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -72,7 +68,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -87,7 +82,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -102,7 +96,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -117,7 +110,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -136,7 +128,6 @@
         <options>PS16K</options>
         <options>PS32K</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -155,7 +146,6 @@
         <options>PS16K</options>
         <options>PS8K</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -174,7 +164,6 @@
         <options>PS16K</options>
         <options>PS32K</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -193,7 +182,6 @@
         <options>PS8K</options>
         <options>PS32K</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -212,7 +200,6 @@
         <options>PS8K</options>
         <options>PS16K</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -227,7 +214,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -245,7 +231,6 @@
         <options>CS64MB</options>
         <options>CS512MB</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -263,7 +248,6 @@
         <options>CS512MB</options>
         <options>CS64MB</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -281,7 +265,6 @@
         <options>CS16MB</options>
         <options>CS512MB</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -299,9 +282,10 @@
         <options>CS16MB</options>
         <options>CS64MB</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
   </binaryOptions>
   <numericOptions />
+  <booleanConstraints />
+  <nonBooleanConstraints />
 </vm>
