@@ -568,12 +568,14 @@ namespace CommandLine
                         }
                         else
                         {
-                            FeatureSubsetSelection learnedModel = exp.models[0];
-                            if (learnedModel == null)
+                            if (exp.models.Count == 0 || exp.models[0] == null)
                             {
                                 GlobalState.logError.logLine("Error... learning was not performed!");
                                 break;
                             }
+                            
+                            FeatureSubsetSelection learnedModel = exp.models[0];
+
                             GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
                             foreach (LearningRound lr in learnedModel.LearningHistory)
                             {
@@ -723,6 +725,10 @@ namespace CommandLine
 
                             ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
                             var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample);
+
+                            // Clear the content of the file
+                            File.WriteAllText(para[0], string.Empty);
+
                             if (para.Length >= 3)
                             {
                                 printer = new ConfigurationPrinter(para[0], GlobalState.optionOrder, para[1], para[2]);
