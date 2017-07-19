@@ -290,6 +290,8 @@ namespace MachineLearning.Learning.Regression
 
         public void clearSampling()
         {
+            this.models.Clear();
+
             if (this.testSet != null)
                 if (this.testSet.Count == GlobalState.allMeasurements.Configurations.Count)
                 {
@@ -321,7 +323,6 @@ namespace MachineLearning.Learning.Regression
             this.nbBaggings = 0;
             this.mlSettings = new ML_Settings();
             this.metaModel = null;
-            this.models.Clear();
             clearSampling();
         }
     }

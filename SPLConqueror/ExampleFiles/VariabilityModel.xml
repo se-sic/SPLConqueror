@@ -11,7 +11,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -23,7 +22,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -34,7 +32,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -49,7 +46,6 @@
       <excludedOptions>
         <options>binOpt2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -62,7 +58,6 @@
         <options>binOpt2</options>
       </impliedOptions>
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
   </binaryOptions>
@@ -78,7 +73,6 @@
       <minValue>0</minValue>
       <maxValue>2</maxValue>
       <stepFunction>n + 2</stepFunction>
-      <defaultValue>0</defaultValue>
     </configurationOption>
     <configurationOption>
       <name>numOpt2</name>
@@ -93,8 +87,12 @@
       <minValue>0.1</minValue>
       <maxValue>0.4</maxValue>
       <stepFunction>n * 2</stepFunction>
-      <defaultValue>0.2</defaultValue>
     </configurationOption>
   </numericOptions>
-  <booleanConstraints />
+  <booleanConstraints>
+    <constraint>!binOpt4 | !binOpt3</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints>
+     <constraint>numOpt1 + numOpt2 > 0</constraint>
+  </nonBooleanConstraints>
 </vm>

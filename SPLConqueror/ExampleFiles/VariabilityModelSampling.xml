@@ -11,7 +11,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -23,7 +22,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -34,7 +32,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -49,7 +46,6 @@
       <excludedOptions>
         <options>binOpt2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
 	<configurationOption>
@@ -62,7 +58,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -78,7 +73,6 @@
         <options>member2</options>
 		<options>member3</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -94,7 +88,6 @@
         <options>member1</options>
 		<options>member3</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -110,7 +103,6 @@
         <options>member1</options>
 		<options>member2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 		<configurationOption>
@@ -123,7 +115,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -139,7 +130,6 @@
         <options>member22</options>
 		<options>member23</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -155,7 +145,6 @@
         <options>member21</options>
 		<options>member23</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -171,7 +160,6 @@
         <options>member21</options>
 		<options>member22</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -184,7 +172,6 @@
         <options>binOpt2</options>
       </impliedOptions>
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
 	  </configurationOption>
 	    <configurationOption>
@@ -195,7 +182,6 @@
       <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
 	    <configurationOption>
@@ -208,7 +194,6 @@
         <options>binOpt6</options>
       </impliedOptions>
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
   </binaryOptions>
@@ -224,7 +209,6 @@
       <minValue>0</minValue>
       <maxValue>2</maxValue>
       <stepFunction>n + 2</stepFunction>
-      <defaultValue>0</defaultValue>
     </configurationOption>
     <configurationOption>
       <name>numOpt2</name>
@@ -239,7 +223,6 @@
       <minValue>1</minValue>
       <maxValue>8</maxValue>
       <stepFunction>n * 2</stepFunction>
-      <defaultValue>0.2</defaultValue>
     </configurationOption>
   </numericOptions>
   <booleanConstraints />
