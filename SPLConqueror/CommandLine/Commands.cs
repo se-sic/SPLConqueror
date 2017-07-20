@@ -59,12 +59,12 @@ namespace CommandLine
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
         public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
-        public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
         public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
 
         // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
         public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
         public const string COMMAND_PRINT_CONFIGURATIONS = "printconfigs";
+        public const string COMMAND_PRINT_MLSETTINGS = "printsettings";
 
         public const string COMMAND_VARIABILITYMODEL = "vm";
         public const string COMMAND_SET_NFP = "nfp";
