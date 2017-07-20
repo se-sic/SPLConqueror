@@ -57,6 +57,7 @@
     <Compile Include="SamplingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CleanSamplingTest.cs" />
+    <Compile Include="PrintSampled.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandLine\CommandLine.csproj">
