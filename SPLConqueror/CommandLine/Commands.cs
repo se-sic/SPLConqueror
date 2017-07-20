@@ -91,9 +91,33 @@ namespace CommandLine
         public const string COMMAND_PYTHON_LEARN_OPT = "learn-python-opt";
 
         List<SamplingStrategies> binaryToSample = new List<SamplingStrategies>();
+
+        public List<SamplingStrategies> BinaryToSample
+        {
+            get { return binaryToSample; }
+        } 
+
         List<SamplingStrategies> binaryToSampleValidation = new List<SamplingStrategies>();
+
+        public List<SamplingStrategies> BinaryToSampleValidation
+        {
+            get { return binaryToSampleValidation;  }
+        }
+
         List<ExperimentalDesign> numericToSample = new List<ExperimentalDesign>();
+
+        public List<ExperimentalDesign> NumericToSample
+        {
+            get { return numericToSample; }
+        }
+
         List<ExperimentalDesign> numericToSampleValidation = new List<ExperimentalDesign>();
+
+        public List<ExperimentalDesign> NumericToSampleValidation
+        {
+            get { return numericToSampleValidation; }
+        }
+
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
 
@@ -648,8 +672,12 @@ namespace CommandLine
 
  						for(int i = 0; i < para.Length; i++)
                         {
-                            prameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
-                        }                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
+                            if (para[i].Contains(":"))
+                            {
+                                prameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
+                            }
+                        }
+                        if (para.Contains(Commands.COMMAND_VALIDATION)) 
                         {
                             this.binaryToSampleValidation.Add(SamplingStrategies.T_WISE);
                             this.exp.info.binarySamplings_Validation = "T_WISE ";
