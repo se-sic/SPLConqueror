@@ -672,9 +672,12 @@ namespace CommandLine
 
                     GlobalState.logError.close();
                     GlobalState.logError = new ErrorLogger(location + "_error");
+
+                    GlobalState.logInfo.logLine("Current machine learning settings: " + this.mlSettings.ToString());
                     break;
                 case COMMAND_SET_MLSETTING:
                     this.mlSettings = ML_Settings.readSettings(task);
+                    GlobalState.logInfo.logLine("Current machine learning settings: " + this.mlSettings.ToString());
                     break;
                 case COMMAND_LOAD_MLSETTINGS:
                     this.mlSettings = ML_Settings.readSettingsFromFile(task);
