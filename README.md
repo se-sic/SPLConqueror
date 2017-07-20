@@ -1,6 +1,3 @@
-[![Build status](https://travis-ci.org/se-passau/SPLConqueror.svg?branch=master "Build status")](https://travis-ci.org/se-passau/SPLConqueror)
-
-
 # SPL Conqueror Project Structure
 
 <details>
@@ -404,7 +401,7 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | bagging | Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (may require a larger amount of memory). | false | true, false |
 | baggingNumbers | Specifies how often an influence model is learned based on a subset of the measurement data. | 100 | int |
 | baggingTestDataFraction | Specifies the percentage of data taken from the test set to be used in one learning run. | 50 | int |
-| useBackward | Terms existing in the model can be removed during the learning procedure if removal leads to a better model. | false | true, false |
+| useBackward | Terms existing in the model can be removed during the learning procedure if removal leads to a better model. | 50 | int |
 | abortError | The threshold at which the learning process stops. | 1 | double |
 | limitFeatureSize | Terms considered during the learning procedure can not become arbitrary complex. | false | true, false |
 | featureSizeThreshold | The maximal number of options participating in one interaction. | 4 | int |
@@ -492,12 +489,11 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```featurewise``` | featurewise |
 | Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```pairwise``` | pairwise |
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```negfw``` | negfw |
-| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```random <numConfigs> <seed>``` | random numConfigs:50 seed:3 |
+| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```random <binaryThreshold> <modulu>``` | random 50 3 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```expdesign plackettburman measurements:<measurements> level:<level>``` | expdesign plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```expdesign centralcomposite``` | expdesign centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```expdesign random sampleSize:<size> seed:<seed>``` | expdesign random sampleSize:50 seed:2 |
 | Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```expdesign fullfactorial``` | expdesign fullfactorial |
-| Numeric | factorial | This design implements the 2^k factorial design. Additionally, 2 can be varied by setting n. | ```expdesign factorial n:<size>``` | expdesign factorial n:3 |
 | Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```expdesign boxbehnken``` | expdesign boxbehnken |
 | Numeric | hypersampling | | ```expdesign hypersampling precision:<precisionValue>``` | expdesign hypersampling precision:25 |
 | Numeric | onefactoratatime | | ```expdesign onefactoratatime distinctValuesPerOption:<values>``` | expdesign onefactoratatime distinctValuesPerOption:5 |
@@ -561,7 +557,7 @@ An example would be as follows:
 
 ```printconfigs <file> <prefix> <postfix>```
 
-With the command ```printconfigs```, all sampled configurations are printed to a persistent file. The command requires a target file as first argument and optionally a prefix or prefix and postfix, that will be printed at the start or end of each configuration, respectively. A special usage of this command is printing all valid configurations of a variability model, using the ```allbinary``` and ```fullfactorial``` sampling strategies. If a .csv-file is provided with this command, the configurations are written in csv-format without prefix and postfix.
+With the command ```printconfigs```, all sampled configurations are printed to a persistent file. The command requires a target file as first argument and optionally a prefix or prefix and postfix, that will be printed at the start or end of each configuration, respectively. A special usage of this command is printing all valid configurations of a variability model, using the ```allbinary``` and ```fullfactorial``` sampling strategies.
 A short example using printconfigs to print all valid configurations into a text file:
 ```
 vm C:\exampleVM.xml
@@ -596,7 +592,7 @@ expdesign random sampleSize:50 seed:3 validation
 
 ```printsettings```
 
-Using the printsettings command, the current machine-learning settings are printed into the .log-file or ,in case you didn't set a .log-file, into the console.
+Using the printsettings command, the current machine-learning settings are printed into the .log-file or ,in case yotogehteru didn't set a .log-file, into the console.
 
 #### Writing measurements to .csv-file
 
@@ -609,6 +605,10 @@ measurementstocsv C:\measurementsAsCSV.csv
 ```
 
 **Note**: The element separator is ```;```, whereas the line separator is ```\n```.
+
+```predict-configurations```
+
+Predicts the ```nfp``` value of all configurations loaded with the ```all``` command and writes them together with the measured ```nfp``` value and the configuration identifier in a file.
 
 #### Evaluation set
 
@@ -635,6 +635,79 @@ For example:
 resume-log C:\abortedScript.a
 ```
 
-#### Example scripts
+</details>
+<details>
+<summary>Exemplary Script-Files</summary>
+A .a-file contains the configuration of SPL Conqueror.
+If one is interested in using all measurement-data, the following .a-file could be used:
 
+```
+# Lines containing a comment begin with '#'
+
+# The log command and the destination file, where the learning progress should be written to
+log ./learnOutput.txt
+
+# The machine-learning settings for configuring different options for machine-learning. These are described in the documentation more precisely
+mlsettings bagging:False stopOnLongRound:False parallelization:False lossFunction:RELATIVE useBackward:False abortError:10 limitFeatureSize:False featureSizeTreshold:7 quadraticFunctionSupport:True crossValidation:False learn_logFunction:True numberOfRounds:70 backwardErrorDelta:1 minImprovementPerRound:0.25 withHierarchy:False
+
+# The path to the variability model (feature model)
+vm ./VariabilityModel.xml
+
+# The file containing all measurements needed for machine-learning
+all ./measurements.xml
+
+# The non-functional property, which was measured.
+# Note that every configuration in the measurements-file needs a data-row with the attribute 'columname=Performance'
+nfp Performance
+
+# Learns with all configurations given in the measurements-file.
+# Note that 'start' is not needed in combination with 'learnwithallmeasurements'
+learnwithallmeasurements
+
+# Cleans the sample set.
+# Note that this command is needed if multiple different sampling sets are computed in one run of SPL Conqueror
+clean-sampling
+
+```
+
+In SPL Conqueror, multiple different sampling strategies for binary and numeric features are implemented and can be used in the .a-file as follows:
+
+```
+# The first lines are the same as in the previous example
+log ./learnOutput.txt
+mlsettings bagging:False stopOnLongRound:False parallelization:False lossFunction:RELATIVE useBackward:False abortError:10 limitFeatureSize:False featureSizeTreshold:7 quadraticFunctionSupport:True crossValidation:False learn_logFunction:True numberOfRounds:70 backwardErrorDelta:1 minImprovementPerRound:0.25 withHierarchy:False
+vm ./VariabilityModel.xml
+all ./measurements.xml
+nfp Performance
+
+# Here, the binary sampling strategy FeatureWise (FW) is selected
+featurewise
+
+# The sampling strategy Plackett-Burman for numeric options is selected
+expdesign plackettburman measurements:125 level:5
+
+# Print configurations selected by the sampling strategies in the file 'samples.txt'
+printconfigs ./samples.txt
+
+# Start learning using the sampled configurations
+start
+
+# Predicts the performance value of all configurations of the measurements file using the learned performance-influence model
+predict-configurations
+
+```
+
+If multiple (different) .a-files should be executed, a super-script can be created as follows:
+```
+# Calls the first script
+script ./scriptA.a
+# Removes all variables related to the invocation of the first script
+clean-global
+# Calls the second script
+script ./scriptB.a
+clean-global
+```
+
+See the previous chapters for a more detailed description of the commands.
+For further examples, see the directory 'Example Files'.
 </details>
