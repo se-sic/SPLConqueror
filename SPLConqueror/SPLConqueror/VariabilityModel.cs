@@ -115,7 +115,8 @@ namespace SPLConqueror_Core
         /// <returns>A list containing all numeric configuartion options that are considered in the learning process.</returns>
         public List<NumericOption> getNonBlacklistedNumericOptions(List<String> blacklist)
         {
-            List<NumericOption> result = new List<NumericOption>();            foreach (NumericOption opt in this.numericOptions)
+            List<NumericOption> result = new List<NumericOption>();
+            foreach (NumericOption opt in this.numericOptions)
             {
                 if (blacklist != null)
                 {

@@ -394,21 +394,14 @@ namespace CommandLine
                     }
                     break;
                 case COMMAND_CLEAR_GLOBAL:
-                    SPLConqueror_Core.GlobalState.clear();
-                    binaryToSample.Clear();
-                    binaryToSampleValidation.Clear();
+                    cleanGlobal();
+                    
                     break;
                 case COMMAND_CLEAR_SAMPLING:
-                    exp.clearSampling();
-                    binaryToSample.Clear();
-                    binaryToSampleValidation.Clear();
-                    numericToSample.Clear();
-                    numericToSampleValidation.Clear();
+                    cleanSampling();
                     break;
                 case COMMAND_CLEAR_LEARNING:
-                    exp.clear();
-                    binaryToSample.Clear();
-                    binaryToSampleValidation.Clear();
+                    cleanLearning();               
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
@@ -1053,6 +1046,31 @@ namespace CommandLine
                     return command;
             }
             return "";
+        }
+
+        private void cleanGlobal()
+        {
+            SPLConqueror_Core.GlobalState.clear();
+            binaryToSample.Clear();
+            binaryToSampleValidation.Clear();
+            cleanSampling();
+        }
+
+        private void cleanSampling()
+        {
+            exp.clearSampling();
+            binaryToSample.Clear();
+            binaryToSampleValidation.Clear();
+            numericToSample.Clear();
+            numericToSampleValidation.Clear();
+            cleanLearning();
+        }
+
+        private void cleanLearning()
+        {
+            exp.clear();
+            binaryToSample.Clear();
+            binaryToSampleValidation.Clear();
         }
 
         private string createSamplingIdentifier()
