@@ -1,3 +1,5 @@
+[![Build status](https://travis-ci.org/se-passau/SPLConqueror.svg?branch=master "Build status")](https://travis-ci.org/se-passau/SPLConqueror)
+
 # SPL Conqueror Project Structure
 
 <details>
