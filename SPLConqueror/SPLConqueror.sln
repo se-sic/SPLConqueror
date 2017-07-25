@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamplingUnitTest", "Samplin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearningTest", "MachineLearningTest\MachineLearningTest.csproj", "{8F8485F6-449F-4512-B61F-6E834A16D6C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPLConquerorCoreTest", "SPLConquerorCoreTest\SPLConquerorCoreTest.csproj", "{C262B96D-E51A-4293-8271-40D00DBB8B7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -255,6 +257,26 @@ Global
 		{8F8485F6-449F-4512-B61F-6E834A16D6C4}.Release|x64.Build.0 = Release|Any CPU
 		{8F8485F6-449F-4512-B61F-6E834A16D6C4}.Release|x86.ActiveCfg = Release|Any CPU
 		{8F8485F6-449F-4512-B61F-6E834A16D6C4}.Release|x86.Build.0 = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|Win32.Build.0 = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|x64.Build.0 = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Debug|x86.Build.0 = Debug|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|Win32.Build.0 = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|x64.ActiveCfg = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|x64.Build.0 = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|x86.ActiveCfg = Release|Any CPU
+		{C262B96D-E51A-4293-8271-40D00DBB8B7E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

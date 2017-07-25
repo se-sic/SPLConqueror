@@ -208,7 +208,7 @@
       <excludedOptions />
       <minValue>0</minValue>
       <maxValue>2</maxValue>
-      <stepFunction>n + 2</stepFunction>
+      <stepFunction>numOpt1 + 2</stepFunction>
     </configurationOption>
     <configurationOption>
       <name>numOpt2</name>
@@ -222,7 +222,7 @@
       <excludedOptions />
       <minValue>1</minValue>
       <maxValue>8</maxValue>
-      <stepFunction>n * 2</stepFunction>
+      <stepFunction>numOpt2 * 2</stepFunction>
     </configurationOption>
   </numericOptions>
   <booleanConstraints />
