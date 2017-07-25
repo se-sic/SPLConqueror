@@ -1331,6 +1331,19 @@ namespace CommandLine
                     return task;
             }
 
+            if ((expDesign is KExchangeAlgorithm || expDesign is RandomSampling) 
+                && parameter.ContainsKey("sampleSize") && GlobalState.varModel != null)
+            {
+                int maximumNumberNumVariants = computeNumberOfPossibleNumericVariants(GlobalState.varModel);
+                String numberOfSamples;
+                parameter.TryGetValue("sampleSize", out numberOfSamples);
+                if (Double.Parse(numberOfSamples) > maximumNumberNumVariants)
+                {
+                    GlobalState.logInfo.logLine("The number of wanted numeric variants exceeds the maximum number"
+                        + "of possible variants. Switching to maximum number of variants");
+                    parameter["sampleSize"] = maximumNumberNumVariants.ToString();
+                }
+            }
             expDesign.setSamplingParameters (parameter);
             if (parameter.ContainsKey("validation"))
             {
@@ -1375,6 +1388,35 @@ namespace CommandLine
             }
             sw.Flush();
             sw.Close();
+        }
+
+        /// <summary>
+        /// Calculate the number of possible configurations for numeric options in a vm.
+        /// </summary>
+        /// <param name="vm">The variability model used.</param>
+        /// <returns>Number of possible configurations.</returns>
+        private static int computeNumberOfPossibleNumericVariants(VariabilityModel vm)
+        {
+            List<int> numberOfSteps = new List<int>();
+
+            foreach (NumericOption numOpt in vm.NumericOptions)
+            {
+                if (numOpt.Values != null)
+                    numberOfSteps.Add(numOpt.Values.Count());
+                else
+                    numberOfSteps.Add((int)numOpt.getNumberOfSteps());
+            }
+
+            if (numberOfSteps.Count == 0)
+            {
+                return numberOfSteps.Count;
+            }
+            else
+            {
+                int numberOfNumVariants = 1;
+                numberOfSteps.ForEach(x => numberOfNumVariants *= x);
+                return numberOfNumVariants;
+            }
         }
 
 
