@@ -41,7 +41,7 @@ namespace MachineLearningTest
 
 
         [Test, Order(1)]
-        public void TestLoadVM()
+        public void TestLearning()
         {
             consoleOutput.Flush();
             consoleOutput.NewLine = "\r\n";
@@ -67,17 +67,38 @@ namespace MachineLearningTest
             }
             cmd.performOneCommand(command);
             Console.Error.Write(consoleOutput.ToString());
-            bool allConfigurationsLoaded = consoleOutput.ToString().Contains("2560 configurations loaded.");
+            bool allConfigurationsLoaded = consoleOutput.ToString()
+                .Contains("2560 configurations loaded.");
             Assert.True(allConfigurationsLoaded);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
+            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " 
+                + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
             Console.Error.Write(consoleOutput.ToString());
-            string rawLearningRounds = consoleOutput.ToString().Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1];
+            string rawLearningRounds = consoleOutput.ToString()
+                .Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1];
             rawLearningRounds = rawLearningRounds.Split(new string[] { "average model" }, StringSplitOptions.None)[0];
-            string[] learningRounds = rawLearningRounds.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] learningRounds = rawLearningRounds
+                .Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.True(isExpectedResult(learningRounds[0].Split(new char[] { ';' })[1]));
+        }
+
+        [Test, Order(2)]
+        public void testBagging()
+        {
+            cmd.performOneCommand(Commands.COMMAND_CLEAR_LEARNING);
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:true baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            string averageModel = consoleOutput.ToString()
+                .Split(new string[] { "average model:" }, StringSplitOptions.None)[1];
+            string[] polynoms = averageModel
+                .Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            Assert.AreEqual(4, polynoms.Length);
+            Assert.AreEqual("1085.73333333333 * PAGESIZE +", polynoms[0].Trim());
+            Assert.AreEqual("3.73333333333342 * DIAGNOSTIC +", polynoms[1].Trim());
+            Assert.AreEqual("24.1333333333336 * HAVE_STATISTICS +", polynoms[2].Trim());
+            Assert.AreEqual("-2.93333333333336 * HAVE_HASH +", polynoms[3].Trim());
         }
 
         private bool isExpectedResult(string learningResult)
