@@ -93,12 +93,13 @@ namespace MachineLearningTest
             string averageModel = consoleOutput.ToString()
                 .Split(new string[] { "average model:" }, StringSplitOptions.None)[1];
             string[] polynoms = averageModel
-                .Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
+            Console.Error.Write(consoleOutput.ToString());
             Assert.AreEqual(4, polynoms.Length);
-            Assert.AreEqual("1085.73333333333 * PAGESIZE +", polynoms[0].Trim());
-            Assert.AreEqual("3.73333333333342 * DIAGNOSTIC +", polynoms[1].Trim());
-            Assert.AreEqual("24.1333333333336 * HAVE_STATISTICS +", polynoms[2].Trim());
-            Assert.AreEqual("-2.93333333333336 * HAVE_HASH +", polynoms[3].Trim());
+            Assert.AreEqual("1085.73333333333 * PAGESIZE", polynoms[0].Trim());
+            Assert.AreEqual("3.73333333333342 * DIAGNOSTIC", polynoms[1].Trim());
+            Assert.AreEqual("24.1333333333336 * HAVE_STATISTICS", polynoms[2].Trim());
+            Assert.AreEqual("-2.93333333333336 * HAVE_HASH", polynoms[3].Trim());
         }
 
         private bool isExpectedResult(string learningResult)

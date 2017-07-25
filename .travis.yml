@@ -9,4 +9,4 @@ script:
   - msbuild ./SPLConqueror/SPLConqueror.sln /t:Build #Use msbuild to compile the project instead of mono.
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/MachineLearningTest/bin/Debug/MachineLearningTest.dll #Test machine learning and a few command line commands.
-  - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SPLConquerorCoreTest/bin/SPLConquerorCoreTest.dll #Test core
+  - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SPLConquerorCoreTest/bin/Debug/SPLConquerorCoreTest.dll #Test core
