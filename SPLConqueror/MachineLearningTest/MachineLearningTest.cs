@@ -81,7 +81,7 @@ namespace MachineLearningTest
             rawLearningRounds = rawLearningRounds.Split(new string[] { "average model" }, StringSplitOptions.None)[0];
             string[] learningRounds = rawLearningRounds
                 .Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            //     Assert.True(isExpectedResult(learningRounds[0].Split(new char[] { ';' })[1]));
+            Assert.True(isExpectedResult(learningRounds[0].Split(new char[] { ';' })[1]));
         }
 
         [Test, Order(2)]
