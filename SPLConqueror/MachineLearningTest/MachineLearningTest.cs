@@ -103,7 +103,7 @@ namespace MachineLearningTest
             Assert.AreEqual("2.44444444444449 * DIAGNOSTIC", polynoms[1].Trim());
             Assert.AreEqual("14.8444444444448 * HAVE_CRYPTO", polynoms[2].Trim());
             Assert.AreEqual("23.1111111111112 * HAVE_STATISTICS", polynoms[3].Trim());
-            Assert.AreEqual("-2.66666666666671 * HAVE_HASH", polynoms[].Trim());
+            Assert.AreEqual("-2.66666666666671 * HAVE_HASH", polynoms[4].Trim());
         }
 
         private bool isExpectedResult(string learningResult)
