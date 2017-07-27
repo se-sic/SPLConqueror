@@ -23,6 +23,8 @@ namespace MachineLearning.Sampling.Hybrid
         public const string DISTRIBUTION = "distribution";
         public const string DISTANCE_METRIC = "distance-metric";
         public const string AS_TW = "asTW";
+        public const string ONLY_NUMERIC = "onlyNumeric";
+        public const string ONLY_BINARY = "onlyBinary";
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
         public static Distribution[] distributions = { new UniformDistribution() };
         #endregion
@@ -41,7 +43,9 @@ namespace MachineLearning.Sampling.Hybrid
             {
                 {DISTANCE_METRIC, "manhattan" },
                 {DISTRIBUTION, "uniform" },
-                {NUM_CONFIGS, "asTW2" }
+                {NUM_CONFIGS, "asTW2" },
+                {ONLY_NUMERIC, "false" },
+                {ONLY_BINARY, "false" }
             };
         }
 
@@ -128,6 +132,26 @@ namespace MachineLearning.Sampling.Hybrid
             if (this.distribution == null)
             {
                 throw new ArgumentException("The metric " + distributionToUse + " is not supported.");
+            }
+
+            string onlyNumeric = this.strategyParameter[ONLY_NUMERIC];
+            if (onlyNumeric.ToLower().Equals("true"))
+            {
+                this.optionsToConsider = new List<ConfigurationOption>();
+                this.optionsToConsider.AddRange(GlobalState.varModel.BinaryOptions);
+            }
+
+            string onlyBinary = this.strategyParameter[ONLY_BINARY];
+            if (onlyBinary.ToLower().Equals("true"))
+            {
+                this.optionsToConsider = new List<ConfigurationOption>();
+                this.optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
+            }
+
+            // Both can't be set to true at the same time
+            if (onlyBinary.ToLower().Equals("true") && onlyNumeric.ToLower().Equals("true"))
+            {
+                throw new ArgumentException("The options " + ONLY_BINARY + " and " + ONLY_NUMERIC + " can not be active at the same time.");
             }
 
         }
