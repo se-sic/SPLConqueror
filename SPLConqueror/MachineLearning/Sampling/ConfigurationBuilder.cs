@@ -126,6 +126,17 @@ namespace MachineLearning.Sampling
                     result = configurations;
                 } else
                 {
+                    // Prepare the previous sample sets
+                    if (result.Count == 0 && binaryConfigs.Count == 0)
+                    {
+                        foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
+                        {
+                            Configuration c = new Configuration(new Dictionary<BinaryOption, BinaryOption.BinaryValue>(), numConf);
+                            result.Add(c);
+                        }
+                    }
+
+
                     // Build the cartesian product
                     List<Configuration> newResult = new List<Configuration>();
                     foreach (Configuration config in result)
