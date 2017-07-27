@@ -500,11 +500,17 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Numeric | hypersampling | | ```expdesign hypersampling precision:<precisionValue>``` | expdesign hypersampling precision:25 |
 | Numeric | onefactoratatime | | ```expdesign onefactoratatime distinctValuesPerOption:<values>``` | expdesign onefactoratatime distinctValuesPerOption:5 |
 | Numeric | kexchange | | ```expdesign kexchange sampleSize:<size> k:<kvalue>``` | expdesign kexchange sampleSize:10 k:3 |
+| Both | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number | asTW1, asTW2, ...> onlyNumeric:<True/False> onlyBinary:<True/False>``` | hybrid distribution-aware onlyNumeric |
 
 For instance, all binary options and random numeric options with a sample size of 50 and a seed of 3 should be used for learning, the following lines have to be appended to the .a-script:
 ```
 allbinary
 expdesign random sampleSize:50 seed:3
+```
+
+If you want to use a hybrid sampling strategy instead, the following line has to be appended to the .a-script:
+```
+hybrid distribution-aware
 ```
 
 **Note**: ```allbinary``` in combination with ```fullfactorial``` results in all measurements being taken into the sample set.
