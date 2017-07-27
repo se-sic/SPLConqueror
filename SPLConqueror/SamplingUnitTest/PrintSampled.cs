@@ -21,7 +21,7 @@ namespace SamplingUnitTest
             Commands cmd = new Commands();
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + modelPath);
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_FEATUREWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN);
+            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN);
             cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " 
                 + System.AppDomain.CurrentDomain.BaseDirectory + "testSampledConfigs.txt");
             StreamReader sr = new StreamReader(System.AppDomain.CurrentDomain.BaseDirectory 

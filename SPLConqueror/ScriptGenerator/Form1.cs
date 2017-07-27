@@ -262,17 +262,17 @@ namespace ScriptGenerator
 
             if (num_BoxBehnken_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
                 keyInfo += "BoxBehnken ";
             }
             if (num_CentralComposite_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
                 keyInfo += "CentralComposite ";
             }
             if (num_FullFactorial_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
                 keyInfo += "FullFactorial ";
             }
             if (num_hyperSampling_check.Checked)
@@ -282,7 +282,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
+                samplingNames.Add(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
                 keyInfo += "HyperSampling " + num_hyper_percent_text.Text + " ";
             }
             if (num_kEx_check.Checked)
@@ -292,7 +292,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -303,7 +303,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -315,7 +315,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
 
@@ -327,7 +327,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
+                string str = CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }

@@ -6,7 +6,7 @@ namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.DistanceMetric
     /// <summary>
     /// This class is an interface for all distance metrics that can be used for computing the distribution.
     /// </summary>
-    interface DistanceMetric
+    public interface DistanceMetric
     {
         /// <summary>
         /// This method computes the distance of the whole configuration.

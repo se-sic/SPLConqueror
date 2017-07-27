@@ -273,7 +273,7 @@ namespace CommandLine
                         }
                         break;
 
-                    case Commands.COMMAND_EXERIMENTALDESIGN:
+                    case Commands.COMMAND_EXPERIMENTALDESIGN:
                         wasPerformed = reconstructNumericSampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -485,8 +485,8 @@ namespace CommandLine
             string lineInLog = Commands.COMMAND + commandLine;
             if (lineInLog.Equals(logReader.ReadLine()))
             {
-                relevantCommands.Remove(Commands.COMMAND_EXERIMENTALDESIGN);
-                relevantCommands.Remove(Commands.COMMAND_EXERIMENTALDESIGN + " validation");
+                relevantCommands.Remove(Commands.COMMAND_EXPERIMENTALDESIGN);
+                relevantCommands.Remove(Commands.COMMAND_EXPERIMENTALDESIGN + " validation");
                 relevantCommands.Remove(Commands.COMMAND_SAMPLE_OPTIONWISE);
                 relevantCommands.Remove(Commands.COMMAND_SAMPLE_BINARY_RANDOM);
                 relevantCommands.Remove(Commands.COMMAND_SAMPLE_PAIRWISE);
