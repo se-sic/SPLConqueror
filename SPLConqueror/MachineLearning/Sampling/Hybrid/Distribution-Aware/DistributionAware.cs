@@ -78,13 +78,19 @@ namespace MachineLearning.Sampling.Hybrid
 
             // Also compute all buckets according to the given features
             List<double> allBuckets = ComputeBuckets();
+            // Sort the list
+            allBuckets.Sort(delegate (double x, double y)
+            {
+                return x.CompareTo(y);
+            });
 
             // Compute the whole population needed for sampling from the buckets
-            Dictionary<double, List<Configuration>> distribution = ComputeDistribution(allBuckets);
+            Dictionary<double, List<Configuration>> wholeDistribution = ComputeDistribution(allBuckets);
 
             // Then, sample from all buckets according to the given distribution
+            SampleFromDistribution(wholeDistribution, allBuckets, numberConfigs);
 
-            throw new NotImplementedException();
+            return true;
         }
 
         /// <summary>
@@ -126,14 +132,67 @@ namespace MachineLearning.Sampling.Hybrid
 
         }
 
+
         /// <summary>
-        /// 
+        /// Selects configurations of the given distribution by using the specified distribution (e.g., uniform).
         /// </summary>
-        /// <param name="distribution"></param>
-        /// <returns></returns>
-        private List<Configuration> SampleFromDistribution(Dictionary<double, List<Configuration>> distribution)
+        /// <param name="wholeDistribution">the distribution of all configurations</param>
+        /// <param name="allBuckets">all buckets of the distribution</param>
+        /// <param name="count">the number of configurations to sample</param>
+        private void SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets, int count)
         {
-            throw new NotImplementedException();
+            Dictionary<double, double> wantedDistribution = this.distribution.CreateDistribution(allBuckets);
+            Random rand = new Random();
+
+            while (this.selectedConfigurations.Count < count && HasSamples(wholeDistribution))
+            {
+                double randomDouble = rand.NextDouble();
+                double currentProbability = 0;
+                int currentBucket = 0;
+
+                while(randomDouble > currentProbability + wantedDistribution.ElementAt(currentBucket).Value)
+                {
+                    currentBucket++;
+                    currentProbability += wantedDistribution.ElementAt(currentBucket).Value;
+                }
+
+                double distanceOfBucket = wantedDistribution.ElementAt(currentBucket).Key;
+
+                // If a bucket was selected that contains no more configurations, repeat the procedure
+                if (wholeDistribution[distanceOfBucket].Count == 0)
+                {
+                    continue;
+                }
+
+                int numberConfiguration = rand.Next(0, wholeDistribution[distanceOfBucket].Count);
+
+                this.selectedConfigurations.Add(wholeDistribution[distanceOfBucket][numberConfiguration]);
+                wholeDistribution[distanceOfBucket].RemoveAt(numberConfiguration);
+
+            }
+
+            if (this.selectedConfigurations.Count < count)
+            {
+                GlobalState.logError.logLine("Sampled only " + this.selectedConfigurations.Count + " configurations as there are no more configurations.");
+            }
+        }
+
+        /// <summary>
+        /// Returns whether there are any more samples or not.
+        /// </summary>
+        /// <param name="wholeDistribution">the distribution of the configurations</param>
+        /// <returns><code>True</code> iff there are any configurations left</returns>
+        private bool HasSamples(Dictionary<double, List<Configuration>> wholeDistribution)
+        {
+            foreach (double d in wholeDistribution.Keys)
+            {
+                if (wholeDistribution[d].Count > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
