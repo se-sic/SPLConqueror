@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distribution
     /// <summary>
     /// This interface provides methods to calculate samples from a given distribution.
     /// </summary>
-    interface Distribution
+    public interface Distribution
     {
         /// <summary>
         /// This method returns a distribution according to the given buckets.

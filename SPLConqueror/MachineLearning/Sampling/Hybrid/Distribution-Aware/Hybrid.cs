@@ -10,7 +10,7 @@ namespace MachineLearning.Sampling.Hybrid
     /// The abstract class for the hybrid classes.
     /// Hybrid classes can be used both for binary and numeric features.
     /// </summary>
-    public abstract class Hybrid
+    public abstract class HybridStrategy
     {
         /// <summary>
         /// This dictionary contains the parameter provided for this strategy.
@@ -25,12 +25,12 @@ namespace MachineLearning.Sampling.Hybrid
         /// <summary>
         /// This list contains the configurations that were selected by the sampling strategy.
         /// </summary>
-        protected List<Configuration> selectedConfigurations = new List<Configuration>();
+        public List<Configuration> selectedConfigurations = new List<Configuration>();
 
         /// <summary>
         /// This constructor creates a new empty hybrid sampling strategy.
         /// </summary>
-        public Hybrid()
+        public HybridStrategy()
         {
 
         }

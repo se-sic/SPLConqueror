@@ -72,7 +72,7 @@ namespace MachineLearningTest
             Assert.True(allConfigurationsLoaded);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " 
+            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " 
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
             Console.Error.Write(consoleOutput.ToString());

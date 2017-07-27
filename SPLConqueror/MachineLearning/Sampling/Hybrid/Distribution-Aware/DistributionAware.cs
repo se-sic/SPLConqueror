@@ -15,7 +15,7 @@ namespace MachineLearning.Sampling.Hybrid
     /// In this sampling strategy, the configurations are divided in buckets and the sampled configurations are selected 
     /// from this buckets according to a given distribution (e.g., uniform, normal distribution).
     /// </summary>
-    class DistributionAware : Hybrid
+    public class DistributionAware : HybridStrategy
     {
         #region variables
         #region constants
@@ -33,7 +33,7 @@ namespace MachineLearning.Sampling.Hybrid
 
         /// <summary>
         /// The constructor initializes the parameters needed for this class and its default values.
-        /// These may be overwritten by <see cref="Hybrid.SetSamplingParameters(Dictionary{string, string})"/>.
+        /// These may be overwritten by <see cref="HybridStrategy.SetSamplingParameters(Dictionary{string, string})"/>.
         /// </summary>
         public DistributionAware() : base()
         {
@@ -196,7 +196,7 @@ namespace MachineLearning.Sampling.Hybrid
         }
 
         /// <summary>
-        /// This method computes the distribution of the whole population using the <see cref="Hybrid.optionsToConsider"/>.
+        /// This method computes the distribution of the whole population using the <see cref="HybridStrategy.optionsToConsider"/>.
         /// </summary>
         /// <param name="allBuckets">all buckets of the distribution</param>
         /// <returns>a <see cref="Dictionary{TKey, TValue}"/> containing the bucket as key and a <see cref="List"/> of different configurations in these buckets</returns>
@@ -222,7 +222,7 @@ namespace MachineLearning.Sampling.Hybrid
         }
 
         /// <summary>
-        /// Returns all possible buckets using the <see cref="Hybrid.optionsToConsider"/>.
+        /// Returns all possible buckets using the <see cref="HybridStrategy.optionsToConsider"/>.
         /// </summary>
         /// <returns>a <see cref="List"/> containing the sum of all value combinations of the features</returns>
         private List<double> ComputeBuckets()
@@ -334,7 +334,7 @@ namespace MachineLearning.Sampling.Hybrid
         }
 
         /// <summary>
-        /// See <see cref="Hybrid.GetName"/>.
+        /// See <see cref="HybridStrategy.GetName"/>.
         /// </summary>
         public override string GetName()
         {

@@ -13,6 +13,7 @@ using MachineLearning.Sampling;
 using Persistence;
 using MachineLearning;
 using ProcessWrapper;
+using MachineLearning.Sampling.Hybrid;
 
 namespace CommandLine
 {
@@ -73,7 +74,7 @@ namespace CommandLine
         public const string COMMAND_START_LEARNING = "start";
         public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
 
-        public const string COMMAND_EXERIMENTALDESIGN = "expdesign";
+        public const string COMMAND_EXPERIMENTALDESIGN = "expdesign";
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
         public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralcomposite";
         public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullfactorial";
@@ -83,6 +84,9 @@ namespace CommandLine
         public const string COMMAND_EXPDESIGN_KEXCHANGE = "kexchange";
         public const string COMMAND_EXPDESIGN_PLACKETTBURMAN = "plackettburman";
         public const string COMMAND_EXPDESIGN_RANDOM = "random";
+
+        public const string COMMAND_HYBRID = "hybrid";
+        public const string COMMAND_HYBRID_DISTRIBUTION_AWARE = "distribution-aware";
 
         public const string COMMAND_SUBSCRIPT = "script";
 
@@ -102,6 +106,20 @@ namespace CommandLine
         public List<SamplingStrategies> BinaryToSampleValidation
         {
             get { return binaryToSampleValidation;  }
+        }
+
+        List<HybridStrategy> hybridToSample = new List<HybridStrategy>();
+
+        public List<HybridStrategy> HybridToSample
+        {
+            get { return hybridToSample; }
+        }
+
+        List<HybridStrategy> hybridToSampleValidation = new List<HybridStrategy>();
+
+        public List<HybridStrategy> HybridToSampleValidation
+        {
+            get { return hybridToSampleValidation; }
         }
 
         List<ExperimentalDesign> numericToSample = new List<ExperimentalDesign>();
@@ -124,7 +142,7 @@ namespace CommandLine
         private CommandHistory currentHistory = new CommandHistory();
         private bool hasLearnData = false;
 
-        public MachineLearning.Learning.Regression.Learning exp = new MachineLearning.Learning.Regression.Learning();
+        public Learning exp = new MachineLearning.Learning.Regression.Learning();
 
         public static string targetPath = "";
 
@@ -614,8 +632,11 @@ namespace CommandLine
 
                         break;
                     }
-                case COMMAND_EXERIMENTALDESIGN:
+                case COMMAND_EXPERIMENTALDESIGN:
                     performOneCommand_ExpDesign(task);
+                    break;
+                case COMMAND_HYBRID:
+
                     break;
 
                 case COMMAND_SAMPLING_OPTIONORDER:
@@ -748,7 +769,7 @@ namespace CommandLine
                             ConfigurationPrinter printer = null;
 
                             ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
-                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample);
+                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample, this.hybridToSample);
 
                             // Clear the content of the file
                             File.WriteAllText(para[0], string.Empty);
@@ -1063,6 +1084,8 @@ namespace CommandLine
             binaryToSampleValidation.Clear();
             numericToSample.Clear();
             numericToSampleValidation.Clear();
+            hybridToSample.Clear();
+            hybridToSampleValidation.Clear();
             cleanLearning();
         }
 
@@ -1107,10 +1130,10 @@ namespace CommandLine
             return true;
         }
 
-        private List<Configuration> buildSet(List<SamplingStrategies> binaryStrats, List<ExperimentalDesign> numericStrats)
+        private List<Configuration> buildSet(List<SamplingStrategies> binaryStrats, List<ExperimentalDesign> numericStrats, List<HybridStrategy> hybridStrats)
         {
             ConfigurationBuilder.setBlacklisted(mlSettings.blacklisted);
-            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binaryStrats, numericStrats);
+            List<Configuration> configurationsTest = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binaryStrats, numericStrats, hybridStrats);
             //Construct configurations and compute the synthetic value if we have a given function that simulates the options' influences
             if (trueModel != null)
             {
@@ -1141,7 +1164,7 @@ namespace CommandLine
             }
             else
             {
-                configurationsLearning = buildSet(this.binaryToSample, this.numericToSample);
+                configurationsLearning = buildSet(this.binaryToSample, this.numericToSample, this.hybridToSample);
             }
 
             if (isAllMeasurementsValidation() && (measurementsValid || allMeasurementsValid()) && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
@@ -1150,7 +1173,7 @@ namespace CommandLine
             }
             else
             {
-                configurationsValidation = buildSet(this.binaryToSampleValidation, this.numericToSampleValidation);
+                configurationsValidation = buildSet(this.binaryToSampleValidation, this.numericToSampleValidation, this.hybridToSampleValidation);
             }
             return Tuple.Create(configurationsLearning, configurationsValidation);
         }
@@ -1250,6 +1273,94 @@ namespace CommandLine
 
             return "";
 
+        }
+
+        /// <summary>
+        /// This method sets the according variables to perform the hybrid sampling strategy.
+        /// Note: A hybrid sampling strategy might have parameters and also consider only a specific set of numeric options. 
+        ///         [option1,option3,...,optionN] param1:value param2:value
+        /// </summary>
+        /// <param name="task">the task containing the name of the sampling strategy and the parameters</param>
+        /// <returns>the name of the sampling strategy if it is not found; empty string otherwise</returns>
+        private string performOneCommand_Hybrid(string task)
+        {
+            // splits the task in design and parameters of the design
+            string[] designAndParams = task.Split(new Char[] { ' ' }, 2);
+            string designName = designAndParams[0];
+            string param = "";
+            if (designAndParams.Length > 1)
+                param = designAndParams[1];
+            string[] parameters = param.Split(' ');
+
+            // parsing of the parameters
+            List<ConfigurationOption> optionsToConsider = new List<ConfigurationOption>();
+            Dictionary<string, string> parameter = new Dictionary<string, string>();
+
+            if (param.Length > 0)
+            {
+                foreach (string par in parameters)
+                {
+                    if (par.Contains("["))
+                    {
+                        string[] options = par.Substring(1, par.Length - 2).Split(',');
+                        foreach (string option in options)
+                        {
+                            BinaryOption binOpt = GlobalState.varModel.getBinaryOption(option);
+                            if (binOpt == null)
+                            {
+                                optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
+                            } else
+                            {
+                                optionsToConsider.Add(binOpt);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (par.Contains(':'))
+                        {
+                            string[] nameAndValue = par.Split(':');
+                            parameter.Add(nameAndValue[0], nameAndValue[1]);
+                        }
+                        else
+                        {
+                            parameter.Add(par, "");
+                        }
+
+                    }
+                }
+
+            }
+            if (optionsToConsider.Count == 0)
+            {
+                optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
+                optionsToConsider.AddRange(GlobalState.varModel.BinaryOptions);
+            }
+
+            HybridStrategy hybridDesign = null;
+
+            switch (designName.ToLower())
+            {
+                case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                    hybridDesign = new DistributionAware();
+                    break;
+                default:
+                    return task;
+            }
+
+            hybridDesign.SetSamplingParameters(parameter);
+            if (parameter.ContainsKey("validation"))
+            {
+                this.hybridToSampleValidation.Add(hybridDesign);
+                this.exp.info.numericSamplings_Validation = hybridDesign.GetName();
+            }
+            else
+            {
+                this.hybridToSample.Add(hybridDesign);
+                this.exp.info.numericSamplings_Learning = hybridDesign.GetName();
+            }
+
+            return "";
         }
 
 

@@ -293,16 +293,16 @@ namespace PerformancePrediction_GUI
             if (num_BoxBehnken_check.Checked)
             {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
             }
             if (num_CentralComposite_check.Checked)
             {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
             }
             if (num_FullFactorial_check.Checked){
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
             }
             if (num_hyperSampling_check.Checked)
             {
@@ -311,7 +311,7 @@ namespace PerformancePrediction_GUI
                     error();
                     return false;
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
                 numSelected = true;
             }
             if (num_kEx_check.Checked)
@@ -322,7 +322,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
                 numSelected = true;
             }
             if (num_randomSampling_num.Checked)
@@ -333,7 +333,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
                 numSelected = true;
             }
 
@@ -345,7 +345,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim());
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim());
                 numSelected = true;
 
             }
@@ -357,7 +357,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
+                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
                 numSelected = true;
             }
 

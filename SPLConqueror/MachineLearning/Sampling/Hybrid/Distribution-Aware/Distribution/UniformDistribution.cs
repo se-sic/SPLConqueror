@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distribution
     /// <summary>
     /// This class represents the uniform distribution, where it is equally likely to pick one of all buckets.
     /// </summary>
-    class UniformDistribution : Distribution
+    public class UniformDistribution : Distribution
     {
         /// <summary>
         /// See <see cref="Distribution.CreateDistribution(List{double})"/>.

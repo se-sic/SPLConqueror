@@ -5,6 +5,7 @@ using SPLConqueror_Core;
 using MachineLearning.Solver;
 using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Sampling.ExperimentalDesigns;
+using MachineLearning.Sampling.Hybrid;
 
 namespace MachineLearning.Sampling
 {
@@ -24,7 +25,7 @@ namespace MachineLearning.Sampling
         }
 
         public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> binaryStrategies,
-            List<ExperimentalDesign> experimentalDesigns)
+            List<ExperimentalDesign> experimentalDesigns, List<HybridStrategy> hybridStrategies)
         {
             List<Configuration> result = new List<Configuration>();
             VariantGenerator vg = new VariantGenerator();
@@ -114,6 +115,22 @@ namespace MachineLearning.Sampling
                     result.Add(c);
                 }
             }
+
+            // Hybrid designs
+            if (hybridStrategies.Count != 0)
+            {
+                List<Configuration> configurations = ExecuteHybridStrategy(hybridStrategies, vm);
+
+                if (experimentalDesigns.Count == 0 && binaryStrategies.Count == 0)
+                {
+                    result = configurations;
+                } else
+                {
+                    // TODO Build the cartesian product
+                }
+            }
+
+
             if (vm.MixedConstraints.Count == 0)
             {
                 if (binaryStrategies.Count == 1 && binaryStrategies.Last().Equals(SamplingStrategies.ALLBINARY) && experimentalDesigns.Count == 1 && experimentalDesigns.Last() is FullFactorialDesign)
@@ -145,6 +162,17 @@ namespace MachineLearning.Sampling
                 }
                 return filteredConfiguration;
             }
+        }
+
+        private static List<Configuration> ExecuteHybridStrategy(List<HybridStrategy> hybridStrategies, VariabilityModel vm)
+        {
+            List<Configuration> allSampledConfigurations = new List<Configuration>();
+            foreach (HybridStrategy hybrid in hybridStrategies)
+            {
+                hybrid.ComputeSamplingStrategy();
+                allSampledConfigurations.AddRange(hybrid.selectedConfigurations);
+            }
+            return allSampledConfigurations;
         }
 
         private static void handleDesigns(List<ExperimentalDesign> samplingDesigns, List<Dictionary<NumericOption, Double>> numericOptions,

@@ -12,7 +12,7 @@ namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.DistanceMetric
     /// For numeric features, the minimum value is mapped on 0 and the maximum value on 1.
     /// The other values are computed relatively to the minimum and maximum value.
     /// </summary>
-    class ManhattanDistance : DistanceMetric
+    public class ManhattanDistance : DistanceMetric
     {
         /// <summary>
         /// Computes the distance of the given configuration.
