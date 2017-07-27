@@ -53,20 +53,60 @@ namespace MachineLearning.Solver
                         binOpts.Add((BinaryOption)termToOption[ct], isSelected);
                     } else
                     {
-                        numOpts.Add((NumericOption)termToOption[ct], soln.GetDoubleValue(ct));
+                        numOpts.Add((NumericOption)termToOption[ct], soln.GetIntegerValue(ct));
                     }
                 }
 
                 Configuration c = new Configuration(binOpts, numOpts);
 
                 // Check if the non-boolean constraints are satisfied
-                if (vm.configurationIsValid(c))
+                if (vm.configurationIsValid(c) && !IsInConfigurationFile(c, allConfigurations) && FulfillsMixedConstraints(c, vm))
                 {
                     allConfigurations.Add(c);
                 }
+                soln.GetNext();
             }
 
             return allConfigurations;
+        }
+
+        /// <summary>
+        /// Returns <code>true</code> if the mixed constraints are satisfied by the given configuration and
+        /// <code>false</code> if not.
+        /// </summary>
+        /// <param name="c">the configuration to check</param>
+        /// <param name="vm">the variability model</param>
+        /// <returns><code>true</code> if the mixed constraints are satisfied by the given configuration and
+        /// <code>false</code> if not.</returns>
+        private static bool FulfillsMixedConstraints(Configuration c, VariabilityModel vm)
+        {
+            List<MixedConstraint> mixedConstraints = vm.MixedConstraints;
+            foreach(MixedConstraint constraint in mixedConstraints)
+            {
+                if (!constraint.requirementsFulfilled(c))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns <code>true</code> if the configuration is already included;<code>false</code> otherwise.
+        /// </summary>
+        /// <param name="c">the configuration to search for</param>
+        /// <param name="configurations">a list containing all configurations</param>
+        /// <returns><code>true</code> if the configuration is already included;<code>false</code> otherwise</returns>
+        private static bool IsInConfigurationFile(Configuration c, List<Configuration> configurations)
+        {
+            foreach (Configuration conf in configurations)
+            {
+                if (conf.ToString().Equals(c.ToString()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
