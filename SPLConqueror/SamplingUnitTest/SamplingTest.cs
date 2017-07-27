@@ -5,6 +5,7 @@ using MachineLearning.Sampling;
 using NUnit.Framework;
 using System.Collections.Generic;
 using MachineLearning.Sampling.ExperimentalDesigns;
+using MachineLearning.Sampling.Hybrid;
 
 namespace SamplingUnitTest
 {
@@ -68,7 +69,8 @@ namespace SamplingUnitTest
             binaryStrat.Add(strategy);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(expected, result.Count);
         }
 
@@ -90,7 +92,8 @@ namespace SamplingUnitTest
             binaryStrat.Add(SamplingStrategies.PAIRWISE);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(design);
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(expected, result.Count);
         }
 
@@ -188,13 +191,14 @@ namespace SamplingUnitTest
             ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameters);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(EXPECTED_T_WISE_3, result.Count);
             ConfigurationBuilder.binaryParams.tWiseParameters.Clear();
             parameters = new Dictionary<string, string>();
             parameters.Add("t", "2");
             ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameters);
-            result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(EXPECTED_T_WISE_2, result.Count);
         }
 
@@ -209,7 +213,8 @@ namespace SamplingUnitTest
             ConfigurationBuilder.binaryParams.randomBinaryParameters.Add(parameters);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(EXPECTED_BINARY_RANDOM_TW_15, result.Count);
         }
     }
