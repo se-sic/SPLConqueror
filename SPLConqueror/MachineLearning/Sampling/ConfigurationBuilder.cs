@@ -126,7 +126,31 @@ namespace MachineLearning.Sampling
                     result = configurations;
                 } else
                 {
-                    // TODO Build the cartesian product
+                    // Build the cartesian product
+                    List<Configuration> newResult = new List<Configuration>();
+                    foreach (Configuration config in result)
+                    {
+                        foreach (Configuration hybridConfiguration in configurations)
+                        {
+                            Dictionary<BinaryOption, BinaryOption.BinaryValue> binOpts = new Dictionary<BinaryOption, BinaryOption.BinaryValue>(config.BinaryOptions);
+                            Dictionary<NumericOption, double> numOpts = new Dictionary<NumericOption, double>(config.NumericOptions);
+
+                            Dictionary<BinaryOption, BinaryOption.BinaryValue> hybridBinOpts = hybridConfiguration.BinaryOptions;
+                            foreach (BinaryOption binOpt in hybridConfiguration.BinaryOptions.Keys)
+                            {
+                                binOpts.Add(binOpt, hybridBinOpts[binOpt]);
+                            }
+
+                            Dictionary<NumericOption, double> hybridNumOpts = hybridConfiguration.NumericOptions;
+                            foreach (NumericOption numOpt in hybridConfiguration.NumericOptions.Keys)
+                            {
+                                numOpts.Add(numOpt, hybridNumOpts[numOpt]);
+                            }
+
+                            newResult.Add(new Configuration(binOpts, numOpts));
+                        }
+                    }
+                    result = newResult;
                 }
             }
 
