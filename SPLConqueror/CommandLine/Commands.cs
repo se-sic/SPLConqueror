@@ -636,7 +636,7 @@ namespace CommandLine
                     performOneCommand_ExpDesign(task);
                     break;
                 case COMMAND_HYBRID:
-
+                    performOneCommand_Hybrid(task);
                     break;
 
                 case COMMAND_SAMPLING_OPTIONORDER:
@@ -773,6 +773,12 @@ namespace CommandLine
 
                             // Clear the content of the file
                             File.WriteAllText(para[0], string.Empty);
+
+                            if (GlobalState.optionOrder.Count == 0)
+                            {
+                                GlobalState.optionOrder.AddRange(GlobalState.varModel.BinaryOptions);
+                                GlobalState.optionOrder.AddRange(GlobalState.varModel.NumericOptions);
+                            }
 
                             if (para.Length >= 3)
                             {

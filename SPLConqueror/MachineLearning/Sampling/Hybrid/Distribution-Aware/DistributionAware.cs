@@ -6,7 +6,6 @@ using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace MachineLearning.Sampling.Hybrid
 {
@@ -25,6 +24,7 @@ namespace MachineLearning.Sampling.Hybrid
         public const string AS_TW = "asTW";
         public const string ONLY_NUMERIC = "onlyNumeric";
         public const string ONLY_BINARY = "onlyBinary";
+        public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
         public static Distribution[] distributions = { new UniformDistribution() };
         #endregion
@@ -65,28 +65,8 @@ namespace MachineLearning.Sampling.Hybrid
                 numberConfigs = CountConfigurations();
             }
 
-            // At first, retrieve the minimum bucket and maximum bucket according to the distance metric
-
-            // The smallest bucket is given by the mandatory features
-            int min = 0;
-            foreach (BinaryOption binOpt in this.optionsToConsider)
-            {
-                if (!binOpt.Optional)
-                {
-                    min++;
-                }
-            }
-
-            // The highest bucket is given by the amount of features
-            int maxBucket = this.optionsToConsider.Count;
-
-            // Also compute all buckets according to the given features
+            // Now, compute all buckets according to the given features
             List<double> allBuckets = ComputeBuckets();
-            // Sort the list
-            allBuckets.Sort(delegate (double x, double y)
-            {
-                return x.CompareTo(y);
-            });
 
             // Compute the whole population needed for sampling from the buckets
             Dictionary<double, List<Configuration>> wholeDistribution = ComputeDistribution(allBuckets);
@@ -138,20 +118,28 @@ namespace MachineLearning.Sampling.Hybrid
             if (onlyNumeric.ToLower().Equals("true"))
             {
                 this.optionsToConsider = new List<ConfigurationOption>();
-                this.optionsToConsider.AddRange(GlobalState.varModel.BinaryOptions);
+                this.optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
             }
 
             string onlyBinary = this.strategyParameter[ONLY_BINARY];
             if (onlyBinary.ToLower().Equals("true"))
             {
                 this.optionsToConsider = new List<ConfigurationOption>();
-                this.optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
+                this.optionsToConsider.AddRange(GlobalState.varModel.BinaryOptions);
             }
 
             // Both can't be set to true at the same time
             if (onlyBinary.ToLower().Equals("true") && onlyNumeric.ToLower().Equals("true"))
             {
                 throw new ArgumentException("The options " + ONLY_BINARY + " and " + ONLY_NUMERIC + " can not be active at the same time.");
+            }
+
+            // If no options are given, select all options
+            if (this.optionsToConsider == null)
+            {
+                this.optionsToConsider = new List<ConfigurationOption>();
+                this.optionsToConsider.AddRange(GlobalState.varModel.BinaryOptions);
+                this.optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
             }
 
         }
@@ -238,8 +226,23 @@ namespace MachineLearning.Sampling.Hybrid
 
             foreach (Configuration c in allConfigurations)
             {
-                double distance = this.metric.ComputeDistance(c);
+                double distance = Math.Round(this.metric.ComputeDistance(c), ROUND_FACTOR);
                 result[distance].Add(c);
+            }
+
+            // Remove empty buckets
+            List<double> toRemove = new List<double>();
+            foreach (double d in result.Keys)
+            {
+                if (result[d].Count == 0)
+                {
+                    toRemove.Add(d);
+                }
+            }
+            foreach (double d in toRemove)
+            {
+                allBuckets.Remove(d);
+                result.Remove(d);
             }
 
             return result;
@@ -262,18 +265,19 @@ namespace MachineLearning.Sampling.Hybrid
 
                     foreach (double numOptValue in valuesOfNumericOption)
                     {
-
+                        distances.Add(this.metric.ComputeDistanceOfNumericFeature(numOptValue, numOpt.Min_value, numOpt.Max_value));
                     }
+                    allValueSets.Add(distances);
                 }
                 else
                 {
                     BinaryOption binOpt = (BinaryOption)o;
-                    if (binOpt.Optional)
-                    {
-                        allValueSets.Add(new List<double> { this.metric.ComputeDistanceOfBinaryFeature(0), this.metric.ComputeDistanceOfBinaryFeature(1) });
-                    } else
+                    if (!binOpt.Optional && binOpt.Children.Count > 0)
                     {
                         allValueSets.Add(new List<double> { this.metric.ComputeDistanceOfBinaryFeature(1) });
+                    } else
+                    {
+                        allValueSets.Add(new List<double> { this.metric.ComputeDistanceOfBinaryFeature(0), this.metric.ComputeDistanceOfBinaryFeature(1) });
                     }
                 }
             }
@@ -318,11 +322,11 @@ namespace MachineLearning.Sampling.Hybrid
                 {
                     foreach (double ownValue in currentList)
                     {
-                        double newSum = value + ownValue;
+                        double newSum = Math.Round(value + ownValue, ROUND_FACTOR);
                         // Reduce the size of the new list by ignoring values that are already included
                         if (!newList.Contains(newSum))
                         {
-                            newList.Add(value + ownValue);
+                            newList.Add(newSum);
                         }
                     }
                 }

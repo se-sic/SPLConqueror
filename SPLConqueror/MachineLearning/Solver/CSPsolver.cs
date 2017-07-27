@@ -35,8 +35,17 @@ namespace MicrosoftSolverFoundation
 
             foreach (ConfigurationOption o in vm.getOptions())
             {
-                CspDomain domain = S.DefaultBoolean;
-                CspTerm temp = S.CreateVariable(domain, o);
+                CspDomain binDomain = S.DefaultBoolean;
+                CspTerm temp;
+                if (o is BinaryOption)
+                {
+                    temp = S.CreateVariable(binDomain, o);
+                } else
+                {
+                    NumericOption numOpt = (NumericOption)o;
+                    temp = S.CreateVariable(S.CreateIntegerInterval((int)numOpt.Min_value, (int)numOpt.Max_value), o);
+                }
+                
                 optionToTerm.Add(o, temp);
                 termToOption.Add(temp, o);
                 if (o is NumericOption)
@@ -56,7 +65,7 @@ namespace MicrosoftSolverFoundation
                 CspTerm cT = optionToTerm[current];
                 if (current.Parent == null || current.Parent == vm.Root)
                 {
-                    if ((current is BinaryOption && ((BinaryOption)current).Optional == false && current.Excluded_Options.Count == 0) || current is NumericOption)
+                    if ((current is BinaryOption && ((BinaryOption)current).Optional == false && current.Excluded_Options.Count == 0))
                         S.AddConstraints(S.Implies(S.True, cT));
                     else
                         S.AddConstraints(S.Implies(cT, optionToTerm[vm.Root]));
@@ -66,8 +75,21 @@ namespace MicrosoftSolverFoundation
                 {
                     CspTerm parent = optionToTerm[(BinaryOption)current.Parent];
                     S.AddConstraints(S.Implies(cT, parent));
-                    if (current is BinaryOption && ((BinaryOption)current).Optional == false && current.Excluded_Options.Count == 0 || current is NumericOption)
+                    if (current is BinaryOption && ((BinaryOption)current).Optional == false && current.Excluded_Options.Count == 0)
                         S.AddConstraints(S.Implies(parent, cT));//mandatory child relationship
+                }
+
+                // Add numeric integer values
+                if (current is NumericOption)
+                {
+                    NumericOption numOpt = (NumericOption)current;
+                    List<double> values = numOpt.getAllValues();
+                    List<CspTerm> equals = new List<CspTerm>();
+                    foreach (double d in values)
+                    {
+                        equals.Add(S.Equal((int)d, cT));
+                    }
+                    S.AddConstraints(S.Or(equals.ToArray()));
                 }
 
                 //Alternative or other exclusion constraints                
