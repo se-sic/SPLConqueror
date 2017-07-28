@@ -220,10 +220,7 @@ namespace VariabilitModel_GUI
 
             if (result.Item1 == DialogResult.OK)
             {
-                currentOption.Parent.Children.Remove(currentOption);
-
                 currentOption.Parent = result.Item2;
-                currentOption.Parent.Children.Add(currentOption);
             }
         }
 
@@ -240,13 +237,12 @@ namespace VariabilitModel_GUI
 
                 ConfigurationOption newOption = new BinaryOption(GlobalState.varModel, currentOption.Name);
                 
-                foreach (ConfigurationOption opt in currentOption.Children)
+                foreach (ConfigurationOption opt in GlobalState.varModel.BinaryOptions)
                 {
-                    opt.Parent = newOption;
-                    newOption.Children.Add(opt);
+                    if (opt.Parent != null && opt.Parent.Equals(currentOption))
+                        opt.Parent = newOption;
                 }
-
-                currentOption.Children = new List<ConfigurationOption>();
+                
                 newOption.Parent = currentOption.Parent;
                 newOption.Prefix = currentOption.Prefix;
                 newOption.Postfix = currentOption.Postfix;
@@ -280,13 +276,12 @@ namespace VariabilitModel_GUI
 
                 ConfigurationOption newOption = new NumericOption(GlobalState.varModel, currentOption.Name);
 
-                foreach (ConfigurationOption opt in currentOption.Children)
+                foreach (ConfigurationOption opt in GlobalState.varModel.BinaryOptions)
                 {
-                    opt.Parent = newOption;
-                    newOption.Children.Add(opt);
+                    if (opt.Parent != null && opt.Parent.Equals(currentOption))
+                        opt.Parent = newOption;
                 }
 
-                currentOption.Children = new List<ConfigurationOption>();
                 newOption.Parent = currentOption.Parent;
                 newOption.Prefix = currentOption.Prefix;
                 newOption.Postfix = currentOption.Postfix;
@@ -659,8 +654,9 @@ namespace VariabilitModel_GUI
 
                 options.Remove(opt);
 
-                foreach (ConfigurationOption child in opt.Children)
-                    optionsToRemove.Add(child);
+                foreach (ConfigurationOption child in GlobalState.varModel.BinaryOptions)
+                    if (child.Parent.Equals(opt))
+                        optionsToRemove.Add(child);
 
                 optionsToRemove.Remove(opt);
             }

@@ -106,20 +106,6 @@ namespace SPLConqueror_Core
             get { return parent; }
             set { parent = value; }
         }
-        
-
-        private List<ConfigurationOption> children = new List<ConfigurationOption>();
-        private List<String> children_names = new List<String>();
-
-        /// <summary>
-        /// This option's child options. These are not necessarily implied.
-        /// </summary>
-        public List<ConfigurationOption> Children
-        {
-            get { return children; }
-            set { children = value; }
-        }
-
 
         /// <summary>
         /// Creates a new configuration option of the given name for the variability model. 
@@ -182,16 +168,6 @@ namespace SPLConqueror_Core
                 parentNode.InnerText = "";
             node.AppendChild(parentNode);
 
-            //children
-            XmlNode childrenNode = doc.CreateNode(XmlNodeType.Element, "children", "");
-            foreach (ConfigurationOption co in this.children)
-            {
-                XmlNode childNode = doc.CreateNode(XmlNodeType.Element, "option", "");
-                childNode.InnerText = co.Name;
-                childrenNode.AppendChild(childNode);
-            }
-            node.AppendChild(childrenNode);
-
             //implied_options
             XmlNode implNode = doc.CreateNode(XmlNodeType.Element, "impliedOptions", "");
             foreach (List<ConfigurationOption> impOptions in this.implied_Options)
@@ -253,10 +229,6 @@ namespace SPLConqueror_Core
                     case "parent":
                         this.parentName = xmlInfo.InnerText;
                         break;
-                    case "children":
-                        foreach (XmlElement elem in xmlInfo.ChildNodes)
-                            children_names.Add(elem.InnerText);
-                        break;
                     case "impliedOptions":
                         foreach (XmlElement elem in xmlInfo.ChildNodes)
                             implied_Options_names.Add(elem.InnerText.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList());
@@ -274,15 +246,9 @@ namespace SPLConqueror_Core
         /// </summary>
         internal void init()
         {
-            //this.parent = vm.getBinaryOption(parentName);
-            foreach (var name in this.children_names)
+            if (ParentName != null)
             {
-                ConfigurationOption c = vm.getBinaryOption(name);
-                if(c == null)
-                    c = vm.getNumericOption(name);
-                if(c == null)
-                    continue;
-                this.children.Add(c);
+                this.parent = vm.getBinaryOption(parentName);
             }
 
             foreach (var imply_names in this.implied_Options_names)
@@ -334,6 +300,22 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// Sets this configuration option as parent for all binary option 
+        /// in a model, that have this option as parent.
+        /// </summary>
+        /// <param name="vm">The model that will be used to update the children.</param>
+        public void updateChildren(VariabilityModel vm)
+        {
+            foreach (ConfigurationOption option in vm.BinaryOptions)
+            {
+                if (option.parentName != null && option.parentName.Equals(this.name))
+                {
+                    option.Parent = this;
+                }
+            }
+        }
+
+        /// <summary>
         /// This method removes all characters form the string that are neither a letter nor '_'. This is necessary because a valid mane for a configuration option should only contains this characters.  
         /// </summary>
         /// <param name="s">The desired name for a configuration option.</param>
@@ -358,17 +340,6 @@ namespace SPLConqueror_Core
         public override string ToString()
         {
             return this.Name;
-        }
-
-        public void updateChildren()
-        {
-            this.children = new List<ConfigurationOption>();
-
-            foreach(ConfigurationOption other in vm.getOptions())
-            {
-                if(other.parent != null && other.parent.Equals(this) && !this.children.Contains(other))
-                    this.children.Add(other);
-            }
         }
 
         /// <summary>

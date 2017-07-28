@@ -5,6 +5,7 @@ using MachineLearning.Sampling;
 using NUnit.Framework;
 using System.Collections.Generic;
 using MachineLearning.Sampling.ExperimentalDesigns;
+using System.Reflection;
 
 namespace SamplingUnitTest
 {
@@ -53,16 +54,38 @@ namespace SamplingUnitTest
         [Test, Order(2)]
         public void TestWholePop()
         {
-            testBinary(SamplingStrategies.ALLBINARY, EXPECTED_CENTRALCOMP_ALLBINARY);
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference") 
+                + Path.DirectorySeparatorChar + "AllbinarySampling.csv";
+            List<Configuration> result = testBinary(SamplingStrategies.ALLBINARY, EXPECTED_CENTRALCOMP_ALLBINARY);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
+        }
+
+        private bool containsAllMeasurements(List<Configuration> result, List<Configuration> expected)
+        {
+            bool allExist = true;
+            if (result.Count != expected.Count)
+                return false;
+
+            foreach (Configuration toFind in expected)
+            {
+                allExist &= result.Contains(toFind);
+            }
+
+            return allExist;
         }
 
         [Test, Order(3)]
         public void TestNegFeatureWise()
         {
-            testBinary(SamplingStrategies.NEGATIVE_OPTIONWISE, EXPECTED_NEG_FEATURE_WISE);
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "NegFWSampling.csv";
+            List<Configuration> result = testBinary(SamplingStrategies.NEGATIVE_OPTIONWISE, EXPECTED_NEG_FEATURE_WISE);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
-        private void testBinary(SamplingStrategies strategy, int expected)
+        private List<Configuration> testBinary(SamplingStrategies strategy, int expected)
         {
             List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
             binaryStrat.Add(strategy);
@@ -70,21 +93,30 @@ namespace SamplingUnitTest
             numericStrat.Add(new CentralCompositeInscribedDesign());
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
             Assert.AreEqual(expected, result.Count);
+            return result;
         }
 
         [Test, Order(4)]
         public void TestPairWise()
         {
-            testBinary(SamplingStrategies.PAIRWISE, EXPECTED_PAIRWISE);
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "PairwiseSampling.csv";
+            List<Configuration> result = testBinary(SamplingStrategies.PAIRWISE, EXPECTED_PAIRWISE);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(5)]
         public void TestFeatureWise()
         {
-            testBinary(SamplingStrategies.OPTIONWISE, EXPECTED_OPTIONWISE);
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "FeaturewiseSampling.csv";
+            List<Configuration> result = testBinary(SamplingStrategies.OPTIONWISE, EXPECTED_OPTIONWISE);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
-        private void testNumeric(ExperimentalDesign design, int expected)
+        private List<Configuration> testNumeric(ExperimentalDesign design, int expected)
         {
             List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
             binaryStrat.Add(SamplingStrategies.PAIRWISE);
@@ -92,95 +124,142 @@ namespace SamplingUnitTest
             numericStrat.Add(design);
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
             Assert.AreEqual(expected, result.Count);
+            return result;
         }
 
         [Test, Order(6)]
         public void TestBoxBehnken()
         {
-            testNumeric(new BoxBehnkenDesign(), EXPECTED_BOXBEHNKEN);
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "BoxbehnkenSampling.csv";
+            List<Configuration> result = testNumeric(new BoxBehnkenDesign(), EXPECTED_BOXBEHNKEN);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(7)]
         public void TestHypersampling()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "HyperSampling50.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("precision", "50");
             HyperSampling sampling = new HyperSampling();
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_HYPERSAMPLING_50);
+            List<Configuration> result = testNumeric(sampling, EXPECTED_HYPERSAMPLING_50);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
             parameters.Clear();
+            loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "HyperSampling40.csv";
             parameters.Add("precision", "40");
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_HYPERSAMPLING_40);
+            result = testNumeric(sampling, EXPECTED_HYPERSAMPLING_40);
+            expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(8)]
         public void TestOneFactorAtATime()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "OnefactorSampling5.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("distinctValuesPerOption", "5");
             OneFactorAtATime sampling = new OneFactorAtATime();
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_ONE_FACTOR_AT_A_TIME_5);
+            List<Configuration> result = testNumeric(sampling, EXPECTED_ONE_FACTOR_AT_A_TIME_5);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
             parameters.Clear();
+            loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "OnefactorSampling3.csv";
             sampling = new OneFactorAtATime();
             parameters.Add("distinctValuesPerOption", "3");
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_ONE_FACTOR_AT_A_TIME_3);
+            result = testNumeric(sampling, EXPECTED_ONE_FACTOR_AT_A_TIME_3);
+            expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(9)]
         public void TestNumericRandom()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "RandomSampling112.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("seed", "1");
             parameters.Add("sampleSize", "12");
             RandomSampling sampling = new RandomSampling();
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_RANDOM_12_1);
+            List<Configuration> result = testNumeric(sampling, EXPECTED_RANDOM_12_1);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
             parameters.Clear();
+            loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "RandomSampling010.csv";
             parameters.Add("seed", "0");
             parameters.Add("sampleSize", "10");
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_RANDOM_10_0);
+            result = testNumeric(sampling, EXPECTED_RANDOM_10_0);
+            expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(10)]
         public void TestPlackettBurman()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "PlackettSampling39.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("level", "3");
             parameters.Add("measurements", "9");
             PlackettBurmanDesign sampling = new PlackettBurmanDesign();
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_PLACKETT_BURMAN_3_9);
+            List<Configuration> result = testNumeric(sampling, EXPECTED_PLACKETT_BURMAN_3_9);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
             parameters.Clear();
+            loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "PlackettSampling5125.csv";
             parameters.Add("level", "5");
             parameters.Add("measurements", "125");
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_PLACKETT_BURMAN_5_125);
+            result = testNumeric(sampling, EXPECTED_PLACKETT_BURMAN_5_125);
+            expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(11)]
         public void TestKExchange()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "KexchangeSampling72.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("sampleSize", "7");
             parameters.Add("k", "2");
             KExchangeAlgorithm sampling = new KExchangeAlgorithm();
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_KEXCHANGE_7_2);
+            List<Configuration> result = testNumeric(sampling, EXPECTED_KEXCHANGE_7_2);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
             parameters.Clear();
+            loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "KexchangeSampling31.csv";
             sampling = new KExchangeAlgorithm();
             parameters.Add("sampleSize", "3");
             parameters.Add("k", "1");
             sampling.setSamplingParameters(parameters);
-            testNumeric(sampling, EXPECTED_KEXCHANGE_3_1);
+            result = testNumeric(sampling, EXPECTED_KEXCHANGE_3_1);
+            expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(12)]
         public void TestTWise()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "TwiseSampling3.csv";
             List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
             binaryStrat.Add(SamplingStrategies.T_WISE);
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -189,18 +268,26 @@ namespace SamplingUnitTest
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
             Assert.AreEqual(EXPECTED_T_WISE_3, result.Count);
             ConfigurationBuilder.binaryParams.tWiseParameters.Clear();
+            loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "TwiseSampling2.csv";
             parameters = new Dictionary<string, string>();
             parameters.Add("t", "2");
             ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameters);
             result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
             Assert.AreEqual(EXPECTED_T_WISE_2, result.Count);
+            expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(13)]
         public void TestBinaryRandom()
         {
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "BinrandomSampling.csv";
             List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
             binaryStrat.Add(SamplingStrategies.BINARY_RANDOM);
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -211,6 +298,8 @@ namespace SamplingUnitTest
             numericStrat.Add(new CentralCompositeInscribedDesign());
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
             Assert.AreEqual(EXPECTED_BINARY_RANDOM_TW_15, result.Count);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+            Assert.True(containsAllMeasurements(result, expected));
         }
     }
 }
