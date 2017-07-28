@@ -45,12 +45,13 @@
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertNumericOptionsToBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAlternativeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertMeasurementsToBinaryOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertLegacyVariabilityModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -172,7 +173,8 @@
             this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.convertNumericOptionsToBinaryToolStripMenuItem,
             this.exportToDimacsToolStripMenuItem,
-            this.convertMeasurementsToBinaryOnlyToolStripMenuItem});
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem,
+            this.convertLegacyVariabilityModelToolStripMenuItem});
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(64, 24);
             this.exportToolStripMenuItem.Text = "Export";
@@ -191,6 +193,13 @@
             this.exportToDimacsToolStripMenuItem.Text = "Export to dimacs";
             this.exportToDimacsToolStripMenuItem.Click += new System.EventHandler(this.exportToDimacsToolStripMenuItem_Click);
             // 
+            // convertMeasurementsToBinaryOnlyToolStripMenuItem
+            // 
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Name = "convertMeasurementsToBinaryOnlyToolStripMenuItem";
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Text = "Convert measurements to binary only";
+            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Click += new System.EventHandler(this.convertMeasurementsToBinaryOnlyToolStripMenuItem_Click);
+            // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -200,42 +209,42 @@
             this.removeFeatureToolStripMenuItem,
             this.addAlternativeGroupToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(234, 108);
+            this.contextMenuStrip.Size = new System.Drawing.Size(228, 100);
             // 
             // addFeatureToolStripMenuItem
             // 
             this.addFeatureToolStripMenuItem.Name = "addFeatureToolStripMenuItem";
-            this.addFeatureToolStripMenuItem.Size = new System.Drawing.Size(233, 26);
+            this.addFeatureToolStripMenuItem.Size = new System.Drawing.Size(227, 24);
             this.addFeatureToolStripMenuItem.Text = "Add Feature";
             this.addFeatureToolStripMenuItem.Click += new System.EventHandler(this.addFeatureToolStripMenuItem_Click);
             // 
             // editFeatureToolStripMenuItem
             // 
             this.editFeatureToolStripMenuItem.Name = "editFeatureToolStripMenuItem";
-            this.editFeatureToolStripMenuItem.Size = new System.Drawing.Size(233, 26);
+            this.editFeatureToolStripMenuItem.Size = new System.Drawing.Size(227, 24);
             this.editFeatureToolStripMenuItem.Text = "Edit Feature";
             this.editFeatureToolStripMenuItem.Click += new System.EventHandler(this.editFeatureToolStripMenuItem_Click);
             // 
             // removeFeatureToolStripMenuItem
             // 
             this.removeFeatureToolStripMenuItem.Name = "removeFeatureToolStripMenuItem";
-            this.removeFeatureToolStripMenuItem.Size = new System.Drawing.Size(233, 26);
+            this.removeFeatureToolStripMenuItem.Size = new System.Drawing.Size(227, 24);
             this.removeFeatureToolStripMenuItem.Text = "Remove Feature";
             this.removeFeatureToolStripMenuItem.Click += new System.EventHandler(this.removeFeatureToolStripMenuItem_Click);
             // 
             // addAlternativeGroupToolStripMenuItem
             // 
             this.addAlternativeGroupToolStripMenuItem.Name = "addAlternativeGroupToolStripMenuItem";
-            this.addAlternativeGroupToolStripMenuItem.Size = new System.Drawing.Size(233, 26);
+            this.addAlternativeGroupToolStripMenuItem.Size = new System.Drawing.Size(227, 24);
             this.addAlternativeGroupToolStripMenuItem.Text = "Add Alternative Group";
             this.addAlternativeGroupToolStripMenuItem.Click += new System.EventHandler(this.addAlternativeGroupToolStripMenuItem_Click);
             // 
-            // convertMeasurementsToBinaryOnlyToolStripMenuItem
+            // convertLegacyVariabilityModelToolStripMenuItem
             // 
-            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Name = "convertMeasurementsToBinaryOnlyToolStripMenuItem";
-            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
-            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Text = "Convert measurements to binary only";
-            this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Click += new System.EventHandler(this.convertMeasurementsToBinaryOnlyToolStripMenuItem_Click);
+            this.convertLegacyVariabilityModelToolStripMenuItem.Name = "convertLegacyVariabilityModelToolStripMenuItem";
+            this.convertLegacyVariabilityModelToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
+            this.convertLegacyVariabilityModelToolStripMenuItem.Text = "Convert legacy Variability Model";
+            this.convertLegacyVariabilityModelToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyVariabilityModelToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 
@@ -281,6 +290,7 @@
         private System.Windows.Forms.ToolStripMenuItem convertNumericOptionsToBinaryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToDimacsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertMeasurementsToBinaryOnlyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertLegacyVariabilityModelToolStripMenuItem;
     }
 }
 

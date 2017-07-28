@@ -295,7 +295,7 @@ namespace SPLConqueror_Core
                 numOpt.init();
 
             foreach (var opt in getOptions())
-                opt.updateChildren();
+                opt.updateChildren(this);
         }
 
         private void loadBooleanConstraints(XmlElement xmlNode)
@@ -480,8 +480,11 @@ namespace SPLConqueror_Core
             // Removing all children
             List<ConfigurationOption> children = new List<ConfigurationOption>();
 
-            foreach (ConfigurationOption opt in toDelete.Children)
-                children.Add(opt);
+            foreach (ConfigurationOption opt in this.BinaryOptions)
+                if (opt.Parent != null && opt.Parent.Equals(toDelete))
+                {
+                    children.Add(opt);
+                }
 
             foreach (ConfigurationOption child in children)
                 deleteOption(child);
@@ -505,8 +508,6 @@ namespace SPLConqueror_Core
             // Removing option from constraints
             binaryConstraints.RemoveAll(x => x.Contains(toDelete.ToString()));
             nonBooleanConstraints.RemoveAll(x => x.ToString().Contains(toDelete.ToString()));
-
-            toDelete.Parent.Children.Remove(toDelete);
 
             if (toDelete is BinaryOption)
                 binaryOptions.Remove((BinaryOption)toDelete);
