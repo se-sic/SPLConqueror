@@ -55,7 +55,7 @@ namespace MachineLearning.Learning.Regression
                 Learning experiment = new MachineLearning.Learning.Regression.Learning(currTrainingSet, subsets[i]);
                 experiment.mlSettings = settings;
                 experiment.learn();
-                lastModels.Add(experiment.models[0].LearningHistory[experiment.models[0].LearningHistory.Count]);
+                lastModels.Add(experiment.models[0].LearningHistory[experiment.models[0].LearningHistory.Count - 1]);
 
             }
 

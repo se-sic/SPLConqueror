@@ -80,8 +80,9 @@ namespace VariabilitModel_GUI
                 t.ForeColor = Color.Red;
 
             //rekursiv die unterelemente einfügen
-            element.updateChildren();
-            foreach (ConfigurationOption elem in element.Children)
+            element.updateChildren(GlobalState.varModel);
+            foreach (ConfigurationOption elem in GlobalState.varModel.getOptions()
+                .Where(option => option.Parent != null && option.Parent.Equals(element)))
             {
                 TreeNode tn = new TreeNode(elem.Name);
                 insertSubElements(elem, tn, bChecked);
@@ -557,7 +558,6 @@ namespace VariabilitModel_GUI
                     allChildren.Add(toAdd);
                     transformedVarModel.addConfigurationOption(toAdd);
                 }
-                parent.Children = allChildren;
 
                 // Add a exclude statement so that it isnt possible to select 2 values for a numeric option at the same time
                 foreach (ConfigurationOption currentOption in allChildren)
@@ -895,6 +895,111 @@ namespace VariabilitModel_GUI
             sourceMeasurements.Save(target);
             sourceMeasurements = null;
             MessageBox.Show("Converted measurements.");
+        }
+
+        /// <summary>
+        /// Converts legacy Variability that still use child tags and/or no parent tag and default values
+        /// to the new Variability model definition standard.
+        /// </summary>
+        private void convertLegacyVariabilityModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog measurementsOFD = new OpenFileDialog();
+            measurementsOFD.CheckPathExists = true;
+            measurementsOFD.CheckFileExists = true;
+            measurementsOFD.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*";
+            measurementsOFD.Title = "Select variability model to convert";
+            if (measurementsOFD.ShowDialog() == DialogResult.OK)
+            {
+                SaveFileDialog convertedSFD = new SaveFileDialog();
+                convertedSFD.OverwritePrompt = true;
+                convertedSFD.AddExtension = true;
+                convertedSFD.CheckPathExists = true;
+                convertedSFD.DefaultExt = "xml";
+                convertedSFD.Title = "Save converted variability model.";
+                if (convertedSFD.ShowDialog() == DialogResult.OK)
+                {
+                    System.Threading.Thread converterThread = new System.Threading
+                        .Thread(() => convertLegacyModel(measurementsOFD.FileName, convertedSFD.FileName));
+                    converterThread.Start();
+                }
+            }
+        }
+
+        private static void convertLegacyModel(string source, string target)
+        {
+            XmlDocument sourceModel = new XmlDocument();
+            sourceModel.Load(source);
+            XmlElement vmNode = sourceModel.DocumentElement;
+            foreach (XmlNode configurationNode in vmNode.ChildNodes)
+            {
+                if (configurationNode.Name.Equals("binaryOptions"))
+                {
+                    Dictionary<string, string> childToParent = new Dictionary<string, string>();
+                    foreach (XmlNode optionNode in configurationNode.ChildNodes)
+                    {
+                        List<XmlNode> toDelete = new List<XmlNode>();
+                        string name = null;
+                        foreach(XmlNode optionData in optionNode)
+                        {
+                            if (optionData.Name.Equals("defaultValue")) {
+                                toDelete.Add(optionData);
+                            } else if (optionData.Name.Equals("children"))
+                            {
+                                toDelete.Add(optionData);
+                                foreach (XmlNode child in optionData.ChildNodes)
+                                {
+                                    childToParent.Add(child.InnerText, name);
+                                }
+                            } else if (optionData.Name.Equals("name"))
+                            {
+                                name = optionData.InnerText;
+                            }
+                        }
+                        toDelete.ForEach(node => optionNode.RemoveChild(node));
+                    }
+                    foreach (XmlNode optionNode in configurationNode.ChildNodes)
+                    {
+                        string parent = null;
+                        string name = null;
+                        foreach (XmlNode optionData in optionNode)
+                        {
+                            if (optionData.Name.Equals("name"))
+                            {
+                                name = optionData.InnerText;
+                            }
+                        }
+                        childToParent.TryGetValue(name, out parent);
+                        if (parent != null)
+                        {
+                            foreach (XmlNode optionData in optionNode)
+                            {
+                                if (optionData.Name.Equals("parent"))
+                                {
+                                    optionData.InnerText = parent;
+                                }
+                            }
+                        }
+                    }
+                } else if (configurationNode.Name.Equals("numericOptions"))
+                {
+                    
+                    foreach (XmlNode option in configurationNode.ChildNodes)
+                    {
+                        List<XmlNode> toDelete = new List<XmlNode>();
+                        foreach (XmlNode optionData in option.ChildNodes)
+                        {
+                            if (optionData.Name.Equals("defaultValue"))
+                            {
+                                toDelete.Add(optionData);
+                            }
+                        }
+                        toDelete.ForEach(node => option.RemoveChild(node));
+                    }
+                }
+            }
+            sourceModel.Save(target);
+            sourceModel = null;
+            MessageBox.Show("Converted model.");
         }
     }
 }
