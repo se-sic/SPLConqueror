@@ -50,12 +50,14 @@ namespace VariabilitModel_GUI
             List<ConfigurationOption> remainingOptions = new List<ConfigurationOption>();
 
             // If all children do exclude each other, the current option has to be an alternative option
-            List<ConfigurationOption> innerOpts = GlobalState.varModel.getOptions().Where(o => o.Children.Count > 0 && o is BinaryOption).ToList();
+            List<ConfigurationOption> innerOpts = GlobalState.varModel.getOptions().Select(option => option.Parent)
+                .Where(o => o != null && o is BinaryOption).ToList();
 
             // Only inner nodes are potential alternative groups
             foreach (ConfigurationOption innerOpt in innerOpts)
             {
-                List<ConfigurationOption> childOpts = innerOpt.Children;
+                List<ConfigurationOption> childOpts = GlobalState.varModel.getOptions()
+                    .Where(option => option.Parent != null && option.Parent.Equals(innerOpt)).ToList();
 
                 bool addToSelection = true;
                 foreach (ConfigurationOption childOpt in childOpts)
@@ -122,7 +124,8 @@ namespace VariabilitModel_GUI
         private void selectedOptionAddButton_Click(object sender, EventArgs e)
         {
             ConfigurationOption selectedOption = (ConfigurationOption)selectedOptionComboBox.SelectedItem;
-            List<ConfigurationOption> opts = selectedOption.Children;
+            List<ConfigurationOption> opts = GlobalState.varModel.getOptions()
+                .Where(option => option.Parent != null && option.Equals(selectedOption)).ToList();
             List<ConfigurationOption> temp = new List<ConfigurationOption>();
             foreach (ConfigurationOption opt in opts)
             {
@@ -166,7 +169,8 @@ namespace VariabilitModel_GUI
             if (currAltGroupsListBox.SelectedIndex > -1)
             {
                 ConfigurationOption selectedOption = (ConfigurationOption)currAltGroupsListBox.SelectedItem;
-                List<ConfigurationOption> opts = selectedOption.Children;
+                List<ConfigurationOption> opts = GlobalState.varModel.getOptions()
+                    .Where(option => option.Parent != null && option.Parent.Equals(selectedOption)).ToList();
 
                 foreach (ConfigurationOption o1 in opts)
                 {
@@ -238,21 +242,23 @@ namespace VariabilitModel_GUI
                     return null;
             }
 
-            if (combinations.Length != altCandidate.Children.Count)
+            List<ConfigurationOption> children = GlobalState.varModel.getOptions()
+                .Where(option => option.Parent != null && option.Parent.Equals(altCandidate)).ToList();
+            if (combinations.Length != children.Count())
                 return null;
 
             // Check if the constraint contains all necessary combinations
-            foreach (ConfigurationOption o1 in altCandidate.Children)
+            foreach (ConfigurationOption o1 in children)
             {
                 bool combinationFound = false;
 
                 for (int i = 0; i < combinations.Length && !combinationFound; i++)
                 {
                     bool stillOk = true;
-
-                    for (int j = 0; j < altCandidate.Children.Count && stillOk; j++)
+                    
+                    for (int j = 0; j < children.Count && stillOk; j++)
                     {
-                        ConfigurationOption o2 = altCandidate.Children[j];
+                        ConfigurationOption o2 = children[j];
                         string[] split = combinations[i].Split(' ');
                         bool optionFound = false;
                         

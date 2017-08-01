@@ -716,7 +716,8 @@ namespace SPLConqueror_GUI
             List<TreeNode> functionChildren = new List<TreeNode>();
 
             // Creating all nodes of the children
-            foreach (ConfigurationOption child in val.Children)
+            foreach (ConfigurationOption child in currentModel.getOptions()
+                .Where(x => x.Parent != null && x.Parent.Equals(val)))
                 functionChildren.Add(insertIntoTreeView(child));
 
             // Creating this node and setting the correct state of this node

@@ -1474,11 +1474,13 @@ namespace CommandLine
                 parameter.TryGetValue("sampleSize", out numberOfSamples);
                 if (Double.Parse(numberOfSamples) > maximumNumberNumVariants)
                 {
-                    GlobalState.logInfo.logLine("The number of wanted numeric variants exceeds the maximum number"
-                        + "of possible variants. Switching to maximum number of variants");
-                    parameter["sampleSize"] = maximumNumberNumVariants.ToString();
+                    GlobalState.logInfo.logLine("The number of stated numeric variants exceeds the maximum number "
+                        + "of possible variants. Only " + maximumNumberNumVariants 
+                        + " variants are possible. Switching to fullfactorial design.");
+                    expDesign = new FullFactorialDesign();
                 }
             }
+
             expDesign.setSamplingParameters (parameter);
             if (parameter.ContainsKey("validation"))
             {
