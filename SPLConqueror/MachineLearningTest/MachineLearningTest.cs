@@ -106,7 +106,7 @@ namespace MachineLearningTest
         {
             cmd.performOneCommand(Commands.COMMAND_CLEAR_LEARNING);
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " "
+            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false baggingNumbers:3");
         }
