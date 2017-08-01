@@ -272,7 +272,7 @@ namespace MachineLearning.Sampling.Hybrid
                 else
                 {
                     BinaryOption binOpt = (BinaryOption)o;
-                    if (!binOpt.Optional && binOpt.Children.Count > 0)
+                    if (!binOpt.Optional && CountChildren(binOpt, GlobalState.varModel) > 0)
                     {
                         allValueSets.Add(new List<double> { this.metric.ComputeDistanceOfBinaryFeature(1) });
                     } else
@@ -291,6 +291,30 @@ namespace MachineLearning.Sampling.Hybrid
             });
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns the number of all children of the given feature.
+        /// </summary>
+        /// <param name="o">the configuration option to search children for</param>
+        /// <param name="var">the variability model</param>
+        /// <returns>the number of all children of the given feature</returns>
+        private int CountChildren(ConfigurationOption o, VariabilityModel var)
+        {
+            int count = 0;
+            foreach (ConfigurationOption conf in var.getOptions())
+            {
+                if (conf == o)
+                {
+                    continue;
+                }
+
+                if (conf.Parent.Equals(o))
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 
 
