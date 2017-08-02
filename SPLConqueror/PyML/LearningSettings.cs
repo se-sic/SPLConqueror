@@ -32,7 +32,7 @@ namespace ProcessWrapper
                 getStrategy(toTest);
                 return true;
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 GlobalState.logError.logLine("Command " + toTest + " is no learning strategy.");
                 return false;

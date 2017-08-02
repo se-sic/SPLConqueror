@@ -973,7 +973,6 @@ namespace CommandLine
                         //    globalstate.loginfo.logline("error :" + relativeerror);
 
                         break;
-                        GlobalState.logInfo.logLine("Finished");
                     }
                 case COMMAND_OPTIMIZE_PARAMETER:
                     {
