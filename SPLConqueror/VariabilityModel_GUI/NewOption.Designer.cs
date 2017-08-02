@@ -2,10 +2,6 @@
 {
     partial class NewFeatureDialog
     {
-        /// <summary>
-        /// Erforderliche Designervariable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
 
         #region Vom Windows Form-Designer generierter Code
 

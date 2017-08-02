@@ -320,11 +320,11 @@ namespace SPLConqueror_Core
             {
                 if (mixedConstraint.Attributes.Count == 1)
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, mixedConstraint.Attributes[0].Value));
                 }
                 else
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
                 }
             }
         }
