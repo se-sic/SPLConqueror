@@ -487,26 +487,8 @@ namespace CommandLine
 
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS:
                     {
-                        if (this.exp.models.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("Can't predict configurations. No learning was performed");
-                        }
-                        else if (this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("Can't predict configurations. No model was learned.");
-                        }
-                        else if (task.Length == 0)
-                        {
-                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
-                        }
-                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
-                        {
-                            GlobalState.logError.logLine("No measurements loaded.");
-                        }
-                        else
-                        {
-                            predict(task);
-                        }
+                        printPredictedConfigurations(task, this.exp);
+
                         break;
                     }
 
@@ -526,7 +508,7 @@ namespace CommandLine
                         }
                         else
                         {
-                            predict(task, useTrueModel: true);
+                            predict(task, this.exp, useTrueModel: true);
                         }
                         break;
                     }
@@ -1021,6 +1003,18 @@ namespace CommandLine
                         }
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
                         GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
+                        Learning experiment = new MachineLearning.Learning.Regression
+                            .Learning(configurationsLearning, configurationsValidation);
+                        experiment.mlSettings = optimalParameters;
+                        experiment.learn();
+                        StringBuilder taskAsString = new StringBuilder();
+                        taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
+                        printPredictedConfigurations(Path.GetFullPath(System.AppDomain.CurrentDomain.BaseDirectory) 
+                            + Path.DirectorySeparatorChar + "CrossValidationResultPrediction"
+                            + taskAsString.ToString()
+                            .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
+                            .Replace(Environment.NewLine, "").Substring(0)
+                            + ".csv", experiment);
 
                         break;
                     }
@@ -1251,6 +1245,30 @@ namespace CommandLine
 
         }
 
+        private void printPredictedConfigurations(String task, Learning exp)
+        {
+            if (exp.models.Count == 0)
+            {
+                GlobalState.logInfo.logLine("Can't predict configurations. No learning was performed");
+            }
+            else if (exp.models.ElementAt(exp.models.Count - 1).LearningHistory.Count == 0)
+            {
+                GlobalState.logInfo.logLine("Can't predict configurations. No model was learned.");
+            }
+            else if (task.Length == 0)
+            {
+                GlobalState.logInfo.logLine("Target file is required to print prediction results");
+            }
+            else if (GlobalState.allMeasurements.Configurations.Count == 0)
+            {
+                GlobalState.logError.logLine("No measurements loaded.");
+            }
+            else
+            {
+                predict(task, exp);
+            }
+        }
+
 
         /// <summary>
         /// 
@@ -1378,7 +1396,7 @@ namespace CommandLine
             return "";
         }
 
-        private void predict(string task, bool useTrueModel = false)
+        private void predict(string task, Learning exp, bool useTrueModel = false)
         {
             StreamWriter sw = new StreamWriter(task);
             sw.Write("configuration;real value;prediction;deviation;percentage;" + Environment.NewLine);
@@ -1395,7 +1413,7 @@ namespace CommandLine
                 else
                 {
                     prediction = FeatureSubsetSelection
-                    .predict(this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
+                    .predict(exp.models.ElementAt(exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
                 }
                 double difference = Math.Abs(realValue - prediction);
                 double percentage = 0;
