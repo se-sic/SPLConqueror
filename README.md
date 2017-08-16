@@ -409,11 +409,11 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | featureSizeThreshold | The maximal number of options participating in one interaction. | 4 | int |
 | quadraticFunctionSupport | The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true. | true | true, false |
 | crossValidation | Cross validation is used during learning process if this property is true. | false | true, false |
-| learn_logFunction | If true, the learn algorithm can learn logarithmic functions such as log(soption1). | false | true, false |
-| learn_accumulatedLogFunction | Allows the creation of logarithmic functions with multiple features such as log(soption1 * soption2). | false | true, false |
-| learn_asymFunction | Allows the creation of functions with the form 1/soptions. | false | true, false |
-| learn_ratioFunction | Allows the creation of functions with the form soptions1/soptions2. | false | true, false |
-| learn_mirrowedFunction | Allows the creation of functions with the form (numericOption.maxValue - soptions). | false | true, false |
+| learn-logFunction (alternatively: learn_logFunction) | If true, the learn algorithm can learn logarithmic functions such as log(soption1). | false | true, false |
+| learn-accumulatedLogFunction (alternatively: learn-accumulatedLogFunction) | Allows the creation of logarithmic functions with multiple features such as log(soption1 * soption2). | false | true, false |
+| learn-asymFunction (alternatively: learn_asymFunction) | Allows the creation of functions with the form 1/soptions. | false | true, false |
+| learn-ratioFunction (alternatively: learn_ratioFunction) | Allows the creation of functions with the form soptions1/soptions2. | false | true, false |
+| learn-mirrowedFunction (alternatively: learn_mirrowedFunction) | Allows the creation of functions with the form (numericOption.maxValue - soptions). | false | true, false |
 | numberOfRounds | Defines the number of rounds the learning process have to be performed. | 70 | int |
 | backwardErrorDelta | Defines the maximum increase of the error when removing a feature from the model. | 1 | double |
 |minImprovementPerRound | Defines the minimum error in improved a round must reach before either the learning is aborted or the hierarchy is increased for hierarchy learning. | 0.1 | double |
@@ -437,8 +437,8 @@ learn_logFunction true
 stopOnLongRound false
 ```
 
-To load these settings, the command ```load_mlsettings``` can be used with the path to the file with the settings as argument. For example: 
-```load_mlsettings C:\exampleSettings.txt```
+To load these settings, the command ```load-mlsettings``` (deprecated: ```load_mlsettings```) can be used with the path to the file with the settings as argument. For example: 
+```load-mlsettings C:\exampleSettings.txt```
 
 Please note that all the settings that are not stated will automatically be set to the default values. So if the commands are used to change the settings several times during the same run, the previous settings have no impact on the new settings.
 
@@ -455,14 +455,14 @@ nfp nfp2
 
 #### Learning with all measurements
 
-Now, we have have enough to learn with all measurements. For this, just use the ```learnwithallmeasurements```-command. A .a-script for learning with all measurements at this point, using the examples from above is as follows:
+Now, we have have enough to learn with all measurements. For this, just use the ```learn-all-splconqueror``` (deprecated: ```learnwithallmeasurements```) command. A .a-script for learning with all measurements at this point, using the examples from above is as follows:
 ```
 log C:\exampleLog.log
 vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-learnwithallmeasurements
+learn-all-splconqueror
 ```
 
 #### Displaying the learning results
@@ -513,7 +513,7 @@ expdesign random sampleSize:50 seed:3
 
 ```start```
 
-To learn only with a subset of the measurements, the command ```start``` can be used. This command requires having set a binary and a numeric sampling strategy, before executing it.
+To learn only with a subset of the measurements, the command ```learn-splconqueror```(deprecated: ```start```) can be used. This command requires having set a binary and a numeric sampling strategy, before executing it.
 **Note**: A numeric sampling strategy is only needed if the variability model contains numeric options.
 
 If, for instance, only a subset of the data should be used for learning, the result looks as follows:
@@ -525,7 +525,7 @@ mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
 allbinary
 expdesign random sampleSize:50 seed:3
-start
+learn-splconqueror
 analyze-learning
 ```
 

@@ -29,7 +29,12 @@ namespace CommandLine
         public const string COMMAND_CLEAR_LEARNING = "clean-learning";
 
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
+
+        #region load ml settings
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
+        // for uniform format of commands
+        public const string COMMAND_LOAD_MLSETTINGS_UNIFORM = "load-mlsettings";
+        #endregion
 
         public const string RESUME_FROM_DUMP = "resume-dump";
 
@@ -54,7 +59,10 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
 
+        #region splconqueror learn with all measurements
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
+        public const string COMMAND_START_ALLMEASUREMENTS_SPLC = "learn-all-splconqueror";
+        #endregion
 
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
         public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
@@ -70,8 +78,15 @@ namespace CommandLine
         public const string COMMAND_SET_NFP = "nfp";
         public const string COMMAND_SET_MLSETTING = "mlsettings";
 
+        #region splconqueror learn with sampling
+        public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
         public const string COMMAND_START_LEARNING = "start";
+        #endregion
+
+        #region Splconqueror parameter opt
         public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
+        public const string COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR = "learn-splconqueror-opt";
+        #endregion
 
         public const string COMMAND_EXERIMENTALDESIGN = "expdesign";
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
@@ -171,6 +186,7 @@ namespace CommandLine
 
             switch (command.ToLower())
             {
+                case COMMAND_START_ALLMEASUREMENTS_SPLC:
                 case COMMAND_START_ALLMEASUREMENTS:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -682,6 +698,7 @@ namespace CommandLine
                     this.mlSettings = ML_Settings.readSettings(task);
                     GlobalState.logInfo.logLine("Current machine learning settings: " + this.mlSettings.ToString());
                     break;
+                case COMMAND_LOAD_MLSETTINGS_UNIFORM:
                 case COMMAND_LOAD_MLSETTINGS:
                     this.mlSettings = ML_Settings.readSettingsFromFile(task);
                     break;
@@ -886,7 +903,7 @@ namespace CommandLine
                         break;
                     }
 
-
+                case COMMAND_START_LEARNING_SPL_CONQUEROR:
                 case COMMAND_START_LEARNING:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -956,6 +973,8 @@ namespace CommandLine
 
                         break;
                     }
+
+                case COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR:
                 case COMMAND_OPTIMIZE_PARAMETER:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -1009,8 +1028,7 @@ namespace CommandLine
                         experiment.learn();
                         StringBuilder taskAsString = new StringBuilder();
                         taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
-                        printPredictedConfigurations(Path.GetFullPath(System.AppDomain.CurrentDomain.BaseDirectory) 
-                            + Path.DirectorySeparatorChar + "CrossValidationResultPrediction"
+                        printPredictedConfigurations("./CrossValidationResultPrediction"
                             + taskAsString.ToString()
                             .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
                             .Replace(Environment.NewLine, "").Substring(0)
