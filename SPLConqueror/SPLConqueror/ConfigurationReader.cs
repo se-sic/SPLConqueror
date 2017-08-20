@@ -299,6 +299,8 @@ namespace SPLConqueror_Core
                 }
 
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+                // indicates if this configuration is valid in the current feature model
+                bool invalid = false;
 
                 string[] binaryOptionNames = binaryString.Split(',');
                 foreach (string binaryOptionName in binaryOptionNames)
@@ -311,7 +313,12 @@ namespace SPLConqueror_Core
                         bOpt = model.getBinaryOption(currOption);
 
                         if (bOpt == null)
+                        {
                             GlobalState.logError.logLine("No Binary option found with name: " + currOption);
+                            GlobalState.logError.logLine("Invalid configuration:" + binaryString + numericString);
+                            invalid = true;
+                            break;
+                        }
                         binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
                     }
                 }
@@ -327,6 +334,10 @@ namespace SPLConqueror_Core
                     string[] numOptionArray = numericString.Trim().Split(',');
                     foreach (string numOption in numOptionArray)
                     {
+
+                        if (invalid)
+                            break;
+
                         string[] numOptionsKeyValue;
                         if (numOption.Contains(";"))
                             numOptionsKeyValue = numOption.Split(';');
@@ -337,22 +348,30 @@ namespace SPLConqueror_Core
                             continue;
                         NumericOption varFeat = model.getNumericOption(numOptionsKeyValue[0]);
                         if (varFeat == null)
+                        {
                             GlobalState.logError.logLine("No numeric option found with name: " + numOptionsKeyValue[0]);
-                        double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
-
-                        numericOptions.Add(varFeat, varFeatValue);
+                            GlobalState.logError.logLine("Invalid configuration:" + binaryString + numericString);
+                            invalid = true;
+                        } else
+                        {
+                            double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
+                            numericOptions.Add(varFeat, varFeatValue);
+                        }
                     }
                 }
 
-                Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
+                if (!invalid)
+                {
+                    Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
 
-                //if(configurations.Contains(config))
-                //{
-                //    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
-                //}else
-                //{
-                configurations.Add(config);
-                //}
+                    //if(configurations.Contains(config))
+                    //{
+                    //    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
+                    //}else
+                    //{
+                    configurations.Add(config);
+                    //}
+                }
             }
             GlobalState.logInfo.logLine("Configs with too large deviation: " + configsWithTooLargeDeviation);
             return configurations.ToList();

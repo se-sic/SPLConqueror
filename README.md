@@ -608,7 +608,7 @@ measurementstocsv C:\measurementsAsCSV.csv
 
 **Note**: The element separator is ```;```, whereas the line separator is ```\n```.
 
-```predict-configurations```
+```predict-configs-splconqueror``` (deprecated: ```predict-configurations```)
 
 Predicts the ```nfp``` value of all configurations loaded with the ```all``` command and writes them together with the measured ```nfp``` value and the configuration identifier in a file.
 
@@ -692,10 +692,10 @@ expdesign plackettburman measurements:125 level:5
 printconfigs ./samples.txt
 
 # Start learning using the sampled configurations
-start
+learn-splconqueror
 
 # Predicts the performance value of all configurations of the measurements file using the learned performance-influence model
-predict-configurations
+predict-configs-splconqueror
 
 ```
 
