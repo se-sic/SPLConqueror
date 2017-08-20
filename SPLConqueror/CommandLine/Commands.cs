@@ -64,10 +64,18 @@ namespace CommandLine
         public const string COMMAND_START_ALLMEASUREMENTS_SPLC = "learn-all-splconqueror";
         #endregion
 
+        #region splconqueror predict all configurations
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
+        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC = "predict-all-configs-splconqueror";
+        #endregion
+
         public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
+
+        #region splconqueror predict configurations
         public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
+        public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
+        #endregion
 
         // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
         public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
@@ -422,6 +430,16 @@ namespace CommandLine
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+
+                    List<Configuration> invalid = GlobalState.allMeasurements.Configurations
+                        .Where(conf => !GlobalState.varModel.isInModel(conf)).ToList();
+                    CheckConfigSAT constraintSystem = new CheckConfigSAT();
+                    invalid = invalid.Union(GlobalState.allMeasurements.Configurations
+                        .Where(conf => constraintSystem.checkConfigurationSAT(conf,GlobalState.varModel))).ToList();
+                    invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
+                    //Remove them the measurements or only warn the user?.
+                    //GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Except(invalid)).ToList();
+
                     GlobalState.measurementSource = task.TrimEnd();
                     string attachement = "";
                     if (GlobalState.measurementDeviation > 0 && this.mlSettings != null && mlSettings.abortError == 1)
@@ -501,6 +519,7 @@ namespace CommandLine
                         break;
                     }
 
+                case COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC:
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS:
                     {
                         printPredictedConfigurations(task, this.exp);
@@ -529,6 +548,7 @@ namespace CommandLine
                         break;
                     }
 
+                case COMMAND_PREDICT_CONFIGURATIONS_SPLC:
                 case COMMAND_PREDICT_CONFIGURATIONS:
                     {
                         FeatureSubsetSelection learnedModel = exp.models[exp.models.Count - 1];

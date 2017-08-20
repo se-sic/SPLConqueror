@@ -456,6 +456,30 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// Tests whether a configuration has only options that are in the Variability model.
+        /// </summary>
+        /// <param name="conf">The configuration to test.</param>
+        /// <returns>True when all configuration options are valid in this model.</returns>
+        public bool isInModel(Configuration conf)
+        {
+            if (conf.BinaryOptions.Keys.ToList().Except(this.BinaryOptions).Count() != 0)
+                return false;
+
+            double value;
+
+            if (!conf.NumericOptions.Keys.ToList()
+                .TrueForAll(numOpt => this.NumericOptions.Contains(numOpt)
+                && conf.NumericOptions.TryGetValue(numOpt, out value)
+                && this.NumericOptions.Where(opt => opt.ToString().Equals(numOpt.ToString())).First().getAllValues().Contains(value)))
+                return false;
+
+            if (!configurationIsValid(conf))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
         /// Tests whether a configuration is valid with respect to all non-boolean constraints.
         /// </summary>
         /// <param name="c">The configuration to test.</param>
