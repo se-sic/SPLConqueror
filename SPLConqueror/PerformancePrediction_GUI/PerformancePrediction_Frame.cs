@@ -274,6 +274,30 @@ namespace PerformancePrediction_GUI
                 binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
             }
+            if (this.twise.Checked)
+            {
+                binarySelected = true;
+                string param = "";
+                if (!twiseParam.Text.Equals(""))
+                {
+                    param = "t:" + twiseParam.Text + " ";
+                }
+                cmd.performOneCommand(Commands.COMMAND_SAMPLE_BINARY_TWISE + " " + param + validation);
+            }
+            if (this.binRandom.Checked)
+            {
+                binarySelected = true;
+                string param = "";
+                if (!numConfigsParam.Text.Equals(""))
+                {
+                    param += "numConfigs:" + numConfigsParam.Text + " ";
+                }
+                if (!binRandomSeed.Text.Equals(""))
+                {
+                    param += "seed:" + binRandomSeed.Text;
+                }
+                cmd.performOneCommand(Commands.COMMAND_SAMPLE_BINARY_RANDOM + " " + param + validation);
+            }
             if (this.PW.Checked){
                 binarySelected = true;
                 cmd.performOneCommand(Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);

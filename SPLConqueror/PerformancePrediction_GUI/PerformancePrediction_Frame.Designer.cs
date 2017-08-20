@@ -35,6 +35,14 @@ namespace PerformancePrediction_GUI
         private void InitializeComponent()
         {
             this.BinarySamplingGroup = new System.Windows.Forms.GroupBox();
+            this.binRandomSeed = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numConfigsParam = new System.Windows.Forms.TextBox();
+            this.numConfigs = new System.Windows.Forms.Label();
+            this.twiseParam = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.binRandom = new System.Windows.Forms.CheckBox();
+            this.twise = new System.Windows.Forms.CheckBox();
             this.binWholePop = new System.Windows.Forms.CheckBox();
             this.negOW = new System.Windows.Forms.CheckBox();
             this.PW = new System.Windows.Forms.CheckBox();
@@ -84,14 +92,6 @@ namespace PerformancePrediction_GUI
             this.PrefixLabel = new System.Windows.Forms.Label();
             this.PostFixTextBox = new System.Windows.Forms.TextBox();
             this.PrefixTextBox = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.numConfigs = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.BinarySamplingGroup.SuspendLayout();
             this.LogGroup.SuspendLayout();
             this.expDasign_group.SuspendLayout();
@@ -103,14 +103,14 @@ namespace PerformancePrediction_GUI
             // 
             // BinarySamplingGroup
             // 
-            this.BinarySamplingGroup.Controls.Add(this.textBox3);
+            this.BinarySamplingGroup.Controls.Add(this.binRandomSeed);
             this.BinarySamplingGroup.Controls.Add(this.label3);
-            this.BinarySamplingGroup.Controls.Add(this.textBox2);
+            this.BinarySamplingGroup.Controls.Add(this.numConfigsParam);
             this.BinarySamplingGroup.Controls.Add(this.numConfigs);
-            this.BinarySamplingGroup.Controls.Add(this.textBox1);
+            this.BinarySamplingGroup.Controls.Add(this.twiseParam);
             this.BinarySamplingGroup.Controls.Add(this.label2);
-            this.BinarySamplingGroup.Controls.Add(this.checkBox2);
-            this.BinarySamplingGroup.Controls.Add(this.checkBox1);
+            this.BinarySamplingGroup.Controls.Add(this.binRandom);
+            this.BinarySamplingGroup.Controls.Add(this.twise);
             this.BinarySamplingGroup.Controls.Add(this.binWholePop);
             this.BinarySamplingGroup.Controls.Add(this.negOW);
             this.BinarySamplingGroup.Controls.Add(this.PW);
@@ -123,6 +123,77 @@ namespace PerformancePrediction_GUI
             this.BinarySamplingGroup.TabIndex = 0;
             this.BinarySamplingGroup.TabStop = false;
             this.BinarySamplingGroup.Text = "Binary Options: Sampling Heuristics ";
+            // 
+            // binRandomSeed
+            // 
+            this.binRandomSeed.Location = new System.Drawing.Point(503, 55);
+            this.binRandomSeed.Name = "binRandomSeed";
+            this.binRandomSeed.Size = new System.Drawing.Size(30, 25);
+            this.binRandomSeed.TabIndex = 11;
+            this.binRandomSeed.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(463, 57);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 16);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "seed:";
+            // 
+            // numConfigsParam
+            // 
+            this.numConfigsParam.Location = new System.Drawing.Point(411, 55);
+            this.numConfigsParam.Name = "numConfigsParam";
+            this.numConfigsParam.Size = new System.Drawing.Size(46, 25);
+            this.numConfigsParam.TabIndex = 9;
+            this.numConfigsParam.Text = "asOW";
+            // 
+            // numConfigs
+            // 
+            this.numConfigs.AutoSize = true;
+            this.numConfigs.Location = new System.Drawing.Point(327, 57);
+            this.numConfigs.Name = "numConfigs";
+            this.numConfigs.Size = new System.Drawing.Size(81, 16);
+            this.numConfigs.TabIndex = 8;
+            this.numConfigs.Text = "numConfigs:";
+            // 
+            // twiseParam
+            // 
+            this.twiseParam.Location = new System.Drawing.Point(108, 55);
+            this.twiseParam.Name = "twiseParam";
+            this.twiseParam.Size = new System.Drawing.Size(22, 25);
+            this.twiseParam.TabIndex = 7;
+            this.twiseParam.Text = "3";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(87, 57);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(15, 16);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "t:";
+            // 
+            // binRandom
+            // 
+            this.binRandom.AutoSize = true;
+            this.binRandom.Location = new System.Drawing.Point(204, 55);
+            this.binRandom.Name = "binRandom";
+            this.binRandom.Size = new System.Drawing.Size(122, 20);
+            this.binRandom.TabIndex = 5;
+            this.binRandom.Text = "Binary Random";
+            this.binRandom.UseVisualStyleBackColor = true;
+            // 
+            // twise
+            // 
+            this.twise.AutoSize = true;
+            this.twise.Location = new System.Drawing.Point(8, 55);
+            this.twise.Name = "twise";
+            this.twise.Size = new System.Drawing.Size(72, 20);
+            this.twise.TabIndex = 4;
+            this.twise.Text = "T-Wise";
+            this.twise.UseVisualStyleBackColor = true;
             // 
             // binWholePop
             // 
@@ -656,77 +727,6 @@ namespace PerformancePrediction_GUI
             this.PrefixTextBox.Size = new System.Drawing.Size(100, 25);
             this.PrefixTextBox.TabIndex = 0;
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(8, 55);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(72, 20);
-            this.checkBox1.TabIndex = 4;
-            this.checkBox1.Text = "T-Wise";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(204, 55);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(122, 20);
-            this.checkBox2.TabIndex = 5;
-            this.checkBox2.Text = "Binary Random";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(87, 57);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(15, 16);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "t:";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(108, 55);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(22, 25);
-            this.textBox1.TabIndex = 7;
-            this.textBox1.Text = "3";
-            // 
-            // numConfigs
-            // 
-            this.numConfigs.AutoSize = true;
-            this.numConfigs.Location = new System.Drawing.Point(327, 57);
-            this.numConfigs.Name = "numConfigs";
-            this.numConfigs.Size = new System.Drawing.Size(81, 16);
-            this.numConfigs.TabIndex = 8;
-            this.numConfigs.Text = "numConfigs:";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(411, 55);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(46, 25);
-            this.textBox2.TabIndex = 9;
-            this.textBox2.Text = "asOW";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(463, 57);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 16);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "seed:";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(503, 55);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(30, 25);
-            this.textBox3.TabIndex = 11;
-            this.textBox3.Text = "0";
-            // 
             // PerformancePrediction_Frame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -817,13 +817,13 @@ private System.Windows.Forms.Button LearnAllMeasurements;private System.Windows.
         private System.Windows.Forms.Label PrefixLabel;
         private System.Windows.Forms.TextBox PostFixTextBox;
         private System.Windows.Forms.TextBox PrefixTextBox;
-        private CheckBox checkBox1;
+        private CheckBox twise;
         private Label label2;
-        private CheckBox checkBox2;
-        private TextBox textBox1;
-        private TextBox textBox3;
+        private CheckBox binRandom;
+        private TextBox twiseParam;
+        private TextBox binRandomSeed;
         private Label label3;
-        private TextBox textBox2;
+        private TextBox numConfigsParam;
         private Label numConfigs;
     }
 }
