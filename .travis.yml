@@ -6,7 +6,7 @@ install:
   - nuget restore ./SPLConqueror/SPLConqueror.sln #Download all packaged
   - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner #Additional to the Nunit test framework download the runner to execue the test.
 script:
-  - msbuild ./SPLConqueror/SPLConqueror.sln /t:Build #Use msbuild to compile the project instead of mono.
+  - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/MachineLearningTest/bin/Debug/MachineLearningTest.dll #Test machine learning and a few command line commands.
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SPLConquerorCoreTest/bin/Debug/SPLConquerorCoreTest.dll #Test core

@@ -68,7 +68,7 @@ namespace MachineLearning.Learning.Regression
 
                 this.nbBaggings = this.mlSettings.baggingNumbers;
                 iCount = this.nbBaggings;
-                Random rand = new Random();
+                Random rand = new Random(0);
                 int nbOfConfigs = (testSet.Count * this.mlSettings.baggingTestDataFraction) / 100;
                 for (int i = 0; i < nbBaggings; i++)
                 {
