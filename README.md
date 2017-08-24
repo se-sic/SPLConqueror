@@ -455,6 +455,25 @@ nfp nfp2
 
 #### Learning with all measurements
 
+To enable learning with all measurements, use ```select-all-measurements true``` command. After that just use the ```learn-splconqueror``` command for learning.
+For example:
+```
+log C:\exampleLog.log
+vm C:\exampleModel.xml
+all C:\exampleMeasurements.xml
+mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
+nfp nfp1
+select-all-measurements true
+learn-splconqueror
+```
+
+To disable learning with all measurements you can use ```select-all-measurements false```.
+
+
+***
+
+Deprecated:
+
 Now, we have have enough to learn with all measurements. For this, just use the ```learn-all-splconqueror``` (deprecated: ```learnwithallmeasurements```) command. A .a-script for learning with all measurements at this point, using the examples from above is as follows:
 ```
 log C:\exampleLog.log
@@ -464,6 +483,8 @@ mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
 learn-all-splconqueror
 ```
+
+***
 
 #### Displaying the learning results
 
