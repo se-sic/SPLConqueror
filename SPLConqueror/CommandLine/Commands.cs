@@ -413,8 +413,6 @@ namespace CommandLine
                     invalid = invalid.Union(GlobalState.allMeasurements.Configurations
                         .Where(conf => constraintSystem.checkConfigurationSAT(conf,GlobalState.varModel))).ToList();
                     invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
-                    //Remove them the measurements or only warn the user?.
-                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Except(invalid)).ToList();
 
                     GlobalState.measurementSource = task.TrimEnd();
                     string attachement = "";
