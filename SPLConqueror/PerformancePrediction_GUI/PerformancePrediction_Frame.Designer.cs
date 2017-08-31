@@ -35,6 +35,14 @@ namespace PerformancePrediction_GUI
         private void InitializeComponent()
         {
             this.BinarySamplingGroup = new System.Windows.Forms.GroupBox();
+            this.binRandomSeed = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numConfigsParam = new System.Windows.Forms.TextBox();
+            this.numConfigs = new System.Windows.Forms.Label();
+            this.twiseParam = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.binRandom = new System.Windows.Forms.CheckBox();
+            this.twise = new System.Windows.Forms.CheckBox();
             this.binWholePop = new System.Windows.Forms.CheckBox();
             this.negOW = new System.Windows.Forms.CheckBox();
             this.PW = new System.Windows.Forms.CheckBox();
@@ -95,6 +103,14 @@ namespace PerformancePrediction_GUI
             // 
             // BinarySamplingGroup
             // 
+            this.BinarySamplingGroup.Controls.Add(this.binRandomSeed);
+            this.BinarySamplingGroup.Controls.Add(this.label3);
+            this.BinarySamplingGroup.Controls.Add(this.numConfigsParam);
+            this.BinarySamplingGroup.Controls.Add(this.numConfigs);
+            this.BinarySamplingGroup.Controls.Add(this.twiseParam);
+            this.BinarySamplingGroup.Controls.Add(this.label2);
+            this.BinarySamplingGroup.Controls.Add(this.binRandom);
+            this.BinarySamplingGroup.Controls.Add(this.twise);
             this.BinarySamplingGroup.Controls.Add(this.binWholePop);
             this.BinarySamplingGroup.Controls.Add(this.negOW);
             this.BinarySamplingGroup.Controls.Add(this.PW);
@@ -103,10 +119,81 @@ namespace PerformancePrediction_GUI
             this.BinarySamplingGroup.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.BinarySamplingGroup.Name = "BinarySamplingGroup";
             this.BinarySamplingGroup.Padding = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.BinarySamplingGroup.Size = new System.Drawing.Size(538, 54);
+            this.BinarySamplingGroup.Size = new System.Drawing.Size(538, 82);
             this.BinarySamplingGroup.TabIndex = 0;
             this.BinarySamplingGroup.TabStop = false;
             this.BinarySamplingGroup.Text = "Binary Options: Sampling Heuristics ";
+            // 
+            // binRandomSeed
+            // 
+            this.binRandomSeed.Location = new System.Drawing.Point(503, 55);
+            this.binRandomSeed.Name = "binRandomSeed";
+            this.binRandomSeed.Size = new System.Drawing.Size(30, 25);
+            this.binRandomSeed.TabIndex = 11;
+            this.binRandomSeed.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(463, 57);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 16);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "seed:";
+            // 
+            // numConfigsParam
+            // 
+            this.numConfigsParam.Location = new System.Drawing.Point(411, 55);
+            this.numConfigsParam.Name = "numConfigsParam";
+            this.numConfigsParam.Size = new System.Drawing.Size(46, 25);
+            this.numConfigsParam.TabIndex = 9;
+            this.numConfigsParam.Text = "asOW";
+            // 
+            // numConfigs
+            // 
+            this.numConfigs.AutoSize = true;
+            this.numConfigs.Location = new System.Drawing.Point(327, 57);
+            this.numConfigs.Name = "numConfigs";
+            this.numConfigs.Size = new System.Drawing.Size(81, 16);
+            this.numConfigs.TabIndex = 8;
+            this.numConfigs.Text = "numConfigs:";
+            // 
+            // twiseParam
+            // 
+            this.twiseParam.Location = new System.Drawing.Point(108, 55);
+            this.twiseParam.Name = "twiseParam";
+            this.twiseParam.Size = new System.Drawing.Size(22, 25);
+            this.twiseParam.TabIndex = 7;
+            this.twiseParam.Text = "3";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(87, 57);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(15, 16);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "t:";
+            // 
+            // binRandom
+            // 
+            this.binRandom.AutoSize = true;
+            this.binRandom.Location = new System.Drawing.Point(204, 55);
+            this.binRandom.Name = "binRandom";
+            this.binRandom.Size = new System.Drawing.Size(122, 20);
+            this.binRandom.TabIndex = 5;
+            this.binRandom.Text = "Binary Random";
+            this.binRandom.UseVisualStyleBackColor = true;
+            // 
+            // twise
+            // 
+            this.twise.AutoSize = true;
+            this.twise.Location = new System.Drawing.Point(8, 55);
+            this.twise.Name = "twise";
+            this.twise.Size = new System.Drawing.Size(72, 20);
+            this.twise.TabIndex = 4;
+            this.twise.Text = "T-Wise";
+            this.twise.UseVisualStyleBackColor = true;
             // 
             // binWholePop
             // 
@@ -114,7 +201,7 @@ namespace PerformancePrediction_GUI
             this.binWholePop.Location = new System.Drawing.Point(359, 21);
             this.binWholePop.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.binWholePop.Name = "binWholePop";
-            this.binWholePop.Size = new System.Drawing.Size(113, 18);
+            this.binWholePop.Size = new System.Drawing.Size(133, 20);
             this.binWholePop.TabIndex = 3;
             this.binWholePop.Text = "Whole Population";
             this.binWholePop.UseVisualStyleBackColor = true;
@@ -125,7 +212,7 @@ namespace PerformancePrediction_GUI
             this.negOW.Location = new System.Drawing.Point(204, 21);
             this.negOW.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.negOW.Name = "negOW";
-            this.negOW.Size = new System.Drawing.Size(131, 18);
+            this.negOW.Size = new System.Drawing.Size(156, 20);
             this.negOW.TabIndex = 2;
             this.negOW.Text = "negative Option-Wise";
             this.negOW.UseVisualStyleBackColor = true;
@@ -136,7 +223,7 @@ namespace PerformancePrediction_GUI
             this.PW.Location = new System.Drawing.Point(114, 21);
             this.PW.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.PW.Name = "PW";
-            this.PW.Size = new System.Drawing.Size(73, 18);
+            this.PW.Size = new System.Drawing.Size(88, 20);
             this.PW.TabIndex = 1;
             this.PW.Text = "Pair-Wise";
             this.PW.UseVisualStyleBackColor = true;
@@ -147,7 +234,7 @@ namespace PerformancePrediction_GUI
             this.OW.Location = new System.Drawing.Point(8, 21);
             this.OW.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.OW.Name = "OW";
-            this.OW.Size = new System.Drawing.Size(89, 18);
+            this.OW.Size = new System.Drawing.Size(103, 20);
             this.OW.TabIndex = 0;
             this.OW.Text = "Option-Wise";
             this.OW.UseVisualStyleBackColor = true;
@@ -212,7 +299,7 @@ namespace PerformancePrediction_GUI
             this.expDasign_group.Controls.Add(this.num_FullFactorial_check);
             this.expDasign_group.Controls.Add(this.num_CentralComposite_check);
             this.expDasign_group.Controls.Add(this.num_BoxBehnken_check);
-            this.expDasign_group.Location = new System.Drawing.Point(132, 68);
+            this.expDasign_group.Location = new System.Drawing.Point(132, 95);
             this.expDasign_group.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.expDasign_group.Name = "expDasign_group";
             this.expDasign_group.Padding = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -226,7 +313,7 @@ namespace PerformancePrediction_GUI
             this.num_oneFactorAtATime_num_Text.Location = new System.Drawing.Point(239, 145);
             this.num_oneFactorAtATime_num_Text.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_oneFactorAtATime_num_Text.Name = "num_oneFactorAtATime_num_Text";
-            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(41, 21);
+            this.num_oneFactorAtATime_num_Text.Size = new System.Drawing.Size(41, 25);
             this.num_oneFactorAtATime_num_Text.TabIndex = 34;
             this.num_oneFactorAtATime_num_Text.Text = "5";
             this.num_oneFactorAtATime_num_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -237,7 +324,7 @@ namespace PerformancePrediction_GUI
             this.num_oneFactorAtATime_num_Label.Location = new System.Drawing.Point(182, 147);
             this.num_oneFactorAtATime_num_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_oneFactorAtATime_num_Label.Name = "num_oneFactorAtATime_num_Label";
-            this.num_oneFactorAtATime_num_Label.Size = new System.Drawing.Size(40, 14);
+            this.num_oneFactorAtATime_num_Label.Size = new System.Drawing.Size(48, 16);
             this.num_oneFactorAtATime_num_Label.TabIndex = 33;
             this.num_oneFactorAtATime_num_Label.Text = "values:";
             // 
@@ -247,7 +334,7 @@ namespace PerformancePrediction_GUI
             this.num_oneFactorAtATime_Box.Location = new System.Drawing.Point(8, 147);
             this.num_oneFactorAtATime_Box.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_oneFactorAtATime_Box.Name = "num_oneFactorAtATime_Box";
-            this.num_oneFactorAtATime_Box.Size = new System.Drawing.Size(128, 18);
+            this.num_oneFactorAtATime_Box.Size = new System.Drawing.Size(156, 20);
             this.num_oneFactorAtATime_Box.TabIndex = 32;
             this.num_oneFactorAtATime_Box.Text = "One Factor at a Time";
             this.num_oneFactorAtATime_Box.UseVisualStyleBackColor = true;
@@ -257,7 +344,7 @@ namespace PerformancePrediction_GUI
             this.num_rand_seed_Text.Location = new System.Drawing.Point(330, 99);
             this.num_rand_seed_Text.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_rand_seed_Text.Name = "num_rand_seed_Text";
-            this.num_rand_seed_Text.Size = new System.Drawing.Size(38, 21);
+            this.num_rand_seed_Text.Size = new System.Drawing.Size(38, 25);
             this.num_rand_seed_Text.TabIndex = 31;
             this.num_rand_seed_Text.Text = "0";
             this.num_rand_seed_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -268,7 +355,7 @@ namespace PerformancePrediction_GUI
             this.num_rand_seed_Label.Location = new System.Drawing.Point(293, 99);
             this.num_rand_seed_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_rand_seed_Label.Name = "num_rand_seed_Label";
-            this.num_rand_seed_Label.Size = new System.Drawing.Size(31, 14);
+            this.num_rand_seed_Label.Size = new System.Drawing.Size(38, 16);
             this.num_rand_seed_Label.TabIndex = 30;
             this.num_rand_seed_Label.Text = "seed:";
             // 
@@ -277,7 +364,7 @@ namespace PerformancePrediction_GUI
             this.num_Plackett_n_Box.Location = new System.Drawing.Point(330, 71);
             this.num_Plackett_n_Box.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_Plackett_n_Box.Name = "num_Plackett_n_Box";
-            this.num_Plackett_n_Box.Size = new System.Drawing.Size(38, 21);
+            this.num_Plackett_n_Box.Size = new System.Drawing.Size(38, 25);
             this.num_Plackett_n_Box.TabIndex = 29;
             this.num_Plackett_n_Box.Text = "9";
             this.num_Plackett_n_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -288,7 +375,7 @@ namespace PerformancePrediction_GUI
             this.num_Plackett_n_Label.Location = new System.Drawing.Point(293, 73);
             this.num_Plackett_n_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_Plackett_n_Label.Name = "num_Plackett_n_Label";
-            this.num_Plackett_n_Label.Size = new System.Drawing.Size(16, 14);
+            this.num_Plackett_n_Label.Size = new System.Drawing.Size(18, 16);
             this.num_Plackett_n_Label.TabIndex = 28;
             this.num_Plackett_n_Label.Text = "n:";
             // 
@@ -297,7 +384,7 @@ namespace PerformancePrediction_GUI
             this.num_Plackett_Level_Box.Location = new System.Drawing.Point(239, 71);
             this.num_Plackett_Level_Box.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_Plackett_Level_Box.Name = "num_Plackett_Level_Box";
-            this.num_Plackett_Level_Box.Size = new System.Drawing.Size(41, 21);
+            this.num_Plackett_Level_Box.Size = new System.Drawing.Size(41, 25);
             this.num_Plackett_Level_Box.TabIndex = 27;
             this.num_Plackett_Level_Box.Text = "3";
             this.num_Plackett_Level_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -308,7 +395,7 @@ namespace PerformancePrediction_GUI
             this.num_Plackett_Level_Label.Location = new System.Drawing.Point(182, 73);
             this.num_Plackett_Level_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_Plackett_Level_Label.Name = "num_Plackett_Level_Label";
-            this.num_Plackett_Level_Label.Size = new System.Drawing.Size(32, 14);
+            this.num_Plackett_Level_Label.Size = new System.Drawing.Size(38, 16);
             this.num_Plackett_Level_Label.TabIndex = 26;
             this.num_Plackett_Level_Label.Text = "level:";
             // 
@@ -317,7 +404,7 @@ namespace PerformancePrediction_GUI
             this.num_hyper_percent_text.Location = new System.Drawing.Point(239, 119);
             this.num_hyper_percent_text.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_hyper_percent_text.Name = "num_hyper_percent_text";
-            this.num_hyper_percent_text.Size = new System.Drawing.Size(41, 21);
+            this.num_hyper_percent_text.Size = new System.Drawing.Size(41, 25);
             this.num_hyper_percent_text.TabIndex = 25;
             this.num_hyper_percent_text.Text = "10";
             this.num_hyper_percent_text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -328,7 +415,7 @@ namespace PerformancePrediction_GUI
             this.num_hyper_percent_Label.Location = new System.Drawing.Point(182, 121);
             this.num_hyper_percent_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_hyper_percent_Label.Name = "num_hyper_percent_Label";
-            this.num_hyper_percent_Label.Size = new System.Drawing.Size(46, 14);
+            this.num_hyper_percent_Label.Size = new System.Drawing.Size(55, 16);
             this.num_hyper_percent_Label.TabIndex = 24;
             this.num_hyper_percent_Label.Text = "percent:";
             // 
@@ -337,7 +424,7 @@ namespace PerformancePrediction_GUI
             this.num_random_n_Text.Location = new System.Drawing.Point(239, 96);
             this.num_random_n_Text.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_random_n_Text.Name = "num_random_n_Text";
-            this.num_random_n_Text.Size = new System.Drawing.Size(41, 21);
+            this.num_random_n_Text.Size = new System.Drawing.Size(41, 25);
             this.num_random_n_Text.TabIndex = 23;
             this.num_random_n_Text.Text = "100";
             this.num_random_n_Text.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -348,7 +435,7 @@ namespace PerformancePrediction_GUI
             this.num_rand_n_Label.Location = new System.Drawing.Point(182, 99);
             this.num_rand_n_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_rand_n_Label.Name = "num_rand_n_Label";
-            this.num_rand_n_Label.Size = new System.Drawing.Size(16, 14);
+            this.num_rand_n_Label.Size = new System.Drawing.Size(18, 16);
             this.num_rand_n_Label.TabIndex = 22;
             this.num_rand_n_Label.Text = "n:";
             // 
@@ -357,7 +444,7 @@ namespace PerformancePrediction_GUI
             this.num_kEx_k_Box.Location = new System.Drawing.Point(330, 44);
             this.num_kEx_k_Box.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_kEx_k_Box.Name = "num_kEx_k_Box";
-            this.num_kEx_k_Box.Size = new System.Drawing.Size(38, 21);
+            this.num_kEx_k_Box.Size = new System.Drawing.Size(38, 25);
             this.num_kEx_k_Box.TabIndex = 21;
             this.num_kEx_k_Box.Text = "5";
             this.num_kEx_k_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -368,7 +455,7 @@ namespace PerformancePrediction_GUI
             this.num_kEx_k_Label.Location = new System.Drawing.Point(293, 48);
             this.num_kEx_k_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_kEx_k_Label.Name = "num_kEx_k_Label";
-            this.num_kEx_k_Label.Size = new System.Drawing.Size(16, 14);
+            this.num_kEx_k_Label.Size = new System.Drawing.Size(18, 16);
             this.num_kEx_k_Label.TabIndex = 20;
             this.num_kEx_k_Label.Text = "k:";
             // 
@@ -377,7 +464,7 @@ namespace PerformancePrediction_GUI
             this.num_kEx_n_Box.Location = new System.Drawing.Point(239, 44);
             this.num_kEx_n_Box.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_kEx_n_Box.Name = "num_kEx_n_Box";
-            this.num_kEx_n_Box.Size = new System.Drawing.Size(41, 21);
+            this.num_kEx_n_Box.Size = new System.Drawing.Size(41, 25);
             this.num_kEx_n_Box.TabIndex = 19;
             this.num_kEx_n_Box.Text = "50";
             this.num_kEx_n_Box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -388,7 +475,7 @@ namespace PerformancePrediction_GUI
             this.num_kEx_n_Label.Location = new System.Drawing.Point(182, 47);
             this.num_kEx_n_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.num_kEx_n_Label.Name = "num_kEx_n_Label";
-            this.num_kEx_n_Label.Size = new System.Drawing.Size(16, 14);
+            this.num_kEx_n_Label.Size = new System.Drawing.Size(18, 16);
             this.num_kEx_n_Label.TabIndex = 18;
             this.num_kEx_n_Label.Text = "n:";
             // 
@@ -398,7 +485,7 @@ namespace PerformancePrediction_GUI
             this.num_hyperSampling_check.Location = new System.Drawing.Point(8, 121);
             this.num_hyperSampling_check.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_hyperSampling_check.Name = "num_hyperSampling_check";
-            this.num_hyperSampling_check.Size = new System.Drawing.Size(104, 18);
+            this.num_hyperSampling_check.Size = new System.Drawing.Size(122, 20);
             this.num_hyperSampling_check.TabIndex = 15;
             this.num_hyperSampling_check.Text = "Hyper sampling";
             this.num_hyperSampling_check.UseVisualStyleBackColor = true;
@@ -409,7 +496,7 @@ namespace PerformancePrediction_GUI
             this.num_randomSampling_num.Location = new System.Drawing.Point(8, 97);
             this.num_randomSampling_num.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_randomSampling_num.Name = "num_randomSampling_num";
-            this.num_randomSampling_num.Size = new System.Drawing.Size(112, 18);
+            this.num_randomSampling_num.Size = new System.Drawing.Size(134, 20);
             this.num_randomSampling_num.TabIndex = 14;
             this.num_randomSampling_num.Text = "Random sampling";
             this.num_randomSampling_num.UseVisualStyleBackColor = true;
@@ -420,7 +507,7 @@ namespace PerformancePrediction_GUI
             this.num_PlackettBurman_check.Location = new System.Drawing.Point(8, 71);
             this.num_PlackettBurman_check.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_PlackettBurman_check.Name = "num_PlackettBurman_check";
-            this.num_PlackettBurman_check.Size = new System.Drawing.Size(107, 18);
+            this.num_PlackettBurman_check.Size = new System.Drawing.Size(130, 20);
             this.num_PlackettBurman_check.TabIndex = 13;
             this.num_PlackettBurman_check.Text = "Plackett-Burman";
             this.num_PlackettBurman_check.UseVisualStyleBackColor = true;
@@ -431,7 +518,7 @@ namespace PerformancePrediction_GUI
             this.num_kEx_check.Location = new System.Drawing.Point(8, 47);
             this.num_kEx_check.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_kEx_check.Name = "num_kEx_check";
-            this.num_kEx_check.Size = new System.Drawing.Size(144, 18);
+            this.num_kEx_check.Size = new System.Drawing.Size(176, 20);
             this.num_kEx_check.TabIndex = 12;
             this.num_kEx_check.Text = "D-Optimal (k-Exchange)";
             this.num_kEx_check.UseVisualStyleBackColor = true;
@@ -442,7 +529,7 @@ namespace PerformancePrediction_GUI
             this.num_FullFactorial_check.Location = new System.Drawing.Point(350, 20);
             this.num_FullFactorial_check.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_FullFactorial_check.Name = "num_FullFactorial_check";
-            this.num_FullFactorial_check.Size = new System.Drawing.Size(91, 18);
+            this.num_FullFactorial_check.Size = new System.Drawing.Size(107, 20);
             this.num_FullFactorial_check.TabIndex = 11;
             this.num_FullFactorial_check.Text = "Full-Factorial";
             this.num_FullFactorial_check.UseVisualStyleBackColor = true;
@@ -453,7 +540,7 @@ namespace PerformancePrediction_GUI
             this.num_CentralComposite_check.Location = new System.Drawing.Point(177, 20);
             this.num_CentralComposite_check.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_CentralComposite_check.Name = "num_CentralComposite_check";
-            this.num_CentralComposite_check.Size = new System.Drawing.Size(114, 18);
+            this.num_CentralComposite_check.Size = new System.Drawing.Size(135, 20);
             this.num_CentralComposite_check.TabIndex = 10;
             this.num_CentralComposite_check.Text = "CentralComposite";
             this.num_CentralComposite_check.UseVisualStyleBackColor = true;
@@ -464,7 +551,7 @@ namespace PerformancePrediction_GUI
             this.num_BoxBehnken_check.Location = new System.Drawing.Point(8, 21);
             this.num_BoxBehnken_check.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.num_BoxBehnken_check.Name = "num_BoxBehnken_check";
-            this.num_BoxBehnken_check.Size = new System.Drawing.Size(87, 18);
+            this.num_BoxBehnken_check.Size = new System.Drawing.Size(106, 20);
             this.num_BoxBehnken_check.TabIndex = 9;
             this.num_BoxBehnken_check.Text = "BoxBehnken";
             this.num_BoxBehnken_check.UseVisualStyleBackColor = true;
@@ -496,7 +583,7 @@ namespace PerformancePrediction_GUI
             this.nfpSelection.Location = new System.Drawing.Point(15, 135);
             this.nfpSelection.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.nfpSelection.Name = "nfpSelection";
-            this.nfpSelection.Size = new System.Drawing.Size(110, 52);
+            this.nfpSelection.Size = new System.Drawing.Size(110, 44);
             this.nfpSelection.TabIndex = 9;
             this.nfpSelection.SelectedIndexChanged += new System.EventHandler(this.nfpSelection_SelectedIndexChanged);
             // 
@@ -506,7 +593,7 @@ namespace PerformancePrediction_GUI
             this.label1.Location = new System.Drawing.Point(16, 117);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 14);
+            this.label1.Size = new System.Drawing.Size(39, 16);
             this.label1.TabIndex = 10;
             this.label1.Text = "NFP:";
             // 
@@ -613,7 +700,7 @@ namespace PerformancePrediction_GUI
             this.PostfixLabel.AutoSize = true;
             this.PostfixLabel.Location = new System.Drawing.Point(6, 88);
             this.PostfixLabel.Name = "PostfixLabel";
-            this.PostfixLabel.Size = new System.Drawing.Size(57, 18);
+            this.PostfixLabel.Size = new System.Drawing.Size(52, 16);
             this.PostfixLabel.TabIndex = 3;
             this.PostfixLabel.Text = "Postfix:";
             // 
@@ -622,7 +709,7 @@ namespace PerformancePrediction_GUI
             this.PrefixLabel.AutoSize = true;
             this.PrefixLabel.Location = new System.Drawing.Point(6, 36);
             this.PrefixLabel.Name = "PrefixLabel";
-            this.PrefixLabel.Size = new System.Drawing.Size(49, 18);
+            this.PrefixLabel.Size = new System.Drawing.Size(47, 16);
             this.PrefixLabel.TabIndex = 2;
             this.PrefixLabel.Text = "Prefix:";
             // 
@@ -630,19 +717,19 @@ namespace PerformancePrediction_GUI
             // 
             this.PostFixTextBox.Location = new System.Drawing.Point(76, 82);
             this.PostFixTextBox.Name = "PostFixTextBox";
-            this.PostFixTextBox.Size = new System.Drawing.Size(100, 24);
+            this.PostFixTextBox.Size = new System.Drawing.Size(100, 25);
             this.PostFixTextBox.TabIndex = 1;
             // 
             // PrefixTextBox
             // 
             this.PrefixTextBox.Location = new System.Drawing.Point(76, 30);
             this.PrefixTextBox.Name = "PrefixTextBox";
-            this.PrefixTextBox.Size = new System.Drawing.Size(100, 24);
+            this.PrefixTextBox.Size = new System.Drawing.Size(100, 25);
             this.PrefixTextBox.TabIndex = 0;
             // 
             // PerformancePrediction_Frame
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1230, 877);
             this.Controls.Add(this.PrintConfigsGroupBox);
@@ -730,6 +817,14 @@ private System.Windows.Forms.Button LearnAllMeasurements;private System.Windows.
         private System.Windows.Forms.Label PrefixLabel;
         private System.Windows.Forms.TextBox PostFixTextBox;
         private System.Windows.Forms.TextBox PrefixTextBox;
+        private CheckBox twise;
+        private Label label2;
+        private CheckBox binRandom;
+        private TextBox twiseParam;
+        private TextBox binRandomSeed;
+        private Label label3;
+        private TextBox numConfigsParam;
+        private Label numConfigs;
     }
 }
 

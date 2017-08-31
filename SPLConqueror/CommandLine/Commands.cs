@@ -30,7 +30,12 @@ namespace CommandLine
         public const string COMMAND_CLEAR_LEARNING = "clean-learning";
 
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
+
+        #region load ml settings
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
+        // for uniform format of commands
+        public const string COMMAND_LOAD_MLSETTINGS_UNIFORM = "load-mlsettings";
+        #endregion
 
         public const string RESUME_FROM_DUMP = "resume-dump";
 
@@ -55,12 +60,25 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
 
+        #region splconqueror learn with all measurements
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
+        public const string COMMAND_START_ALLMEASUREMENTS_SPLC = "learn-all-splconqueror";
 
+        public const string COMMAND_SELECT_ALL_MEASUREMENTS = "select-all-measurements";
+        #endregion
+
+        #region splconqueror predict all configurations
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
+        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC = "predict-all-configs-splconqueror";
+        #endregion
+
         public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
+
+        #region splconqueror predict configurations
         public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
+        public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
+        #endregion
 
         // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
         public const string COMMAND_SAMPLING_OPTIONORDER = "optionorder";
@@ -71,8 +89,15 @@ namespace CommandLine
         public const string COMMAND_SET_NFP = "nfp";
         public const string COMMAND_SET_MLSETTING = "mlsettings";
 
+        #region splconqueror learn with sampling
+        public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
         public const string COMMAND_START_LEARNING = "start";
+        #endregion
+
+        #region Splconqueror parameter opt
         public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
+        public const string COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR = "learn-splconqueror-opt";
+        #endregion
 
         public const string COMMAND_EXPERIMENTALDESIGN = "expdesign";
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
@@ -99,7 +124,7 @@ namespace CommandLine
         public List<SamplingStrategies> BinaryToSample
         {
             get { return binaryToSample; }
-        } 
+        }
 
         List<SamplingStrategies> binaryToSampleValidation = new List<SamplingStrategies>();
 
@@ -135,6 +160,8 @@ namespace CommandLine
         {
             get { return numericToSampleValidation; }
         }
+
+        private bool allMeasurementsSelected = false;
 
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
@@ -189,54 +216,27 @@ namespace CommandLine
 
             switch (command.ToLower())
             {
+                case COMMAND_START_ALLMEASUREMENTS_SPLC:
                 case COMMAND_START_ALLMEASUREMENTS:
                     {
-                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-
-                        List<Configuration> configurations_Learning = new List<Configuration>();
-
-                        if (allMeasurementsValid())
-                        {
-                            configurations_Learning = GlobalState.allMeasurements.Configurations;
-
-                        }
-                        else
-                        {
-                            foreach (Configuration config in GlobalState.allMeasurements.Configurations)
-                            {
-                                if (config.nfpValues.ContainsKey(GlobalState.currentNFP))
-                                    configurations_Learning.Add(config);
-                            }
-                        }
-
-                        if (configurations_Learning.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
-                            break;
-                        }
-
-                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
-                        // prepare the machine learning 
-
-
-
-                        //PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
-
-                        //LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
-                        //// SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        //pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-
-                        //pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
-                        //Console.WriteLine("Py result:\n" + pyResult);
-                        exp.models.Clear();
-                        var mod = exp.models;
-                        exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
-                        exp.models = mod;
-                        exp.metaModel = infMod;
-                        exp.mlSettings = this.mlSettings;
-                        exp.learn();
-                        GlobalState.logInfo.logLine("Finished");
+                        learnWithAllMeasurements();
                     }
+                    break;
+
+                case COMMAND_SELECT_ALL_MEASUREMENTS:
+                    if (task == null)
+                        {
+                        GlobalState.logInfo.logLine("The command needs either true or false as argument");
+                    } else if (task.Trim().ToLower().Equals("true"))
+                        {
+                        this.allMeasurementsSelected = true;
+                    } else if (task.Trim().ToLower().Equals("false"))
+                            {
+                        this.allMeasurementsSelected = false;
+                    } else
+                        {
+                        GlobalState.logInfo.logLine("Invalid argument. Only true or false are allowed");
+                        }
                     break;
 
                 case RESUME_FROM_DUMP:
@@ -424,6 +424,14 @@ namespace CommandLine
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
                     GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+
+                    List<Configuration> invalid = GlobalState.allMeasurements.Configurations
+                        .Where(conf => !GlobalState.varModel.isInModel(conf)).ToList();
+                    CheckConfigSAT constraintSystem = new CheckConfigSAT();
+                    invalid = invalid.Union(GlobalState.allMeasurements.Configurations
+                        .Where(conf => constraintSystem.checkConfigurationSAT(conf,GlobalState.varModel))).ToList();
+                    invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
+
                     GlobalState.measurementSource = task.TrimEnd();
                     string attachement = "";
                     if (GlobalState.measurementDeviation > 0 && this.mlSettings != null && mlSettings.abortError == 1)
@@ -503,28 +511,11 @@ namespace CommandLine
                         break;
                     }
 
+                case COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC:
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS:
                     {
-                        if (this.exp.models.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("Can't predict configurations. No learning was performed");
-                        }
-                        else if (this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("Can't predict configurations. No model was learned.");
-                        }
-                        else if (task.Length == 0)
-                        {
-                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
-                        }
-                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
-                        {
-                            GlobalState.logError.logLine("No measurements loaded.");
-                        }
-                        else
-                        {
-                            predict(task);
-                        }
+                        printPredictedConfigurations(task, this.exp);
+
                         break;
                     }
 
@@ -544,11 +535,12 @@ namespace CommandLine
                         }
                         else
                         {
-                            predict(task, useTrueModel: true);
+                            predict(task, this.exp, useTrueModel: true);
                         }
                         break;
                     }
 
+                case COMMAND_PREDICT_CONFIGURATIONS_SPLC:
                 case COMMAND_PREDICT_CONFIGURATIONS:
                     {
                         FeatureSubsetSelection learnedModel = exp.models[exp.models.Count - 1];
@@ -721,6 +713,7 @@ namespace CommandLine
                     this.mlSettings = ML_Settings.readSettings(task);
                     GlobalState.logInfo.logLine("Current machine learning settings: " + this.mlSettings.ToString());
                     break;
+                case COMMAND_LOAD_MLSETTINGS_UNIFORM:
                 case COMMAND_LOAD_MLSETTINGS:
                     this.mlSettings = ML_Settings.readSettingsFromFile(task);
                     break;
@@ -931,77 +924,20 @@ namespace CommandLine
                         break;
                     }
 
-
+                case COMMAND_START_LEARNING_SPL_CONQUEROR:
                 case COMMAND_START_LEARNING:
                     {
-                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                        Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
-                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
-
-                        if (configurationsLearning.Count == 0)
+                        if (allMeasurementsSelected)
                         {
-                            configurationsLearning = configurationsValidation;
+                            learnWithAllMeasurements();
+                        } else
+                        {
+                            learnWithSampling();
                         }
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
                             break;
                         }
 
-                        if (configurationsValidation.Count == 0)
-                        {
-                            configurationsValidation = configurationsLearning;
-                        }
-
-
-                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
-
-                        // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
-                        if (!hasLearnData)
-                        {
-                            exp.models.Clear();
-                            var mod = exp.models;
-                            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                            exp.models = mod;
-
-                            exp.metaModel = infMod;
-                            exp.mlSettings = this.mlSettings;
-                            exp.learn();
-                        }
-                        else
-                        {
-                            GlobalState.logInfo.logLine("Continue learning");
-                            exp.models.Clear();
-                            var mod = exp.models;
-                            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                            exp.models = mod;
-                            exp.metaModel = infMod;
-                            exp.mlSettings = this.mlSettings;
-                            List<LearningRound> lr = new List<LearningRound>();
-                            foreach (string lrAsString in CommandPersistence.learningHistory.Item2)
-                            {
-                                lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
-                            }
-                            exp.continueLearning(lr);
-                        }
-                        GlobalState.logInfo.logLine("average model: \n" + exp.metaModel.printModelAsFunction());
-                        double relativeerror = 0;
-                        if (GlobalState.evaluationSet.Configurations.Count > 0)
-                        {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings, false);
-                        }
-                        else
-                        {
-                            relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings, false);
-                        }
-
-                        //    globalstate.loginfo.logline("error :" + relativeerror);
-
-                        break;
-                        GlobalState.logInfo.logLine("Finished");
-                    }
+                case COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR:
                 case COMMAND_OPTIMIZE_PARAMETER:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -1049,6 +985,17 @@ namespace CommandLine
                         }
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
                         GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
+                        Learning experiment = new MachineLearning.Learning.Regression
+                            .Learning(configurationsLearning, configurationsValidation);
+                        experiment.mlSettings = optimalParameters;
+                        experiment.learn();
+                        StringBuilder taskAsString = new StringBuilder();
+                        taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
+                        printPredictedConfigurations("./CrossValidationResultPrediction"
+                            + taskAsString.ToString()
+                            .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
+                            .Replace(Environment.NewLine, "").Substring(0)
+                            + ".csv", experiment);
 
                         break;
                     }
@@ -1085,6 +1032,7 @@ namespace CommandLine
 
         private void cleanSampling()
         {
+            this.allMeasurementsSelected = false;
             exp.clearSampling();
             binaryToSample.Clear();
             binaryToSampleValidation.Clear();
@@ -1279,6 +1227,30 @@ namespace CommandLine
 
             return "";
 
+        }
+
+        private void printPredictedConfigurations(String task, Learning exp)
+        {
+            if (exp.models.Count == 0)
+            {
+                GlobalState.logInfo.logLine("Can't predict configurations. No learning was performed");
+            }
+            else if (exp.models.ElementAt(exp.models.Count - 1).LearningHistory.Count == 0)
+            {
+                GlobalState.logInfo.logLine("Can't predict configurations. No model was learned.");
+            }
+            else if (task.Length == 0)
+            {
+                GlobalState.logInfo.logLine("Target file is required to print prediction results");
+            }
+            else if (GlobalState.allMeasurements.Configurations.Count == 0)
+            {
+                GlobalState.logError.logLine("No measurements loaded.");
+            }
+            else
+            {
+                predict(task, exp);
+            }
         }
 
         /// <summary>
@@ -1496,7 +1468,123 @@ namespace CommandLine
             return "";
         }
 
-        private void predict(string task, bool useTrueModel = false)
+        private void learnWithAllMeasurements()
+        {
+            InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+
+            List<Configuration> configurations_Learning = new List<Configuration>();
+
+            if (allMeasurementsValid())
+            {
+                configurations_Learning = GlobalState.allMeasurements.Configurations;
+
+            }
+            else
+            {
+                foreach (Configuration config in GlobalState.allMeasurements.Configurations)
+                {
+                    if (config.nfpValues.ContainsKey(GlobalState.currentNFP))
+                        configurations_Learning.Add(config);
+                }
+            }
+
+            if (configurations_Learning.Count == 0)
+            {
+                GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
+                return;
+            }
+
+            GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
+            // prepare the machine learning 
+
+            //PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
+
+            //LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
+            //// SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+            //pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
+
+            //pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
+            //Console.WriteLine("Py result:\n" + pyResult);
+            exp.models.Clear();
+            var mod = exp.models;
+            exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+            exp.models = mod;
+            exp.metaModel = infMod;
+            exp.mlSettings = this.mlSettings;
+            exp.learn();
+            GlobalState.logInfo.logLine("Finished");
+        }
+
+        private void learnWithSampling()
+        {
+            InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+            Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+            List<Configuration> configurationsLearning = learnAndValidation.Item1;
+            List<Configuration> configurationsValidation = learnAndValidation.Item2;
+
+            if (configurationsLearning.Count == 0)
+            {
+                configurationsLearning = configurationsValidation;
+            }
+
+            if (configurationsLearning.Count == 0)
+            {
+                GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
+                return;
+            }
+
+            if (configurationsValidation.Count == 0)
+            {
+                configurationsValidation = configurationsLearning;
+            }
+
+
+            GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+
+            // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
+            if (!hasLearnData)
+            {
+                exp.models.Clear();
+                var mod = exp.models;
+                exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                exp.models = mod;
+
+                exp.metaModel = infMod;
+                exp.mlSettings = this.mlSettings;
+                exp.learn();
+            }
+            else
+            {
+                GlobalState.logInfo.logLine("Continue learning");
+                exp.models.Clear();
+                var mod = exp.models;
+                exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+                exp.models = mod;
+                exp.metaModel = infMod;
+                exp.mlSettings = this.mlSettings;
+                List<LearningRound> lr = new List<LearningRound>();
+                foreach (string lrAsString in CommandPersistence.learningHistory.Item2)
+                {
+                    lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
+                }
+                exp.continueLearning(lr);
+            }
+            GlobalState.logInfo.logLine("average model: \n" + exp.metaModel.printModelAsFunction());
+            double relativeerror = 0;
+            if (GlobalState.evaluationSet.Configurations.Count > 0)
+            {
+                relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.evaluationSet.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings, false);
+            }
+            else
+            {
+                relativeerror = FeatureSubsetSelection.computeError(exp.metaModel, GlobalState.allMeasurements.Configurations, ML_Settings.LossFunction.RELATIVE, exp.mlSettings, false);
+            }
+
+            //    globalstate.loginfo.logline("error :" + relativeerror);
+
+        }
+
+        private void predict(string task, Learning exp, bool useTrueModel = false)
         {
             StreamWriter sw = new StreamWriter(task);
             sw.Write("configuration;real value;prediction;deviation;percentage;" + Environment.NewLine);
@@ -1513,7 +1601,7 @@ namespace CommandLine
                 else
                 {
                     prediction = FeatureSubsetSelection
-                    .predict(this.exp.models.ElementAt(this.exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
+                    .predict(exp.models.ElementAt(exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
                 }
                 double difference = Math.Abs(realValue - prediction);
                 double percentage = 0;
