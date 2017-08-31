@@ -2,6 +2,9 @@
 using ILNumerics;
 using ILNumerics.Drawing;
 using ILNumerics.Drawing.Plotting;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
@@ -268,6 +271,7 @@ namespace SPLConqueror_GUI
                 return;
 
             VariabilityModel varModel = loadVariabilityModel();
+            GlobalState.varModel = varModel;
 
             if (varModel == null)
                 return;
@@ -363,15 +367,16 @@ namespace SPLConqueror_GUI
             try
             {
                 new InfluenceFunction(optExpression);
-            } catch
+            }
+            catch
             {
                 MessageBox.Show(ERROR_INVALID_EXP);
                 return;
             }
-            
+
             if (originalFunction == null)
                 initializeOnce();
-            
+
             modelLoaded = model != null;
             originalFunction = modelLoaded ? new InfluenceFunction(optExpression, model) : new InfluenceFunction(optExpression);
             currentModel = originalFunction.getVariabilityModel();
@@ -383,11 +388,11 @@ namespace SPLConqueror_GUI
             // Update readFunction-textbox
             getMaxAbstractConstant(originalFunction.ToString());
             updateFunctionTextBox(originalFunctionTextBox, sortExpression(originalFunction.ToString()));
-            
+
             // Activating all components and returning their original state
             ilFunctionPanel.Scene = new ILScene();
             ilFunctionPanel.Refresh();
-            
+
             initializeComponents();
             updateAdjustedFunction();
         }
@@ -475,7 +480,8 @@ namespace SPLConqueror_GUI
             measurementViewCombobox.SelectedIndex = 0;
 
             // Adding events to the variableTreeView
-            variableTreeView.BeforeCheck += (o, e) => {
+            variableTreeView.BeforeCheck += (o, e) =>
+            {
                 if (e.Node.BackColor == deactivatedColor)
                     e.Cancel = true;
             };
@@ -514,7 +520,7 @@ namespace SPLConqueror_GUI
             numericSettings.Clear();
 
             foreach (NumericOption option in currentModel.NumericOptions)
-                numericSettings.Add(option, (float) option.getCenterValue());
+                numericSettings.Add(option, (float)option.getCenterValue());
 
             // Evaluation configuration
             calculationResultLabel.Text = BUTTON_PRESS_REQUEST;
@@ -669,7 +675,7 @@ namespace SPLConqueror_GUI
             variableTreeView.Visible = true;
             variableTreeView.Enabled = false;
             variableTreeView.Nodes.Clear();
-            
+
             variableTreeView.Nodes.Add(insertIntoTreeView(currentModel.Root));
 
             // Initializing regex filtering
@@ -687,7 +693,7 @@ namespace SPLConqueror_GUI
         private void ownAfterCheck(object sender, TreeViewEventArgs e)
         {
             variableTreeView.AfterCheck -= ownAfterCheck;
-            
+
             setChildrenChecked(e.Node);
             updateTreeView();
 
@@ -804,7 +810,7 @@ namespace SPLConqueror_GUI
             string currSign = "+";
             List<Tuple<string, string>> components = new List<Tuple<string, string>>();
             List<string> componentParts = new List<string>();
-            
+
             for (int i = 0; i < currExpression.Length; i++)
             {
                 if (currExpression[i] == "log10(")
@@ -829,7 +835,7 @@ namespace SPLConqueror_GUI
                 {
                     if (i == currExpression.Length - 1)
                         componentParts.Add(currExpression[i]);
-                    
+
                     if (componentParts.Count > 0)
                         components.Add(Tuple.Create<string, string>(String.Join(" ", componentParts), currSign));
 
@@ -857,8 +863,8 @@ namespace SPLConqueror_GUI
                 new SortedDictionary<string, SortedDictionary<string, List<Tuple<int, int>>>>();
 
             //Dictionary<string, Dictionary<string, List<Tuple<int, int>>>> currInteractions =
-                //new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
-            
+            //new Dictionary<string, Dictionary<string, List<Tuple<int, int>>>>();
+
             foreach (Tuple<string, string> component in getComponents(adjustedMeasurementFunction))
             {
                 // Getting a list of all options in a component. Presuming that there is no
@@ -869,7 +875,7 @@ namespace SPLConqueror_GUI
                 foreach (string part in component.Item1.Split(' '))
                 {
                     ConfigurationOption option = currentModel.getOption(part);
-                
+
                     if (option != null && !componentOptions.Contains(option))
                     {
                         componentOptions.Add(option);
@@ -883,7 +889,7 @@ namespace SPLConqueror_GUI
                     SortedDictionary<string, List<Tuple<int, int>>> optionInteractions;
 
                     if (!currInteractions.TryGetValue(componentOptions[i].Name, out optionInteractions))
-                        optionInteractions = new SortedDictionary<string, List<Tuple<int,int>>>();
+                        optionInteractions = new SortedDictionary<string, List<Tuple<int, int>>>();
 
                     for (int j = 0; j < componentOptions.Count; j++)
                     {
@@ -924,7 +930,7 @@ namespace SPLConqueror_GUI
                     currInteractions.Add(componentOptions[i].Name, optionInteractions);
                 }
             }
-            
+
             return currInteractions;
         }
 
@@ -1100,7 +1106,7 @@ namespace SPLConqueror_GUI
         {
             List<double> constants = new List<double>();
 
-            foreach (Tuple<string,string> part in getComponents(exp))
+            foreach (Tuple<string, string> part in getComponents(exp))
             {
                 bool valid = true;
                 List<double> nums = new List<double>();
@@ -1144,11 +1150,11 @@ namespace SPLConqueror_GUI
             foreach (string s in getLegalOptions())
             {
                 BinaryOption opt = currentModel.getBinaryOption(s);
-                
+
                 if (opt != null)
                     bins.Add(opt);
             }
-            
+
             foreach (KeyValuePair<NumericOption, float> entry in numericSettings.ToList())
             {
                 if (chosenOptions.Item1 != entry.Key && chosenOptions.Item2 != entry.Key)
@@ -1467,32 +1473,32 @@ namespace SPLConqueror_GUI
         /// <param name="e">Event</param>
         private void chartComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            interactionChart.Visible = false;
-            constantChart.Visible = false;
-            maxChart.Visible = false;
-            maxOccuranceChart.Visible = false;
-            rangeChart.Visible = false;
+            interactionChartRepl.Visible = false;
+            constantChartRepl.Visible = false;
+            maxChartRepl.Visible = false;
+            maxOccChartRepl.Visible = false;
+            rangeChartRepl.Visible = false;
 
             switch (chartComboBox.SelectedItem.ToString())
             {
                 case COMBOBOX_INTERACTIONS_OPTION:
-                    interactionChart.Visible = true;
+                    interactionChartRepl.Visible = true;
                     chartDescriptionLabel.Text = INTERACTION_INFORMATION;
                     break;
                 case COMBOBOX_CONSTANT_OPTION:
-                    constantChart.Visible = true;
+                    constantChartRepl.Visible = true;
                     chartDescriptionLabel.Text = CONSTANT_INFORMATION;
                     break;
                 case COMBOBOX_MAX_OPTION:
-                    maxChart.Visible = true;
+                    maxChartRepl.Visible = true;
                     chartDescriptionLabel.Text = MAX_INFORMATION;
                     break;
                 case COMBOBOX_MAX_OCCURANCE_OPTION:
-                    maxOccuranceChart.Visible = true;
+                    maxOccChartRepl.Visible = true;
                     chartDescriptionLabel.Text = MAX_OCCURANCE_INFORMATION;
                     break;
                 case COMBOBOX_RANGE_OPTION:
-                    rangeChart.Visible = true;
+                    rangeChartRepl.Visible = true;
                     chartDescriptionLabel.Text = RANGE_INFORMATION;
                     break;
                 default:
@@ -1567,7 +1573,7 @@ namespace SPLConqueror_GUI
             Stack<TreeNode> stack = new Stack<TreeNode>();
             stack.Push(variableTreeView.Nodes[0]);
 
-            while(stack.Count > 0)
+            while (stack.Count > 0)
             {
                 TreeNode node = stack.Pop();
 
@@ -1602,7 +1608,7 @@ namespace SPLConqueror_GUI
 
                         foreach (TreeNode child in node.Nodes)
                             nodes.Push(child);
-                           
+
                         while (nodes.Count != 0 && !done)
                         {
                             TreeNode temp = nodes.Pop();
@@ -1625,7 +1631,7 @@ namespace SPLConqueror_GUI
                     }
                 }
             }
-            
+
             // Check for each potential candidate if the configuration is still legal even
             // after its addition/removal.
             foreach (Tuple<BinaryOption, TreeNode> t in potentialCandidate)
@@ -1710,7 +1716,7 @@ namespace SPLConqueror_GUI
                 failureLabel.Visible = true;
             }
         }
-        
+
         /// <summary>
         /// Updates the interaction tab.
         /// </summary>
@@ -1733,8 +1739,9 @@ namespace SPLConqueror_GUI
             List<string> legalOptions = getLegalOptions();
 
             // Update influence chart
-            interactionChart.Series.Clear();
-            interactionChart.Series.Add("Series1");
+            interactionChartRepl.Model = null;
+            List<ColumnItem> interactionValues = new List<ColumnItem>();
+            List<string> interactionLabels = new List<string>();
 
             foreach (KeyValuePair<string, SortedDictionary<string, List<Tuple<int, int>>>> entry in getInteractions())
             {
@@ -1746,19 +1753,17 @@ namespace SPLConqueror_GUI
 
                 if (value != 0)
                 {
-                    System.Windows.Forms.DataVisualization.Charting.DataPoint point = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point.AxisLabel = entry.Key;
-                    point.SetValueY(value);
-                    point.ToolTip = "Number of interactions: #VALY";
-
-                    interactionChart.Series["Series1"].Points.Insert(0, point);
+                    interactionLabels.Add(entry.Key);
+                    interactionValues.Add(new ColumnItem { Value = value });
                 }
             }
+
+            populatePlot(interactionChartRepl, interactionValues, interactionLabels, "Number of interactions: #VALY");
 
             Dictionary<string, Tuple<double, double>> rangeInfluences = calculateRangeInfluences();
             Dictionary<string, double> constantInfluences = new Dictionary<string, double>();
             Dictionary<string, double> constantMaxInfluences = new Dictionary<string, double>();
-            
+
             // Calculate the constant influences
             foreach (Tuple<string, string> component in getComponents(adjustedMeasurementFunction))
             {
@@ -1783,7 +1788,7 @@ namespace SPLConqueror_GUI
                 {
                     // Calculating constant influences
                     double oldValue = 0.0;
-                    
+
                     if (constantInfluences.TryGetValue(var, out oldValue))
                         constantInfluences.Remove(var);
 
@@ -1793,7 +1798,7 @@ namespace SPLConqueror_GUI
                     NumericOption opt = currentModel.getNumericOption(var);
 
                     if (opt != null)
-                        currConstantRange = currConstantRange * opt.Max_value;                        
+                        currConstantRange = currConstantRange * opt.Max_value;
                 }
 
                 foreach (string var in variables)
@@ -1808,31 +1813,34 @@ namespace SPLConqueror_GUI
             }
 
             // Update other charts
-            constantChart.Series.Clear();
-            constantChart.Series.Add("Series1");
+            constantChartRepl.Model = null;
+            List<ColumnItem> constantValues = new List<ColumnItem>();
+            List<string> constantLabels = new List<string>();
 
-            maxChart.Series.Clear();
-            maxChart.Series.Add("Series1");
+            maxChartRepl.Model = null;
+            List<ColumnItem> maxValues = new List<ColumnItem>();
+            List<string> maxLabels = new List<string>();
 
-            maxOccuranceChart.Series.Clear();
-            maxOccuranceChart.Series.Add("Series1");
+            maxOccChartRepl.Model = null;
+            List<ColumnItem> maxOccValues = new List<ColumnItem>();
+            List<string> maxOccLabels = new List<string>();
 
-            rangeChart.Series.Clear();
-            rangeChart.Series.Add("Series1");
-            rangeChart.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.RangeColumn;
+            maxOccChartRepl.Model = null;
+            var rangeModel = new PlotModel();
+            List<HighLowItem> rangeValues = new List<HighLowItem>();
+            List<string> rangeLabels = new List<string>();
 
             // Update abstract constant chart
             foreach (KeyValuePair<string, double> entry in constantInfluences)
             {
                 if (legalOptions.Contains(entry.Key))
                 {
-                    System.Windows.Forms.DataVisualization.Charting.DataPoint point = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point.AxisLabel = entry.Key;
-                    point.SetValueY(entry.Value);
-
-                    constantChart.Series["Series1"].Points.Insert(0, point);
+                    constantValues.Add(new ColumnItem(entry.Value));
+                    constantLabels.Add(entry.Key);
                 }
             }
+
+            populatePlot(constantChartRepl, constantValues, constantLabels);
 
             int amountOfVariants = varGen.generateAllVariantsFast(currentModel).Count;
 
@@ -1841,17 +1849,14 @@ namespace SPLConqueror_GUI
             {
                 if (legalOptions.Contains(entry.Key))
                 {
-                    System.Windows.Forms.DataVisualization.Charting.DataPoint point1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point1.AxisLabel = entry.Key;
-                    point1.SetValueY(entry.Value);
-
-                    maxChart.Series["Series1"].Points.Insert(0, point1);
-                    
-                    System.Windows.Forms.DataVisualization.Charting.DataPoint point2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    point2.AxisLabel = entry.Key;
+                    maxValues.Add(new ColumnItem(entry.Value));
+                    maxLabels.Add(entry.Key);
+                    maxOccLabels.Add(entry.Key);
 
                     if (currentModel.getNumericOption(entry.Key) != null)
-                        point2.SetValueY(entry.Value);
+                    {
+                        maxOccValues.Add(new ColumnItem(entry.Value));
+                    }
                     else
                     {
                         int i = 0;
@@ -1859,28 +1864,29 @@ namespace SPLConqueror_GUI
                         if (!occuranceOfOptions.TryGetValue(entry.Key, out i))
                             i = 1;
 
-                        point2.SetValueY(entry.Value * i / amountOfVariants);
+                        maxOccValues.Add(new ColumnItem(entry.Value * i / amountOfVariants));
                     }
-
-                    maxOccuranceChart.Series["Series1"].Points.Insert(0, point2);
                 }
             }
 
+            populatePlot(maxOccChartRepl, maxOccValues, maxOccLabels);
+            populatePlot(maxChartRepl, maxValues, maxLabels);
+
             foreach (KeyValuePair<string, Tuple<double, double>> entry in rangeInfluences)
             {
-                System.Windows.Forms.DataVisualization.Charting.DataPoint point1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                point1.AxisLabel = entry.Key;
-                point1.SetValueY(entry.Value.Item1, entry.Value.Item2);
-
-                rangeChart.Series[0].Points.Add(point1);
+                rangeLabels.Add(entry.Key);
+                rangeValues.Add(new HighLowItem(rangeLabels.Count - 1, entry.Value.Item2, entry.Value.Item1));
             }
-
-            // Sort data points in charts
-            interactionChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
-            constantChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
-            maxChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
-            maxOccuranceChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
-            rangeChart.Series[0].Sort(System.Windows.Forms.DataVisualization.Charting.PointSortOrder.Ascending, "AxisLabel");
+            rangeModel.Series.Add(new HighLowSeries
+            {
+                ItemsSource = rangeValues,
+                StrokeThickness = 30
+            });
+            rangeModel.Axes.Add(new CategoryAxis
+            {
+                ItemsSource = rangeLabels
+            });
+            rangeChartRepl.Model = rangeModel;
         }
 
         /// <summary>
@@ -1905,7 +1911,7 @@ namespace SPLConqueror_GUI
             {
                 List<string> expressions = new List<string>();
                 string generalExpression = "";
-                
+
                 foreach (Tuple<string, string> comp in getComponents(String.Join(" ", currExpression)))
                 {
                     string[] splitComponent = comp.Item1.Split(' ');
@@ -1916,7 +1922,7 @@ namespace SPLConqueror_GUI
                         if (splitComponent[i] == option)
                         {
                             componentAdded = true;
-                            
+
                             if (generalExpression.Count() == 0)
                                 generalExpression += "0";
 
@@ -1993,7 +1999,7 @@ namespace SPLConqueror_GUI
 
             List<Tuple<string, string>> components = getComponents(exp);
             double finalValue = 0.0;
-            
+
             // Components only contain multiplication or logarithm
             foreach (Tuple<string, string> comp in components)
             {
@@ -2049,7 +2055,7 @@ namespace SPLConqueror_GUI
         private void updateAdjustedFunction()
         {
             string[] expressionParts = originalFunction.getExpressionTree();
-            
+
             // Adjusting variables
             if (filterVariablesCheckbox.Checked || filterRegexCheckBox.Checked)
                 expressionParts = filterVariables(expressionParts);
@@ -2076,7 +2082,7 @@ namespace SPLConqueror_GUI
                         if (constantDecimalCheckBox.Checked)
                         {
                             string[] parts = part.Split('.');
-                            
+
                             if (maxDigits == 0)
                                 part = parts[0] + ".0";
                             else if (parts[1].Length > maxDigits)
@@ -2114,7 +2120,7 @@ namespace SPLConqueror_GUI
 
             string[] parts = expressionParts;
             List<string> legalOptions = getLegalOptions();
-            
+
             for (int i = 0; i < parts.Length; i++)
             {
                 if (currentModel.getOption(parts[i]) != null
@@ -2253,7 +2259,7 @@ namespace SPLConqueror_GUI
                 }
             }
 
-            if(stack.Count != 1)
+            if (stack.Count != 1)
                 throw new Exception("The entered expression is not in a valid revert polish notation!");
 
             return stack.Pop().Item1;
@@ -2385,7 +2391,7 @@ namespace SPLConqueror_GUI
             NFProperty prop = new NFProperty(nfpValueCombobox.SelectedItem.ToString());
 
             // Check if at least one configuration contains the current nfp value
-            if(neededConfigurations.All(x => !x.nfpValues.Keys.Contains(prop)))
+            if (neededConfigurations.All(x => !x.nfpValues.Keys.Contains(prop)))
             {
                 overviewPerformanceIlPanel.Scene = new ILScene();
                 overviewMeasurementIlPanel.Scene = new ILScene();
@@ -2423,7 +2429,7 @@ namespace SPLConqueror_GUI
 
             ILPlotCube bothGraphsCube, measurementsOnlyCube, absoluteDifferenceCube,
                 relativeDifferenceCube, overviewPerformanceCube, overviewMeasurementsCube,
-                overviewAbsoluteDifferenceCube, overviewRelativeDifferenceCube; 
+                overviewAbsoluteDifferenceCube, overviewRelativeDifferenceCube;
 
             // Decide if there has to be a 2D or 3D shape
             if (chosenOptions.Item2 == null)
@@ -2515,11 +2521,11 @@ namespace SPLConqueror_GUI
                         absoluteDifferences[0, pos] = (float)value;
                         absoluteDifferences[1, pos] = ILMath.abs((float)d - calculatedPerformances[1, values.IndexOf(value)]);
                         relativeDifferences[0, pos] = (float)value;
-                        
+
                         if (ILMath.abs(XY[1, pos]) < 1)
                             relativeDifferences[1, pos] = absoluteDifferences[1, pos] == XY[1, pos] ? 0 : 100;
                         else
-                            relativeDifferences[1, pos] = absoluteDifferences[1, pos] >= 1 ? absoluteDifferences[1, pos]/XY[1, pos] * 100 : 0;
+                            relativeDifferences[1, pos] = absoluteDifferences[1, pos] >= 1 ? absoluteDifferences[1, pos] / XY[1, pos] * 100 : 0;
 
                         ILPoints point = createPoint(XY[0, pos], XY[1, pos], 0, measurementPointLabel);
 
@@ -2623,10 +2629,10 @@ namespace SPLConqueror_GUI
                 measurements = ILMath.zeros<float>(X.Length, Y.Length, 3);
                 absoluteDifferences = ILMath.zeros<float>(X.Length, Y.Length, 3);
                 relativeDifferences = ILMath.zeros<float>(X.Length, Y.Length, 3);
-                
+
                 measurements[":;:;1"] = XMat;
                 measurements[":;:;2"] = YMat;
-                
+
                 List<double> valuesX = chosenOptions.Item1.getAllValues();
                 List<double> valuesY = chosenOptions.Item2.getAllValues();
                 valuesX.Sort();
@@ -2636,7 +2642,7 @@ namespace SPLConqueror_GUI
                 /// be set to negative infinity.
                 for (int i = 0; i < valuesX.Count; i++)
                 {
-                    for(int j = 0; j < valuesY.Count; j++)
+                    for (int j = 0; j < valuesY.Count; j++)
                     {
                         Configuration c = null;
                         double d1, d2;
@@ -2689,7 +2695,7 @@ namespace SPLConqueror_GUI
                             relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] == 0 ? 0 : 100;
                         else
                             relativeDifferences[i, j, 0] = absoluteDifferences[i, j, 0] >= 1 ? absoluteDifferences[i, j, 0] / measurements[i, j, 0] * 100 : 0;
-                        
+
                         relativeDifferences[i, j, 1] = measurements[i, j, 1].GetArrayForRead()[0];
                         relativeDifferences[i, j, 2] = measurements[i, j, 2].GetArrayForRead()[0];
                     }
@@ -2697,15 +2703,15 @@ namespace SPLConqueror_GUI
 
                 // Insert all information into the cubes
                 bothGraphsCube.Add(new ILSurface(measurements)
-                    {
-                        ColorMode = ILSurface.ColorModes.Solid
-                    }
+                {
+                    ColorMode = ILSurface.ColorModes.Solid
+                }
                 );
                 bothGraphsCube.Add(new ILSurface(calculatedPerformances));
                 measurementsOnlyCube.Add(new ILSurface(measurements)
-                    {
-                        ColorMode = ILSurface.ColorModes.Solid
-                    }
+                {
+                    ColorMode = ILSurface.ColorModes.Solid
+                }
                 );
                 absoluteDifferenceCube.Add(new ILSurface(absoluteDifferences)
                 {
@@ -2803,7 +2809,7 @@ namespace SPLConqueror_GUI
             measurementsOnlyIlPanel.Refresh();
             absoluteDifferenceIlPanel.Refresh();
             relativeDifferenceIlPanel.Refresh();
-            
+
             updateMeasurementPanel();
         }
 
@@ -2819,7 +2825,7 @@ namespace SPLConqueror_GUI
             measurementsOnlyPanel.Visible = false;
             absoluteDifferencePanel.Visible = false;
             relativeDifferencePanel.Visible = false;
-            
+
             switch (measurementViewCombobox.SelectedItem.ToString())
             {
                 case COMBOBOX_OVERVIEW_OPTION:
@@ -2878,8 +2884,8 @@ namespace SPLConqueror_GUI
                         if (maxAbstractConstant == 0)
                             textbox.SelectionBackColor = Color.LightGreen;
                         else
-                            textbox.SelectionBackColor = Color.FromArgb((int) (255 * Math.Abs(d) / maxAbstractConstant),
-                                (int) (255 * (maxAbstractConstant - Math.Abs(d)) / maxAbstractConstant), 0);
+                            textbox.SelectionBackColor = Color.FromArgb((int)(255 * Math.Abs(d) / maxAbstractConstant),
+                                (int)(255 * (maxAbstractConstant - Math.Abs(d)) / maxAbstractConstant), 0);
                     }
                     else if (addingComponent == "(" || addingComponent == "log10(")
                     {
@@ -2908,9 +2914,9 @@ namespace SPLConqueror_GUI
 
                     pos++;
                 }
-                
+
                 if (i < expressionParts.Count - 1)
-                    textbox.AppendText("\n" + tabs + expressionParts[i+1].Item2 + " ");
+                    textbox.AppendText("\n" + tabs + expressionParts[i + 1].Item2 + " ");
             }
         }
 
@@ -2928,9 +2934,9 @@ namespace SPLConqueror_GUI
                 draw2DShape();
             else
                 draw3DShape();
-   
+
             ilFunctionPanel.Refresh();
-        }        
+        }
 
         /// <summary>
         /// Draws the adjusted function into a two-dimensional grid.
@@ -2962,7 +2968,7 @@ namespace SPLConqueror_GUI
                         float value = 0;
                         numericSettings.TryGetValue(currentModel.getNumericOption(polishAdjusted[i]), out value);
 
-                        string[] parts = value.ToString().Split(new char[] {'.', ',' });
+                        string[] parts = value.ToString().Split(new char[] { '.', ',' });
 
                         if (parts.Length == 1)
                             polishAdjusted[i] = parts[0];
@@ -2975,14 +2981,14 @@ namespace SPLConqueror_GUI
                 else if (currentModel.getBinaryOption(polishAdjusted[i]) != null)
                     polishAdjusted[i] = "1.0";
             }
-            
+
             // Define plot cube
             ILPlotCube cube = new ILPlotCube(twoDMode: true);
             cube.Axes.XAxis.Label.Text = option.Name;
             cube.Axes.YAxis.Label.Text = PERFORMANCE_AXIS_LABEL;
 
             // Calculate values for the measurements
-            ILArray<float> XY = Array.ConvertAll(option.getAllValues().ToArray(), x => (float) x);
+            ILArray<float> XY = Array.ConvertAll(option.getAllValues().ToArray(), x => (float)x);
             XY = XY.T;
 
             XY["0;:"] = XY;
@@ -3025,7 +3031,7 @@ namespace SPLConqueror_GUI
                     Color = calculatedColor
                 }
             };
-            
+
             cube.Add(linePlot);
 
             ilFunctionPanel.Scene = new ILScene()
@@ -3092,7 +3098,7 @@ namespace SPLConqueror_GUI
             cube.Axes.XAxis.Label.Text = firstOption.Name;
             cube.Axes.YAxis.Label.Text = secondOption.Name;
             cube.Axes.ZAxis.Label.Text = PERFORMANCE_AXIS_LABEL;
-            
+
             // Calculating the surface
             X = Array.ConvertAll(firstOption.getAllValues().ToArray(), x => (float)x);
             Y = Array.ConvertAll(secondOption.getAllValues().ToArray(), y => (float)y);
@@ -3107,7 +3113,7 @@ namespace SPLConqueror_GUI
                 new string[] { "XMat", "YMat" }, new ILArray<float>[] { XMat, YMat });
             A[":;:;1"] = XMat;
             A[":;:;2"] = YMat;
-            
+
             cube.Add(new ILSurface(A));
 
             calculatedPerformances = ILMath.zeros<float>(0, 0, 0);
@@ -3117,7 +3123,7 @@ namespace SPLConqueror_GUI
                 for (int j = 0; j < A.Size[1]; j++)
                     for (int k = 0; k < A.Size[2]; k++)
                         calculatedPerformances[i, j, k] = A[i, j, k];
-            
+
             // Calculating the points on the surface
             X = X.T;
             Y = Y.T;
@@ -3160,7 +3166,7 @@ namespace SPLConqueror_GUI
 
         /// <summary>
         /// Creates an ILPoints-object at the specified coordinates and with a handler to set the
-       ///  specified label for the coordinates invisible.
+        ///  specified label for the coordinates invisible.
         /// </summary>
         /// <param name="x">First coordinate of the point. Must be a one-dimensional array with one element and must not be null!</param>
         /// <param name="y">Second coordinate of the point. Must be a one-dimensional array with one element and must not be null!</param>
@@ -3233,10 +3239,10 @@ namespace SPLConqueror_GUI
                 bool done = false;
 
                 // Check if part is an operator
-                switch(prt)
+                switch (prt)
                 {
                     case "+":
-                        if (i+1 >= expParts.Length || expParts[i + 1] == "+")
+                        if (i + 1 >= expParts.Length || expParts[i + 1] == "+")
                             stack.Push(stack.Pop() + stack.Pop());
                         else if (expParts[i + 1] == "-")
                         {
@@ -3297,9 +3303,9 @@ namespace SPLConqueror_GUI
                 }
 
                 // Otherwise it is just a number or something unknown
-                if(!done)
+                if (!done)
                 {
-                    float num = (float) 0.0;
+                    float num = (float)0.0;
 
                     if (float.TryParse(prt, out num))
                         stack.Push(num);
@@ -3396,7 +3402,8 @@ namespace SPLConqueror_GUI
                 String max = "";
 
                 // Calculate a list of all found options sorted by their priorities
-                foreach (KeyValuePair<string, int> pair in counting) {
+                foreach (KeyValuePair<string, int> pair in counting)
+                {
                     ConfigurationOption option = currentModel.getOption(pair.Key);
                     List<ConfigurationOption> list;
                     double val;
@@ -3512,7 +3519,7 @@ namespace SPLConqueror_GUI
                     else
                         others.Add(prt);
                 }
-                
+
                 string factorizedRest = factorizeExpression(getExpression(varRest));
                 string[] splitRest = factorizedRest.Split(' ');
 
@@ -3593,7 +3600,7 @@ namespace SPLConqueror_GUI
         private string sortExpression(string exp)
         {
             List<Tuple<string, string>> sortedComponents = getComponents(exp).OrderBy(x => x.Item1.Trim().Split(' ').Length).ToList();
-            
+
             return getExpression(sortedComponents);
         }
 
@@ -3728,6 +3735,25 @@ namespace SPLConqueror_GUI
                 else
                     base.WndProc(ref m);
             }
+        }
+
+        private void populatePlot(OxyPlot.WindowsForms.PlotView chart, List<ColumnItem> values, List<string> labels, string toolTip = "")
+        {
+            var model = new PlotModel();
+            model.Series.Add(new ColumnSeries
+            {
+                ItemsSource = values,
+                LabelPlacement = LabelPlacement.Inside,
+                ToolTip = toolTip,
+
+            });
+
+            model.Axes.Add(new CategoryAxis
+            {
+                ItemsSource = labels,
+            });
+
+            chart.Model = model;
         }
     }
 }

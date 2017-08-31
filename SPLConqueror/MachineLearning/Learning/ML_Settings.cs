@@ -234,6 +234,13 @@ namespace MachineLearning.Learning
         /// <returns>True of the field could be set with the given value. False if there is no field with the given name.</returns>
         public bool setSetting(string name, string value)
         {
+            // Replace '-' in ml settings name with underscore since '-' isnt a valid symbol for names.
+            // Now both underscore and '-' are supported for uniform naming.
+            if (name.Contains("-"))
+            {
+                name = name.Replace("-", "_");
+            }
+
             System.Reflection.FieldInfo fi =  this.GetType().GetField(name);
  
             if (fi == null)
@@ -407,7 +414,8 @@ namespace MachineLearning.Learning
             foreach (FieldInfo field in fields)
             {
                 if(!field.IsStatic)
-                    sb.Append(field.Name+":"+field.GetValue(this)+" ");
+                    // Replace underscore with '-' for uniform naming in string representation.
+                    sb.Append(field.Name.Replace("_", "-") +":"+field.GetValue(this)+" ");
             }
             sb.Append(System.Environment.NewLine);
  	        return sb.ToString();

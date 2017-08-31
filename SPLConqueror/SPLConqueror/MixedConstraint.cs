@@ -28,7 +28,16 @@ namespace SPLConqueror_Core
 
         private string negativeOrPositiveExpr;
 
-        public MixedConstraint(String unparsedExpr, VariabilityModel vm, VariabilityModel varMod, string requirement, string exprKind = "pos") : base(unparsedExpr, vm)
+        /// <summary>
+        /// Creates a new mixed constraint between boolean and numeric options and literals.
+        /// </summary>
+        /// <param name="unparsedExpr">The expression of the constraint as string.</param>
+        /// <param name="varMod">The variability model the constraint applies to.</param>
+        /// <param name="requirement">String indicating if the constraints evaluates to
+        ///                           to false if not all options are present.</param>
+        /// <param name="exprKind">Value indicating if the the expression will be negated.</param>
+        public MixedConstraint(String unparsedExpr, VariabilityModel varMod, string requirement, string exprKind = "pos") 
+            : base(unparsedExpr, varMod)
         {
             if (requirement.Trim().ToLower().Equals(REQUIRE_ALL))
             {

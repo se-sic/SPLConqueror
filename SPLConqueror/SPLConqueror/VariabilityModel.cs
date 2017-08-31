@@ -320,11 +320,11 @@ namespace SPLConqueror_Core
             {
                 if (mixedConstraint.Attributes.Count == 1)
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, mixedConstraint.Attributes[0].Value));
                 }
                 else
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
                 }
             }
         }
@@ -453,6 +453,30 @@ namespace SPLConqueror_Core
             options.AddRange(binaryOptions);
             options.AddRange(numericOptions);
             return options;
+        }
+
+        /// <summary>
+        /// Tests whether a configuration has only options that are in the Variability model.
+        /// </summary>
+        /// <param name="conf">The configuration to test.</param>
+        /// <returns>True when all configuration options are valid in this model.</returns>
+        public bool isInModel(Configuration conf)
+        {
+            if (conf.BinaryOptions.Keys.ToList().Except(this.BinaryOptions).Count() != 0)
+                return false;
+
+            double value;
+
+            if (!conf.NumericOptions.Keys.ToList()
+                .TrueForAll(numOpt => this.NumericOptions.Contains(numOpt)
+                && conf.NumericOptions.TryGetValue(numOpt, out value)
+                && this.NumericOptions.Where(opt => opt.ToString().Equals(numOpt.ToString())).First().getAllValues().Contains(value)))
+                return false;
+
+            if (!configurationIsValid(conf))
+                return false;
+
+            return true;
         }
 
         /// <summary>

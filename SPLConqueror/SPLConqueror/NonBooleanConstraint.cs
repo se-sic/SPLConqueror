@@ -156,7 +156,14 @@ namespace SPLConqueror_Core
         }
 
 
-
+        /// <summary>
+        /// Checks if a configuration violates a non boolean constraint.
+        /// </summary>
+        /// <param name="config">The configuration that will be checked.</param>
+        /// <returns>Returns true if not all options of the constraint are present
+        ///          or if the configuration violates the constraint. Else returns
+        ///          false.
+        /// </returns>
         protected bool configIsValidNeg(Configuration config)
         {
             if (!configHasOptionsOfConstraint(config))

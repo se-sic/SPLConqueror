@@ -424,7 +424,7 @@ namespace CommandLine
                 sr.Close();
                 return true;
             }
-            catch (FileNotFoundException exc)
+            catch (FileNotFoundException)
             {
                 return false;
             }
@@ -473,7 +473,7 @@ namespace CommandLine
             {
                 dict.Add(key, value);
             }
-            catch (ArgumentException argexc)
+            catch (ArgumentException)
             {
                 dict.Remove(key);
                 dict.Add(key, value);
