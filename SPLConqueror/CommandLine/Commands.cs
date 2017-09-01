@@ -749,10 +749,11 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-                        if (!configurationsPreparedForLearning(learnAndValidation))
+                        List<Configuration> configurationsLearning;
+                        List<Configuration> configurationsValidation;
+                        if (!configurationsPreparedForLearning(learnAndValidation, 
+                            out configurationsLearning, out configurationsValidation))
                             break;
-                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
-                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
 
                         String samplingIdentifier = createSamplingIdentifier();
 
@@ -780,10 +781,11 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-                        if (!configurationsPreparedForLearning(learnAndValidation))
+                        List<Configuration> configurationsLearning;
+                        List<Configuration> configurationsValidation;
+                        if (!configurationsPreparedForLearning(learnAndValidation,
+                            out configurationsLearning, out configurationsValidation))
                             break;
-                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
-                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
 
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
@@ -815,10 +817,11 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-                        if (!configurationsPreparedForLearning(learnAndValidation))
+                        List<Configuration> configurationsLearning;
+                        List<Configuration> configurationsValidation;
+                        if (!configurationsPreparedForLearning(learnAndValidation,
+                            out configurationsLearning, out configurationsValidation))
                             break;
-                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
-                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
 
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
                         parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
@@ -857,6 +860,8 @@ namespace CommandLine
                     }
 
                 default:
+                    // Try to perform it as deprecated command.
+                    performOneCommand_Depr(line);
                     return command;
             }
             return "";
@@ -964,10 +969,11 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-                        if (!configurationsPreparedForLearning(learnAndValidation))
+                        List<Configuration> configurationsLearning;
+                        List<Configuration> configurationsValidation;
+                        if (!configurationsPreparedForLearning(learnAndValidation,
+                            out configurationsLearning, out configurationsValidation))
                             break;
-                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
-                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
 
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
                         parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
@@ -1601,10 +1607,11 @@ namespace CommandLine
         {
             InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
             Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-            if (!configurationsPreparedForLearning(learnAndValidation))
+            List<Configuration> configurationsLearning;
+            List<Configuration> configurationsValidation;
+            if (!configurationsPreparedForLearning(learnAndValidation,
+                out configurationsLearning, out configurationsValidation))
                 return;
-            List<Configuration> configurationsLearning = learnAndValidation.Item1;
-            List<Configuration> configurationsValidation = learnAndValidation.Item2;
 
             // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
             if (!hasLearnData)
@@ -1709,10 +1716,11 @@ namespace CommandLine
             }
         }
 
-        private bool configurationsPreparedForLearning(Tuple<List<Configuration>, List<Configuration>> learnAndValidation)
+        private bool configurationsPreparedForLearning(Tuple<List<Configuration>, List<Configuration>> learnAndValidation,
+            out List<Configuration> configurationsLearning, out List<Configuration> configurationsValidation)
         {
-            List<Configuration> configurationsLearning = learnAndValidation.Item1;
-            List<Configuration> configurationsValidation = learnAndValidation.Item2;
+            configurationsLearning = learnAndValidation.Item1;
+            configurationsValidation = learnAndValidation.Item2;
 
             if (configurationsLearning.Count == 0)
             {
