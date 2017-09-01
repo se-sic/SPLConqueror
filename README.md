@@ -504,29 +504,29 @@ analyze-learning
 
 #### Sampling strategies
 
-SPLConqueror also supports learning on a subset of the data. Therefore, one has to set at least one sampling strategy for the binary options first and at least one for the numeric options. In the following, we list all sampling strategies:
+SPLConqueror also supports learning on a subset of the data. Therefore, one has to set at least one sampling strategy for the binary options first and at least one for the numeric options. Numeric sampling strategies have to always start with ```numeric```(deprecated: ```expdesign```), while binary sampling strategies have to start with ```binary``` (deprecated: no prefix command). In the following, we list all sampling strategies:
 
 | Binary/Numeric | Name  | Description | Command | Example |
 | :------------: | :---: | :---------: | :-----: | :-----: |
-| Binary | allbinary | Uses all available binary options to create configurations. | ```allbinary``` | allbinary |
-| Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```featurewise``` | featurewise |
-| Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```pairwise``` | pairwise |
-| Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```negfw``` | negfw |
-| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```random <binaryThreshold> <modulu>``` | random 50 3 |
-| Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```expdesign plackettburman measurements:<measurements> level:<level>``` | expdesign plackettburman measurements:125 level:5 |
-| Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```expdesign centralcomposite``` | expdesign centralcomposite |
-| Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```expdesign random sampleSize:<size> seed:<seed>``` | expdesign random sampleSize:50 seed:2 |
-| Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```expdesign fullfactorial``` | expdesign fullfactorial |
-| Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```expdesign boxbehnken``` | expdesign boxbehnken |
-| Numeric | hypersampling | | ```expdesign hypersampling precision:<precisionValue>``` | expdesign hypersampling precision:25 |
-| Numeric | onefactoratatime | | ```expdesign onefactoratatime distinctValuesPerOption:<values>``` | expdesign onefactoratatime distinctValuesPerOption:5 |
-| Numeric | kexchange | | ```expdesign kexchange sampleSize:<size> k:<kvalue>``` | expdesign kexchange sampleSize:10 k:3 |
+| Binary | allbinary | Uses all available binary options to create configurations. | ```binary allbinary``` | binary allbinary |
+| Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```binary featurewise``` | binary featurewise |
+| Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary pairwise``` | binary pairwise |
+| Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
+| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```binary random <binaryThreshold> <modulu>``` | binary random 50 3 |
+| Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
+| Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
+| Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```numeric random sampleSize:<size> seed:<seed>``` | numeric random sampleSize:50 seed:2 |
+| Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```numeric fullfactorial``` | numeric fullfactorial |
+| Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```numeric boxbehnken``` | numeric boxbehnken |
+| Numeric | hypersampling | | ```numeric hypersampling precision:<precisionValue>``` | numeric hypersampling precision:25 |
+| Numeric | onefactoratatime | | ```numeric onefactoratatime distinctValuesPerOption:<values>``` | numeric onefactoratatime distinctValuesPerOption:5 |
+| Numeric | kexchange | | ```numeric kexchange sampleSize:<size> k:<kvalue>``` | numeric kexchange sampleSize:10 k:3 |
 | Both | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number | asTW1, asTW2, ...> onlyNumeric:<True/False> onlyBinary:<True/False>``` | hybrid distribution-aware onlyNumeric |
 
 For instance, all binary options and random numeric options with a sample size of 50 and a seed of 3 should be used for learning, the following lines have to be appended to the .a-script:
 ```
-allbinary
-expdesign random sampleSize:50 seed:3
+binary allbinary
+numeric random sampleSize:50 seed:3
 ```
 
 If you want to use a hybrid sampling strategy instead, the following line has to be appended to the .a-script:
@@ -534,7 +534,7 @@ If you want to use a hybrid sampling strategy instead, the following line has to
 hybrid distribution-aware
 ```
 
-**Note**: ```allbinary``` in combination with ```fullfactorial``` results in all measurements being taken into the sample set.
+**Note**: ```allbinary``` in combination with ```fullfactorial``` results in all valid measurements being taken into the sample set.
 
 #### Learning with sample set
 
@@ -550,8 +550,8 @@ vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-allbinary
-expdesign random sampleSize:50 seed:3
+binary allbinary
+numeric random sampleSize:50 seed:3
 learn-splconqueror
 analyze-learning
 ```
@@ -590,8 +590,8 @@ With the command ```printconfigs```, all sampled configurations are printed to a
 A short example using printconfigs to print all valid configurations into a text file:
 ```
 vm C:\exampleVM.xml
-allbinary
-expdesign fullfactorial
+binary allbinary
+numeric fullfactorial
 printconfigs C:\allConfigurations.txt prefix postfix
 ```
 Until now, the elements ```outputString```, ```prefix``` and ```postfix``` of the variability model were ignored. These attributes are used by the printconfigs command and printed if the option in question is selected.
@@ -710,10 +710,10 @@ all ./measurements.xml
 nfp Performance
 
 # Here, the binary sampling strategy FeatureWise (FW) is selected
-featurewise
+binary featurewise
 
 # The sampling strategy Plackett-Burman for numeric options is selected
-expdesign plackettburman measurements:125 level:5
+numeric plackettburman measurements:125 level:5
 
 # Print configurations selected by the sampling strategies in the file 'samples.txt'
 printconfigs ./samples.txt
