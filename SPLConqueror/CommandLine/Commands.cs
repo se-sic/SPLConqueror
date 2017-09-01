@@ -63,7 +63,6 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
 
         #region splconqueror learn with all measurements
-        public const string COMMAND_START_ALLMEASUREMENTS_SPLC = "learn-all-splconqueror";
         // deprecated
         public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
 
@@ -205,6 +204,7 @@ namespace CommandLine
             // split line in command and parameters of the command
             string[] components = line.Split(new Char[] { ' ' }, 2);
 
+            // ReSharper disable once SuggestVarOrType_BuiltInTypes
             string task = "";
             if (components.Length > 1)
                 task = components[1];
@@ -227,16 +227,10 @@ namespace CommandLine
 
             switch (command.ToLower())
             {
-                case COMMAND_START_ALLMEASUREMENTS_SPLC:
-                case COMMAND_START_ALLMEASUREMENTS:
-                    {
-                        learnWithAllMeasurements();
-                    }
-                    break;
 
                 case COMMAND_SELECT_ALL_MEASUREMENTS:
                     if (task == null)
-                        {
+                    {
                         GlobalState.logInfo.logLine("The command needs either true or false as argument");
                     } else if (task.Trim().ToLower().Equals("true"))
                         {
@@ -506,16 +500,7 @@ namespace CommandLine
                     ostrm.Close();
                     break;
 
-                case COMMAND_SAMPLE_ALLBINARY:
-                    {
-                        addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLBINARY",
-                            taskAsParameter.Contains(COMMAND_VALIDATION));
-
-                        break;
-                    }
-
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC:
-                case COMMAND_PREDICT_ALL_CONFIGURATIONS:
                     {
                         printPredictedConfigurations(task, this.exp);
 
@@ -544,7 +529,6 @@ namespace CommandLine
                     }
 
                 case COMMAND_PREDICT_CONFIGURATIONS_SPLC:
-                case COMMAND_PREDICT_CONFIGURATIONS:
                     {
                         FeatureSubsetSelection learnedModel = exp.models[exp.models.Count - 1];
                         String samplingIdentifier = createSamplingIdentifier();
@@ -628,7 +612,6 @@ namespace CommandLine
                         break;
                     }
                 case COMMAND_NUMERIC_SAMPLING:
-                case COMMAND_EXPERIMENTALDESIGN:
                     performOneCommand_ExpDesign(task);
                     break;
                 case COMMAND_HYBRID:
@@ -659,31 +642,6 @@ namespace CommandLine
                 case COMMAND_SET_NFP:
                     GlobalState.currentNFP = GlobalState.getOrCreateProperty(task.Trim());
                     break;
-                case COMMAND_SAMPLE_FEATUREWISE:
-                case COMMAND_SAMPLE_OPTIONWISE:
-                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
-                        "OPTIONWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
-                    break;
-
-                case COMMAND_SAMPLE_BINARY_TWISE:
-                    {
-                        string[] para = task.Split(new char[] { ' ' });
-
-                        // TODO something is wrong here....
-                        Dictionary<String, String> parameters = new Dictionary<string, string>();
-                        //parseParametersToLinearAndQuadraticBinarySampling(para);
-
- 						for(int i = 0; i < para.Length; i++)
-                        {
-                            if (para[i].Contains(":"))
-                            {
-                                parameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
-                            }
-                        }
-                        addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameters, 
-                            para.Contains(Commands.COMMAND_VALIDATION));
-                    }
-                    break;  
 
                 case COMMAND_LOG:
 
@@ -702,13 +660,7 @@ namespace CommandLine
                     GlobalState.logInfo.logLine("Current machine learning settings: " + this.mlSettings.ToString());
                     break;
                 case COMMAND_LOAD_MLSETTINGS_UNIFORM:
-                case COMMAND_LOAD_MLSETTINGS:
                     this.mlSettings = ML_Settings.readSettingsFromFile(task);
-                    break;
-
-                case COMMAND_SAMPLE_PAIRWISE:
-                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
-                        "PAIRWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
                 case COMMAND_PRINT_MLSETTINGS:
@@ -774,21 +726,6 @@ namespace CommandLine
 
                         break;
                     }
-                case COMMAND_SAMPLE_BINARY_RANDOM:
-                    {
-                        Dictionary<String, String> parameter = new Dictionary<String, String>();
-                        string[] para = task.Split(new char[] { ' ' });
-                        for(int i = 0; i < para.Length; i++)
-                        {
-                            String key = para[i].Split(':')[0];
-                            String value = para[i].Split(':')[1];
-                            parameter.Add(key, value);
-                        }
-                        addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM", 
-                            parameter, taskAsParameter.Contains(COMMAND_VALIDATION));
-
-                        break;
-                    }
 
                 case DEFINE_PYTHON_PATH:
                     {
@@ -812,27 +749,12 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+                        if (!configurationsPreparedForLearning(learnAndValidation))
+                            break;
                         List<Configuration> configurationsLearning = learnAndValidation.Item1;
                         List<Configuration> configurationsValidation = learnAndValidation.Item2;
 
                         String samplingIdentifier = createSamplingIdentifier();
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            configurationsLearning = configurationsValidation;
-                        }
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
-                            break;
-                        }
-
-                        if (configurationsValidation.Count == 0)
-                        {
-                            configurationsValidation = configurationsLearning;
-                        }
-                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
@@ -858,25 +780,10 @@ namespace CommandLine
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+                        if (!configurationsPreparedForLearning(learnAndValidation))
+                            break;
                         List<Configuration> configurationsLearning = learnAndValidation.Item1;
                         List<Configuration> configurationsValidation = learnAndValidation.Item2;
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            configurationsLearning = configurationsValidation;
-                        }
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
-                            break;
-                        }
-
-                        if (configurationsValidation.Count == 0)
-                        {
-                            configurationsValidation = configurationsLearning;
-                        }
-                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
@@ -895,44 +802,23 @@ namespace CommandLine
                     }
 
                 case COMMAND_START_LEARNING_SPL_CONQUEROR:
-                case COMMAND_START_LEARNING:
+                    if (allMeasurementsSelected)
                     {
-                        if (allMeasurementsSelected)
-                        {
                             learnWithAllMeasurements();
-                        } else
-                        {
+                    } else
+                    {
                             learnWithSampling();
-                        }
-                            break;
-                        }
+                    }
+                    break;
 
                 case COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR:
-                case COMMAND_OPTIMIZE_PARAMETER:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+                        if (!configurationsPreparedForLearning(learnAndValidation))
+                            break;
                         List<Configuration> configurationsLearning = learnAndValidation.Item1;
                         List<Configuration> configurationsValidation = learnAndValidation.Item2;
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            configurationsLearning = configurationsValidation;
-                        }
-
-                        if (configurationsLearning.Count == 0)
-                        {
-                            GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
-                            break;
-                        }
-
-                        if (configurationsValidation.Count == 0)
-                        {
-                            configurationsValidation = configurationsLearning;
-                        }
-
-
-                        GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
                         parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
@@ -970,13 +856,6 @@ namespace CommandLine
                         break;
                     }
 
-
-
-                case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
-                    // TODO there are two different variants in generating NegFW configurations. 
-                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
-                        "NEGATIVE_OPTIONISE", taskAsParameter.Contains(COMMAND_VALIDATION));
-                    break;
                 default:
                     return command;
             }
@@ -1000,10 +879,159 @@ namespace CommandLine
             command = components[0];
             switch(command.ToLower())
             {
+                case COMMAND_LOAD_MLSETTINGS:
+                    this.mlSettings = ML_Settings.readSettingsFromFile(task);
+                    break;
+
+                case COMMAND_SAMPLE_PAIRWISE:
+                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
+                        "PAIRWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
+                    break;
+
+                case COMMAND_SAMPLE_BINARY_TWISE:
+                    {
+                        string[] para = task.Split(new char[] { ' ' });
+
+                        // TODO something is wrong here....
+                        Dictionary<String, String> parameters = new Dictionary<string, string>();
+                        //parseParametersToLinearAndQuadraticBinarySampling(para);
+
+                        for (int i = 0; i < para.Length; i++)
+                        {
+                            if (para[i].Contains(":"))
+                            {
+                                parameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
+                            }
+                        }
+                        addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameters,
+                            para.Contains(Commands.COMMAND_VALIDATION));
+                    }
+                    break;
+
+                case COMMAND_EXPERIMENTALDESIGN:
+                    performOneCommand_ExpDesign(task);
+                    break;
+
+                case COMMAND_SAMPLE_FEATUREWISE:
+                case COMMAND_SAMPLE_OPTIONWISE:
+                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
+                        "OPTIONWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
+                    break;
+
+                case COMMAND_PREDICT_CONFIGURATIONS:
+                    {
+                        FeatureSubsetSelection learnedModel = exp.models[exp.models.Count - 1];
+                        String samplingIdentifier = createSamplingIdentifier();
+
+                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, new String[] { "SPLConqueror" }, GlobalState.varModel.Name + "_" + samplingIdentifier);
+                        List<Feature> features = learnedModel.LearningHistory[learnedModel.LearningHistory.Count - 1].FeatureSet;
+                        csvWriter.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
+                        for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; i++)
+                        {
+
+                            Double predictedValue = FeatureSubsetSelection.estimate(features, GlobalState.allMeasurements.Configurations[i]);
+                            csvWriter.writePredictions(GlobalState.allMeasurements.Configurations[i].ToString().Replace(";", "_") + ";" + Math.Round(GlobalState.allMeasurements.Configurations[i].GetNFPValue(), 4) + ";" + Math.Round(predictedValue, 4) + "\n");
+                        }
+
+                        break;
+                    }
+
+                case COMMAND_PREDICT_ALL_CONFIGURATIONS:
+                        printPredictedConfigurations(task, this.exp);
+                        break;
+
+                case COMMAND_SAMPLE_ALLBINARY:
+                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLBINARY",
+                        taskAsParameter.Contains(COMMAND_VALIDATION));
+                    break;
+
+                case COMMAND_START_ALLMEASUREMENTS:
+                        learnWithAllMeasurements();
+                    break;
+
+                case COMMAND_START_LEARNING:
+                    if (allMeasurementsSelected)
+                    {
+                        learnWithAllMeasurements();
+                    }
+                    else
+                    {
+                        learnWithSampling();
+                    }
+                    break;
+
+                case COMMAND_OPTIMIZE_PARAMETER:
+                    {
+                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                        Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+                        if (!configurationsPreparedForLearning(learnAndValidation))
+                            break;
+                        List<Configuration> configurationsLearning = learnAndValidation.Item1;
+                        List<Configuration> configurationsValidation = learnAndValidation.Item2;
+
+                        List<ML_Settings> parameterSettings = new List<ML_Settings>();
+                        parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
+
+                        ML_Settings optimalParameters = null;
+                        double minimalError = Double.MaxValue;
+
+                        foreach (ML_Settings parameters in parameterSettings)
+                        {
+                            // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
+                            KFoldCrossValidation kFold = new KFoldCrossValidation(parameters, configurationsLearning);
+                            double error = kFold.learn();
+
+                            if (error < minimalError)
+                            {
+                                optimalParameters = parameters;
+                                minimalError = error;
+                            }
+
+                        }
+                        GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
+                        GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
+                        Learning experiment = new MachineLearning.Learning.Regression
+                            .Learning(configurationsLearning, configurationsValidation);
+                        experiment.mlSettings = optimalParameters;
+                        experiment.learn();
+                        StringBuilder taskAsString = new StringBuilder();
+                        taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
+                        printPredictedConfigurations("./CrossValidationResultPrediction"
+                            + taskAsString.ToString()
+                            .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
+                            .Replace(Environment.NewLine, "").Substring(0)
+                            + ".csv", experiment);
+
+                        break;
+                    }
+
+                case COMMAND_SAMPLE_BINARY_RANDOM:
+                    {
+                        Dictionary<String, String> parameter = new Dictionary<String, String>();
+                        string[] para = task.Split(new char[] { ' ' });
+                        for (int i = 0; i < para.Length; i++)
+                        {
+                            String key = para[i].Split(':')[0];
+                            String value = para[i].Split(':')[1];
+                            parameter.Add(key, value);
+                        }
+                        addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM",
+                            parameter, taskAsParameter.Contains(COMMAND_VALIDATION));
+
+                        break;
+                    }
+
+                case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
+                    // TODO there are two different variants in generating NegFW configurations. 
+                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
+                        "NEGATIVE_OPTIONISE", taskAsParameter.Contains(COMMAND_VALIDATION));
+                    break;
+
                 default:
                     GlobalState.logInfo.logLine("Invalid deprecated command: " + command);
                     break;
             }
+            return "";
         }
         #endregion
 
@@ -1573,27 +1601,10 @@ namespace CommandLine
         {
             InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
             Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+            if (!configurationsPreparedForLearning(learnAndValidation))
+                return;
             List<Configuration> configurationsLearning = learnAndValidation.Item1;
             List<Configuration> configurationsValidation = learnAndValidation.Item2;
-
-            if (configurationsLearning.Count == 0)
-            {
-                configurationsLearning = configurationsValidation;
-            }
-
-            if (configurationsLearning.Count == 0)
-            {
-                GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
-                return;
-            }
-
-            if (configurationsValidation.Count == 0)
-            {
-                configurationsValidation = configurationsLearning;
-            }
-
-
-            GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
 
             // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
             if (!hasLearnData)
@@ -1696,6 +1707,30 @@ namespace CommandLine
                 numberOfSteps.ForEach(x => numberOfNumVariants *= x);
                 return numberOfNumVariants;
             }
+        }
+
+        private bool configurationsPreparedForLearning(Tuple<List<Configuration>, List<Configuration>> learnAndValidation)
+        {
+            List<Configuration> configurationsLearning = learnAndValidation.Item1;
+            List<Configuration> configurationsValidation = learnAndValidation.Item2;
+
+            if (configurationsLearning.Count == 0)
+            {
+                configurationsLearning = configurationsValidation;
+            }
+
+            if (configurationsLearning.Count == 0)
+            {
+                GlobalState.logInfo.logLine("The learning set is empty! Cannot start learning!");
+                return false;
+            }
+
+            if (configurationsValidation.Count == 0)
+            {
+                configurationsValidation = configurationsLearning;
+            }
+            GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurationsLearning.Count + " NumberOfConfigurationsValidation:" + configurationsValidation.Count);
+            return true;
         }
 
 
