@@ -32,6 +32,7 @@ namespace CommandLine
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
 
         #region load ml settings
+        // deprecated
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
         // for uniform format of commands
         public const string COMMAND_LOAD_MLSETTINGS_UNIFORM = "load-mlsettings";
@@ -52,6 +53,7 @@ namespace CommandLine
 
         public const string COMMAND_EVALUATION_SET = "evaluationset";
 
+        public const string COMMAND_BINARY_SAMPLING = "binary";
         public const string COMMAND_SAMPLE_ALLBINARY = "allbinary";
         public const string COMMAND_SAMPLE_FEATUREWISE = "featurewise";
         public const string COMMAND_SAMPLE_OPTIONWISE = "optionwise";
@@ -61,23 +63,26 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
 
         #region splconqueror learn with all measurements
-        public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
         public const string COMMAND_START_ALLMEASUREMENTS_SPLC = "learn-all-splconqueror";
+        // deprecated
+        public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
 
         public const string COMMAND_SELECT_ALL_MEASUREMENTS = "select-all-measurements";
         #endregion
 
         #region splconqueror predict all configurations
-        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC = "predict-all-configs-splconqueror";
+        // deprecated
+        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
         #endregion
 
         public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
 
         #region splconqueror predict configurations
-        public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
         public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
+        // deprecated
+        public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
         #endregion
 
         // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
@@ -91,15 +96,21 @@ namespace CommandLine
 
         #region splconqueror learn with sampling
         public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
+        // deprecated
         public const string COMMAND_START_LEARNING = "start";
         #endregion
 
         #region Splconqueror parameter opt
-        public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
         public const string COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR = "learn-splconqueror-opt";
+        // deprecated
+        public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
         #endregion
 
+        #region tag for numeric sampling
+        public const string COMMAND_NUMERIC_SAMPLING = "numeric";
+        // deprecated
         public const string COMMAND_EXPERIMENTALDESIGN = "expdesign";
+        #endregion
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
         public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralcomposite";
         public const string COMMAND_EXPDESIGN_FULLFACTORIAL = "fullfactorial";
@@ -497,16 +508,8 @@ namespace CommandLine
 
                 case COMMAND_SAMPLE_ALLBINARY:
                     {
-                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                        {
-                            this.binaryToSampleValidation.Add(SamplingStrategies.ALLBINARY);
-                            this.exp.info.binarySamplings_Validation = "ALLBINARY";
-                        }
-                        else
-                        {
-                            this.binaryToSample.Add(SamplingStrategies.ALLBINARY);
-                            this.exp.info.binarySamplings_Learning = "ALLBINARY";
-                        }
+                        addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLBINARY",
+                            taskAsParameter.Contains(COMMAND_VALIDATION));
 
                         break;
                     }
@@ -624,13 +627,16 @@ namespace CommandLine
 
                         break;
                     }
+                case COMMAND_NUMERIC_SAMPLING:
                 case COMMAND_EXPERIMENTALDESIGN:
                     performOneCommand_ExpDesign(task);
                     break;
                 case COMMAND_HYBRID:
                     performOneCommand_Hybrid(task);
                     break;
-
+                case COMMAND_BINARY_SAMPLING:
+                    performOneCommand_Binary(task);
+                    break;
                 case COMMAND_SAMPLING_OPTIONORDER:
                     parseOptionOrder(task);
                     break;
@@ -655,17 +661,8 @@ namespace CommandLine
                     break;
                 case COMMAND_SAMPLE_FEATUREWISE:
                 case COMMAND_SAMPLE_OPTIONWISE:
-                    if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                    {
-                        this.binaryToSampleValidation.Add(SamplingStrategies.OPTIONWISE);
-                        this.exp.info.binarySamplings_Validation = "OPTIONSWISE";
-                    }
-                    else
-                    {
-                        this.binaryToSample.Add(SamplingStrategies.OPTIONWISE);
-                        this.exp.info.binarySamplings_Learning = "OPTIONSWISE";
-                    }
-
+                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
+                        "OPTIONWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
                 case COMMAND_SAMPLE_BINARY_TWISE:
@@ -673,27 +670,18 @@ namespace CommandLine
                         string[] para = task.Split(new char[] { ' ' });
 
                         // TODO something is wrong here....
-                        Dictionary<String, String> prameters = new Dictionary<string, string>();
+                        Dictionary<String, String> parameters = new Dictionary<string, string>();
                         //parseParametersToLinearAndQuadraticBinarySampling(para);
 
  						for(int i = 0; i < para.Length; i++)
                         {
                             if (para[i].Contains(":"))
                             {
-                                prameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
+                                parameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
                             }
                         }
-                        if (para.Contains(Commands.COMMAND_VALIDATION)) 
-                        {
-                            this.binaryToSampleValidation.Add(SamplingStrategies.T_WISE);
-                            this.exp.info.binarySamplings_Validation = "T_WISE ";
-                        }
-                        else
-                        {
-                            this.binaryToSample.Add(SamplingStrategies.T_WISE);
-                            this.exp.info.binarySamplings_Learning = "T_WISE ";
-                        }
-                        ConfigurationBuilder.binaryParams.tWiseParameters.Add(prameters);
+                        addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameters, 
+                            para.Contains(Commands.COMMAND_VALIDATION));
                     }
                     break;  
 
@@ -719,17 +707,8 @@ namespace CommandLine
                     break;
 
                 case COMMAND_SAMPLE_PAIRWISE:
-
-                    if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                    {
-                        this.binaryToSampleValidation.Add(SamplingStrategies.PAIRWISE);
-                        this.exp.info.binarySamplings_Validation = "PAIRWISE";
-                    }
-                    else
-                    {
-                        this.binaryToSample.Add(SamplingStrategies.PAIRWISE);
-                        this.exp.info.binarySamplings_Learning = "PAIRWISE";
-                    }
+                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
+                        "PAIRWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
                 case COMMAND_PRINT_MLSETTINGS:
@@ -805,17 +784,8 @@ namespace CommandLine
                             String value = para[i].Split(':')[1];
                             parameter.Add(key, value);
                         }
-                        if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                        {
-                            this.binaryToSampleValidation.Add(SamplingStrategies.BINARY_RANDOM);
-                            this.exp.info.binarySamplings_Validation = "BINARY_RANDOM";
-                        }
-                        else
-                        {
-                            this.binaryToSample.Add(SamplingStrategies.BINARY_RANDOM);
-                            this.exp.info.binarySamplings_Learning = "BINARY_RANDOM " + task;
-                        }
-                        ConfigurationBuilder.binaryParams.randomBinaryParameters.Add(parameter);
+                        addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM", 
+                            parameter, taskAsParameter.Contains(COMMAND_VALIDATION));
 
                         break;
                     }
@@ -1004,23 +974,39 @@ namespace CommandLine
 
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
-
-                    if (taskAsParameter.Contains(COMMAND_VALIDATION))
-                    {
-                        this.binaryToSampleValidation.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
-                        this.exp.info.binarySamplings_Validation = "NEGATIVE_OPTIONWISE";
-                    }
-                    else
-                    {
-                        this.binaryToSample.Add(SamplingStrategies.NEGATIVE_OPTIONWISE);
-                        this.exp.info.binarySamplings_Learning = "NEGATIVE_OPTIONWISE";
-                    }
+                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
+                        "NEGATIVE_OPTIONISE", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
                 default:
                     return command;
             }
             return "";
         }
+
+        #region execution of deprecated commands
+        public string performOneCommand_Depr(string line)
+        {
+            string command;
+            line = line.Split(new Char[] { '#' }, 2)[0];
+
+            if (line.Length == 0)
+                return "";
+
+            string[] components = line.Split(new Char[] { ' ' }, 2);
+            string task = "";
+            if (components.Length > 1)
+                task = components[1];
+            string[] taskAsParameter = task.Split(new Char[] { ' ' });
+            command = components[0];
+            switch(command.ToLower())
+            {
+                default:
+                    GlobalState.logInfo.logLine("Invalid deprecated command: " + command);
+                    break;
+            }
+        }
+        #endregion
+
 
         private void cleanGlobal()
         {
@@ -1222,9 +1208,7 @@ namespace CommandLine
                     parameter.Add(nameAndValue[0], "");
             }
 
-
-
-
+            
             return "";
 
         }
@@ -1339,6 +1323,86 @@ namespace CommandLine
             }
 
             return "";
+        }
+
+        private void performOneCommand_Binary(string task)
+        {
+            string strategyName = task.Split(new string[] { " " }, StringSplitOptions.None)[0];
+            Dictionary<string, string> parameterKeyAndValue = new Dictionary<string, string>();
+            string[] parameters = task.Split(new string[] { " " }, StringSplitOptions.None);
+
+            if (parameters.Length > 1)
+            {
+                foreach (string param in parameters)
+                {
+                    if (param.Contains(":"))
+                    {
+                        string[] keyAndValue = param.Split(new string[] { ":" }, StringSplitOptions.None);
+                        parameterKeyAndValue.Add(keyAndValue[0], keyAndValue[1]);
+                    }
+                }
+            }
+
+            switch (strategyName)
+            {
+                case COMMAND_SAMPLE_ALLBINARY:
+                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY,
+                        "ALLBINARY", task.Contains(COMMAND_VALIDATION));
+                    break;
+                case COMMAND_SAMPLE_FEATUREWISE:
+                case COMMAND_SAMPLE_OPTIONWISE:
+                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
+                        "OPTIONWISE", task.Contains(COMMAND_VALIDATION));
+                    break;
+                case COMMAND_SAMPLE_PAIRWISE:
+                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
+                        "PAIRWISE", task.Contains(COMMAND_VALIDATION));
+                    break;
+                case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
+                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
+                        "NEGATIVE_OPTIONISE", task.Contains(COMMAND_VALIDATION));
+                    break;
+                case COMMAND_SAMPLE_BINARY_RANDOM:
+                    addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM",
+                            parameterKeyAndValue, task.Contains(COMMAND_VALIDATION));
+                    break;
+                case COMMAND_SAMPLE_BINARY_TWISE:
+                    addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameterKeyAndValue,
+                            task.Contains(Commands.COMMAND_VALIDATION));
+                    break;
+                default:
+                    GlobalState.logError.logLine("Invalid binary strategy: " + strategyName);
+                    break;
+            }
+        }
+
+        private void addBinSamplingNoParams(SamplingStrategies strategy, string name, bool isValidation)
+        {
+            if (isValidation)
+            {
+                this.binaryToSampleValidation.Add(strategy);
+                this.exp.info.binarySamplings_Validation = name;
+            }
+            else
+            {
+                this.binaryToSample.Add(strategy);
+                this.exp.info.binarySamplings_Learning = name;
+            }
+        }
+
+        private void addBinSamplingParams(SamplingStrategies strategy, string name, 
+            Dictionary<string, string> parameter, bool isValidation)
+        {
+            addBinSamplingNoParams(strategy, name, isValidation);
+            switch (strategy)
+            {
+                case SamplingStrategies.BINARY_RANDOM:
+                    ConfigurationBuilder.binaryParams.randomBinaryParameters.Add(parameter);
+                    break;
+                case SamplingStrategies.T_WISE:
+                    ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameter);
+                    break;
+            }
         }
 
 
@@ -1495,16 +1559,6 @@ namespace CommandLine
             }
 
             GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
-            // prepare the machine learning 
-
-            //PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, new string[] { });
-
-            //LearningSettings.LearningStrategies currentStrategy = LearningSettings.getStrategy(taskAsParameter[0]);
-            //// SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-            //pyInterpreter.setupApplication(configurations_Learning, currentStrategy, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-
-            //pyResult = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations);
-            //Console.WriteLine("Py result:\n" + pyResult);
             exp.models.Clear();
             var mod = exp.models;
             exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
