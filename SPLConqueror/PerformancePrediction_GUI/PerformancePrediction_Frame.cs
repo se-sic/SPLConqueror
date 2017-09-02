@@ -33,7 +33,7 @@ namespace PerformancePrediction_GUI
             InitializeComponent();
             addMlSettingsBoxContent();
 
-            
+
         }
 
 
@@ -46,24 +46,24 @@ namespace PerformancePrediction_GUI
 
             for (int i = 0; i < fields.Length; i++)
             {
-                    Label l = new Label();
-                    mlSettingsPanel.Controls.Add(l);
+                Label l = new Label();
+                mlSettingsPanel.Controls.Add(l);
 
-                    l.AutoSize = true;
-                    l.Location = new System.Drawing.Point(5, 5 + ML_FIELDS_OFFSET * i);
-                    l.Name = fields[i].Name + "_label";
-                    l.Size = new System.Drawing.Size(50, 15);
-                    l.TabIndex = i * 2;
-                    l.Text = fields[i].Name;
+                l.AutoSize = true;
+                l.Location = new System.Drawing.Point(5, 5 + ML_FIELDS_OFFSET * i);
+                l.Name = fields[i].Name + "_label";
+                l.Size = new System.Drawing.Size(50, 15);
+                l.TabIndex = i * 2;
+                l.Text = fields[i].Name;
 
-                    TextBox t = new TextBox();
-                    mlSettingsPanel.Controls.Add(t);
+                TextBox t = new TextBox();
+                mlSettingsPanel.Controls.Add(t);
 
-                    t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i);
-                    t.Name = fields[i].Name + "_textBox";
-                    t.Size = new System.Drawing.Size(150, 15);
-                    t.TabIndex = i * 2 + 1;
-                    t.Text = fields[i].GetValue(settingsObject).ToString();
+                t.Location = new System.Drawing.Point(150, 5 + ML_FIELDS_OFFSET * i);
+                t.Name = fields[i].Name + "_textBox";
+                t.Size = new System.Drawing.Size(150, 15);
+                t.TabIndex = i * 2 + 1;
+                t.Text = fields[i].GetValue(settingsObject).ToString();
             }
         }
 
@@ -75,7 +75,7 @@ namespace PerformancePrediction_GUI
             if (pfd.ShowDialog() == DialogResult.OK)
             {
                 System.IO.FileInfo fi = new System.IO.FileInfo(pfd.FileName);
-                filePath =  fi.FullName;
+                filePath = fi.FullName;
             }
 
             if (filePath == "")
@@ -138,12 +138,13 @@ namespace PerformancePrediction_GUI
 
             bool ableToStart = createSamplingCommands();
 
-            if(ableToStart){
+            if (ableToStart)
+            {
                 if (executionThread != null && executionThread.IsAlive) executionThread.Abort();
                 executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startLearning));
                 executionThread.Start();
                 InitDataGridView();
-            }   
+            }
         }
 
         private void setMLSettings()
@@ -158,13 +159,13 @@ namespace PerformancePrediction_GUI
                     setting.setSetting(fieldName, ((TextBox)c).Text);
                 }
             }
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING+" "+setting.ToString());
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " " + setting.ToString());
         }
 
         void roundFinished(object sender, NotifyCollectionChangedEventArgs e)
         {
             //e.NewItems will be an IList of all the items that were added in the AddRange method...
-            MachineLearning.Learning.Regression.LearningRound lastRound = (MachineLearning.Learning.Regression.LearningRound) e.NewItems[0];
+            MachineLearning.Learning.Regression.LearningRound lastRound = (MachineLearning.Learning.Regression.LearningRound)e.NewItems[0];
 
             UpdateDataGridView(lastRound);
 
@@ -177,12 +178,12 @@ namespace PerformancePrediction_GUI
             Console.WriteLine();
             if (cmd.exp.models.Count > 0)
             {
-                if(notifyer == null)
-                   notifyer =  new NotifyCollectionChangedEventHandler(roundFinished);
+                if (notifyer == null)
+                    notifyer = new NotifyCollectionChangedEventHandler(roundFinished);
 
                 cmd.exp.models[cmd.exp.models.Count - 1].LearningHistory.CollectionChanged -= notifyer;
                 cmd.exp.models[cmd.exp.models.Count - 1].LearningHistory.CollectionChanged += notifyer;
-            
+
             }
 
         }
@@ -191,9 +192,13 @@ namespace PerformancePrediction_GUI
         {
             try
             {
+                // make sure that all measurements are deselected
+                cmd.performOneCommand(Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " false");
+
                 cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
-                cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
-            } catch (System.Threading.ThreadAbortException)
+                cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+            }
+            catch (System.Threading.ThreadAbortException)
             {
                 return;
             }
@@ -203,9 +208,11 @@ namespace PerformancePrediction_GUI
         {
             try
             {
+                cmd.performOneCommand(Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true");
                 cmd.exp.models.CollectionChanged += new NotifyCollectionChangedEventHandler(initLearning);
-                cmd.performOneCommand(Commands.COMMAND_START_ALLMEASUREMENTS);
-            } catch (System.Threading.ThreadAbortException)
+                cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+            }
+            catch (System.Threading.ThreadAbortException)
             {
                 return;
             }
@@ -249,10 +256,10 @@ namespace PerformancePrediction_GUI
                     termToIndex.Add(name, termToIndex.Count + perfInfGrid_definedColumns);
 
                 }
-                row[termToIndex[name]] = Math.Round(f.Constant,2).ToString();
+                row[termToIndex[name]] = Math.Round(f.Constant, 2).ToString();
             }
 
-            
+
             perfInfGridView.Invoke((MethodInvoker)(() => this.perfInfGridView.Rows.Add(row)));
         }
 
@@ -260,6 +267,16 @@ namespace PerformancePrediction_GUI
         {
             GlobalState.logInfo.logLine(ERROR + "\n");
 
+        }
+
+        private void performBinarySampling(Commands cmd, string param)
+        {
+            cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + param);
+        }
+
+        private void performNumericSampling(Commands cmd, string param)
+        {
+            cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " " + param);
         }
 
         private bool createSamplingCommands()
@@ -272,7 +289,7 @@ namespace PerformancePrediction_GUI
             if (this.OW.Checked)
             {
                 binarySelected = true;
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
+                performBinarySampling(cmd, Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
             }
             if (this.twise.Checked)
             {
@@ -282,7 +299,7 @@ namespace PerformancePrediction_GUI
                 {
                     param = "t:" + twiseParam.Text + " ";
                 }
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_BINARY_TWISE + " " + param + validation);
+                performBinarySampling(cmd, Commands.COMMAND_SAMPLE_BINARY_TWISE + " " + param + validation);
             }
             if (this.binRandom.Checked)
             {
@@ -296,20 +313,22 @@ namespace PerformancePrediction_GUI
                 {
                     param += "seed:" + binRandomSeed.Text;
                 }
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_BINARY_RANDOM + " " + param + validation);
+                performBinarySampling(cmd, Commands.COMMAND_SAMPLE_BINARY_RANDOM + " " + param + validation);
             }
-            if (this.PW.Checked){
+            if (this.PW.Checked)
+            {
                 binarySelected = true;
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);
+                performBinarySampling(cmd, Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);
             }
-            if (this.negOW.Checked){
+            if (this.negOW.Checked)
+            {
                 binarySelected = true;
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
+                performBinarySampling(cmd, Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
             }
             if (this.binWholePop.Checked)
             {
                 binarySelected = true;
-                cmd.performOneCommand(Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
+                performBinarySampling(cmd, Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
             }
 
 
@@ -317,16 +336,17 @@ namespace PerformancePrediction_GUI
             if (num_BoxBehnken_check.Checked)
             {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
             }
             if (num_CentralComposite_check.Checked)
             {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
             }
-            if (num_FullFactorial_check.Checked){
+            if (num_FullFactorial_check.Checked)
+            {
                 numSelected = true;
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
             }
             if (num_hyperSampling_check.Checked)
             {
@@ -335,7 +355,8 @@ namespace PerformancePrediction_GUI
                     error();
                     return false;
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " "
+                    + num_hyper_percent_text.Text + " " + validation);
                 numSelected = true;
             }
             if (num_kEx_check.Checked)
@@ -346,7 +367,8 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" +
+                    num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim());
                 numSelected = true;
             }
             if (num_randomSampling_num.Checked)
@@ -357,7 +379,8 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" 
+                    + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
                 numSelected = true;
             }
 
@@ -369,7 +392,8 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim());
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" 
+                    + num_oneFactorAtATime_num_Text.Text.Trim());
                 numSelected = true;
 
             }
@@ -381,7 +405,8 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                cmd.performOneCommand(CommandLine.Commands.COMMAND_EXPERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" 
+                    + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
                 numSelected = true;
             }
 
@@ -391,7 +416,7 @@ namespace PerformancePrediction_GUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(perfInfGridView.SelectedRows.Count == 1)
+            if (perfInfGridView.SelectedRows.Count == 1)
             {
                 SaveFileDialog sfd = new SaveFileDialog();
                 if (sfd.ShowDialog() != DialogResult.OK)
@@ -399,11 +424,11 @@ namespace PerformancePrediction_GUI
                 StreamWriter sw = new StreamWriter(sfd.FileName);
                 StringBuilder sb = new StringBuilder();
                 var row = perfInfGridView.SelectedRows[0];
-                for (int i = 3; i < row.Cells.Count;i++)
+                for (int i = 3; i < row.Cells.Count; i++)
                 {
                     if (row.Cells[i].Value == null)
                         break;
-                    if (i == row.Cells.Count - 1 || row.Cells[i+1].Value == null)
+                    if (i == row.Cells.Count - 1 || row.Cells[i + 1].Value == null)
                         sb.Append(row.Cells[i].Value + " * " + perfInfGridView.Columns[i].HeaderText);
                     else
                         sb.Append(row.Cells[i].Value + " * " + perfInfGridView.Columns[i].HeaderText + " + ");
@@ -416,7 +441,7 @@ namespace PerformancePrediction_GUI
                 MessageBox.Show("Please select exactly one row of the result set.");
             }
         }
-        private void button2_Click  (object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             cleanButton_Click(null, null);
             button1.Enabled = true;
@@ -426,7 +451,7 @@ namespace PerformancePrediction_GUI
             executionThread = new System.Threading.Thread(new System.Threading.ThreadStart(startWithAllMeasurements));
             executionThread.Start();
             InitDataGridView();
-               
+
         }
 
         private void printConfigs(string path)
@@ -440,7 +465,8 @@ namespace PerformancePrediction_GUI
             else if (postfix.Trim().Equals(""))
             {
                 cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path + " " + prefix);
-            } else
+            }
+            else
             {
                 cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " + path + " " + prefix + " " + postfix);
             }
@@ -454,7 +480,8 @@ namespace PerformancePrediction_GUI
             {
                 MessageBox.Show("No sampling selected!", "Error");
 
-            } else
+            }
+            else
             {
                 SaveFileDialog sfd = new SaveFileDialog();
                 if (sfd.ShowDialog() != DialogResult.OK)
@@ -463,8 +490,9 @@ namespace PerformancePrediction_GUI
                 {
                     System.Threading.Thread printConfigsThread = new System.Threading.Thread(() => printConfigs(sfd.FileName));
                     printConfigsThread.Start();
- 
-                } else
+
+                }
+                else
                 {
                     MessageBox.Show("Invalid path!", "Error");
                 }
