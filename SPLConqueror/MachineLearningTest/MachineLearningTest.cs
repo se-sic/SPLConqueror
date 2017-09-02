@@ -2,7 +2,6 @@
 using CommandLine;
 using System.IO;
 using System;
-using System.Text;
 using System.Collections.Generic;
 
 namespace MachineLearningTest
@@ -46,6 +45,7 @@ namespace MachineLearningTest
             consoleOutput.Flush();
             consoleOutput.NewLine = "\r\n";
             string command = null;
+
             if (isCIEnvironment)
             {
                 command = Commands.COMMAND_VARIABILITYMODEL + " " + modelPathCI;
@@ -54,27 +54,32 @@ namespace MachineLearningTest
             {
                 command = Commands.COMMAND_VARIABILITYMODEL + " " + modelPathVS;
             }
+
             cmd.performOneCommand(command);
             Equals(consoleOutput.ToString()
                 .Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None)[1], "");
             command = null;
+
             if (isCIEnvironment)
             {
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathCI;
-            } else
+            }
+            else
             {
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathVS;
             }
+
             cmd.performOneCommand(command);
             Console.Error.Write(consoleOutput.ToString());
             bool allConfigurationsLoaded = consoleOutput.ToString()
                 .Contains("2560 configurations loaded.");
             Assert.True(allConfigurationsLoaded);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
-            cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " 
+            cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
+            cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
-            cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+
             Console.Error.Write(consoleOutput.ToString());
             string rawLearningRounds = consoleOutput.ToString()
                 .Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1];
@@ -89,12 +94,14 @@ namespace MachineLearningTest
         {
             cleanUp(cmd, "");
             cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:true baggingNumbers:3");
-            cmd.performOneCommand(Commands.COMMAND_START_LEARNING);
+            cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+
             string averageModel = consoleOutput.ToString()
                 .Split(new string[] { "average model:" }, StringSplitOptions.RemoveEmptyEntries)[2];
             string[] polynoms = averageModel
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
+
             Assert.AreEqual(5, polynoms.Length);
             Assert.AreEqual("1085.73333333333 * PAGESIZE", polynoms[0].Trim());
             Assert.AreEqual("5.20000000000012 * DIAGNOSTIC", polynoms[1].Trim());
@@ -105,8 +112,8 @@ namespace MachineLearningTest
         private void cleanUp(Commands cmd, String mlSettings)
         {
             cmd.performOneCommand(Commands.COMMAND_CLEAR_LEARNING);
-            cmd.performOneCommand(Commands.COMMAND_SAMPLE_OPTIONWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " "
+            cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
+            cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false baggingNumbers:3");
         }
@@ -115,8 +122,9 @@ namespace MachineLearningTest
         public void testParameterOptimization()
         {
             cleanUp(cmd, " bagging:false baggingNumbers:3");
-            cmd.performOneCommand(Commands.COMMAND_OPTIMIZE_PARAMETER 
+            cmd.performOneCommand(Commands.COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR
                 + " lossFunction=[RELATIVE,LEASTSQUARES,ABSOLUTE]");
+
             Assert.IsTrue(consoleOutput.ToString()
                 .Split(new string[] { "Parameters:" }, StringSplitOptions.None)[1].Contains("lossFunction:RELATIVE"));
 
@@ -129,12 +137,14 @@ namespace MachineLearningTest
             string[] polynoms = learningResult.Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             List<string> variables = new List<string>();
             List<double> coefficients = new List<double>();
+
             foreach (string polynom in polynoms)
             {
                 string[] coefficientAndVariable = polynom.Split(new char[] { '*' }, 2);
                 variables.Add(coefficientAndVariable[1].Trim());
                 coefficients.Add(Double.Parse(coefficientAndVariable[0].Trim()));
             }
+
             isExpected &= variables.Count == 2;
             isExpected &= variables[0].Equals("PAGESIZE");
             isExpected &= variables[1].Equals("CS16MB");

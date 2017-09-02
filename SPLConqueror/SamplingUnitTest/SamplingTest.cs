@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
 using NUnit.Framework;
@@ -48,6 +47,7 @@ namespace SamplingUnitTest
                 modelPath = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/VariabilityModelSampling.xml";
             }
+
             Assert.IsTrue(model.loadXML(modelPath));
             GlobalState.varModel = model;
         }

@@ -13,17 +13,20 @@ namespace SamplingUnitTest
             string modelPath = Path.GetFullPath(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..."))
             + Path.DirectorySeparatorChar + "ExampleFiles"
             + Path.DirectorySeparatorChar + "VariabilityModelSampling.xml";
+
             if (!File.Exists(modelPath))
             {
                 modelPath = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/VariabilityModelSampling.xml";
             }
+
             Commands cmd = new Commands();
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + modelPath);
-            cmd.performOneCommand(Commands.COMMAND_SAMPLE_FEATUREWISE);
-            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN);
+            cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_FEATUREWISE);
+            cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN);
             cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " 
                 + System.AppDomain.CurrentDomain.BaseDirectory + "testSampledConfigs.txt");
+
             StreamReader sr = new StreamReader(System.AppDomain.CurrentDomain.BaseDirectory 
                 + "testSampledConfigs.txt");
             string line = "";

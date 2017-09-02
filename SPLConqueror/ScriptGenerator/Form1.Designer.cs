@@ -45,8 +45,8 @@
             this.cleanGlobalAfterVM = new System.Windows.Forms.CheckBox();
             this.informatioLabel = new System.Windows.Forms.Label();
             this.bsamp_group = new System.Windows.Forms.GroupBox();
-            this.bsamp_random__modulo_textBox = new System.Windows.Forms.TextBox();
-            this.bsamp_random_textBox = new System.Windows.Forms.TextBox();
+            this.randomSeedTextBox = new System.Windows.Forms.TextBox();
+            this.numConfigsTextBox = new System.Windows.Forms.TextBox();
             this.bsamp_random_box = new System.Windows.Forms.CheckBox();
             this.bsamp_all_box = new System.Windows.Forms.CheckBox();
             this.bsamp_negFW_box = new System.Windows.Forms.CheckBox();
@@ -107,6 +107,11 @@
             this.learnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sPLConquerorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tWiseCheckBox = new System.Windows.Forms.CheckBox();
+            this.tLabel = new System.Windows.Forms.Label();
+            this.tTextBox = new System.Windows.Forms.TextBox();
+            this.randomNumConfs = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.MlSettings_Box.SuspendLayout();
             this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
@@ -293,8 +298,13 @@
             // 
             // bsamp_group
             // 
-            this.bsamp_group.Controls.Add(this.bsamp_random__modulo_textBox);
-            this.bsamp_group.Controls.Add(this.bsamp_random_textBox);
+            this.bsamp_group.Controls.Add(this.label1);
+            this.bsamp_group.Controls.Add(this.randomNumConfs);
+            this.bsamp_group.Controls.Add(this.tTextBox);
+            this.bsamp_group.Controls.Add(this.tLabel);
+            this.bsamp_group.Controls.Add(this.tWiseCheckBox);
+            this.bsamp_group.Controls.Add(this.randomSeedTextBox);
+            this.bsamp_group.Controls.Add(this.numConfigsTextBox);
             this.bsamp_group.Controls.Add(this.bsamp_random_box);
             this.bsamp_group.Controls.Add(this.bsamp_all_box);
             this.bsamp_group.Controls.Add(this.bsamp_negFW_box);
@@ -306,29 +316,29 @@
             this.bsamp_group.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_group.Name = "bsamp_group";
             this.bsamp_group.Padding = new System.Windows.Forms.Padding(4);
-            this.bsamp_group.Size = new System.Drawing.Size(267, 175);
+            this.bsamp_group.Size = new System.Drawing.Size(267, 188);
             this.bsamp_group.TabIndex = 6;
             this.bsamp_group.TabStop = false;
             this.bsamp_group.Text = "binary sampling heuristics";
             // 
-            // bsamp_random__modulo_textBox
+            // randomSeedTextBox
             // 
-            this.bsamp_random__modulo_textBox.Location = new System.Drawing.Point(184, 90);
-            this.bsamp_random__modulo_textBox.Margin = new System.Windows.Forms.Padding(4);
-            this.bsamp_random__modulo_textBox.Name = "bsamp_random__modulo_textBox";
-            this.bsamp_random__modulo_textBox.ShortcutsEnabled = false;
-            this.bsamp_random__modulo_textBox.Size = new System.Drawing.Size(41, 22);
-            this.bsamp_random__modulo_textBox.TabIndex = 8;
-            this.bsamp_random__modulo_textBox.Text = "5";
+            this.randomSeedTextBox.Location = new System.Drawing.Point(226, 91);
+            this.randomSeedTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.randomSeedTextBox.Name = "randomSeedTextBox";
+            this.randomSeedTextBox.ShortcutsEnabled = false;
+            this.randomSeedTextBox.Size = new System.Drawing.Size(41, 22);
+            this.randomSeedTextBox.TabIndex = 8;
+            this.randomSeedTextBox.Text = "0";
             // 
-            // bsamp_random_textBox
+            // numConfigsTextBox
             // 
-            this.bsamp_random_textBox.Location = new System.Drawing.Point(133, 90);
-            this.bsamp_random_textBox.Margin = new System.Windows.Forms.Padding(4);
-            this.bsamp_random_textBox.Name = "bsamp_random_textBox";
-            this.bsamp_random_textBox.Size = new System.Drawing.Size(41, 22);
-            this.bsamp_random_textBox.TabIndex = 7;
-            this.bsamp_random_textBox.Text = "100";
+            this.numConfigsTextBox.Location = new System.Drawing.Point(133, 90);
+            this.numConfigsTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.numConfigsTextBox.Name = "numConfigsTextBox";
+            this.numConfigsTextBox.Size = new System.Drawing.Size(41, 22);
+            this.numConfigsTextBox.TabIndex = 7;
+            this.numConfigsTextBox.Text = "asOW";
             // 
             // bsamp_random_box
             // 
@@ -388,7 +398,7 @@
             // bsamp_ForValidation
             // 
             this.bsamp_ForValidation.AutoSize = true;
-            this.bsamp_ForValidation.Location = new System.Drawing.Point(125, 142);
+            this.bsamp_ForValidation.Location = new System.Drawing.Point(127, 157);
             this.bsamp_ForValidation.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_ForValidation.Name = "bsamp_ForValidation";
             this.bsamp_ForValidation.Size = new System.Drawing.Size(111, 21);
@@ -398,7 +408,7 @@
             // 
             // bsamp_addButton
             // 
-            this.bsamp_addButton.Location = new System.Drawing.Point(9, 137);
+            this.bsamp_addButton.Location = new System.Drawing.Point(9, 152);
             this.bsamp_addButton.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_addButton.Name = "bsamp_addButton";
             this.bsamp_addButton.Size = new System.Drawing.Size(100, 28);
@@ -988,6 +998,51 @@
             this.pythonToolStripMenuItem.Text = "Python";
             this.pythonToolStripMenuItem.Click += new System.EventHandler(this.pythonToolStripMenuItem_Click_1);
             // 
+            // tWiseCheckBox
+            // 
+            this.tWiseCheckBox.AutoSize = true;
+            this.tWiseCheckBox.Location = new System.Drawing.Point(9, 124);
+            this.tWiseCheckBox.Name = "tWiseCheckBox";
+            this.tWiseCheckBox.Size = new System.Drawing.Size(75, 21);
+            this.tWiseCheckBox.TabIndex = 9;
+            this.tWiseCheckBox.Text = "T-Wise";
+            this.tWiseCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // tLabel
+            // 
+            this.tLabel.AutoSize = true;
+            this.tLabel.Location = new System.Drawing.Point(94, 125);
+            this.tLabel.Name = "tLabel";
+            this.tLabel.Size = new System.Drawing.Size(16, 17);
+            this.tLabel.TabIndex = 10;
+            this.tLabel.Text = "t:";
+            // 
+            // tTextBox
+            // 
+            this.tTextBox.Location = new System.Drawing.Point(133, 122);
+            this.tTextBox.Name = "tTextBox";
+            this.tTextBox.Size = new System.Drawing.Size(42, 22);
+            this.tTextBox.TabIndex = 11;
+            this.tTextBox.Text = "3";
+            // 
+            // randomNumConfs
+            // 
+            this.randomNumConfs.AutoSize = true;
+            this.randomNumConfs.Location = new System.Drawing.Point(94, 93);
+            this.randomNumConfs.Name = "randomNumConfs";
+            this.randomNumConfs.Size = new System.Drawing.Size(39, 17);
+            this.randomNumConfs.TabIndex = 12;
+            this.randomNumConfs.Text = "num:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(181, 93);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(45, 17);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Seed:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1060,7 +1115,7 @@
         private System.Windows.Forms.CheckBox bsamp_negFW_box;
         private System.Windows.Forms.CheckBox bsamp_all_box;
         private System.Windows.Forms.CheckBox bsamp_random_box;
-        private System.Windows.Forms.TextBox bsamp_random_textBox;
+        private System.Windows.Forms.TextBox numConfigsTextBox;
         private System.Windows.Forms.GroupBox expDasign_group;
         private System.Windows.Forms.CheckBox num_forValidationCheckBox;
         private System.Windows.Forms.Button expDesign_addButton;
@@ -1085,7 +1140,7 @@
         private System.Windows.Forms.TextBox num_Plackett_n_Box;
         private System.Windows.Forms.Label num_rand_seed_Label;
         private System.Windows.Forms.TextBox num_rand_seed_Text;
-        private System.Windows.Forms.TextBox bsamp_random__modulo_textBox;
+        private System.Windows.Forms.TextBox randomSeedTextBox;
         private System.Windows.Forms.CheckBox num_oneFactorAtATime_Box;
         private System.Windows.Forms.Label num_oneFactorAtATime_num_Label;
         private System.Windows.Forms.TextBox num_oneFactorAtATime_num_Text;
@@ -1117,6 +1172,11 @@
         private System.Windows.Forms.Panel pythonPanel;
         private System.Windows.Forms.Label parametersLabel;
         private System.Windows.Forms.TextBox parametersTextBox;
+        private System.Windows.Forms.CheckBox tWiseCheckBox;
+        private System.Windows.Forms.TextBox tTextBox;
+        private System.Windows.Forms.Label tLabel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label randomNumConfs;
     }
 }
 
