@@ -1278,6 +1278,8 @@ namespace CommandLine
         /// </summary>
         /// <param name="task">the task containing the name of the sampling strategy and the parameters</param>
         /// <returns>the name of the sampling strategy if it is not found; empty string otherwise</returns>
+        // TODO : Delete
+        [Obsolete("hybrid strategies are now called via numeric/binary", false)]
         private string performOneCommand_Hybrid(string task)
         {
             // splits the task in design and parameters of the design
@@ -1377,7 +1379,7 @@ namespace CommandLine
                 }
             }
 
-            switch (strategyName)
+            switch (strategyName.ToLower())
             {
                 case COMMAND_SAMPLE_ALLBINARY:
                     addBinSamplingNoParams(SamplingStrategies.ALLBINARY,
@@ -1402,11 +1404,59 @@ namespace CommandLine
                     break;
                 case COMMAND_SAMPLE_BINARY_TWISE:
                     addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameterKeyAndValue,
-                            task.Contains(Commands.COMMAND_VALIDATION));
+                            task.Contains(COMMAND_VALIDATION));
                     break;
+                case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                    DistributionAware distAWDesign = new DistributionAware();
+                    checkParametersDistAW(parameterKeyAndValue, DistributionAware.ONLY_BINARY,
+                        DistributionAware.ONLY_NUMERIC);
+
+                    addHybridStrategy(distAWDesign, task.Contains(COMMAND_VALIDATION), parameterKeyAndValue);
+
+                    break;
+
                 default:
                     GlobalState.logError.logLine("Invalid binary strategy: " + strategyName);
                     break;
+            }
+        }
+
+        private void checkParametersDistAW(Dictionary<string, string> parameters, string allowed, string notAllowed)
+        {
+            string temp;
+
+            // make sure parameters are properly set.
+            if (parameters.TryGetValue(allowed, out temp))
+            {
+                parameters.Remove(allowed);
+                parameters.Add(allowed, "true");
+            }
+            else
+            {
+                parameters.Add(allowed, "true");
+            }
+
+            if (parameters.TryGetValue(notAllowed, out temp))
+            {
+                GlobalState.logInfo.logLine(notAllowed + " sampling parameter is not allowed in"
+                    + "combination with " + allowed);
+                parameters.Remove(DistributionAware.ONLY_NUMERIC);
+            }
+        }
+
+        private void addHybridStrategy(HybridStrategy hybridDesign, bool isValidation, 
+            Dictionary<string, string> parameters)
+        {
+            hybridDesign.SetSamplingParameters(parameters);
+            if (isValidation)
+            {
+                this.hybridToSampleValidation.Add(hybridDesign);
+                this.exp.info.numericSamplings_Validation = hybridDesign.GetName();
+            }
+            else
+            {
+                this.hybridToSample.Add(hybridDesign);
+                this.exp.info.numericSamplings_Learning = hybridDesign.GetName();
             }
         }
 
@@ -1531,6 +1581,20 @@ namespace CommandLine
                 case COMMAND_EXPDESIGN_RANDOM:
                     expDesign = new RandomSampling();
                     break;
+
+                case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                    DistributionAware distAWDesign = new DistributionAware();
+                    if (optionsToConsider.Count > 0)
+                    {
+                        List<ConfigurationOption> asConfiguration = new List<ConfigurationOption>();
+                        optionsToConsider.ForEach(x => asConfiguration.Add(x));
+                        distAWDesign.SetSamplingDomain(asConfiguration);
+                    }
+                    checkParametersDistAW(parameter, DistributionAware.ONLY_NUMERIC,
+                        DistributionAware.ONLY_BINARY);
+
+                    addHybridStrategy(distAWDesign, task.Contains(COMMAND_VALIDATION), parameter);
+                    return "";
 
                 default:
                     return task;

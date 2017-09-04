@@ -513,15 +513,16 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary pairwise``` | binary pairwise |
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
 | Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```binary random <binaryThreshold> <modulu>``` | binary random 50 3 |
+| Binary | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary options. | ```binary distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]>``` | binary distribution-aware numConfigs:asTW3 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```numeric random sampleSize:<size> seed:<seed>``` | numeric random sampleSize:50 seed:2 |
 | Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```numeric fullfactorial``` | numeric fullfactorial |
 | Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```numeric boxbehnken``` | numeric boxbehnken |
 | Numeric | hypersampling | | ```numeric hypersampling precision:<precisionValue>``` | numeric hypersampling precision:25 |
-| Numeric | onefactoratatime | | ```numeric onefactoratatime distinctValuesPerOption:<values>``` | numeric onefactoratatime distinctValuesPerOption:5 |
+| Numeric | onefactoratatime | | ```numeric onefactoratatime distinctValuesPerOption:<values>``` | numeric onefactoratatime distinctValuesPerOption:5 | numeric distribution-aware numConfigs:asTW2 |
 | Numeric | kexchange | | ```numeric kexchange sampleSize:<size> k:<kvalue>``` | numeric kexchange sampleSize:10 k:3 |
-| Both | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number | asTW1, asTW2, ...> onlyNumeric:<True/False> onlyBinary:<True/False>``` | hybrid distribution-aware onlyNumeric |
+| Numeric | distribution-aware | Uses distribution-aware sampling to generate sample sets from numeric options. | ```binary distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]>``` | 
 
 For instance, all binary options and random numeric options with a sample size of 50 and a seed of 3 should be used for learning, the following lines have to be appended to the .a-script:
 ```
