@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using SPLConqueror_Core;
 
-namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.DistanceMetric
+namespace MachineLearning.Sampling.Hybrid.Distributive
 {
     /// <summary>
     /// This class represents the manhattan distance of features.
