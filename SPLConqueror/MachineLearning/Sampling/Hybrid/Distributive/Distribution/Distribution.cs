@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distribution
+namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.Distribution
 {
     /// <summary>
     /// This interface provides methods to calculate samples from a given distribution.

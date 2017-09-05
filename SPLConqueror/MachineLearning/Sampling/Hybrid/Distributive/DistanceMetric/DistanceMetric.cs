@@ -1,7 +1,7 @@
 ﻿using SPLConqueror_Core;
 using System.Collections.Generic;
 
-namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.DistanceMetric
+namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.DistanceMetric
 {
     /// <summary>
     /// This class is an interface for all distance metrics that can be used for computing the distribution.

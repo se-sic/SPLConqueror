@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using SPLConqueror_Core;
 
-namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distribution
+namespace MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.Distribution
 {
     /// <summary>
     /// This class represents the uniform distribution, where it is equally likely to pick one of all buckets.
