@@ -1,6 +1,6 @@
 ﻿using MachineLearning.Sampling.Heuristics;
-using MachineLearning.Sampling.Hybrid.Distribution_Aware.DistanceMetric;
-using MachineLearning.Sampling.Hybrid.Distribution_Aware.Distribution;
+using MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.DistanceMetric;
+using MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.Distribution;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using System;
@@ -10,11 +10,12 @@ using System.Linq;
 namespace MachineLearning.Sampling.Hybrid
 {
     /// <summary>
-    /// This class represents the distribution-aware sampling strategy.
-    /// In this sampling strategy, the configurations are divided in buckets and the sampled configurations are selected 
+    /// This class summarizes the methods of distribution-aware and distribution-preserving sampling and is realized by using
+    /// the strategy pattern. 
+    /// In these sampling strategies, the configurations are divided in buckets and the sampled configurations are selected 
     /// from this buckets according to a given distribution (e.g., uniform, normal distribution).
     /// </summary>
-    public class DistributionAware : HybridStrategy
+    public abstract class DistributionSensitive : HybridStrategy
     {
         #region variables
         #region constants
@@ -29,15 +30,15 @@ namespace MachineLearning.Sampling.Hybrid
         public static Distribution[] distributions = { new UniformDistribution() };
         #endregion
 
-        private DistanceMetric metric = null;
-        private Distribution distribution = null;
+        protected DistanceMetric metric = null;
+        protected Distribution distribution = null;
         #endregion
 
         /// <summary>
         /// The constructor initializes the parameters needed for this class and its default values.
         /// These may be overwritten by <see cref="HybridStrategy.SetSamplingParameters(Dictionary{string, string})"/>.
         /// </summary>
-        public DistributionAware() : base()
+        public DistributionSensitive() : base()
         {
             this.strategyParameter = new Dictionary<string, string>()
             {
@@ -84,7 +85,7 @@ namespace MachineLearning.Sampling.Hybrid
         {
             // Check the used metric
             string metricToUse = this.strategyParameter[DISTANCE_METRIC];
-            foreach (DistanceMetric m in DistributionAware.metrics)
+            foreach (DistanceMetric m in DistributionSensitive.metrics)
             {
                 if (m.GetName().ToUpper().Equals(metricToUse.ToUpper()))
                 {
@@ -92,7 +93,7 @@ namespace MachineLearning.Sampling.Hybrid
                     break;
                 }
             }
-            
+
             if (this.metric == null)
             {
                 throw new ArgumentException("The metric " + metricToUse + " is not supported.");
@@ -100,7 +101,7 @@ namespace MachineLearning.Sampling.Hybrid
 
             // Check the used distribution
             string distributionToUse = this.strategyParameter[DISTRIBUTION];
-            foreach (Distribution d in DistributionAware.distributions)
+            foreach (Distribution d in DistributionSensitive.distributions)
             {
                 if (d.GetName().ToUpper().Equals(distributionToUse.ToUpper()))
                 {
@@ -144,6 +145,13 @@ namespace MachineLearning.Sampling.Hybrid
 
         }
 
+        /// <summary>
+        /// Creates the wanted distribution.
+        /// This method has to be implemented by the different sampling strategies (e.g., distribution-aware, distribution-preserving).
+        /// </summary>
+        /// <param name="wholeDistribution">a <see cref="Dictionary{TKey, TValue}"/> containing all configurations and their corresponding distance</param>
+        /// <param name="allBuckets">all buckets of the distribution</param>
+        public abstract Dictionary<double, double> CreateDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets);
 
         /// <summary>
         /// Selects configurations of the given distribution by using the specified distribution (e.g., uniform).
@@ -151,9 +159,9 @@ namespace MachineLearning.Sampling.Hybrid
         /// <param name="wholeDistribution">the distribution of all configurations</param>
         /// <param name="allBuckets">all buckets of the distribution</param>
         /// <param name="count">the number of configurations to sample</param>
-        private void SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets, int count)
+        public void SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets, int count)
         {
-            Dictionary<double, double> wantedDistribution = this.distribution.CreateDistribution(allBuckets);
+            Dictionary<double, double> wantedDistribution = CreateDistribution(wholeDistribution, allBuckets);
             Random rand = new Random();
 
             while (this.selectedConfigurations.Count < count && HasSamples(wholeDistribution))
@@ -162,7 +170,7 @@ namespace MachineLearning.Sampling.Hybrid
                 double currentProbability = 0;
                 int currentBucket = 0;
 
-                while(randomDouble > currentProbability + wantedDistribution.ElementAt(currentBucket).Value)
+                while (randomDouble > currentProbability + wantedDistribution.ElementAt(currentBucket).Value)
                 {
                     currentBucket++;
                     currentProbability += wantedDistribution.ElementAt(currentBucket).Value;
@@ -194,7 +202,7 @@ namespace MachineLearning.Sampling.Hybrid
         /// </summary>
         /// <param name="wholeDistribution">the distribution of the configurations</param>
         /// <returns><code>True</code> iff there are any configurations left</returns>
-        private bool HasSamples(Dictionary<double, List<Configuration>> wholeDistribution)
+        protected bool HasSamples(Dictionary<double, List<Configuration>> wholeDistribution)
         {
             foreach (double d in wholeDistribution.Keys)
             {
@@ -275,7 +283,8 @@ namespace MachineLearning.Sampling.Hybrid
                     if (!binOpt.Optional && CountChildren(binOpt, GlobalState.varModel) > 0)
                     {
                         allValueSets.Add(new List<double> { this.metric.ComputeDistanceOfBinaryFeature(1) });
-                    } else
+                    }
+                    else
                     {
                         allValueSets.Add(new List<double> { this.metric.ComputeDistanceOfBinaryFeature(0), this.metric.ComputeDistanceOfBinaryFeature(1) });
                     }
@@ -285,7 +294,7 @@ namespace MachineLearning.Sampling.Hybrid
             List<double> result = ComputeSumOfCartesianProduct(allValueSets);
 
             // Sort the list
-            result.Sort(delegate(double x, double y)
+            result.Sort(delegate (double x, double y)
             {
                 return x.CompareTo(y);
             });
@@ -338,7 +347,8 @@ namespace MachineLearning.Sampling.Hybrid
             if (remaining.Count == 0)
             {
                 return currentList;
-            } else
+            }
+            else
             {
                 List<double> sumOfRest = ComputeSumOfCartesianProduct(remaining);
                 List<double> newList = new List<double>();
@@ -383,14 +393,6 @@ namespace MachineLearning.Sampling.Hybrid
             }
 
             return numberConfigs;
-        }
-
-        /// <summary>
-        /// See <see cref="HybridStrategy.GetName"/>.
-        /// </summary>
-        public override string GetName()
-        {
-            return "DISTRIBUTION-AWARE";
         }
     }
 }

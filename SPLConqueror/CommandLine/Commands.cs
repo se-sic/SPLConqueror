@@ -6,14 +6,13 @@ using System.Text;
 using MachineLearning.Learning;
 using MachineLearning.Learning.Regression;
 using MachineLearning.Sampling.ExperimentalDesigns;
-using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
 using Persistence;
-using MachineLearning;
 using ProcessWrapper;
 using MachineLearning.Sampling.Hybrid;
+using MachineLearning.Sampling.Hybrid.Distributive;
 
 namespace CommandLine
 {
