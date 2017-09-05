@@ -1,13 +1,12 @@
 ﻿using MachineLearning.Sampling.Heuristics;
-using MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.DistanceMetric;
-using MachineLearning.Sampling.Hybrid.Distribution_Aware.Distributive.Distribution;
+using MachineLearning.Sampling.Hybrid.Distributive;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MachineLearning.Sampling.Hybrid
+namespace MachineLearning.Sampling.Hybrid.Distributive
 {
     /// <summary>
     /// This class summarizes the methods of distribution-aware and distribution-preserving sampling and is realized by using
@@ -313,7 +312,7 @@ namespace MachineLearning.Sampling.Hybrid
             int count = 0;
             foreach (ConfigurationOption conf in var.getOptions())
             {
-                if (conf == o)
+                if (conf == o || conf.Parent == null)
                 {
                     continue;
                 }

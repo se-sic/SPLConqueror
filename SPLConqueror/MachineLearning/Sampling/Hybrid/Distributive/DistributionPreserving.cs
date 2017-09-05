@@ -10,7 +10,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
     /// The first distribution is the one selected by the user (e.g., uniform), whereas the second distribution is the original distribution of the subject system.
     /// To obtain a distribution with a total probability of 1, a normalization constant is used.
     /// </summary>
-    class DistributionPreserving : DistributionSensitive
+    public class DistributionPreserving : DistributionSensitive
     {
         /// <summary>
         /// This method multiplies two distributions, namely the distribution provided by the user and the 
@@ -87,19 +87,21 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             }
 
             // Now that the sanity checks are done, compute the new distribution
-            Dictionary<double, double> result = new Dictionary<double, double>();
+            Dictionary<double, double> probabilities = new Dictionary<double, double>();
 
             double sum = 0;
             foreach (double d in firstDistribution.Keys)
             {
-                result[d] = firstDistribution[d] * secondDistribution[d];
-                sum += result[d];
+                probabilities[d] = firstDistribution[d] * secondDistribution[d];
+                sum += probabilities[d];
             }
 
+            Dictionary<double, double> result = new Dictionary<double, double>();
+
             // Afterwards, divide it by the sum to obtain a total probability of 1
-            foreach (double d in result.Keys)
+            foreach (double d in probabilities.Keys)
             {
-                result[d] = result[d] / sum;
+                result[d] = probabilities[d] / sum;
             }
 
             return result;

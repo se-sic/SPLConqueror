@@ -121,6 +121,7 @@ namespace CommandLine
 
         public const string COMMAND_HYBRID = "hybrid";
         public const string COMMAND_HYBRID_DISTRIBUTION_AWARE = "distribution-aware";
+        public const string COMMAND_HYBRID_DISTRIBUTION_PRESERVING = "distribution-preserving";
 
         public const string COMMAND_SUBSCRIPT = "script";
 
@@ -1340,6 +1341,9 @@ namespace CommandLine
             {
                 case COMMAND_HYBRID_DISTRIBUTION_AWARE:
                     hybridDesign = new DistributionAware();
+                    break;
+                case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
+                    hybridDesign = new DistributionPreserving();
                     break;
                 default:
                     return task;
