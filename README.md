@@ -519,9 +519,11 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```numeric fullfactorial``` | numeric fullfactorial |
 | Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```numeric boxbehnken``` | numeric boxbehnken |
 | Numeric | hypersampling | | ```numeric hypersampling precision:<precisionValue>``` | numeric hypersampling precision:25 |
-| Numeric | onefactoratatime | | ```numeric onefactoratatime distinctValuesPerOption:<values>``` | numeric onefactoratatime distinctValuesPerOption:5 | numeric distribution-aware numConfigs:asTW2 |
+| Numeric | onefactoratatime | | ```numeric onefactoratatime distinctValuesPerOption:<values>``` | numeric onefactoratatime distinctValuesPerOption:5 |
 | Numeric | kexchange | | ```numeric kexchange sampleSize:<size> k:<kvalue>``` | numeric kexchange sampleSize:10 k:3 |
-| Both | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]> onlyNumeric:<true/false> onlyBinary<true/false>``` | hybrid distribution-aware numConfigs:asTW3 |
+| Both | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]> onlyNumeric:<true/false> onlyBinary:<true/false>``` | hybrid distribution-aware numConfigs:asTW3 |
+| Both | distribution-preserving | Uses distribution-preserving sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-preserving distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]> onlyNumeric:<true/false> onlyBinary:<true/false>``` | hybrid distribution-preserving numConfigs:asTW3 |
+
 
 For instance, all binary options and random numeric options with a sample size of 50 and a seed of 3 should be used for learning, the following lines have to be appended to the .a-script:
 ```
