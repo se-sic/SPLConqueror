@@ -28,6 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.AutoSize = true;
+            this.AutoScroll = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+
             this.GenerateScript = new System.Windows.Forms.Button();
             this.MlSettings_Box = new System.Windows.Forms.GroupBox();
             this.AddMlSetting = new System.Windows.Forms.Button();

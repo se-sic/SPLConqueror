@@ -1,7 +1,8 @@
 log ./learnOutput.txt
-mlsettings bagging:False stopOnLongRound:False parallelization:False lossFunction:RELATIVE useBackward:False abortError:10 limitFeatureSize:False featureSizeTreshold:7 quadraticFunctionSupport:True crossValidation:False learn_logFunction:True numberOfRounds:70 backwardErrorDelta:1 minImprovementPerRound:0.25 withHierarchy:False
+mlsettings bagging:False stopOnLongRound:False parallelization:False lossFunction:RELATIVE useBackward:False abortError:10 limitFeatureSize:False featureSizeTreshold:7 quadraticFunctionSupport:True crossValidation:False learn-logFunction:True numberOfRounds:70 backwardErrorDelta:1 minImprovementPerRound:0.25 withHierarchy:False
 vm ./VariabilityModel.xml
 all ./measurements.xml
 nfp Performance
-learnwithallmeasurements
+select-all-measurements true
+learn-splconqueror
 clean-sampling
