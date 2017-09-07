@@ -1,7 +1,7 @@
 log ./out.txt
-load_MLsettings ./MlSettings.txt
+load-mlsettings ./MlSettings.txt
 vm ./VariabilityModel.xml
 printSettings 
-pairWise
-expDesign random
+binary pairWise
+numeric random
 #printConfigs ./ConfigurationsByPrinter.txt PREFIX POSTFIX

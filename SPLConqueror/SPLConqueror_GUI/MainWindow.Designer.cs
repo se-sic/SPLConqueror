@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.AutoSize = true;
+            this.AutoScroll = true;
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.interactionChartRepl = new OxyPlot.WindowsForms.PlotView();
@@ -36,7 +39,7 @@
             this.maxOccChartRepl = new OxyPlot.WindowsForms.PlotView();
             this.rangeChartRepl = new OxyPlot.WindowsForms.PlotView();
             this.evaluationGroupBox = new System.Windows.Forms.GroupBox();
-            this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
+            this .evaluationFunctionPanel = new System.Windows.Forms.Panel();
             this.defaultNumericOptionLabel = new System.Windows.Forms.Label();
             this.numericDefaultPanel = new System.Windows.Forms.Panel();
             this.failureLabel = new System.Windows.Forms.Label();
