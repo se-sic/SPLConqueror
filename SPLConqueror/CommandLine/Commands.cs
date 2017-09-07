@@ -6,14 +6,13 @@ using System.Text;
 using MachineLearning.Learning;
 using MachineLearning.Learning.Regression;
 using MachineLearning.Sampling.ExperimentalDesigns;
-using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
 using Persistence;
-using MachineLearning;
 using ProcessWrapper;
 using MachineLearning.Sampling.Hybrid;
+using MachineLearning.Sampling.Hybrid.Distributive;
 
 namespace CommandLine
 {
@@ -122,6 +121,7 @@ namespace CommandLine
 
         public const string COMMAND_HYBRID = "hybrid";
         public const string COMMAND_HYBRID_DISTRIBUTION_AWARE = "distribution-aware";
+        public const string COMMAND_HYBRID_DISTRIBUTION_PRESERVING = "distribution-preserving";
 
         public const string COMMAND_SUBSCRIPT = "script";
 
@@ -1341,6 +1341,9 @@ namespace CommandLine
             {
                 case COMMAND_HYBRID_DISTRIBUTION_AWARE:
                     hybridDesign = new DistributionAware();
+                    break;
+                case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
+                    hybridDesign = new DistributionPreserving();
                     break;
                 default:
                     return task;
