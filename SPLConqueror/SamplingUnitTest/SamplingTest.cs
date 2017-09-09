@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Hybrid;
 using System.Reflection;
+using MachineLearning.Sampling.Hybrid.Distributive;
 
 namespace SamplingUnitTest
 {
@@ -37,6 +38,8 @@ namespace SamplingUnitTest
         private const int EXPECTED_T_WISE_3 = 602;
         private const int EXPECTED_T_WISE_2 = 287;
         private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
+        private const int EXPECTED_DIST_AW = 41;
+        private const int EXPECTED_DIST_PRESERVING = 41;
 
         [Test, Order(1)]
         public void TestLoadingTestVM()
@@ -306,6 +309,42 @@ namespace SamplingUnitTest
             Assert.AreEqual(EXPECTED_BINARY_RANDOM_TW_15, result.Count);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             Assert.True(containsAllMeasurements(result, expected));
+        }
+
+        [Test, Order(14)]
+        public void TestDistributionAware()
+        {
+            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar;
+            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware());
+            Assert.AreEqual(EXPECTED_DIST_AW, distAwareBinAndNum.Count);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
+                locTemplate + "DistributionAwareCompleteConfigurations.csv", GlobalState.varModel);
+            Assert.True(containsAllMeasurements(distAwareBinAndNum, expected));
+
+
+        }
+
+        private List<Configuration> buildSampleSetHybrid(HybridStrategy design)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            List<HybridStrategy> hybridStrategies = new List<HybridStrategy>();
+            design.SetSamplingParameters(parameters);
+            hybridStrategies.Add(design);
+            return ConfigurationBuilder.buildConfigs(model, new List<SamplingStrategies>(), 
+                new List<ExperimentalDesign>(), hybridStrategies);
+        }
+
+        [Test, Order(15)]
+        public void TestDistributionPreserving()
+        {
+            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar;
+            List<Configuration> distPreserving = buildSampleSetHybrid(new DistributionPreserving());
+            Assert.AreEqual(EXPECTED_DIST_PRESERVING, distPreserving.Count);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
+                locTemplate + "DistributionPreserving.csv", GlobalState.varModel);
+            Assert.True(containsAllMeasurements(distPreserving, expected));
         }
     }
 }
