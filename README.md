@@ -381,6 +381,16 @@ A short example using this format is provided in the following:
 </results>
 ```
 
+Optionally you, in case you have knowlegde about the relative deviation, you can also provide the deviation values in a coma separated format. The highest rel. deviation value is used as metric of how accurate the learning can and therefore used as the abort error for the learning.
+```
+<results deviation="2;3;9.13">
+  .
+  .
+  .
+</results>
+```
+
+
 Further real world examples of measurements in xml format are provided in the [Suplemental Material](http://www.infosun.fim.uni-passau.de/se/projects/splconqueror/#supMat).
 
 Alternatively, the measurements can be provided in a *csv*-format. Thereby, the first row has to be a header with the name of the binary and numeric options and the names of the non functional properties. In the column of binary options there has to be either true or false, indicating whether the feature was selected in this configuration or not, and in the columns of numeric options the values that were selected in this configuration. In the columns are the values of the properties that were measured for this property. So if we format the above example in csv format: 
