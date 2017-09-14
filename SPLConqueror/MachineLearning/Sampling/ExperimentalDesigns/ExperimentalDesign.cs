@@ -59,6 +59,15 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         }
 
         /// <summary>
+        /// Gets the sampling domain of the experimental design.
+        /// </summary>
+        /// <returns>Set of numeric options that are considered by the design.</returns>
+        public List<NumericOption> getSamplingDomain()
+        {
+            return options;
+        }
+
+        /// <summary>
         /// Instatiates a new experimental design based on a given string. the format is: "[NumericOption1,Num2,...] Parameter1:VALUE Parameter2:VALUE"
         /// </summary>
         /// <param name="param">The string containing the parameters and numeric options used by an experimental design</param>

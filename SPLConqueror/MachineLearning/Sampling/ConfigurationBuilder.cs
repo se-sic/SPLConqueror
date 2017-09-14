@@ -218,7 +218,7 @@ namespace MachineLearning.Sampling
                 SamplingStrategies currentSamplingStrategy = (SamplingStrategies)System.Enum.Parse(typeof(SamplingStrategies), samplingDesign.getName());
                 if (optionsToConsider.ContainsKey(currentSamplingStrategy))
                     samplingDesign.setSamplingDomain(optionsToConsider[currentSamplingStrategy]);
-                else
+                else if (samplingDesign.getSamplingDomain().Count == 0)
                     samplingDesign.setSamplingDomain(vm.getNonBlacklistedNumericOptions(blacklisted));
                 samplingDesign.computeDesign();
                 numericOptions.AddRange(samplingDesign.SelectedConfigurations);
