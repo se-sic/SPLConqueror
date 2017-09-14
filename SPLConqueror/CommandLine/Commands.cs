@@ -1278,8 +1278,6 @@ namespace CommandLine
         /// </summary>
         /// <param name="task">the task containing the name of the sampling strategy and the parameters</param>
         /// <returns>the name of the sampling strategy if it is not found; empty string otherwise</returns>
-        // TODO : Delete
-        [Obsolete("hybrid strategies are now called via numeric/binary", false)]
         private string performOneCommand_Hybrid(string task)
         {
             // splits the task in design and parameters of the design
@@ -1341,25 +1339,17 @@ namespace CommandLine
             {
                 case COMMAND_HYBRID_DISTRIBUTION_AWARE:
                     hybridDesign = new DistributionAware();
+                    hybridDesign.SetSamplingDomain(optionsToConsider);
                     break;
                 case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
                     hybridDesign = new DistributionPreserving();
+                    hybridDesign.SetSamplingDomain(optionsToConsider);
                     break;
                 default:
                     return task;
             }
 
-            hybridDesign.SetSamplingParameters(parameter);
-            if (parameter.ContainsKey("validation"))
-            {
-                this.hybridToSampleValidation.Add(hybridDesign);
-                this.exp.info.numericSamplings_Validation = hybridDesign.GetName();
-            }
-            else
-            {
-                this.hybridToSample.Add(hybridDesign);
-                this.exp.info.numericSamplings_Learning = hybridDesign.GetName();
-            }
+            addHybridDesign(hybridDesign, parameter.ContainsKey("validation"), parameter);
 
             return "";
         }
@@ -1409,11 +1399,64 @@ namespace CommandLine
                     addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameterKeyAndValue,
                             task.Contains(COMMAND_VALIDATION));
                     break;
-
+                //TODO:hybrid as bin/num
+                //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                //    addHybridAsBin(new DistributionAware(), task.Contains(COMMAND_VALIDATION), parameterKeyAndValue);
+                //    break;
+                //case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
+                //    addHybridDesign(new DistributionPreserving(), task.Contains(COMMAND_VALIDATION),
+                //        parameterKeyAndValue);
+                //    break;
                 default:
                     GlobalState.logError.logLine("Invalid binary strategy: " + strategyName);
                     break;
             }
+        }
+
+        //TODO:hybrid as bin/num
+        //private void addHybridAsBin(HybridStrategy hybrid, bool isValidation, Dictionary<string, string> parameters)
+        //{
+        //    initHybridParamsNoMixed(parameters, DistributionAware.ONLY_BINARY, DistributionAware.ONLY_NUMERIC);
+        //    addHybridDesign(hybrid, isValidation, parameters);
+        //}
+
+        //private void addHybridAsNumeric(HybridStrategy hybrid, bool isValidation, Dictionary<string,string> parameters)
+        //{
+        //    initHybridParamsNoMixed(parameters, DistributionAware.ONLY_NUMERIC, DistributionAware.ONLY_BINARY);
+        //    addHybridDesign(hybrid, isValidation, parameters);
+        //}
+
+        //private void initHybridParamsNoMixed(Dictionary<string, string> parameters, string defaultSet,
+        //    string notAllowed)
+        //{
+        //    string setVal;
+        //    if (!parameters.TryGetValue(defaultSet, out setVal)
+        //        || !setVal.ToLower().Equals("true"))
+        //    {
+        //        parameters[defaultSet] = "true";
+        //    }
+
+        //    if (parameters.TryGetValue(notAllowed, out setVal)
+        //        && setVal.ToLower().Equals("true"))
+        //    {
+        //        parameters[notAllowed] = "false";
+        //    }
+        //}
+
+        private void addHybridDesign(HybridStrategy hybrid, bool isValidation, Dictionary<string, string> parameters)
+        {
+            hybrid.SetSamplingParameters(parameters);
+            if (isValidation)
+            {
+                this.hybridToSampleValidation.Add(hybrid);
+                this.exp.info.numericSamplings_Validation = hybrid.GetName();
+            }
+            else
+            {
+                this.hybridToSample.Add(hybrid);
+                this.exp.info.numericSamplings_Learning = hybrid.GetName();
+            }
+
         }
 
         private void addBinSamplingNoParams(SamplingStrategies strategy, string name, bool isValidation)
@@ -1538,8 +1581,22 @@ namespace CommandLine
                     expDesign = new RandomSampling();
                     break;
 
+                //TODO:hybrids as bin/num
+                //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                //    addHybridAsNumeric(new DistributionAware(), parameter.ContainsKey("validation"), parameter);
+                //    return "";
+
+                //case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
+                //    addHybridAsNumeric(new DistributionPreserving(), parameter.ContainsKey("validation"), parameter);
+                //    return "";
+
                 default:
                     return task;
+            }
+
+            if (optionsToConsider.Count > 0)
+            {
+                expDesign.setSamplingDomain(optionsToConsider);
             }
 
             if ((expDesign is KExchangeAlgorithm || expDesign is RandomSampling) 
