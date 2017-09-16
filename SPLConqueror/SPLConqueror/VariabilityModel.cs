@@ -306,6 +306,48 @@ namespace SPLConqueror_Core
             }
         }
 
+        /// <summary>
+        /// Produce a reduced version of the variability model, containing only binary options
+        /// and at least the considered options. Is a considered option, all parent option will be inlcuded.
+        /// Constraints between options(alternative groups, implication etc), will be included if enough options
+        /// are present to (e.g. both options for implications or at least 2 options in alternative groups).
+        /// </summary>
+        /// <param name="consideredOptions">The options that will be in the reduced model.</param>
+        /// <returns>A reduced version of the model containing the considered options.</returns>
+        public VariabilityModel reduce(List<BinaryOption> consideredOptions)
+        {
+            VariabilityModel reduced = new VariabilityModel(this.name);
+            foreach (BinaryOption binOpt in consideredOptions)
+            {
+                BinaryOption child = new BinaryOption(reduced, binOpt.Name);
+                replicateOption(binOpt, child);
+                reduced.addConfigurationOption(child);
+                BinaryOption parent = (BinaryOption)binOpt.Parent;
+                while (parent != null && parent != this.root)
+                {
+                    BinaryOption newParent = new BinaryOption(reduced, parent.Name);
+                    child.Parent = newParent;
+                    replicateOption(parent, newParent);
+                    reduced.addConfigurationOption(newParent);
+                }
+
+                if (child.Parent == null)
+                    child.Parent = reduced.root;
+            }
+
+            //TODO: alternative groups, implications, exclusive groups
+
+            return reduced;
+        }
+
+        private void replicateOption(BinaryOption original, BinaryOption replication)
+        {
+            replication.Optional = original.Optional;
+            replication.OutputString = original.OutputString;
+            replication.Postfix = original.Postfix;
+            replication.Prefix = original.Prefix;
+        }
+
         private void loadNonBooleanConstraint(XmlElement xmlNode)
         {
             foreach (XmlElement nonBoolConstr in xmlNode.ChildNodes)
