@@ -1060,6 +1060,7 @@ namespace CommandLine
             numericToSampleValidation.Clear();
             hybridToSample.Clear();
             hybridToSampleValidation.Clear();
+            ConfigurationBuilder.clear();
             cleanLearning();
         }
 
@@ -1358,33 +1359,35 @@ namespace CommandLine
             List<ConfigurationOption> temp = new List<ConfigurationOption>();
             getParametersAndSamplingDomain(task, out parameterKeyAndValue, out temp);
             optionsToConsider = temp.OfType<BinaryOption>().ToList();
+            SamplingStrategies strat;
 
             switch (strategyName.ToLower())
             {
                 case COMMAND_SAMPLE_ALLBINARY:
-                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY,
-                        "ALLBINARY", task.Contains(COMMAND_VALIDATION));
+                    strat = SamplingStrategies.ALLBINARY;
+                    addBinSamplingNoParams(strat,"ALLBINARY", task.Contains(COMMAND_VALIDATION));
                     break;
                 case COMMAND_SAMPLE_FEATUREWISE:
                 case COMMAND_SAMPLE_OPTIONWISE:
-                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
-                        "OPTIONWISE", task.Contains(COMMAND_VALIDATION));
+                    strat = SamplingStrategies.OPTIONWISE;
+                    addBinSamplingNoParams(strat, "OPTIONWISE", task.Contains(COMMAND_VALIDATION));
                     break;
                 case COMMAND_SAMPLE_PAIRWISE:
-                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
-                        "PAIRWISE", task.Contains(COMMAND_VALIDATION));
+                    strat = SamplingStrategies.PAIRWISE;
+                    addBinSamplingNoParams(strat, "PAIRWISE", task.Contains(COMMAND_VALIDATION));
                     break;
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
-                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
-                        "NEGATIVE_OPTIONISE", task.Contains(COMMAND_VALIDATION));
+                    strat = SamplingStrategies.NEGATIVE_OPTIONWISE;
+                    addBinSamplingNoParams(strat, "NEGATIVE_OPTIONISE", task.Contains(COMMAND_VALIDATION));
                     break;
                 case COMMAND_SAMPLE_BINARY_RANDOM:
-                    addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM",
-                            parameterKeyAndValue, task.Contains(COMMAND_VALIDATION));
+                    strat = SamplingStrategies.BINARY_RANDOM;
+                    addBinSamplingParams(strat, "BINARY_RANDOM", parameterKeyAndValue, 
+                        task.Contains(COMMAND_VALIDATION));
                     break;
                 case COMMAND_SAMPLE_BINARY_TWISE:
-                    addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameterKeyAndValue,
-                            task.Contains(COMMAND_VALIDATION));
+                    strat = SamplingStrategies.T_WISE;
+                    addBinSamplingParams(strat, "T_WISE", parameterKeyAndValue, task.Contains(COMMAND_VALIDATION));
                     break;
                 //TODO:hybrid as bin/num
                 //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
@@ -1397,6 +1400,11 @@ namespace CommandLine
                 default:
                     GlobalState.logError.logLine("Invalid binary strategy: " + strategyName);
                     break;
+            }
+
+            if (optionsToConsider.Count > 0)
+            {
+                ConfigurationBuilder.optionsToConsider.Add(strat, optionsToConsider);
             }
         }
 
