@@ -1283,50 +1283,14 @@ namespace CommandLine
             // splits the task in design and parameters of the design
             string[] designAndParams = task.Split(new Char[] { ' ' }, 2);
             string designName = designAndParams[0];
-            string param = "";
-            if (designAndParams.Length > 1)
-                param = designAndParams[1];
-            string[] parameters = param.Split(' ');
 
             // parsing of the parameters
-            List<ConfigurationOption> optionsToConsider = new List<ConfigurationOption>();
-            Dictionary<string, string> parameter = new Dictionary<string, string>();
+            List<ConfigurationOption> optionsToConsider;
+            Dictionary<string, string> parameter;
+            List<ConfigurationOption> temp = new List<ConfigurationOption>();
+            getParametersAndSamplingDomain(task, out parameter, out optionsToConsider);
 
-            if (param.Length > 0)
-            {
-                foreach (string par in parameters)
-                {
-                    if (par.Contains("["))
-                    {
-                        string[] options = par.Substring(1, par.Length - 2).Split(',');
-                        foreach (string option in options)
-                        {
-                            BinaryOption binOpt = GlobalState.varModel.getBinaryOption(option);
-                            if (binOpt == null)
-                            {
-                                optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
-                            } else
-                            {
-                                optionsToConsider.Add(binOpt);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (par.Contains(':'))
-                        {
-                            string[] nameAndValue = par.Split(':');
-                            parameter.Add(nameAndValue[0], nameAndValue[1]);
-                        }
-                        else
-                        {
-                            parameter.Add(par, "");
-                        }
 
-                    }
-                }
-
-            }
             if (optionsToConsider.Count == 0)
             {
                 optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
@@ -1354,23 +1318,46 @@ namespace CommandLine
             return "";
         }
 
-        private void performOneCommand_Binary(string task)
+        private void getParametersAndSamplingDomain(string taskLine, out Dictionary<string, string> parameters, 
+            out List<ConfigurationOption> samplingDomain)
         {
-            string strategyName = task.Split(new string[] { " " }, StringSplitOptions.None)[0];
-            Dictionary<string, string> parameterKeyAndValue = new Dictionary<string, string>();
-            string[] parameters = task.Split(new string[] { " " }, StringSplitOptions.None);
+            parameters = new Dictionary<string, string>();
+            samplingDomain = new List<ConfigurationOption>();
 
-            if (parameters.Length > 1)
+            string[] args = taskLine.Split(new string[] { " " }, StringSplitOptions.None);
+
+            if (args.Length > 1)
             {
-                foreach (string param in parameters)
+                foreach (string param in args)
                 {
-                    if (param.Contains(":"))
+                    if (param.Contains("["))
+                    {
+                        string[] options = param.Substring(1, param.Length - 2).Split(',');
+                        foreach (string option in options)
+                        {
+                            samplingDomain.Add(GlobalState.varModel.getOption(option));
+                        }
+                    }
+                    else if (param.Contains(":"))
                     {
                         string[] keyAndValue = param.Split(new string[] { ":" }, StringSplitOptions.None);
-                        parameterKeyAndValue.Add(keyAndValue[0], keyAndValue[1]);
+                        parameters.Add(keyAndValue[0], keyAndValue[1]);
+                    } else
+                    {
+                        parameters.Add(param, "");
                     }
                 }
             }
+        }
+
+        private void performOneCommand_Binary(string task)
+        {
+            string strategyName = task.Split(new string[] { " " }, StringSplitOptions.None)[0];
+            Dictionary<string, string> parameterKeyAndValue;
+            List<BinaryOption> optionsToConsider;
+            List<ConfigurationOption> temp = new List<ConfigurationOption>();
+            getParametersAndSamplingDomain(task, out parameterKeyAndValue, out temp);
+            optionsToConsider = temp.OfType<BinaryOption>().ToList();
 
             switch (strategyName.ToLower())
             {
@@ -1500,46 +1487,17 @@ namespace CommandLine
         {
             // splits the task in design and parameters of the design
             string[] designAndParams = task.Split(new Char[] { ' ' }, 2);
-            string designName = designAndParams[0];
-            string param = "";
-            if (designAndParams.Length > 1)
-                param = designAndParams[1];
-            string[] parameters = param.Split(' ');
+            string designName = designAndParams[0];;
 
 
 
             // parsing of the parameters
-            List<NumericOption> optionsToConsider = new List<NumericOption>();
+            List<NumericOption> optionsToConsider;
             Dictionary<string, string> parameter = new Dictionary<string, string>();
+            List<ConfigurationOption> temp = new List<ConfigurationOption>();
+            getParametersAndSamplingDomain(task, out parameter, out temp);
+            optionsToConsider = temp.OfType<NumericOption>().ToList();
 
-            if (param.Length > 0)
-            {
-                foreach (string par in parameters)
-                {
-                    if (par.Contains("["))
-                    {
-                        string[] options = par.Substring(1, par.Length - 2).Split(',');
-                        foreach (string option in options)
-                        {
-                            optionsToConsider.Add(GlobalState.varModel.getNumericOption(option));
-                        }
-                    }
-                    else
-                    {
-                        if (par.Contains(':'))
-                        {
-                            string[] nameAndValue = par.Split(':');
-                            parameter.Add(nameAndValue[0], nameAndValue[1]);
-                        }
-                        else
-                        {
-                            parameter.Add(par, "");
-                        }
-
-                    }
-                }
-
-            }
             if (optionsToConsider.Count == 0)
                 optionsToConsider = GlobalState.varModel.NumericOptions;
 
