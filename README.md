@@ -414,7 +414,7 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | baggingNumbers | Specifies how often an influence model is learned based on a subset of the measurement data. | 100 | int |
 | baggingTestDataFraction | Specifies the percentage of data taken from the test set to be used in one learning run. | 50 | int |
 | useBackward | Terms existing in the model can be removed during the learning procedure if removal leads to a better model. | 50 | int |
-| abortError | The threshold at which the learning process stops. | 1 | double |
+| abortError | The threshold at which the learning process stops.(abortError can also be set via measurement file, see measurement section for more information) | 1 | double |
 | limitFeatureSize | Terms considered during the learning procedure can not become arbitrary complex. | false | true, false |
 | featureSizeThreshold | The maximal number of options participating in one interaction. | 4 | int |
 | quadraticFunctionSupport | The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true. | true | true, false |
@@ -547,6 +547,14 @@ hybrid distribution-aware
 ```
 
 **Note**: ```allbinary``` in combination with ```fullfactorial``` results in all valid measurements being taken into the sample set.
+
+##### Sampling domain
+
+It also to consider only a subset of the configuration options for aampling. To do this, add the options that should be used in square brackets as additional argument when stating the sampling strategies.
+For example:
+```
+numeric random [numOpt1,numOpt2,numOpt3]
+```
 
 #### Learning with sample set
 
