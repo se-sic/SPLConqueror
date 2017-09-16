@@ -13,7 +13,7 @@ namespace MachineLearning.Sampling
     {
         public static int binaryThreshold = 0;
         public static int binaryModulu = 0;
-        public static Dictionary<SamplingStrategies, List<NumericOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<NumericOption>>();
+        public static Dictionary<SamplingStrategies, List<BinaryOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<BinaryOption>>();
         public static BinaryParameters binaryParams = new BinaryParameters();
 
         // Added by Ch.K.
@@ -22,6 +22,14 @@ namespace MachineLearning.Sampling
         public static void setBlacklisted(List<String> blacklist)
         {
             ConfigurationBuilder.blacklisted = blacklist;
+        }
+
+        public static void clear()
+        {
+            binaryModulu = 0;
+            binaryThreshold = 0;
+            optionsToConsider = new Dictionary<SamplingStrategies, List<BinaryOption>>();
+            binaryParams = new BinaryParameters();
         }
 
         public static List<Configuration> buildConfigs(VariabilityModel vm, List<SamplingStrategies> binaryStrategies,
@@ -215,12 +223,7 @@ namespace MachineLearning.Sampling
         {
             foreach (ExperimentalDesign samplingDesign in samplingDesigns)
             {
-                SamplingStrategies currentSamplingStrategy = (SamplingStrategies)System.Enum.Parse(typeof(SamplingStrategies), samplingDesign.getName());
-                if (optionsToConsider.ContainsKey(currentSamplingStrategy))
-                {
-                    samplingDesign.setSamplingDomain(optionsToConsider[currentSamplingStrategy]);
-                }
-                else if (samplingDesign.getSamplingDomain() == null ||
+                if (samplingDesign.getSamplingDomain() == null ||
                     samplingDesign.getSamplingDomain().Count == 0)
                 {
                     samplingDesign.setSamplingDomain(vm.getNonBlacklistedNumericOptions(blacklisted));
