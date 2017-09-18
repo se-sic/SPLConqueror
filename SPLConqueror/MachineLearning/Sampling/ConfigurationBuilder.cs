@@ -46,20 +46,44 @@ namespace MachineLearning.Sampling
                 {
                     //Binary sampling heuristics
                     case SamplingStrategies.ALLBINARY:
-                        binaryConfigs.AddRange(vg.generateAllVariantsFast(vm));
+                        if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
+                        {
+                            List<List<BinaryOption>> variants = 
+                                vg.generateAllVariantsFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]));
+                            binaryConfigs.AddRange(changeModel(vm, variants));
+                        }
+                        else
+                        {
+                            binaryConfigs.AddRange(vg.generateAllVariantsFast(vm));
+                        }
                         break;
                     case SamplingStrategies.BINARY_RANDOM:
-                        RandomBinary rb = new RandomBinary(vm);
+                        RandomBinary rb;
+                        if (optionsToConsider.ContainsKey(SamplingStrategies.BINARY_RANDOM))
+                        {
+                            rb = new RandomBinary(vm.reduce(optionsToConsider[SamplingStrategies.BINARY_RANDOM]));
+                        } else
+                        {
+                            rb = new RandomBinary(vm);
+                        }
                         foreach (Dictionary<string, string> expDesignParamSet in binaryParams.randomBinaryParameters)
                         {
-                            binaryConfigs.AddRange(rb.getRandomConfigs(expDesignParamSet));
+                            binaryConfigs.AddRange(changeModel(vm, rb.getRandomConfigs(expDesignParamSet)));
                         }
 
                         break;
                     case SamplingStrategies.OPTIONWISE:
                         { 
                             FeatureWise fw = new FeatureWise();
-                            binaryConfigs.AddRange(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                            if (optionsToConsider.ContainsKey(SamplingStrategies.OPTIONWISE))
+                            {
+                                List<List<BinaryOption>> variants = fw.generateFeatureWiseConfigurations(GlobalState.varModel
+                                    .reduce(optionsToConsider[SamplingStrategies.OPTIONWISE]));
+                                binaryConfigs.AddRange(changeModel(vm, variants));
+                            } else
+                            {
+                                binaryConfigs.AddRange(fw.generateFeatureWiseConfigurations(GlobalState.varModel));
+                            }
                         }
                         break;
 
@@ -74,13 +98,29 @@ namespace MachineLearning.Sampling
                     case SamplingStrategies.PAIRWISE:
                         {
                             PairWise pw = new PairWise();
-                            binaryConfigs.AddRange(pw.generatePairWiseVariants(GlobalState.varModel));
+                            if (optionsToConsider.ContainsKey(SamplingStrategies.PAIRWISE))
+                            {
+                                List<List<BinaryOption>> variants = pw.generatePairWiseVariants(GlobalState.varModel
+                                    .reduce(optionsToConsider[SamplingStrategies.PAIRWISE]));
+                                binaryConfigs.AddRange(changeModel(vm, variants));
+                            } else
+                            {
+                                binaryConfigs.AddRange(pw.generatePairWiseVariants(GlobalState.varModel));
+                            }
                         }
                         break;
                     case SamplingStrategies.NEGATIVE_OPTIONWISE:
                         {
                             NegFeatureWise neg = new NegFeatureWise();//2nd option: neg.generateNegativeFWAllCombinations(GlobalState.varModel));
-                            binaryConfigs.AddRange(neg.generateNegativeFW(GlobalState.varModel));
+                            if (optionsToConsider.ContainsKey(SamplingStrategies.NEGATIVE_OPTIONWISE))
+                            {
+                                List<List<BinaryOption>> variants = neg.generateNegativeFW(GlobalState.varModel
+                                    .reduce(optionsToConsider[SamplingStrategies.NEGATIVE_OPTIONWISE]));
+                                binaryConfigs.AddRange(changeModel(vm, variants));
+                            } else
+                            {
+                                binaryConfigs.AddRange(neg.generateNegativeFW(GlobalState.varModel));
+                            }
                         }
                         break;
 
@@ -96,7 +136,17 @@ namespace MachineLearning.Sampling
                                 {
                                     t = Convert.ToInt16(param.Value);
                                 }
-                                binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
+
+                                if (optionsToConsider.ContainsKey(SamplingStrategies.T_WISE))
+                                {
+                                    List<List<BinaryOption>> variants = tw.generateT_WiseVariants_new(
+                                        vm.reduce(optionsToConsider[SamplingStrategies.T_WISE]), t);
+                                    binaryConfigs.AddRange(changeModel(vm, variants));
+                                }
+                                else
+                                {
+                                    binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
+                                }
                             }
                         }
                         break;
@@ -216,6 +266,25 @@ namespace MachineLearning.Sampling
                 allSampledConfigurations.AddRange(hybrid.selectedConfigurations);
             }
             return allSampledConfigurations;
+        }
+
+        private static List<List<BinaryOption>> changeModel(VariabilityModel vm, List<List<BinaryOption>> variants)
+        {
+            List<List<BinaryOption>> toReturn = new List<List<BinaryOption>>();
+
+            foreach (List<BinaryOption> variant in variants)
+            {
+                List<BinaryOption> variantInRightModel = new List<BinaryOption>();
+
+                foreach (BinaryOption opt in variant)
+                {
+                    variantInRightModel.Add(vm.getBinaryOption(opt.Name));
+                }
+
+                toReturn.Add(variantInRightModel);
+            }
+
+            return toReturn;
         }
 
         private static void handleDesigns(List<ExperimentalDesign> samplingDesigns, List<Dictionary<NumericOption, Double>> numericOptions,
