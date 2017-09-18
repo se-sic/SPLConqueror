@@ -306,6 +306,8 @@ namespace SPLConqueror_Core
             }
         }
 
+        #region to replicate VM with a given subset
+
         /// <summary>
         /// Produce a reduced version of the variability model, containing only binary options
         /// and at least the considered options. Is a considered option, all parent option will be inlcuded.
@@ -323,19 +325,61 @@ namespace SPLConqueror_Core
                 replicateOption(binOpt, child);
                 reduced.addConfigurationOption(child);
                 BinaryOption parent = (BinaryOption)binOpt.Parent;
-                while (parent != null && parent != this.root)
+                bool parentExists = false;
+                while ((parent != null && parent != this.root) && !parentExists)
                 {
-                    BinaryOption newParent = new BinaryOption(reduced, parent.Name);
+                    BinaryOption newParent = reduced.getBinaryOption(parent.Name);
+                    if (newParent == null)
+                    {
+                        newParent = new BinaryOption(reduced, parent.Name);
+                        replicateOption(parent, newParent);
+                        reduced.addConfigurationOption(newParent);
+                    }
+                    else
+                        parentExists = true;
                     child.Parent = newParent;
-                    replicateOption(parent, newParent);
-                    reduced.addConfigurationOption(newParent);
+                    child = newParent;
+                    parent = (BinaryOption)parent.Parent;
                 }
 
                 if (child.Parent == null)
                     child.Parent = reduced.root;
             }
 
-            //TODO: alternative groups, implications, exclusive groups
+            foreach (BinaryOption opt in consideredOptions)
+            {
+
+                List<List<ConfigurationOption>> impliedOptionsRepl = new List<List<ConfigurationOption>>();
+                foreach (List<ConfigurationOption> implied in opt.Implied_Options)
+                {
+                    List<ConfigurationOption> implRepl = new List<ConfigurationOption>();
+
+                    foreach (ConfigurationOption impliedOption in implied)
+                    {
+                        if (reduced.getOption(impliedOption.Name) != null)
+                            implRepl.Add(reduced.getOption(impliedOption.Name));
+                    }
+                    impliedOptionsRepl.Add(implRepl);
+  
+                }
+
+                reduced.getBinaryOption(opt.Name).Implied_Options = impliedOptionsRepl;
+
+                List<List<ConfigurationOption>> excludedOptionsRepl = new List<List<ConfigurationOption>>();
+                foreach (List<ConfigurationOption> excluded in opt.Excluded_Options)
+                {
+                    List<ConfigurationOption> exclRepl = new List<ConfigurationOption>();
+
+                    foreach (ConfigurationOption excludedOption in excluded)
+                    {
+                        if (reduced.getOption(excludedOption.Name) != null)
+                            exclRepl.Add(reduced.getOption(excludedOption.Name));
+                    }
+                    excludedOptionsRepl.Add(exclRepl);
+                }
+
+                reduced.getBinaryOption(opt.Name).Excluded_Options = excludedOptionsRepl;
+            }
 
             return reduced;
         }
@@ -347,6 +391,8 @@ namespace SPLConqueror_Core
             replication.Postfix = original.Postfix;
             replication.Prefix = original.Prefix;
         }
+
+        #endregion
 
         private void loadNonBooleanConstraint(XmlElement xmlNode)
         {
