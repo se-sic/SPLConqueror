@@ -11,7 +11,11 @@ namespace MachineLearning.Learning
     public class ML_Settings
     {
 
-        public double epsilonTube = 0;
+        /// <summary>
+        /// The epsilon within the error of the loss Function will be 0.
+        /// A epsilon of 0 is equal to this feature not being present.
+        /// </summary>
+        public double epsilon = 0;
 
         public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
 
