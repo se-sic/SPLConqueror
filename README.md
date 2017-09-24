@@ -409,6 +409,7 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | Name  | Description | Default Value | Value Range |
 | :---: | :---------: | :-----------: | :---------: |
 | lossFunction | The loss function on which bases options and interactions are added to the influence model | RELATIVE | RELATIVE, LEASTSQUARES, ABSOLUTE |
+| epsilon | The epsilon within the error of the loss Function will be 0. A epsilon of 0 is equal to this feature not being present | 0 | int |
 | parallelization | Turns the parallel execution of model candidates on/off. | true | true, false |
 | bagging | Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (may require a larger amount of memory). | false | true, false |
 | baggingNumbers | Specifies how often an influence model is learned based on a subset of the measurement data. | 100 | int |
