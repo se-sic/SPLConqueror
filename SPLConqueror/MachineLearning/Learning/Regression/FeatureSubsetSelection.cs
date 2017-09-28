@@ -993,9 +993,9 @@ namespace MachineLearning.Learning.Regression
                         // Consider epsilon tube
                         if (considerEpsilonTube)
                         {
-                            double percentageOfError = error / realValue;
-                            if (percentageOfError < this.MLsettings.epsilon)
+                            if (error <= (this.MLsettings.epsilon * 100))
                             {
+                                relativeError -= error;
                                 error = 0.0;
                             }
                         }
@@ -1005,8 +1005,9 @@ namespace MachineLearning.Learning.Regression
 
                         if (considerEpsilonTube)
                         {
-                            if (error < this.MLsettings.epsilon)
+                            if (error <= this.MLsettings.epsilon)
                             {
+                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
                                 error = 0.0;
                             }
                         }
@@ -1017,8 +1018,11 @@ namespace MachineLearning.Learning.Regression
 
                         if (considerEpsilonTube)
                         {
-                            if (error < this.MLsettings.epsilon)
+                            if (error <= this.MLsettings.epsilon)
+                            {
+                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
                                 error = 0.0;
+                            }
                         }
                         break;
                 }
