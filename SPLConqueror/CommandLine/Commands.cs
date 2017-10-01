@@ -747,7 +747,6 @@ namespace CommandLine
 
                 case COMMAND_PYTHON_LEARN:
                     {
-                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
                         List<Configuration> configurationsLearning;
                         List<Configuration> configurationsValidation;
@@ -755,19 +754,10 @@ namespace CommandLine
                             out configurationsLearning, out configurationsValidation))
                             break;
 
-                        String samplingIdentifier = createSamplingIdentifier();
-
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
                         {
-                            PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
-                            GlobalState.logInfo.logLine("Starting Prediction");
-                            pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
-                            configurationsLearning = null;
-                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, GlobalState.varModel.Name + "_" + samplingIdentifier);
-                            pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
-                            GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
-                            csvWriter.close();
+                            handlePythonTask(false, configurationsLearning, taskAsParameter);
                         }
                         else
                         {
@@ -790,11 +780,7 @@ namespace CommandLine
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                         if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
                         {
-                            PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
-                            pyInterpreter.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_PARAM_TUNING);
-                            string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
-                            pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
-                            GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                            handlePythonTask(true, configurationsLearning, taskAsParameter);
                         }
                         else
                         {
@@ -1125,6 +1111,77 @@ namespace CommandLine
 
             return configurationsTest;
         }
+
+        private void printNFPsToFile(List<Configuration> conf, string file)
+        {
+            StreamWriter sr = new StreamWriter(file);
+            conf.ForEach(x => sr.WriteLine(x.GetNFPValue()));
+            sr.Flush();
+            sr.Close();
+        }
+
+        private string createSmallerSamplingIdentifier()
+        {
+            string samplingIdentifier = createSamplingIdentifier();
+            if (samplingIdentifier.Length > 200)
+            {
+                samplingIdentifier = samplingIdentifier.Substring(0, 200);
+            }
+            return samplingIdentifier;
+        }
+
+        private void handlePythonTask(bool isParamTuning, List<Configuration> configurationsLearning, string[] taskAsParameter)
+        {
+            string samplingIdentifier = createSmallerSamplingIdentifier();
+
+            //print configurations and nfps to temp folder
+            string tempPath = Path.GetTempPath();
+            string configsLearnFile = tempPath + "learn_" + samplingIdentifier + ".csv";
+            string configsValFile = tempPath + "validation_" + samplingIdentifier + ".csv";
+            string nfpLearnFile = tempPath + "nfp_learn_" + samplingIdentifier + ".nfp";
+            string nfpValFile = tempPath + "nfp_validation_" + samplingIdentifier + ".nfp";
+
+            ConfigurationPrinter printer = new ConfigurationPrinter(configsLearnFile, "", "");
+            printer.print(configurationsLearning);
+            printer = new ConfigurationPrinter(configsValFile, "", "");
+            printer.print(GlobalState.allMeasurements.Configurations);
+            printNFPsToFile(configurationsLearning, nfpLearnFile);
+            printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
+
+            try
+            {
+                PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + 
+                    Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+                GlobalState.logInfo.logLine("Starting Prediction");
+                
+                if (isParamTuning)
+                {
+                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile, 
+                        PythonWrapper.START_PARAM_TUNING, GlobalState.varModel);
+                    string path = targetPath.Substring(0, (targetPath.Length 
+                        - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
+                    pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
+                    GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                } else
+                {
+                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile, 
+                        PythonWrapper.START_LEARN, GlobalState.varModel);
+                    PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, 
+                        GlobalState.varModel.Name + "_" + samplingIdentifier);
+                    pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                    GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                    csvWriter.close();
+                }
+            }
+            finally
+            {
+                File.Delete(configsLearnFile);
+                File.Delete(configsValFile);
+                File.Delete(nfpLearnFile);
+                File.Delete(nfpValFile);
+            }
+        }
+
 
         private Tuple<List<Configuration>, List<Configuration>> buildSetsEfficient()
         {

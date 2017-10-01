@@ -49,14 +49,16 @@ def get_configurations(learn_container, predict_container):
     print_line(PASS_OK)
     line = raw_input()
     config_and_nfp_file_predict = line.split(" ")
+    print_line(PASS_OK)
+    options = raw_input()
     if config_and_nfp_file_learn[0].strip().endswith(".csv"):
         data = parser.parse_from_csv(config_and_nfp_file_learn[0].strip(), config_and_nfp_file_predict[0].strip(),
                                      config_and_nfp_file_learn[1].strip(), config_and_nfp_file_predict[1].strip())
     else:
-        data = parser.parse_configs_from_plaintext(config_and_nfp_file_learn[0].strip(),
-                                                   config_and_nfp_file_predict[0].strip(),
-                                                   config_and_nfp_file_learn[1].strip(),
-                                                   config_and_nfp_file_predict[1].strip())
+        data = parser.parse_from_plain_text(options.strip().split(","), config_and_nfp_file_learn[0].strip(),
+                                            config_and_nfp_file_predict[0].strip(),
+                                            config_and_nfp_file_learn[1].strip(),
+                                            config_and_nfp_file_predict[1].strip())
     learn_container.features = data[0]
     learn_container.results = data[2]
     predict_container.features = data[1]
@@ -99,10 +101,10 @@ def main():
             print_line_array(predictions)
     # perform parameter tuning
     elif task == START_PARAM_TUNING:
-        target_path = raw_input()
-        parameterTuning.setOutputPath(target_path)
+        parameterTuning.setOutputPath(raw_input())
         optimal_parameters = parameterTuning.optimizeParameter(learning_strategy, configurations_learn.features,
                                                                configurations_learn.results, learner_settings)
+        print_line(FINISHED_LEARNING)
         if raw_input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimal_parameters)
 
@@ -118,19 +120,3 @@ class Configurations:
         self.features.append(features)
 
 main()
-
-
-def test_function():
-    model = learning.Learner("svr", "")
-    model.learn([[0, 0]], [1])
-    pred = model.predict([[0, 0]])
-    print_line_array(pred)
-    model = learning.Learner("ssvr", "")
-    model.learn([[0, 0]], [1])
-    pred = model.predict([[0, 0]])
-    print_line_array(pred)
-    model = learning.Learner("svr", ["C=\'bogus\'"])
-    model.learn([[0, 0]], [1])
-    print_line_array(model.predict([[0, 0]]))
-    model = learning.Learner("svr", [])
-    print_line_array(model.predict([[0, 0]]))
