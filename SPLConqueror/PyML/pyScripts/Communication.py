@@ -1,7 +1,7 @@
 import sys
 import learning
 import parameterTuning
-import parser
+import configParser
 
 # Messages received by the parent process
 SETTING_STREAM_START = "settings_start"
@@ -52,13 +52,13 @@ def get_configurations(learn_container, predict_container):
     print_line(PASS_OK)
     options = raw_input()
     if config_and_nfp_file_learn[0].strip().endswith(".csv"):
-        data = parser.parse_from_csv(config_and_nfp_file_learn[0].strip(), config_and_nfp_file_predict[0].strip(),
-                                     config_and_nfp_file_learn[1].strip(), config_and_nfp_file_predict[1].strip())
+        data = configParser.parse_from_csv(config_and_nfp_file_learn[0].strip(), config_and_nfp_file_predict[0].strip(),
+                                           config_and_nfp_file_learn[1].strip(), config_and_nfp_file_predict[1].strip())
     else:
-        data = parser.parse_from_plain_text(options.strip().split(","), config_and_nfp_file_learn[0].strip(),
-                                            config_and_nfp_file_predict[0].strip(),
-                                            config_and_nfp_file_learn[1].strip(),
-                                            config_and_nfp_file_predict[1].strip())
+        data = configParser.parse_from_plain_text(options.strip().split(","), config_and_nfp_file_learn[0].strip(),
+                                                  config_and_nfp_file_predict[0].strip(),
+                                                  config_and_nfp_file_learn[1].strip(),
+                                                  config_and_nfp_file_predict[1].strip())
     learn_container.features = data[0]
     learn_container.results = data[2]
     predict_container.features = data[1]

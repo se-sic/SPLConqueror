@@ -51,13 +51,17 @@ def parse_from_plain_text(configuration_options, configuration_learn_file, confi
 def parse_configs_from_csv(configuration_file):
     config_selection = []
     f = open(configuration_file, 'r')
+    j = 0
     for row in csv.reader(f, delimiter=';'):
-        config = []
-        i = 0
-        while i < len(row):
-            config.append(int(row[i]))
-            i += 1
-        config_selection.append(config)
+        if j == 0:
+            j += 1
+        else:
+            config = []
+            i = 0
+            while i < len(row):
+                config.append(int(row[i]))
+                i += 1
+            config_selection.append(config)
 
     f.close()
     return config_selection

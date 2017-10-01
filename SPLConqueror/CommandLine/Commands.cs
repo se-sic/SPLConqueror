@@ -1141,15 +1141,19 @@ namespace CommandLine
             string nfpLearnFile = tempPath + "nfp_learn_" + samplingIdentifier + ".nfp";
             string nfpValFile = tempPath + "nfp_validation_" + samplingIdentifier + ".nfp";
 
-            ConfigurationPrinter printer = new ConfigurationPrinter(configsLearnFile, "", "");
-            printer.print(configurationsLearning);
-            printer = new ConfigurationPrinter(configsValFile, "", "");
-            printer.print(GlobalState.allMeasurements.Configurations);
-            printNFPsToFile(configurationsLearning, nfpLearnFile);
-            printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
-
             try
             {
+                if (GlobalState.optionOrder.Count == 0)
+                {
+                    GlobalState.optionOrder.AddRange(GlobalState.varModel.BinaryOptions);
+                    GlobalState.optionOrder.AddRange(GlobalState.varModel.NumericOptions);
+                }
+                ConfigurationPrinter printer = new ConfigurationPrinter(configsLearnFile, GlobalState.optionOrder);
+                printer.print(configurationsLearning);
+                printer = new ConfigurationPrinter(configsValFile, GlobalState.optionOrder);
+                printer.print(GlobalState.allMeasurements.Configurations);
+                printNFPsToFile(configurationsLearning, nfpLearnFile);
+                printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
                 PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + 
                     Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                 GlobalState.logInfo.logLine("Starting Prediction");

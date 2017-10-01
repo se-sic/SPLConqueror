@@ -1,7 +1,9 @@
 log ./out.txt
-load-mlsettings ./MlSettings.txt
-vm ./VariabilityModel.xml
-printSettings 
+vm ./BerkeleyDBFeatureModel.xml
+all ./BerkeleyDBMeasurements.xml
+nfp MainMemory
 binary pairWise
 numeric random
+define-python-path C:\Anaconda2\
+learn-python SVR
 #printConfigs ./ConfigurationsByPrinter.txt PREFIX POSTFIX
