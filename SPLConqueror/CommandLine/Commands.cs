@@ -1134,6 +1134,12 @@ namespace CommandLine
         {
             string samplingIdentifier = createSmallerSamplingIdentifier();
 
+            if (samplingIdentifier.Length > 50)
+            {
+                samplingIdentifier = samplingIdentifier.Substring(0, 50);
+
+            }
+
             //print configurations and nfps to temp folder
             string tempPath = Path.GetTempPath();
             string configsLearnFile = tempPath + "learn_" + samplingIdentifier + ".csv";

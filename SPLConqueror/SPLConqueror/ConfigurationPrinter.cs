@@ -74,6 +74,18 @@ namespace SPLConqueror_Core
         /// <returns>True if the configurations can be printed in the file.</returns>
         public bool print(List<Configuration> configurations)
         {
+            if (file.Length > 250)
+            {
+                bool isCSV = file.EndsWith(CSV_FILE_EXTENSION);
+                file = file.Substring(0, file.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+                Random rand = new Random();
+                file += "configs" + rand.Next(99);
+                if (isCSV)
+                {
+                    file += ".csv";
+                }
+                GlobalState.logInfo.logLine("File name for configurations file was too long. Changed to" + file);
+            }
             if (!File.Exists(file))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(file));
