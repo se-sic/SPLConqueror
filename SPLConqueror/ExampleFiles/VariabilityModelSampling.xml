@@ -8,7 +8,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>False</optional>
@@ -19,7 +18,6 @@
       <postfix>
       </postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>False</optional>
@@ -29,7 +27,6 @@
       <prefix>-?</prefix>
       <postfix>kg</postfix>
       <parent>binOpt1</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -41,124 +38,115 @@
       <postfix>
       </postfix>
       <parent>binOpt1</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>binOpt2</options>
       </excludedOptions>
       <optional>True</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>group</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>False</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>member1</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>group</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>member2</options>
-		<options>member3</options>
+        <options>member3</options>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>member2</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>group</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>member1</options>
-		<options>member3</options>
+        <options>member3</options>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>member3</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>group</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>member1</options>
-		<options>member2</options>
+        <options>member2</options>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
-		<configurationOption>
+    <configurationOption>
       <name>group2</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>False</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>member21</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>group2</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>member22</options>
-		<options>member23</options>
+        <options>member23</options>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>member22</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>group2</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>member21</options>
-		<options>member23</options>
+        <options>member23</options>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
-	<configurationOption>
+    <configurationOption>
       <name>member23</name>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>group2</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>member21</options>
-		<options>member22</options>
+        <options>member22</options>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
@@ -167,29 +155,26 @@
       <prefix>4_</prefix>
       <postfix>_4</postfix>
       <parent>binOpt1</parent>
-      <children />
       <impliedOptions>
         <options>binOpt2</options>
       </impliedOptions>
       <excludedOptions />
       <optional>True</optional>
-	  </configurationOption>
-	    <configurationOption>
+    </configurationOption>
+    <configurationOption>
       <name>binOpt6</name>
       <prefix>6</prefix>
       <postfix>6</postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
     </configurationOption>
-	    <configurationOption>
+    <configurationOption>
       <name>binOpt5</name>
       <prefix>5</prefix>
       <postfix>5</postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions>
         <options>binOpt6</options>
       </impliedOptions>

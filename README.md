@@ -169,12 +169,10 @@ An example for a variability model is given below:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption2<option>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -183,12 +181,10 @@ An example for a variability model is given below:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption1<option>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
   </binaryOptions>
@@ -199,12 +195,10 @@ An example for a variability model is given below:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <minValue>1</minValue>
       <maxValue>10</maxValue>
       <stepFunction>numericExample + 2</stepFunction>
-      <defaultValue>10</defaultValue>
     </configurationOption>
   </numericOptions>
 </vm>
@@ -300,7 +294,6 @@ For instance, a variability model with the name exampleVM is defined as follows:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption2<option>
@@ -314,7 +307,6 @@ For instance, a variability model with the name exampleVM is defined as follows:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption1<option>
@@ -330,12 +322,10 @@ For instance, a variability model with the name exampleVM is defined as follows:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <minValue>1</minValue>
       <maxValue>10</maxValue>
       <stepFunction>numericExample + 1</stepFunction>
-      <defaultValue>10</defaultValue>
     </configurationOption>
   </numericOptions>
 </vm>
