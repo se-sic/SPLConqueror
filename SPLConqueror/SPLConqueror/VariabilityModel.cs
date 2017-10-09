@@ -255,8 +255,26 @@ namespace SPLConqueror_Core
             if (!File.Exists(path))
                 return false;
             dat.Load(path);
-    
             XmlElement currentElemt = dat.DocumentElement;
+
+            // Test if old definition is used and print a warning if needed
+            var childrenNode = currentElemt.SelectSingleNode("//children");
+            if (childrenNode != null)
+            {
+                GlobalState.logInfo.logLine("Warning: Variability model contains outdated notation. " +
+                    "Children nodes will no longer have effect on the model. Instead use the parent node " +
+                    "to describe the parent of an configuration option. You can also use the converter provided" +
+                    "by the Variability Model GUI in export>convert legacy model.");
+            }
+            var defaultValueNode = currentElemt.SelectSingleNode("//defaultValue");
+            if (defaultValueNode != null)
+            {
+                GlobalState.logInfo.logLine("Warning: Default value nodes in models are no longer used" +
+                    " and should be removed. You can also use the converter provided by the Variability" + 
+                    " Model GUI in export>convert legacy model to update your model.");
+            }
+
+
             this.name = currentElemt.Attributes["name"].Value.ToString();
             foreach (XmlElement xmlNode in currentElemt.ChildNodes)
             {

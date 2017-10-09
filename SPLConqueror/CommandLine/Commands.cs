@@ -854,6 +854,8 @@ namespace CommandLine
         }
 
         #region execution of deprecated commands
+        [System.Obsolete("Warning: You are using deprecated commands. These commands might" + 
+            " be removed in the future. Please update your scripts or use the converter.",false)]
         public string performOneCommand_Depr(string line)
         {
             string command;
