@@ -924,6 +924,81 @@ namespace ScriptGenerator
                 addedElementsList.Items.Add(new Container(learnPythonCommand, parameters.ToString()));
             }
         }
+
+        private void convertLegacyScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog scriptOFD = new OpenFileDialog();
+            scriptOFD.CheckPathExists = true;
+            scriptOFD.CheckFileExists = true;
+            scriptOFD.Title = "Select the script";
+            if (scriptOFD.ShowDialog() == DialogResult.OK)
+            {
+                SaveFileDialog scriptSFD = new SaveFileDialog();
+                scriptSFD.OverwritePrompt = true;
+                scriptSFD.AddExtension = true;
+                scriptSFD.CheckPathExists = true;
+                scriptSFD.DefaultExt = "a";
+                scriptSFD.Title = "Save script";
+                if (scriptSFD.ShowDialog() == DialogResult.OK)
+                {
+                    updateScript(scriptOFD.FileName, scriptSFD.FileName);
+                }
+            }
+        }
+
+        private void updateScript(string source, string target)
+        {
+            string[] binarySampling = new string[] { Commands.COMMAND_SAMPLE_ALLBINARY,
+                    Commands.COMMAND_SAMPLE_BINARY_RANDOM, Commands.COMMAND_SAMPLE_BINARY_TWISE,
+                    Commands.COMMAND_SAMPLE_FEATUREWISE, Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE,
+                    Commands.COMMAND_SAMPLE_OPTIONWISE, Commands.COMMAND_SAMPLE_PAIRWISE,
+                    Commands.COMMAND_SAMPLING_OPTIONORDER };
+            StreamReader sr = new StreamReader(source);
+            StreamWriter sw = new StreamWriter(target);
+            string line = "";
+            while (!sr.EndOfStream)
+            {
+                line = sr.ReadLine();
+                if (binarySampling.Any(sampling => line.Contains(sampling)) 
+                    && !line.StartsWith(Commands.COMMAND_BINARY_SAMPLING))
+                {
+                    line = Commands.COMMAND_BINARY_SAMPLING + " " + line;
+                } else if (line.Contains(Commands.COMMAND_LOAD_MLSETTINGS))
+                {
+                    line = line.Replace(Commands.COMMAND_LOAD_MLSETTINGS, Commands.COMMAND_LOAD_MLSETTINGS_UNIFORM);
+                } else if (line.Contains(Commands.COMMAND_EXPERIMENTALDESIGN))
+                {
+                    line = line.Replace(Commands.COMMAND_EXPERIMENTALDESIGN, Commands.COMMAND_NUMERIC_SAMPLING);
+                } else if (line.Contains(Commands.COMMAND_PREDICT_CONFIGURATIONS))
+                {
+                    line = line.Replace(Commands.COMMAND_PREDICT_CONFIGURATIONS,
+                        Commands.COMMAND_PREDICT_CONFIGURATIONS_SPLC);
+                } else if (line.Contains(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS))
+                {
+                    line = line.Replace(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS,
+                        Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC);
+                } else if (line.Contains(Commands.COMMAND_START_ALLMEASUREMENTS))
+                {
+                    line = Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true" + Environment.NewLine 
+                        + Commands.COMMAND_START_LEARNING_SPL_CONQUEROR + Environment.NewLine 
+                        + Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " false";
+                } else if (line.Contains(Commands.COMMAND_START_LEARNING))
+                {
+                    line = line.Replace(Commands.COMMAND_START_LEARNING
+                        , Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+                } else if (line.Contains(Commands.COMMAND_OPTIMIZE_PARAMETER))
+                {
+                    line = line.Replace(Commands.COMMAND_OPTIMIZE_PARAMETER
+                        , Commands.COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR);
+                }
+
+                sw.WriteLine(line);
+            }
+            sr.Close();
+            sw.Flush();
+            sw.Close();
+            MessageBox.Show("Converted script.");
+        }
     }
 
     }

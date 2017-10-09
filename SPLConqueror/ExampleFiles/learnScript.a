@@ -5,4 +5,5 @@ all ./measurements.xml
 nfp Performance
 select-all-measurements true
 learn-splconqueror
+select-all-measurements false
 clean-sampling

@@ -28,10 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.AutoSize = true;
-            this.AutoScroll = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-
             this.GenerateScript = new System.Windows.Forms.Button();
             this.MlSettings_Box = new System.Windows.Forms.GroupBox();
             this.AddMlSetting = new System.Windows.Forms.Button();
@@ -49,6 +45,11 @@
             this.cleanGlobalAfterVM = new System.Windows.Forms.CheckBox();
             this.informatioLabel = new System.Windows.Forms.Label();
             this.bsamp_group = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.randomNumConfs = new System.Windows.Forms.Label();
+            this.tTextBox = new System.Windows.Forms.TextBox();
+            this.tLabel = new System.Windows.Forms.Label();
+            this.tWiseCheckBox = new System.Windows.Forms.CheckBox();
             this.randomSeedTextBox = new System.Windows.Forms.TextBox();
             this.numConfigsTextBox = new System.Windows.Forms.TextBox();
             this.bsamp_random_box = new System.Windows.Forms.CheckBox();
@@ -111,11 +112,8 @@
             this.learnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sPLConquerorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tWiseCheckBox = new System.Windows.Forms.CheckBox();
-            this.tLabel = new System.Windows.Forms.Label();
-            this.tTextBox = new System.Windows.Forms.TextBox();
-            this.randomNumConfs = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.converterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertLegacyScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MlSettings_Box.SuspendLayout();
             this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
@@ -324,6 +322,51 @@
             this.bsamp_group.TabIndex = 6;
             this.bsamp_group.TabStop = false;
             this.bsamp_group.Text = "binary sampling heuristics";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(181, 93);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(45, 17);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Seed:";
+            // 
+            // randomNumConfs
+            // 
+            this.randomNumConfs.AutoSize = true;
+            this.randomNumConfs.Location = new System.Drawing.Point(94, 93);
+            this.randomNumConfs.Name = "randomNumConfs";
+            this.randomNumConfs.Size = new System.Drawing.Size(39, 17);
+            this.randomNumConfs.TabIndex = 12;
+            this.randomNumConfs.Text = "num:";
+            // 
+            // tTextBox
+            // 
+            this.tTextBox.Location = new System.Drawing.Point(133, 122);
+            this.tTextBox.Name = "tTextBox";
+            this.tTextBox.Size = new System.Drawing.Size(42, 22);
+            this.tTextBox.TabIndex = 11;
+            this.tTextBox.Text = "3";
+            // 
+            // tLabel
+            // 
+            this.tLabel.AutoSize = true;
+            this.tLabel.Location = new System.Drawing.Point(94, 125);
+            this.tLabel.Name = "tLabel";
+            this.tLabel.Size = new System.Drawing.Size(16, 17);
+            this.tLabel.TabIndex = 10;
+            this.tLabel.Text = "t:";
+            // 
+            // tWiseCheckBox
+            // 
+            this.tWiseCheckBox.AutoSize = true;
+            this.tWiseCheckBox.Location = new System.Drawing.Point(9, 124);
+            this.tWiseCheckBox.Name = "tWiseCheckBox";
+            this.tWiseCheckBox.Size = new System.Drawing.Size(75, 21);
+            this.tWiseCheckBox.TabIndex = 9;
+            this.tWiseCheckBox.Text = "T-Wise";
+            this.tWiseCheckBox.UseVisualStyleBackColor = true;
             // 
             // randomSeedTextBox
             // 
@@ -972,7 +1015,8 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.learnerToolStripMenuItem});
+            this.learnerToolStripMenuItem,
+            this.converterToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1081, 28);
@@ -1002,55 +1046,27 @@
             this.pythonToolStripMenuItem.Text = "Python";
             this.pythonToolStripMenuItem.Click += new System.EventHandler(this.pythonToolStripMenuItem_Click_1);
             // 
-            // tWiseCheckBox
+            // converterToolStripMenuItem
             // 
-            this.tWiseCheckBox.AutoSize = true;
-            this.tWiseCheckBox.Location = new System.Drawing.Point(9, 124);
-            this.tWiseCheckBox.Name = "tWiseCheckBox";
-            this.tWiseCheckBox.Size = new System.Drawing.Size(75, 21);
-            this.tWiseCheckBox.TabIndex = 9;
-            this.tWiseCheckBox.Text = "T-Wise";
-            this.tWiseCheckBox.UseVisualStyleBackColor = true;
+            this.converterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.convertLegacyScriptToolStripMenuItem});
+            this.converterToolStripMenuItem.Name = "converterToolStripMenuItem";
+            this.converterToolStripMenuItem.Size = new System.Drawing.Size(85, 24);
+            this.converterToolStripMenuItem.Text = "Converter";
             // 
-            // tLabel
+            // convertLegacyScriptToolStripMenuItem
             // 
-            this.tLabel.AutoSize = true;
-            this.tLabel.Location = new System.Drawing.Point(94, 125);
-            this.tLabel.Name = "tLabel";
-            this.tLabel.Size = new System.Drawing.Size(16, 17);
-            this.tLabel.TabIndex = 10;
-            this.tLabel.Text = "t:";
-            // 
-            // tTextBox
-            // 
-            this.tTextBox.Location = new System.Drawing.Point(133, 122);
-            this.tTextBox.Name = "tTextBox";
-            this.tTextBox.Size = new System.Drawing.Size(42, 22);
-            this.tTextBox.TabIndex = 11;
-            this.tTextBox.Text = "3";
-            // 
-            // randomNumConfs
-            // 
-            this.randomNumConfs.AutoSize = true;
-            this.randomNumConfs.Location = new System.Drawing.Point(94, 93);
-            this.randomNumConfs.Name = "randomNumConfs";
-            this.randomNumConfs.Size = new System.Drawing.Size(39, 17);
-            this.randomNumConfs.TabIndex = 12;
-            this.randomNumConfs.Text = "num:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(181, 93);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 17);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "Seed:";
+            this.convertLegacyScriptToolStripMenuItem.Name = "convertLegacyScriptToolStripMenuItem";
+            this.convertLegacyScriptToolStripMenuItem.Size = new System.Drawing.Size(222, 26);
+            this.convertLegacyScriptToolStripMenuItem.Text = "Convert legacy script";
+            this.convertLegacyScriptToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyScriptToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1081, 615);
             this.Controls.Add(this.pythonLearnerGroupBox);
             this.Controls.Add(this.logForEachSubscript);
@@ -1070,6 +1086,7 @@
             this.Controls.Add(this.MlSettings_Box);
             this.Controls.Add(this.GenerateScript);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
@@ -1181,6 +1198,8 @@
         private System.Windows.Forms.Label tLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label randomNumConfs;
+        private System.Windows.Forms.ToolStripMenuItem converterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertLegacyScriptToolStripMenuItem;
     }
 }
 

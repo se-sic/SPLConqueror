@@ -466,6 +466,7 @@ mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
 select-all-measurements true
 learn-splconqueror
+select-all-measurements false
 ```
 
 To disable learning with all measurements you can use ```select-all-measurements false```.
@@ -482,7 +483,7 @@ vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-learn-all-splconqueror
+learnwithallmeasurements
 ```
 
 ***
@@ -497,7 +498,9 @@ vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-learnwithallmeasurements
+select-all-measurements true
+learn-splconqueror
+select-all-measurements false
 analyze-learning
 ```
 
@@ -701,8 +704,9 @@ all ./measurements.xml
 nfp Performance
 
 # Learns with all configurations given in the measurements-file.
-# Note that 'start' is not needed in combination with 'learnwithallmeasurements'
-learnwithallmeasurements
+select-all-measurements true
+learn-splconqueror
+select-all-measurements false
 
 # Cleans the sample set.
 # Note that this command is needed if multiple different sampling sets are computed in one run of SPL Conqueror
