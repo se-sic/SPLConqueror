@@ -346,5 +346,45 @@ namespace SamplingUnitTest
                 locTemplate + "DistributionPreserving.csv", GlobalState.varModel);
             Assert.True(containsAllMeasurements(distPreserving, expected));
         }
+
+        [Test, Order(16)]
+        public void TestSamplingDomain()
+        {
+            List<BinaryOption> samplingDomainBinary = new List<BinaryOption>();
+            samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt1"));
+            samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt2"));
+            samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt6"));
+            ConfigurationBuilder.optionsToConsider.Add(SamplingStrategies.PAIRWISE, samplingDomainBinary);
+            List<NumericOption> samplingDomainNumeric = new List<NumericOption>();
+            samplingDomainNumeric.Add(GlobalState.varModel.getNumericOption("numOpt1"));
+            ExperimentalDesign exp = new CentralCompositeInscribedDesign();
+            exp.setSamplingDomain(samplingDomainNumeric);
+            List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
+            binaryStrat.Add(SamplingStrategies.PAIRWISE);
+            List<ExperimentalDesign> exps = new List<ExperimentalDesign>();
+            exps.Add(exp);
+            List<Configuration> confs = ConfigurationBuilder
+                .buildConfigs(GlobalState.varModel, binaryStrat, exps, new List<HybridStrategy>());
+            Assert.AreEqual(6, confs.Count);
+
+            // Due to how the space is modeled valid options can only contain root or in sampling 
+            // domain specified options
+            foreach(Configuration conf in confs)
+            {
+                foreach(BinaryOption binOpt in conf.BinaryOptions.Keys)
+                {
+                    if (binOpt.Name != "root")
+                    {
+                        Assert.True(samplingDomainBinary.Contains(binOpt));
+                    }
+                }
+
+                foreach (NumericOption numOpt in conf.NumericOptions.Keys)
+                {
+                    Assert.True(numOpt.Name == "numOpt1");
+                }
+            }
+
+        }
     }
 }
