@@ -889,6 +889,23 @@ namespace CommandLine
                             string path = targetPath.Substring(0, (targetPath.Length - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
                             pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
                             GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+
+                            String samplingIdentifier = createSamplingIdentifier();
+
+                            String[] optParameters = pyResult.Replace(",", "").Replace(";", " ").Split(' ');
+
+                            String[] parameters = taskAsParameter.Concat(optParameters).ToArray();
+
+                            PythonWrapper pyInterpreter_write = new PythonWrapper(this.getLocationPythonScript() + Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, parameters);
+                            GlobalState.logInfo.logLine("Starting Prediction");
+                            pyInterpreter_write.setupApplication(configurationsLearning, GlobalState.allMeasurements.Configurations, PythonWrapper.START_LEARN);
+                            configurationsLearning = null;
+                            PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, parameters, GlobalState.varModel.Name + "_" + samplingIdentifier);
+                            pyInterpreter_write.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                            GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                            csvWriter.close();
+
+
                         }
                         else
                         {
