@@ -1560,6 +1560,19 @@ namespace CommandLine
                     ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameter);
                     break;
             }
+
+            string parameterIdentifier = "";
+            foreach (KeyValuePair<string, string> kv in parameter)
+            {
+                parameterIdentifier += "_" + kv.Key + "-" + kv.Value;
+            }
+            if (isValidation)
+            {
+                this.exp.info.binarySamplings_Validation += parameterIdentifier;
+            } else
+            {
+                this.exp.info.binarySamplings_Learning += parameterIdentifier;
+            }
         }
 
 
