@@ -1174,6 +1174,13 @@ namespace CommandLine
                         - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
                     pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
                     GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                    File.Delete(configsLearnFile);
+                    File.Delete(configsValFile);
+                    File.Delete(nfpLearnFile);
+                    File.Delete(nfpValFile);
+                    var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' }).ToList();
+                    optimalParameters.Insert(0, taskAsParameter[0]);
+                    handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());
                 } else
                 {
                     pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile, 
