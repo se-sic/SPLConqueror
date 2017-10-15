@@ -91,25 +91,25 @@ def optimize_SVR(X_train, y_train):
 
 
 def optimize_DecisionTree(X_train, y_train):
-    opt = modelSel.GridSearchCV(skTr.DecisionTreeRegressor(cache_size=500), param_DecisionTree, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skTr.DecisionTreeRegressor(), param_DecisionTree, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_RandomForestRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(skEn.RandomForestRegressor(cache_size=500), param_RandomForest, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skEn.RandomForestRegressor(), param_RandomForest, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_KNNeighborsRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(skNE.KNeighborsRegressor(cache_size=500), param_kNNRegressor, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skNE.KNeighborsRegressor(), param_kNNRegressor, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_KernelRidge(X_train, y_train):
-    opt = modelSel.GridSearchCV(skKR.KernelRidge(cache_size=500), param_kernelRidge, cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(skKR.KernelRidge(), param_kernelRidge, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
