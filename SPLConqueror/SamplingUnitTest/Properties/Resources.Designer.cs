@@ -72,8 +72,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;1;0;0;0;0;2;4
         ///1;1;0;0;1;0;0;1;1;0;1;0;0;0;0;0;4
         ///1;1;0;0;1;0;0;1;1;0;1;0;0;0;0;2;1
-        ///1;1;0;0;1;0;0;1;1;0;1;0;0;0;0;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;0;1;1;0;1;0;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string AllbinarySampling {
             get {
@@ -110,12 +109,53 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;8
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
-        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string BoxbehnkenSampling {
             get {
                 return ResourceManager.GetString("BoxbehnkenSampling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;2
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;4
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;1
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;4
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;4
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;2
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;1
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string DistributionAwareCompleteConfigurations {
+            get {
+                return ResourceManager.GetString("DistributionAwareCompleteConfigurations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;4
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;4
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;1
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;1
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;1
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;2;8
+        ///1;1;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string DistributionPreserving {
+            get {
+                return ResourceManager.GetString("DistributionPreserving", resourceCulture);
             }
         }
         
@@ -131,8 +171,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;0;0;1;1;0;0;1;0;0;0;2;4
         ///1;1;0;1;1;0;0;1;1;0;0;1;0;0;0;0;4
         ///1;1;0;1;1;0;0;1;1;0;0;1;0;0;0;2;1
-        ///1;1;0;1;1;0;0;1;1;0;0;1;0;0;0;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;1;1;0;0;1;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string FeaturewiseSampling {
             get {
@@ -152,8 +191,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;1
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;8
-        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string HyperSampling40 {
             get {
@@ -173,8 +211,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;1
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;8
-        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string HyperSampling50 {
             get {
@@ -194,8 +231,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;1
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;2;1
-        ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;0;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;0;1;1;1;0;0;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string KexchangeSampling31 {
             get {
@@ -215,8 +251,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;1
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;8
-        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string KexchangeSampling72 {
             get {
@@ -236,8 +271,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;0;0;1;1;1;0;0;0;1;1;2;4
         ///1;1;0;1;1;0;0;1;1;1;0;0;0;1;1;0;4
         ///1;1;0;1;1;0;0;1;1;1;0;0;0;1;1;2;1
-        ///1;1;0;1;1;0;0;1;1;1;0;0;0;1;1;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;1;1;0;0;1;1;1;0;0;0;1; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string NegFWSampling {
             get {
@@ -257,8 +291,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;4
-        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string OnefactorSampling3 {
             get {
@@ -278,8 +311,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;2
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
-        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;4
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string OnefactorSampling5 {
             get {
@@ -299,8 +331,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;4
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
-        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string PairwiseSampling {
             get {
@@ -320,8 +351,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;8
-        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string PlackettSampling39 {
             get {
@@ -341,8 +371,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;2
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
-        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string PlackettSampling5125 {
             get {
@@ -362,8 +391,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;1;2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;1
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;2
-        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;2
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string RandomSampling010 {
             get {
@@ -383,8 +411,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;1;3
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;1;2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;1
-        ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;1
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;0;1;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string RandomSampling112 {
             get {
@@ -404,8 +431,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;4
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
-        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string TwiseSampling2 {
             get {
@@ -425,8 +451,7 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;2;4
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;0;4
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;2;1
-        ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;2;8
-        ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///1;1;0;0;1;0;0;1;1;1;0;0;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string TwiseSampling3 {
             get {

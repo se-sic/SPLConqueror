@@ -11,8 +11,103 @@ using MicrosoftSolverFoundation;
 
 namespace MachineLearning.Solver
 {
+    /// <summary>
+    /// This class provides methods for generating all configurations of a given variability model.
+    /// </summary>
     public class VariantGenerator 
     {
+
+        /// <summary>
+        /// Generates all valid combinations of all configuration options in the given model.
+        /// </summary>
+        /// <param name="vm">the variability model containing the binary options and their constraints</param>
+        /// <param name="optionsToConsider">the options that should be considered. All other options are ignored</param>
+        /// <returns>Returns a list of <see cref="Configuration"/></returns>
+        public static List<Configuration> GenerateAllVariants(VariabilityModel vm, List<ConfigurationOption> optionsToConsider)
+        {
+            List<Configuration> allConfigurations = new List<Configuration>();
+            Dictionary<CspTerm, bool> variables;
+            Dictionary<ConfigurationOption, CspTerm> optionToTerm;
+            Dictionary<CspTerm, ConfigurationOption> termToOption;
+            ConstraintSystem S = CSPsolver.GetGeneralConstraintSystem(out variables,out optionToTerm,out termToOption, vm);
+
+            ConstraintSolverSolution soln = S.Solve();
+
+            while (soln.HasFoundSolution)
+            {
+                Dictionary<BinaryOption, BinaryOption.BinaryValue> binOpts = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+                Dictionary<NumericOption, double> numOpts = new Dictionary<NumericOption, double>();
+
+                foreach (CspTerm ct in variables.Keys)
+                {
+                    // Ignore all options that should not be considered.
+                    if (!optionsToConsider.Contains(termToOption[ct]))
+                    {
+                        continue;
+                    }
+
+                    // If it is a binary option
+                    if (variables[ct])
+                    {
+                        BinaryOption.BinaryValue isSelected = soln.GetIntegerValue(ct) == 1 ? BinaryOption.BinaryValue.Selected : BinaryOption.BinaryValue.Deselected;
+                        binOpts.Add((BinaryOption)termToOption[ct], isSelected);
+                    } else
+                    {
+                        numOpts.Add((NumericOption)termToOption[ct], soln.GetIntegerValue(ct));
+                    }
+                }
+
+                Configuration c = new Configuration(binOpts, numOpts);
+
+                // Check if the non-boolean constraints are satisfied
+                if (vm.configurationIsValid(c) && !IsInConfigurationFile(c, allConfigurations) && FulfillsMixedConstraints(c, vm))
+                {
+                    allConfigurations.Add(c);
+                }
+                soln.GetNext();
+            }
+
+            return allConfigurations;
+        }
+
+        /// <summary>
+        /// Returns <code>true</code> if the mixed constraints are satisfied by the given configuration and
+        /// <code>false</code> if not.
+        /// </summary>
+        /// <param name="c">the configuration to check</param>
+        /// <param name="vm">the variability model</param>
+        /// <returns><code>true</code> if the mixed constraints are satisfied by the given configuration and
+        /// <code>false</code> if not.</returns>
+        private static bool FulfillsMixedConstraints(Configuration c, VariabilityModel vm)
+        {
+            List<MixedConstraint> mixedConstraints = vm.MixedConstraints;
+            foreach(MixedConstraint constraint in mixedConstraints)
+            {
+                if (!constraint.requirementsFulfilled(c))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns <code>true</code> if the configuration is already included;<code>false</code> otherwise.
+        /// </summary>
+        /// <param name="c">the configuration to search for</param>
+        /// <param name="configurations">a list containing all configurations</param>
+        /// <returns><code>true</code> if the configuration is already included;<code>false</code> otherwise</returns>
+        private static bool IsInConfigurationFile(Configuration c, List<Configuration> configurations)
+        {
+            foreach (Configuration conf in configurations)
+            {
+                if (conf.ToString().Equals(c.ToString()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Generates all valid binary combinations of all binary configurations options in the given model

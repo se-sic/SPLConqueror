@@ -80,10 +80,7 @@ def scoreFunction(estimator, configurations, measurements):
     sum = 0.0
     for i in range(len(measurements)):
         sum = np.abs(measurements[i] - predictions[i]) / measurements[i]
-    f = open('H:\ExpDesignPaper\DefaultParameters\jobs\javaGC_Whole_default_python\py.log', 'a+')
-    f.write(str(sum))
-    f.write('\n')
-    f.close()
+    
     return sum
 
 

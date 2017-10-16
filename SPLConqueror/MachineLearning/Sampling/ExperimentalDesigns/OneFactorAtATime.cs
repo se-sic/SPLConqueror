@@ -101,7 +101,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         public override string parameterIdentifier()
         {
-            return "";
+            return "distinctValuesPerOption-" + distinctValuesPerOption + "_";
         }
     }
 }

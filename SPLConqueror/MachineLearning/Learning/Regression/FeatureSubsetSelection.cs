@@ -414,7 +414,7 @@ namespace MachineLearning.Learning.Regression
             else
             {
                 bestModel = copyCombination(bestModel);
-                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel, out relativeErrorEval, false), previousRound.round + 1);
+                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel, out relativeErrorEval), previousRound.round + 1);
                 newRound.learningError_relative = minimalRoundError;
                 newRound.validationError_relative = relativeErrorEval;
                 newRound.elapsedTime = DateTime.Now - startTime;
@@ -431,7 +431,7 @@ namespace MachineLearning.Learning.Regression
             ModelFit fit = new ModelFit();
             fit.complete = fitModel(model);
             double temp;
-            fit.error = computeModelError(model, out temp, considerEpsilonTube);
+            fit.error = computeModelError(model, out temp);
             fit.newModel = model;
             return fit;
         }
@@ -865,7 +865,7 @@ namespace MachineLearning.Learning.Regression
                     List<Feature> reducedFeatureSet = copyCombination(featureSet);
                     reducedFeatureSet.Remove(delitionCandidate);
                     double relativeValidationError = 0;
-                    computeModelError(reducedFeatureSet, out relativeValidationError, true);
+                    computeModelError(reducedFeatureSet, out relativeValidationError);
                     if ((relativeValidationError <= previousRelativeValidationError)
                         && (relativeValidationError - previousReducedModelValidationError < this.MLsettings.minImprovementPerRound))
                     {
@@ -898,9 +898,9 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeValidationError(List<Feature> currentModel, out double relativeError, bool considerEpsilonTube)
+        private double computeValidationError(List<Feature> currentModel, out double relativeError)
         {
-            return computeError(currentModel, this.validationSet, out relativeError, considerEpsilonTube);
+            return computeError(currentModel, this.validationSet, out relativeError, true);
         }
 
         /// <summary>
@@ -993,23 +993,36 @@ namespace MachineLearning.Learning.Regression
                         // Consider epsilon tube
                         if (considerEpsilonTube)
                         {
-                            double percentageOfError = error / realValue;
-                            if (percentageOfError < this.MLsettings.epsilonTube)
+                            if (error <= (this.MLsettings.epsilon * 100))
                             {
+                                relativeError -= error;
                                 error = 0.0;
                             }
                         }
                         break;
                     case ML_Settings.LossFunction.LEASTSQUARES:
                         error = Math.Pow(realValue - estimatedValue, 2);
+
+                        if (considerEpsilonTube)
+                        {
+                            if (error <= this.MLsettings.epsilon)
+                            {
+                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                                error = 0.0;
+                            }
+                        }
+
                         break;
                     case ML_Settings.LossFunction.ABSOLUTE:
                         error = Math.Abs(realValue - estimatedValue);
 
                         if (considerEpsilonTube)
                         {
-                            if (error < this.MLsettings.epsilonTube)
+                            if (error <= this.MLsettings.epsilon)
+                            {
+                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
                                 error = 0.0;
+                            }
                         }
                         break;
                 }
@@ -1031,9 +1044,9 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeLearningError(List<Feature> currentModel, out double relativeError, bool considerEpsilonTube)
+        private double computeLearningError(List<Feature> currentModel, out double relativeError)
         {
-            return computeError(currentModel, this.learningSet, out relativeError, considerEpsilonTube);
+            return computeError(currentModel, this.learningSet, out relativeError, true);
         }
 
         /// <summary>
@@ -1042,14 +1055,14 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model for which the error should be computed.</param>
         /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The prediction error of the model.</returns>
-        private double computeModelError(List<Feature> currentModel, out double relativeError, bool considerEpsilonTube)
+        private double computeModelError(List<Feature> currentModel, out double relativeError)
         {
             if (!this.MLsettings.crossValidation)
-                return computeValidationError(currentModel, out relativeError, considerEpsilonTube);
+                return computeValidationError(currentModel, out relativeError);
             else
             {
                 //todo k-fold
-                return (computeLearningError(currentModel, out relativeError, considerEpsilonTube) + computeValidationError(currentModel, out relativeError, considerEpsilonTube) / 2);
+                return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
             }
 
         }
@@ -1361,10 +1374,9 @@ namespace MachineLearning.Learning.Regression
         /// <param name="influenceModel">The influence model containing the already learned influences.</param>
         /// <param name="configs">The configurations for which predictions should be made. The configurations must contain the measured/true value to compute the error.</param>
         /// <param name="loss">The loss functions used to compute the error.</param>
-        /// <param name="mlSettingObject"> The machine learning settings.</param> 
-        /// <param name="considerEpsilonTube">This parameter defines whether an error of less than epsilon around the model is allowed without penatelizing the model.</param> 
+        /// <param name="mlSettingObject"> The machine learning settings.</param>
         /// <returns>The error of the model for the given configurations.</returns>
-        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss, ML_Settings mlSettingObject, bool considerEpsilonTube)
+        public static double computeError(InfluenceModel influenceModel, List<Configuration> configs, ML_Settings.LossFunction loss, ML_Settings mlSettingObject)
         {
             double error_sum = 0;
             int skips = 0;
@@ -1401,36 +1413,23 @@ namespace MachineLearning.Learning.Regression
                 double error = 0;
                 switch (loss)
                 {
+                    // epsilon is not used in this method due to it only being used to calculate the relative error of the final model.
                     case ML_Settings.LossFunction.RELATIVE:
                         if (realValue < 1)
                         {
                             error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
                         }
                         else
-                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
-
-
-                        // Consider epsilon tube
-                        if (considerEpsilonTube)
                         {
-                            double percentageOfError = error / realValue;
-                            if (percentageOfError < mlSettingObject.epsilonTube)
-                            {
-                                error = 0.0;
-                            }
+                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
                         }
                         break;
+
                     case ML_Settings.LossFunction.LEASTSQUARES:
                         error = Math.Pow(realValue - estimatedValue, 2);
                         break;
                     case ML_Settings.LossFunction.ABSOLUTE:
                         error = Math.Abs(realValue - estimatedValue);
-
-                        if (considerEpsilonTube)
-                        {
-                            if (error < mlSettingObject.epsilonTube)
-                                error = 0.0;
-                        }
 
                         break;
                 }

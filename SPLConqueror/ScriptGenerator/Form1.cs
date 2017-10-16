@@ -214,29 +214,49 @@ namespace ScriptGenerator
 
             if (bsamp_FW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE + " " + validation);
                 keyInfo += "FW ";
             }
             if (bsamp_PW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_PAIRWISE + " " + validation);
                 keyInfo += "PW ";
             }
             if (bsamp_negFW_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE + " " + validation);
                 keyInfo += "negFW ";
             }
             if (bsamp_all_box.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_ALLBINARY + " " + validation);
                 keyInfo += "all ";
             }
             if (bsamp_random_box.Checked)
             {
                 // TODO text of the textField should contain numeric characters only.
-                samplingNames.Add(CommandLine.Commands.COMMAND_SAMPLE_BINARY_RANDOM + " " + bsamp_random_textBox.Text + " " + bsamp_random__modulo_textBox.Text + " " + validation);
-                keyInfo += "random " + bsamp_random_textBox.Text;
+                string param = "";
+                if (!numConfigsTextBox.Text.Equals(""))
+                {
+                    param += "numConfigs:" + numConfigsTextBox.Text + " ";
+                }
+                if (!randomSeedTextBox.Text.Equals(""))
+                {
+                    param += "seed:" + randomSeedTextBox.Text;
+                }
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_RANDOM 
+                    + " " + param + " " + validation);
+                keyInfo += "random " + numConfigsTextBox.Text + randomSeedTextBox.Text;
+            }
+            if (tWiseCheckBox.Checked)
+            {
+                string param = "";
+                if (!tTextBox.Text.Equals(""))
+                {
+                    param += "t:" + tTextBox.Text + " ";
+                }
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_TWISE + " " 
+                    + param + validation);
             }
             Container cont = new Container(containerKey, samplingNames);
             cont.AdditionalKeyInformation = keyInfo;
@@ -262,17 +282,17 @@ namespace ScriptGenerator
 
             if (num_BoxBehnken_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
+                samplingNames.Add(Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN + " " + validation);
                 keyInfo += "BoxBehnken ";
             }
             if (num_CentralComposite_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
+                samplingNames.Add(Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE + " " + validation);
                 keyInfo += "CentralComposite ";
             }
             if (num_FullFactorial_check.Checked)
             {
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
+                samplingNames.Add(Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_FULLFACTORIAL + " " + validation);
                 keyInfo += "FullFactorial ";
             }
             if (num_hyperSampling_check.Checked)
@@ -282,7 +302,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                samplingNames.Add(CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
+                samplingNames.Add(Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_HYPERSAMPLING + " " + num_hyper_percent_text.Text + " " + validation);
                 keyInfo += "HyperSampling " + num_hyper_percent_text.Text + " ";
             }
             if (num_kEx_check.Checked)
@@ -292,7 +312,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
+                string str = Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_KEXCHANGE + " sampleSize:" + num_kEx_n_Box.Text.Trim() + " k:" + num_kEx_k_Box.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -303,7 +323,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
+                string str = Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -315,7 +335,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
+                string str = Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" + num_oneFactorAtATime_num_Text.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
 
@@ -327,7 +347,7 @@ namespace ScriptGenerator
                     informatioLabel.Text = PARAMETER_NOT_SPECIFIED;
                     return;
                 }
-                string str = CommandLine.Commands.COMMAND_EXERIMENTALDESIGN + " " + CommandLine.Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
+                string str = Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim();
                 samplingNames.Add(str + " " + validation);
                 keyInfo += str + " ";
             }
@@ -716,7 +736,7 @@ namespace ScriptGenerator
                             {
                                 if (splconqueror_learner)
                                 {
-                                    sb.Append(Commands.COMMAND_START_LEARNING + System.Environment.NewLine);
+                                    sb.Append(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR + System.Environment.NewLine);
                                     sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
                                     sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
                                 } else
@@ -898,10 +918,86 @@ namespace ScriptGenerator
             {
                 if (parametersTextBox.Text != null && !parametersTextBox.Text.Equals(""))
                 {
-                    parameters.Append(" " + parametersTextBox.Text + "\n");
+                    parameters.Append(" " + parametersTextBox.Text);
                 }
+                parameters.Append("\n");
                 addedElementsList.Items.Add(new Container(learnPythonCommand, parameters.ToString()));
             }
+        }
+
+        private void convertLegacyScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog scriptOFD = new OpenFileDialog();
+            scriptOFD.CheckPathExists = true;
+            scriptOFD.CheckFileExists = true;
+            scriptOFD.Title = "Select the script";
+            if (scriptOFD.ShowDialog() == DialogResult.OK)
+            {
+                SaveFileDialog scriptSFD = new SaveFileDialog();
+                scriptSFD.OverwritePrompt = true;
+                scriptSFD.AddExtension = true;
+                scriptSFD.CheckPathExists = true;
+                scriptSFD.DefaultExt = "a";
+                scriptSFD.Title = "Save script";
+                if (scriptSFD.ShowDialog() == DialogResult.OK)
+                {
+                    updateScript(scriptOFD.FileName, scriptSFD.FileName);
+                }
+            }
+        }
+
+        private void updateScript(string source, string target)
+        {
+            string[] binarySampling = new string[] { Commands.COMMAND_SAMPLE_ALLBINARY,
+                    Commands.COMMAND_SAMPLE_BINARY_RANDOM, Commands.COMMAND_SAMPLE_BINARY_TWISE,
+                    Commands.COMMAND_SAMPLE_FEATUREWISE, Commands.COMMAND_SAMPLE_NEGATIVE_OPTIONWISE,
+                    Commands.COMMAND_SAMPLE_OPTIONWISE, Commands.COMMAND_SAMPLE_PAIRWISE,
+                    Commands.COMMAND_SAMPLING_OPTIONORDER };
+            StreamReader sr = new StreamReader(source);
+            StreamWriter sw = new StreamWriter(target);
+            string line = "";
+            while (!sr.EndOfStream)
+            {
+                line = sr.ReadLine();
+                if (binarySampling.Any(sampling => line.Contains(sampling)) 
+                    && !line.StartsWith(Commands.COMMAND_BINARY_SAMPLING))
+                {
+                    line = Commands.COMMAND_BINARY_SAMPLING + " " + line;
+                } else if (line.Contains(Commands.COMMAND_LOAD_MLSETTINGS))
+                {
+                    line = line.Replace(Commands.COMMAND_LOAD_MLSETTINGS, Commands.COMMAND_LOAD_MLSETTINGS_UNIFORM);
+                } else if (line.Contains(Commands.COMMAND_EXPERIMENTALDESIGN))
+                {
+                    line = line.Replace(Commands.COMMAND_EXPERIMENTALDESIGN, Commands.COMMAND_NUMERIC_SAMPLING);
+                } else if (line.Contains(Commands.COMMAND_PREDICT_CONFIGURATIONS))
+                {
+                    line = line.Replace(Commands.COMMAND_PREDICT_CONFIGURATIONS,
+                        Commands.COMMAND_PREDICT_CONFIGURATIONS_SPLC);
+                } else if (line.Contains(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS))
+                {
+                    line = line.Replace(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS,
+                        Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC);
+                } else if (line.Contains(Commands.COMMAND_START_ALLMEASUREMENTS))
+                {
+                    line = Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true" + Environment.NewLine 
+                        + Commands.COMMAND_START_LEARNING_SPL_CONQUEROR + Environment.NewLine 
+                        + Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " false";
+                } else if (line.Contains(Commands.COMMAND_START_LEARNING))
+                {
+                    line = line.Replace(Commands.COMMAND_START_LEARNING
+                        , Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+                } else if (line.Contains(Commands.COMMAND_OPTIMIZE_PARAMETER))
+                {
+                    line = line.Replace(Commands.COMMAND_OPTIMIZE_PARAMETER
+                        , Commands.COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR);
+                }
+
+                sw.WriteLine(line);
+            }
+            sr.Close();
+            sw.Flush();
+            sw.Close();
+            MessageBox.Show("Converted script.");
         }
     }
 
