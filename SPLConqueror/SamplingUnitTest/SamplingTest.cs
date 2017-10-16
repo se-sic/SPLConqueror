@@ -1,11 +1,12 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
 using NUnit.Framework;
 using System.Collections.Generic;
 using MachineLearning.Sampling.ExperimentalDesigns;
+using MachineLearning.Sampling.Hybrid;
 using System.Reflection;
+using MachineLearning.Sampling.Hybrid.Distributive;
 
 namespace SamplingUnitTest
 {
@@ -37,6 +38,8 @@ namespace SamplingUnitTest
         private const int EXPECTED_T_WISE_3 = 602;
         private const int EXPECTED_T_WISE_2 = 287;
         private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
+        private const int EXPECTED_DIST_AW = 41;
+        private const int EXPECTED_DIST_PRESERVING = 41;
 
         [Test, Order(1)]
         public void TestLoadingTestVM()
@@ -47,6 +50,7 @@ namespace SamplingUnitTest
                 modelPath = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/VariabilityModelSampling.xml";
             }
+
             Assert.IsTrue(model.loadXML(modelPath));
             GlobalState.varModel = model;
         }
@@ -91,7 +95,8 @@ namespace SamplingUnitTest
             binaryStrat.Add(strategy);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(expected, result.Count);
             return result;
         }
@@ -122,7 +127,8 @@ namespace SamplingUnitTest
             binaryStrat.Add(SamplingStrategies.PAIRWISE);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(design);
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(expected, result.Count);
             return result;
         }
@@ -267,7 +273,9 @@ namespace SamplingUnitTest
             ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameters);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             Assert.True(containsAllMeasurements(result, expected));
             Assert.AreEqual(EXPECTED_T_WISE_3, result.Count);
@@ -277,7 +285,7 @@ namespace SamplingUnitTest
             parameters = new Dictionary<string, string>();
             parameters.Add("t", "2");
             ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameters);
-            result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(EXPECTED_T_WISE_2, result.Count);
             expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             Assert.True(containsAllMeasurements(result, expected));
@@ -296,10 +304,87 @@ namespace SamplingUnitTest
             ConfigurationBuilder.binaryParams.randomBinaryParameters.Add(parameters);
             List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
             numericStrat.Add(new CentralCompositeInscribedDesign());
-            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat);
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             Assert.AreEqual(EXPECTED_BINARY_RANDOM_TW_15, result.Count);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             Assert.True(containsAllMeasurements(result, expected));
+        }
+
+        [Test, Order(14)]
+        public void TestDistributionAware()
+        {
+            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar;
+            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware());
+            Assert.AreEqual(EXPECTED_DIST_AW, distAwareBinAndNum.Count);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
+                locTemplate + "DistributionAwareCompleteConfigurations.csv", GlobalState.varModel);
+            Assert.True(containsAllMeasurements(distAwareBinAndNum, expected));
+
+
+        }
+
+        private List<Configuration> buildSampleSetHybrid(HybridStrategy design)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            List<HybridStrategy> hybridStrategies = new List<HybridStrategy>();
+            design.SetSamplingParameters(parameters);
+            hybridStrategies.Add(design);
+            return ConfigurationBuilder.buildConfigs(model, new List<SamplingStrategies>(), 
+                new List<ExperimentalDesign>(), hybridStrategies);
+        }
+
+        [Test, Order(15)]
+        public void TestDistributionPreserving()
+        {
+            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar;
+            List<Configuration> distPreserving = buildSampleSetHybrid(new DistributionPreserving());
+            Assert.AreEqual(EXPECTED_DIST_PRESERVING, distPreserving.Count);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
+                locTemplate + "DistributionPreserving.csv", GlobalState.varModel);
+            Assert.True(containsAllMeasurements(distPreserving, expected));
+        }
+
+        [Test, Order(16)]
+        public void TestSamplingDomain()
+        {
+            List<BinaryOption> samplingDomainBinary = new List<BinaryOption>();
+            samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt1"));
+            samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt2"));
+            samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt6"));
+            ConfigurationBuilder.optionsToConsider.Add(SamplingStrategies.PAIRWISE, samplingDomainBinary);
+            List<NumericOption> samplingDomainNumeric = new List<NumericOption>();
+            samplingDomainNumeric.Add(GlobalState.varModel.getNumericOption("numOpt1"));
+            ExperimentalDesign exp = new CentralCompositeInscribedDesign();
+            exp.setSamplingDomain(samplingDomainNumeric);
+            List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
+            binaryStrat.Add(SamplingStrategies.PAIRWISE);
+            List<ExperimentalDesign> exps = new List<ExperimentalDesign>();
+            exps.Add(exp);
+            List<Configuration> confs = ConfigurationBuilder
+                .buildConfigs(GlobalState.varModel, binaryStrat, exps, new List<HybridStrategy>());
+            Assert.AreEqual(6, confs.Count);
+
+            // Due to how the space is modeled valid options can only contain root or in sampling 
+            // domain specified options
+            foreach(Configuration conf in confs)
+            {
+                foreach(BinaryOption binOpt in conf.BinaryOptions.Keys)
+                {
+                    if (binOpt.Name != "root")
+                    {
+                        Assert.True(samplingDomainBinary.Contains(binOpt));
+                    }
+                }
+
+                foreach (NumericOption numOpt in conf.NumericOptions.Keys)
+                {
+                    Assert.True(numOpt.Name == "numOpt1");
+                }
+            }
+
         }
     }
 }

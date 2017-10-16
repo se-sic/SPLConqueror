@@ -111,6 +111,14 @@
     <Compile Include="Sampling\ExperimentalDesigns\PlackettBurmanDesign.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\RandomSampling.cs" />
     <Compile Include="Sampling\Heuristics\TWise.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\DistanceMetric\DistanceMetric.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\DistanceMetric\ManhattanDistance.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\DistributionSensitive.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\Distribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\UniformDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\DistributionAware.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\DistributionPreserving.cs" />
+    <Compile Include="Sampling\Hybrid\Hybrid.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
@@ -130,6 +138,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.4.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.4.0\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

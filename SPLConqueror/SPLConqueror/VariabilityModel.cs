@@ -255,8 +255,26 @@ namespace SPLConqueror_Core
             if (!File.Exists(path))
                 return false;
             dat.Load(path);
-    
             XmlElement currentElemt = dat.DocumentElement;
+
+            // Test if old definition is used and print a warning if needed
+            var childrenNode = currentElemt.SelectSingleNode("//children");
+            if (childrenNode != null)
+            {
+                GlobalState.logInfo.logLine("Warning: Variability model contains outdated notation. " +
+                    "Children nodes will no longer have effect on the model. Instead use the parent node " +
+                    "to describe the parent of an configuration option. You can also use the converter provided" +
+                    "by the Variability Model GUI in export>convert legacy model.");
+            }
+            var defaultValueNode = currentElemt.SelectSingleNode("//defaultValue");
+            if (defaultValueNode != null)
+            {
+                GlobalState.logInfo.logLine("Warning: Default value nodes in models are no longer used" +
+                    " and should be removed. You can also use the converter provided by the Variability" + 
+                    " Model GUI in export>convert legacy model to update your model.");
+            }
+
+
             this.name = currentElemt.Attributes["name"].Value.ToString();
             foreach (XmlElement xmlNode in currentElemt.ChildNodes)
             {
@@ -305,6 +323,94 @@ namespace SPLConqueror_Core
                 this.binaryConstraints.Add(boolConstr.InnerText);
             }
         }
+
+        #region to replicate VM with a given subset
+
+        /// <summary>
+        /// Produce a reduced version of the variability model, containing only binary options
+        /// and at least the considered options. Is a considered option, all parent option will be inlcuded.
+        /// Constraints between options(alternative groups, implication etc), will be included if enough options
+        /// are present to (e.g. both options for implications or at least 2 options in alternative groups).
+        /// </summary>
+        /// <param name="consideredOptions">The options that will be in the reduced model.</param>
+        /// <returns>A reduced version of the model containing the considered options.</returns>
+        public VariabilityModel reduce(List<BinaryOption> consideredOptions)
+        {
+            VariabilityModel reduced = new VariabilityModel(this.name);
+            foreach (BinaryOption binOpt in consideredOptions)
+            {
+                BinaryOption child = new BinaryOption(reduced, binOpt.Name);
+                replicateOption(binOpt, child);
+                reduced.addConfigurationOption(child);
+                BinaryOption parent = (BinaryOption)binOpt.Parent;
+                bool parentExists = false;
+                while ((parent != null && parent != this.root) && !parentExists)
+                {
+                    BinaryOption newParent = reduced.getBinaryOption(parent.Name);
+                    if (newParent == null)
+                    {
+                        newParent = new BinaryOption(reduced, parent.Name);
+                        replicateOption(parent, newParent);
+                        reduced.addConfigurationOption(newParent);
+                    }
+                    else
+                        parentExists = true;
+                    child.Parent = newParent;
+                    child = newParent;
+                    parent = (BinaryOption)parent.Parent;
+                }
+
+                if (child.Parent == null)
+                    child.Parent = reduced.root;
+            }
+
+            foreach (BinaryOption opt in consideredOptions)
+            {
+
+                List<List<ConfigurationOption>> impliedOptionsRepl = new List<List<ConfigurationOption>>();
+                foreach (List<ConfigurationOption> implied in opt.Implied_Options)
+                {
+                    List<ConfigurationOption> implRepl = new List<ConfigurationOption>();
+
+                    foreach (ConfigurationOption impliedOption in implied)
+                    {
+                        if (reduced.getOption(impliedOption.Name) != null)
+                            implRepl.Add(reduced.getOption(impliedOption.Name));
+                    }
+                    impliedOptionsRepl.Add(implRepl);
+  
+                }
+
+                reduced.getBinaryOption(opt.Name).Implied_Options = impliedOptionsRepl;
+
+                List<List<ConfigurationOption>> excludedOptionsRepl = new List<List<ConfigurationOption>>();
+                foreach (List<ConfigurationOption> excluded in opt.Excluded_Options)
+                {
+                    List<ConfigurationOption> exclRepl = new List<ConfigurationOption>();
+
+                    foreach (ConfigurationOption excludedOption in excluded)
+                    {
+                        if (reduced.getOption(excludedOption.Name) != null)
+                            exclRepl.Add(reduced.getOption(excludedOption.Name));
+                    }
+                    excludedOptionsRepl.Add(exclRepl);
+                }
+
+                reduced.getBinaryOption(opt.Name).Excluded_Options = excludedOptionsRepl;
+            }
+
+            return reduced;
+        }
+
+        private void replicateOption(BinaryOption original, BinaryOption replication)
+        {
+            replication.Optional = original.Optional;
+            replication.OutputString = original.OutputString;
+            replication.Postfix = original.Postfix;
+            replication.Prefix = original.Prefix;
+        }
+
+        #endregion
 
         private void loadNonBooleanConstraint(XmlElement xmlNode)
         {

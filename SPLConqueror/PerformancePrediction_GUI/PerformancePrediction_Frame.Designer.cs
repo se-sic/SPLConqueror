@@ -34,6 +34,7 @@ namespace PerformancePrediction_GUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.AutoSize = true;
             this.BinarySamplingGroup = new System.Windows.Forms.GroupBox();
             this.binRandomSeed = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -731,7 +732,8 @@ namespace PerformancePrediction_GUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1230, 877);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(1237, 877);
             this.Controls.Add(this.PrintConfigsGroupBox);
             this.Controls.Add(this.LearnAllMeasurements);
             this.Controls.Add(this.button1);
@@ -747,7 +749,9 @@ namespace PerformancePrediction_GUI
             this.Controls.Add(this.LogGroup);
             this.Controls.Add(this.BinarySamplingGroup);
             this.Font = new System.Drawing.Font("Liberation Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.MaximizeBox = false;
             this.Name = "PerformancePrediction_Frame";
             this.Text = "SPL Conqueror: Performance Prediction";
             this.BinarySamplingGroup.ResumeLayout(false);

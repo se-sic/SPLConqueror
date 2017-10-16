@@ -169,12 +169,10 @@ An example for a variability model is given below:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption2<option>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -183,12 +181,10 @@ An example for a variability model is given below:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption1<option>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
   </binaryOptions>
@@ -199,12 +195,10 @@ An example for a variability model is given below:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <minValue>1</minValue>
       <maxValue>10</maxValue>
       <stepFunction>numericExample + 2</stepFunction>
-      <defaultValue>10</defaultValue>
     </configurationOption>
   </numericOptions>
 </vm>
@@ -300,7 +294,6 @@ For instance, a variability model with the name exampleVM is defined as follows:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption2<option>
@@ -314,7 +307,6 @@ For instance, a variability model with the name exampleVM is defined as follows:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <excludedOptions>
         <option>xorOption1<option>
@@ -330,12 +322,10 @@ For instance, a variability model with the name exampleVM is defined as follows:
       <prefix/>
       <postfix/>
       <parent/>
-      <children/>
       <impliedOptions/>
       <minValue>1</minValue>
       <maxValue>10</maxValue>
       <stepFunction>numericExample + 1</stepFunction>
-      <defaultValue>10</defaultValue>
     </configurationOption>
   </numericOptions>
 </vm>
@@ -381,6 +371,16 @@ A short example using this format is provided in the following:
 </results>
 ```
 
+Optionally you, in case you have knowlegde about the relative deviation, you can also provide the deviation values in a coma separated format. The highest rel. deviation value is used as metric of how accurate the learning can and therefore used as the abort error for the learning.
+```
+<results deviation="2;3;9.13">
+  .
+  .
+  .
+</results>
+```
+
+
 Further real world examples of measurements in xml format are provided in the [Suplemental Material](http://www.infosun.fim.uni-passau.de/se/projects/splconqueror/#supMat).
 
 Alternatively, the measurements can be provided in a *csv*-format. Thereby, the first row has to be a header with the name of the binary and numeric options and the names of the non functional properties. In the column of binary options there has to be either true or false, indicating whether the feature was selected in this configuration or not, and in the columns of numeric options the values that were selected in this configuration. In the columns are the values of the properties that were measured for this property. So if we format the above example in csv format: 
@@ -399,12 +399,13 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | Name  | Description | Default Value | Value Range |
 | :---: | :---------: | :-----------: | :---------: |
 | lossFunction | The loss function on which bases options and interactions are added to the influence model | RELATIVE | RELATIVE, LEASTSQUARES, ABSOLUTE |
+| epsilon | The epsilon within the error of the loss Function will be 0. A epsilon of 0 is equal to this feature not being present | 0 | int |
 | parallelization | Turns the parallel execution of model candidates on/off. | true | true, false |
 | bagging | Turns the bagging functionality (ensemble learning) on. This functionality relies on parallelization (may require a larger amount of memory). | false | true, false |
 | baggingNumbers | Specifies how often an influence model is learned based on a subset of the measurement data. | 100 | int |
 | baggingTestDataFraction | Specifies the percentage of data taken from the test set to be used in one learning run. | 50 | int |
 | useBackward | Terms existing in the model can be removed during the learning procedure if removal leads to a better model. | 50 | int |
-| abortError | The threshold at which the learning process stops. | 1 | double |
+| abortError | The threshold at which the learning process stops.(abortError can also be set via measurement file, see measurement section for more information) | 1 | double |
 | limitFeatureSize | Terms considered during the learning procedure can not become arbitrary complex. | false | true, false |
 | featureSizeThreshold | The maximal number of options participating in one interaction. | 4 | int |
 | quadraticFunctionSupport | The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true. | true | true, false |
@@ -465,6 +466,7 @@ mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
 select-all-measurements true
 learn-splconqueror
+select-all-measurements false
 ```
 
 To disable learning with all measurements you can use ```select-all-measurements false```.
@@ -481,7 +483,7 @@ vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-learn-all-splconqueror
+learnwithallmeasurements
 ```
 
 ***
@@ -496,7 +498,9 @@ vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-learnwithallmeasurements
+select-all-measurements true
+learn-splconqueror
+select-all-measurements false
 analyze-learning
 ```
 
@@ -504,31 +508,47 @@ analyze-learning
 
 #### Sampling strategies
 
-SPLConqueror also supports learning on a subset of the data. Therefore, one has to set at least one sampling strategy for the binary options first and at least one for the numeric options. In the following, we list all sampling strategies:
+SPLConqueror also supports learning on a subset of the data. Therefore, one has to set at least one sampling strategy for the binary options first and at least one for the numeric options. Numeric sampling strategies have to always start with ```numeric```(deprecated: ```expdesign```), while binary sampling strategies have to start with ```binary``` (deprecated: no prefix command). In the following, we list all sampling strategies:
 
 | Binary/Numeric | Name  | Description | Command | Example |
 | :------------: | :---: | :---------: | :-----: | :-----: |
-| Binary | allbinary | Uses all available binary options to create configurations. | ```allbinary``` | allbinary |
-| Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```featurewise``` | featurewise |
-| Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```pairwise``` | pairwise |
-| Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```negfw``` | negfw |
-| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```random <binaryThreshold> <modulu>``` | random 50 3 |
-| Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```expdesign plackettburman measurements:<measurements> level:<level>``` | expdesign plackettburman measurements:125 level:5 |
-| Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```expdesign centralcomposite``` | expdesign centralcomposite |
-| Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```expdesign random sampleSize:<size> seed:<seed>``` | expdesign random sampleSize:50 seed:2 |
-| Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```expdesign fullfactorial``` | expdesign fullfactorial |
-| Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```expdesign boxbehnken``` | expdesign boxbehnken |
-| Numeric | hypersampling | | ```expdesign hypersampling precision:<precisionValue>``` | expdesign hypersampling precision:25 |
-| Numeric | onefactoratatime | | ```expdesign onefactoratatime distinctValuesPerOption:<values>``` | expdesign onefactoratatime distinctValuesPerOption:5 |
-| Numeric | kexchange | | ```expdesign kexchange sampleSize:<size> k:<kvalue>``` | expdesign kexchange sampleSize:10 k:3 |
+| Binary | allbinary | Uses all available binary options to create configurations. | ```binary allbinary``` | binary allbinary |
+| Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```binary featurewise``` | binary featurewise |
+| Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary pairwise``` | binary pairwise |
+| Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
+| Binary | random | Get certain number of random valid configurations. The binaryThreshold sets the maximum number of configurations. The randomness is simulated by the modulu value. | ```binary random <binaryThreshold> <modulu>``` | binary random 50 3 |
+| Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
+| Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
+| Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```numeric random sampleSize:<size> seed:<seed>``` | numeric random sampleSize:50 seed:2 |
+| Numeric | fullfactorial | This design selects all possible combinations of numeric options and their values. | ```numeric fullfactorial``` | numeric fullfactorial |
+| Numeric | boxbehnken | This is an implementation of the BoxBehnken Design as proposed in the "Some New Three Level Designs for the Study of Quantitative Variables". | ```numeric boxbehnken``` | numeric boxbehnken |
+| Numeric | hypersampling | | ```numeric hypersampling precision:<precisionValue>``` | numeric hypersampling precision:25 |
+| Numeric | onefactoratatime | | ```numeric onefactoratatime distinctValuesPerOption:<values>``` | numeric onefactoratatime distinctValuesPerOption:5 |
+| Numeric | kexchange | | ```numeric kexchange sampleSize:<size> k:<kvalue>``` | numeric kexchange sampleSize:10 k:3 |
+| Both | distribution-aware | Uses distribution-aware sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-aware distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]> onlyNumeric:<true/false> onlyBinary:<true/false> seed:<int>``` | hybrid distribution-aware numConfigs:asTW3 |
+| Both | distribution-preserving | Uses distribution-preserving sampling to generate sample sets from binary and/or numeric options. | ```hybrid distribution-preserving distance-metric:<manhattan> distribution:<uniform> numConfigs:<number/asTW[n]> onlyNumeric:<true/false> onlyBinary:<true/false> seed:<int>``` | hybrid distribution-preserving numConfigs:asTW3 |
+
 
 For instance, all binary options and random numeric options with a sample size of 50 and a seed of 3 should be used for learning, the following lines have to be appended to the .a-script:
 ```
-allbinary
-expdesign random sampleSize:50 seed:3
+binary allbinary
+numeric random sampleSize:50 seed:3
 ```
 
-**Note**: ```allbinary``` in combination with ```fullfactorial``` results in all measurements being taken into the sample set.
+If you want to use a hybrid sampling strategy instead, the following line has to be appended to the .a-script:
+```
+hybrid distribution-aware
+```
+
+**Note**: ```allbinary``` in combination with ```fullfactorial``` results in all valid measurements being taken into the sample set.
+
+##### Sampling domain
+
+It also to consider only a subset of the configuration options for aampling. To do this, add the options that should be used in square brackets as additional argument when stating the sampling strategies.
+For example:
+```
+numeric random [numOpt1,numOpt2,numOpt3]
+```
 
 #### Learning with sample set
 
@@ -544,8 +564,8 @@ vm C:\exampleModel.xml
 all C:\exampleMeasurements.xml
 mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
 nfp nfp1
-allbinary
-expdesign random sampleSize:50 seed:3
+binary allbinary
+numeric random sampleSize:50 seed:3
 learn-splconqueror
 analyze-learning
 ```
@@ -584,8 +604,8 @@ With the command ```printconfigs```, all sampled configurations are printed to a
 A short example using printconfigs to print all valid configurations into a text file:
 ```
 vm C:\exampleVM.xml
-allbinary
-expdesign fullfactorial
+binary allbinary
+numeric fullfactorial
 printconfigs C:\allConfigurations.txt prefix postfix
 ```
 Until now, the elements ```outputString```, ```prefix``` and ```postfix``` of the variability model were ignored. These attributes are used by the printconfigs command and printed if the option in question is selected.
@@ -684,8 +704,9 @@ all ./measurements.xml
 nfp Performance
 
 # Learns with all configurations given in the measurements-file.
-# Note that 'start' is not needed in combination with 'learnwithallmeasurements'
-learnwithallmeasurements
+select-all-measurements true
+learn-splconqueror
+select-all-measurements false
 
 # Cleans the sample set.
 # Note that this command is needed if multiple different sampling sets are computed in one run of SPL Conqueror
@@ -704,10 +725,10 @@ all ./measurements.xml
 nfp Performance
 
 # Here, the binary sampling strategy FeatureWise (FW) is selected
-featurewise
+binary featurewise
 
 # The sampling strategy Plackett-Burman for numeric options is selected
-expdesign plackettburman measurements:125 level:5
+numeric plackettburman measurements:125 level:5
 
 # Print configurations selected by the sampling strategies in the file 'samples.txt'
 printconfigs ./samples.txt

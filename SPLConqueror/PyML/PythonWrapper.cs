@@ -3,7 +3,6 @@ using SPLConqueror_Core;
 using System.Collections.Generic;
 using System;
 using System.Text;
-using System.Threading;
 
 namespace ProcessWrapper
 {
@@ -26,20 +25,6 @@ namespace ProcessWrapper
         private const string LEARNING_SETTINGS_STREAM_START = "settings_start";
 
         private const string LEARNING_SETTINGS_STREAM_END = "settings_end";
-
-        /* Meassages to indicate the start and end of the stream of configurations.
-         * Configurations will be sent in between the messages.
-        */
-        private const string CONFIG_LEARN_STREAM_START = "config_learn_start";
-
-        private const string CONFIG_LEARN_STREAM_END = "config_learn_end";
-
-        /* Meassages to indicate the start and end of the stream of configurations.
-         * Configurations will be sent in between the messages.
-        */
-        private const string CONFIG_PREDICT_STREAM_START = "config_predict_start";
-
-        private const string CONFIG_PREDICT_STREAM_END = "config_predict_end";
 
         /* Message to send the task that should be performed by the application.
          * Only one task can be performed by the process before terminating.
@@ -65,13 +50,6 @@ namespace ProcessWrapper
 
         // Message to indicate that the process has performed the task.
         private const string FINISHED_LEARNING = "learn_finished";
-
-        // Partial Stream that sends the configs in more than one run
-        private const string CONFIG_PARTIAL_STREAM_START = "partial_start";
-
-        private const string CONFIG_PARTIAL_STREAM_END = "partial_end";
-
-        private const string PARTIAL_ACK = "partial_ack";
 
         private string[] mlProperties = null;
 
@@ -113,38 +91,6 @@ namespace ProcessWrapper
             pythonProcess.Close();
         }
 
-        private void passConfigurations(List<Configuration> toPass)
-        {
-            passLineToApplication(CONFIG_LEARN_STREAM_START);
-
-            foreach (Configuration config in toPass)
-            {
-                passLineToApplication(config.toNumeric());
-                while (!waitForNextReceivedLine().Equals(PASS_OK))
-                {
-                    // Wait to make sure the previous input is processed in order to make sure receiver wont be overwhelmed
-                }
-            }
-
-            passLineToApplication(CONFIG_LEARN_STREAM_END);
-        }
-
-        private void passConfigurationsPredict(List<Configuration> toPass)
-        {
-            passLineToApplication(CONFIG_PREDICT_STREAM_START);
-
-            foreach (Configuration config in toPass)
-            {
-                passLineToApplication(config.toNumeric());
-                while (!waitForNextReceivedLine().Equals(PASS_OK))
-                {
-                    // Wait to make sure the previous input is processed in order to make sure receiver wont be overwhelmed
-                }
-            }
-
-            passLineToApplication(CONFIG_PREDICT_STREAM_END);
-        }
-
         private void initializeLearning(string[] mlSettings)
         {
             passLineToApplication(LEARNING_SETTINGS_STREAM_START);
@@ -157,39 +103,6 @@ namespace ProcessWrapper
                 }
             }
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
-        }
-
-        // currently replaced by PrintNfpPredictionsPython
-        private string nfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations)
-        {
-            string[] separators = new String[] { "," };
-            string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            StringBuilder sb = new StringBuilder();
-
-            if (predictedConfigurations.Count != predictions.Length)
-                GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
-
-            sb.Append("Configuration;Measured;Predicted\n");
-            for (int i = 0; i < predictedConfigurations.Count; i++)
-            {
-                sb.Append(predictedConfigurations[i].ToString() + ";" + predictedConfigurations[i].GetNFPValue() + ";" + predictions[i] + "\n");
-            }
-
-
-            if (predictions.Length == GlobalState.varModel.optionToIndex.Count)
-            {
-                int counter = 0;
-                foreach (KeyValuePair<int, ConfigurationOption> option in GlobalState.varModel.optionToIndex)
-                {
-                    sb.Append(predictions[counter] + " " + option.Value.ToString());
-                    if (counter < predictions.Length - 1)
-                    {
-                        sb.Append(" + ");
-                    }
-                    counter++;
-                }
-            }
-            return sb.ToString();
         }
 
         private void printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
@@ -227,54 +140,31 @@ namespace ProcessWrapper
         /// At last sends the task that should be performed(learning or parameter tuning).
         /// This has to be performed before requesting results and can only be done once per lifetime of the process.
         /// </summary>
-        /// <param name="configs">Configurations used to train.</param>
-        /// <param name="configurationsToPredict">Configurations used for prediction.</param>
+        /// <param name="configsLearn">Path to the file that constains the configurations used for learning.</param>
+        /// <param name="configsPredict">Path to the file that constains the configurations used for prediction.</param>
+        /// <param name="nfpLearn">Path to the file that contains the nfp values that belong to the learning set.</param>
+        /// <param name="nfpPredict">Path to the file that contains the nfp vlaues that belong to the prediction set.</param>
         /// <param name="task">Task that should be performed by the learner. Can either be parameter tuning
         /// or learning.</param>
-        public void setupApplication(List<Configuration> configs, List<Configuration> configurationsToPredict, string task)
+        /// <param name="model">Model that contains all the configuration options.</param>
+        public void setupApplication(string configsLearn,string nfpLearn, string configsPredict, string nfpPredict,
+            string task, VariabilityModel model)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
                 initializeLearning(this.mlProperties);
-                passLineToApplication(task);
                 if (AWAITING_CONFIGS.Equals(waitForNextReceivedLine()))
                 {
-                    if (task.Equals(START_PARAM_TUNING))
-                    {
-                        passConfigurations(configs);
-
-                        passConfigurationsPredict(configurationsToPredict);
-                    }
-                    else
-                    {
-                        int j = 1;
-                        List<Configuration>.Enumerator enumerator = configs.GetEnumerator();
-                        enumerator.MoveNext();
-                        passLineToApplication(CONFIG_PARTIAL_STREAM_START);
-                        while (enumerator.Current != null)
-                        {
-                            passLineToApplication(CONFIG_LEARN_STREAM_START);
-                            while (j <= 5000 && enumerator.Current != null)
-                            {
-                                passLineToApplication(enumerator.Current.toNumeric());
-                                enumerator.MoveNext();
-                                while (!waitForNextReceivedLine().Equals(PASS_OK))
-                                {
-                                    // Wait to make sure the previous input is processed in order to make sure receiver wont be overwhelmed
-                                }
-                                j++;
-                            }
-                            j = 1;
-                            passLineToApplication(CONFIG_LEARN_STREAM_END);
-                            while (!waitForNextReceivedLine().Equals(PARTIAL_ACK)) ;
-                        }
-                        passLineToApplication(CONFIG_PARTIAL_STREAM_END);
-                        while (!waitForNextReceivedLine().Equals(AWAITING_CONFIGS))
-                        {
-                            Thread.Sleep(1000);
-                        }
-                        passConfigurationsPredict(configurationsToPredict);
-                    }
+                    passLineToApplication(configsLearn + " " + nfpLearn);
+                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                    passLineToApplication(configsPredict + " " + nfpPredict);
+                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                    List<string> opts = new List<string>();
+                    model.BinaryOptions.ForEach(opt => opts.Add(opt.Name));
+                    model.NumericOptions.ForEach(opt => opts.Add(opt.Name));
+                    passLineToApplication(string.Join(",", opts));
+                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                    passLineToApplication(task);
                 }
             }
         }
@@ -309,13 +199,12 @@ namespace ProcessWrapper
         /// <returns>Optimal configuration</returns>
         public string getOptimizationResult(List<Configuration> predictedConfigurations, string targetPath)
         {
+            passLineToApplication(targetPath);
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
             {
 
             }
-
-            passLineToApplication(targetPath);
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return waitForNextReceivedLine();

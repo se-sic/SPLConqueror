@@ -1,21 +1,11 @@
 import sys
 import learning
 import parameterTuning
-
-
-
-CONF_MARKER = "Configurations"
+import configParser
 
 # Messages received by the parent process
 SETTING_STREAM_START = "settings_start"
 SETTING_STREAM_END = "settings_end"
-
-CONFIG_LEARN_STREAM_START = "config_learn_start"
-CONFIG_LEARN_STREAM_END = "config_learn_end"
-
-CONFIG_PREDICT_STREAM_START = "config_predict_start"
-
-CONFIG_PREDICT_STREAM_END = "config_predict_end"
 
 START_LEARN = "start_learn"
 START_PARAM_TUNING = "start_param_tuning"
@@ -28,12 +18,6 @@ PASS_OK = "pass_ok"
 FINISHED_LEARNING = "learn_finished"
 
 REQUESTING_LEARNING_SETTINGS = "req_settings"
-
-CONFIG_PARTIAL_STREAM_START = "partial_start"
-
-CONFIG_PARTIAL_STREAM_END = "partial_end"
-
-PARTIAL_ACK = "partial_ack"
 
 number_of_configurations = 0
 
@@ -57,65 +41,36 @@ def print_line_array(array):
 
 
 # Function to request and then parse configurations.
-def get_configurations(container, stream_start_arg, stream_end_arg):
+def get_configurations(learn_container, predict_container):
     print_line(REQUESTING_CONFIGURATION)
-    marker = input()
-    if marker == stream_start_arg:
-        line = input()
-        while not line == stream_end_arg:
+    line = input()
+    config_and_nfp_file_learn = line.split(" ")
 
-            # parse each line written by C# in the format binOpt,...,binOpt,numOpt,...,numOpt, nfp_value
-            # into a list containing the option values as int and cast the nfp value to double
-            # then save it in the configuration class
-            data = line.split(",")
-            nfp_value = float(data.pop())
-            configuration_values = []
-            for value in data:
-                configuration_values.append(int(value))
-            container.append(nfp_value, configuration_values)
-
-            # message to C# indicating that current line is processed and next can be sent in order to control traffic
-            print_line(PASS_OK)
-            line = input()
-
-    return container
-
-
-# Request and return the configurations used to train.
-def get_configurations_learn(container):
-    return get_configurations(container, CONFIG_LEARN_STREAM_START, CONFIG_LEARN_STREAM_END)
-
-
-def conf_partial(learner):
-
-    cs_input = input()
-    configs = Configurations()
-    while cs_input != CONFIG_PARTIAL_STREAM_END:
-        if cs_input == CONFIG_LEARN_STREAM_START:
-            cs_input = input()
-            while cs_input != CONFIG_LEARN_STREAM_END:
-                data = cs_input.split(",")
-                nfp_value = float(data.pop())
-                configuration_values = []
-                for value in data:
-                    configuration_values.append(int(value))
-                configs.append(nfp_value, configuration_values)
-                print_line(PASS_OK)
-                cs_input = input()
-            print_line(PARTIAL_ACK)
-            cs_input = input()
-    learner.learn(configs.features, configs.results)
-
-
-# Request and return the configurations used to predict.
-def get_configurations_predict(container):
-    return get_configurations(container, CONFIG_PREDICT_STREAM_START, CONFIG_PREDICT_STREAM_END)
+    print_line(PASS_OK)
+    line = input()
+    config_and_nfp_file_predict = line.split(" ")
+    print_line(PASS_OK)
+    options = input()
+    if config_and_nfp_file_learn[0].strip().endswith(".csv"):
+        data = configParser.parse_from_csv(config_and_nfp_file_learn[0].strip(), config_and_nfp_file_predict[0].strip(),
+                                           config_and_nfp_file_learn[1].strip(), config_and_nfp_file_predict[1].strip())
+    else:
+        data = configParser.parse_from_plain_text(options.strip().split(","), config_and_nfp_file_learn[0].strip(),
+                                                  config_and_nfp_file_predict[0].strip(),
+                                                  config_and_nfp_file_learn[1].strip(),
+                                                  config_and_nfp_file_predict[1].strip())
+    learn_container.features = data[0]
+    learn_container.results = data[2]
+    predict_container.features = data[1]
+    predict_container.results = data[3]
+    print_line(PASS_OK)
 
 
 # Main method, that will be executed when executing this script.
 def main():
     configurations_learn = Configurations()
     configurations_predict = Configurations()
+
     learning_strategy = ""
     learner_settings = []
 
@@ -130,7 +85,7 @@ def main():
             learner_settings.append(learner_setting)
             learner_setting = input()
 
-    print_line(REQUESTING_CONFIGURATION)
+    get_configurations(configurations_learn, configurations_predict)
     task = input()
     # perform prediction
     if task == START_LEARN:
@@ -138,11 +93,7 @@ def main():
         global number_of_configurations
         number_of_configurations = len(configurations_learn.results)
         model = learning.Learner(learning_strategy, learner_settings)
-        task = input()
-        if task == CONFIG_PARTIAL_STREAM_START:
-            conf_partial(model)
-
-        configurations_predict = get_configurations_predict(configurations_predict)
+        model.learn(configurations_learn.features, configurations_learn.results)
         predictions = model.predict(configurations_predict.features)
 
         print_line(FINISHED_LEARNING)
@@ -150,13 +101,10 @@ def main():
             print_line_array(predictions)
     # perform parameter tuning
     elif task == START_PARAM_TUNING:
-        configurations_learn = get_configurations_learn(configurations_learn)
-        configurations_predict = get_configurations_predict(configurations_predict)
-        print_line(FINISHED_LEARNING)
-        target_path = input()
-        parameterTuning.setOutputPath(target_path)
+        parameterTuning.setOutputPath(input())
         optimal_parameters = parameterTuning.optimizeParameter(learning_strategy, configurations_learn.features,
                                                                configurations_learn.results, learner_settings)
+        print_line(FINISHED_LEARNING)
         if input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimal_parameters)
 
@@ -172,19 +120,3 @@ class Configurations:
         self.features.append(features)
 
 main()
-
-
-def test_function():
-    model = learning.Learner("svr", "")
-    model.learn([[0, 0]], [1])
-    pred = model.predict([[0, 0]])
-    print_line_array(pred)
-    model = learning.Learner("ssvr", "")
-    model.learn([[0, 0]], [1])
-    pred = model.predict([[0, 0]])
-    print_line_array(pred)
-    model = learning.Learner("svr", ["C=\'bogus\'"])
-    model.learn([[0, 0]], [1])
-    print_line_array(model.predict([[0, 0]]))
-    model = learning.Learner("svr", [])
-    print_line_array(model.predict([[0, 0]]))

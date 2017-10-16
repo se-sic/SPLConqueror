@@ -127,6 +127,12 @@
   <data name="BoxbehnkenSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sampleReference\BoxbehnkenSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="DistributionAwareCompleteConfigurations" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\sampleReference\DistributionAwareCompleteConfigurations.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="DistributionPreserving" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\sampleReference\DistributionPreserving.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="FeaturewiseSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sampleReference\FeaturewiseSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

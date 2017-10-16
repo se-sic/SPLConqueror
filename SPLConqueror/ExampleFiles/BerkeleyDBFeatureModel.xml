@@ -9,7 +9,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -23,7 +22,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -37,7 +35,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -51,7 +48,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -65,7 +61,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -79,7 +74,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -93,7 +87,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>True</optional>
@@ -107,7 +100,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>False</optional>
@@ -120,7 +112,6 @@
       <postfix>
       </postfix>
       <parent>PAGESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>PS4K</options>
@@ -138,7 +129,6 @@
       <postfix>
       </postfix>
       <parent>PAGESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>PS1K</options>
@@ -156,7 +146,6 @@
       <postfix>
       </postfix>
       <parent>PAGESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>PS1K</options>
@@ -174,7 +163,6 @@
       <postfix>
       </postfix>
       <parent>PAGESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>PS1K</options>
@@ -192,7 +180,6 @@
       <postfix>
       </postfix>
       <parent>PAGESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>PS1K</options>
@@ -211,7 +198,6 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <optional>False</optional>
@@ -224,7 +210,6 @@
       <postfix>
       </postfix>
       <parent>CACHESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>CS16MB</options>
@@ -241,7 +226,6 @@
       <postfix>
       </postfix>
       <parent>CACHESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>CS32MB</options>
@@ -258,7 +242,6 @@
       <postfix>
       </postfix>
       <parent>CACHESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>CS32MB</options>
@@ -275,7 +258,6 @@
       <postfix>
       </postfix>
       <parent>CACHESIZE</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>CS32MB</options>

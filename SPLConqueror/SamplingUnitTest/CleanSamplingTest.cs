@@ -23,8 +23,8 @@ namespace SamplingUnitTest
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + modelPath);
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_FEATUREWISE);
             cmd.performOneCommand(Commands.COMMAND_SAMPLE_BINARY_TWISE + " " + Commands.COMMAND_VALIDATION);
-            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_FULLFACTORIAL);
-            cmd.performOneCommand(Commands.COMMAND_EXERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN
+            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_FULLFACTORIAL);
+            cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN
                 + " " + Commands.COMMAND_VALIDATION);
             cmd.performOneCommand(Commands.COMMAND_CLEAR_SAMPLING);
             assertNoSamplingStrategies(cmd); 
