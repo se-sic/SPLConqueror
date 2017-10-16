@@ -2,6 +2,8 @@ import sys
 import learning
 import parameterTuning
 
+
+
 CONF_MARKER = "Configurations"
 
 # Messages received by the parent process
@@ -57,9 +59,9 @@ def print_line_array(array):
 # Function to request and then parse configurations.
 def get_configurations(container, stream_start_arg, stream_end_arg):
     print_line(REQUESTING_CONFIGURATION)
-    marker = raw_input()
+    marker = input()
     if marker == stream_start_arg:
-        line = raw_input()
+        line = input()
         while not line == stream_end_arg:
 
             # parse each line written by C# in the format binOpt,...,binOpt,numOpt,...,numOpt, nfp_value
@@ -74,7 +76,7 @@ def get_configurations(container, stream_start_arg, stream_end_arg):
 
             # message to C# indicating that current line is processed and next can be sent in order to control traffic
             print_line(PASS_OK)
-            line = raw_input()
+            line = input()
 
     return container
 
@@ -86,11 +88,11 @@ def get_configurations_learn(container):
 
 def conf_partial(learner):
 
-    cs_input = raw_input()
+    cs_input = input()
     configs = Configurations()
     while cs_input != CONFIG_PARTIAL_STREAM_END:
         if cs_input == CONFIG_LEARN_STREAM_START:
-            cs_input = raw_input()
+            cs_input = input()
             while cs_input != CONFIG_LEARN_STREAM_END:
                 data = cs_input.split(",")
                 nfp_value = float(data.pop())
@@ -99,9 +101,9 @@ def conf_partial(learner):
                     configuration_values.append(int(value))
                 configs.append(nfp_value, configuration_values)
                 print_line(PASS_OK)
-                cs_input = raw_input()
+                cs_input = input()
             print_line(PARTIAL_ACK)
-            cs_input = raw_input()
+            cs_input = input()
     learner.learn(configs.features, configs.results)
 
 
@@ -119,24 +121,24 @@ def main():
 
     # Sequence for getting the basic learning settings from C#
     print_line(REQUESTING_LEARNING_SETTINGS)
-    csharp_response = raw_input()
+    csharp_response = input()
     if csharp_response == SETTING_STREAM_START:
-        learning_strategy = raw_input()
-        learner_setting = raw_input()
+        learning_strategy = input()
+        learner_setting = input()
         while learner_setting != SETTING_STREAM_END:
             # pair of settings passed by other application in format identifier=value
             learner_settings.append(learner_setting)
-            learner_setting = raw_input()
+            learner_setting = input()
 
     print_line(REQUESTING_CONFIGURATION)
-    task = raw_input()
+    task = input()
     # perform prediction
     if task == START_LEARN:
 
         global number_of_configurations
         number_of_configurations = len(configurations_learn.results)
         model = learning.Learner(learning_strategy, learner_settings)
-        task = raw_input()
+        task = input()
         if task == CONFIG_PARTIAL_STREAM_START:
             conf_partial(model)
 
@@ -144,18 +146,18 @@ def main():
         predictions = model.predict(configurations_predict.features)
 
         print_line(FINISHED_LEARNING)
-        if raw_input() == REQUESTING_LEARNING_RESULTS:
+        if input() == REQUESTING_LEARNING_RESULTS:
             print_line_array(predictions)
     # perform parameter tuning
     elif task == START_PARAM_TUNING:
         configurations_learn = get_configurations_learn(configurations_learn)
         configurations_predict = get_configurations_predict(configurations_predict)
         print_line(FINISHED_LEARNING)
-        target_path = raw_input()
+        target_path = input()
         parameterTuning.setOutputPath(target_path)
         optimal_parameters = parameterTuning.optimizeParameter(learning_strategy, configurations_learn.features,
                                                                configurations_learn.results, learner_settings)
-        if raw_input() == REQUESTING_LEARNING_RESULTS:
+        if input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimal_parameters)
 
 
