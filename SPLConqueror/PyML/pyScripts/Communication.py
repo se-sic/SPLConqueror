@@ -19,9 +19,6 @@ FINISHED_LEARNING = "learn_finished"
 
 REQUESTING_LEARNING_SETTINGS = "req_settings"
 
-number_of_configurations = 0
-
-
 # Output function to pass strings to C#, flushing the output buffer is required to make sure the string is written
 #  in the stream
 def print_line(string):
@@ -90,8 +87,7 @@ def main():
     # perform prediction
     if task == START_LEARN:
 
-        global number_of_configurations
-        number_of_configurations = len(configurations_learn.results)
+        learning.number_of_configurations = len(configurations_learn.results)
         model = learning.Learner(learning_strategy, learner_settings)
         model.learn(configurations_learn.features, configurations_learn.results)
         predictions = model.predict(configurations_predict.features)
