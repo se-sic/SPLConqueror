@@ -3,8 +3,9 @@ import sklearn.ensemble as skEn
 import sklearn.neighbors as skNE
 import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
-import numpy as np
 import ast
+
+number_of_configurations = 0
 
 
 # setup the learner with the right settings.
@@ -92,16 +93,6 @@ class Learner:
             return
         except AttributeError:
             return
-
-    def get_result_function(self):
-        if self.strategy == "LinearSVR" or self.kernel == "standard":
-            # returns the coefficients of the learned linear function
-            coefficients = []
-            for coeff in self.learning_model.coef_:
-                coefficients.append(coeff)
-            return coefficients
-        else:
-            return "[not supported yet]"
 
     def predict(self, x):
         try:
@@ -374,8 +365,7 @@ def setup_KNeighborsRegressor(learner_settings):
         # split identifier=value, so you can identify value and the variable
         setting_value_pair = additional_setting.split("=")
         if setting_value_pair[0] == "n_neighbors":
-            import Communication
-            if int(setting_value_pair[1]) <= Communication.number_of_configurations:
+            if int(setting_value_pair[1]) <= number_of_configurations:
                 n_neighbors = int(setting_value_pair[1])
             else:
                 n_neighbors = 5
