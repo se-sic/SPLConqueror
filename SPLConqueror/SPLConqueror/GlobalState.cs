@@ -96,6 +96,7 @@ namespace SPLConqueror_Core
             evaluationSet = new ResultDB();
             nfProperties = new Dictionary<string,NFProperty>();
             optionOrder = new List<ConfigurationOption>();
+            substitutedConfigs = new Dictionary<Configuration, Configuration>();
         }
 
 
@@ -194,7 +195,6 @@ namespace SPLConqueror_Core
 
                 if (result.Item2 != null && !substitutedConfigs.ContainsKey(result.Item1))
                 {
-                    
 
                     substitutedConfigs.Add(result.Item1, result.Item2);
                     configsWithValues.Add(result.Item2);
