@@ -73,6 +73,11 @@ namespace ProcessWrapper
             string processOutput = "";
             while (processOutput == null || processOutput.Length == 0)
             {
+                if (pythonProcess.HasExited)
+                {
+                    GlobalState.logError.logLine("Python process crashed. For more information check std error.");
+                    throw new InvalidOperationException();
+                }
                 processOutput = pythonProcess.StandardOutput.ReadLine();
             }
             return processOutput;
