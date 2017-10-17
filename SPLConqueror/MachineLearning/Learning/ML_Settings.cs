@@ -417,9 +417,19 @@ namespace MachineLearning.Learning
 
             foreach (FieldInfo field in fields)
             {
-                if(!field.IsStatic)
-                    // Replace underscore with '-' for uniform naming in string representation.
-                    sb.Append(field.Name.Replace("_", "-") +":"+field.GetValue(this)+" ");
+                if (!field.IsStatic)
+                {
+                    if (field.Name == "blacklisted")
+                    {
+                        sb.Append(field.Name + ":");
+                        ((List<String>)field.GetValue(this)).ForEach(x => sb.Append(x + ","));
+                        sb.Append(" ");
+                    } else
+                    {
+                        // Replace underscore with '-' for uniform naming in string representation.
+                        sb.Append(field.Name.Replace("_", "-") + ":" + field.GetValue(this) + " ");
+                    }
+                }
             }
             sb.Append(System.Environment.NewLine);
  	        return sb.ToString();
