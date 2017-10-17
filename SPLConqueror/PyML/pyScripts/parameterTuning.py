@@ -126,13 +126,6 @@ def optimize_BaggingSVR(X_train, y_train):
 
 # Format the best configuration found during parameter tuning.
 def formatOptimal(optimalParams):
-    try:
-        f = open('H:\ExpDesignPaper\DefaultParameters\jobs\javaGC_Whole_default_python\py.log', 'a+')
-        f.write(str(optimalParams))
-        f.write('\n')
-        f.close()
-    except FileNotFoundError:
-        sys.stderr.write(str(optimalParams))
 
     if len(optimalParams.keys()) == 0:
         return "No parameter has an influence on the accuracy of the result!"

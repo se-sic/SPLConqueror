@@ -11,7 +11,7 @@ namespace ProcessWrapper
 
         private string learningSettingsAttachment = null;
 
-        public const string csvFilename = "PredictedValues";
+        public const string csvFilename = "PreVal";
         public const string csv = ".csv";
 
         private const string csvSeparator = ";";
