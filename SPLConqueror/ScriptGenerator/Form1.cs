@@ -244,7 +244,7 @@ namespace ScriptGenerator
                 {
                     param += "seed:" + randomSeedTextBox.Text;
                 }
-                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_RANDOM 
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_RANDOM
                     + " " + param + " " + validation);
                 keyInfo += "random " + numConfigsTextBox.Text + randomSeedTextBox.Text;
             }
@@ -255,7 +255,7 @@ namespace ScriptGenerator
                 {
                     param += "t:" + tTextBox.Text + " ";
                 }
-                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_TWISE + " " 
+                samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_TWISE + " "
                     + param + validation);
             }
             Container cont = new Container(containerKey, samplingNames);
@@ -441,13 +441,14 @@ namespace ScriptGenerator
             {
                 int i = 0;
                 foreach (ML_Settings setting in mlSettings)
-                { 
+                {
                     foreach (Container varModelContainer in runs["variabilityModel"])
                     {
                         // Placeholder variable
                         scriptContent.Append("$" + i + System.Environment.NewLine);
                         i++;
                         StringBuilder subscript = new StringBuilder();
+
 
                         if (logForEachSubscript.Checked)
                         {
@@ -457,7 +458,7 @@ namespace ScriptGenerator
                                 switch (c.Type.Trim())
                                 {
                                     case CONTAINERKEY_LOGFILE:
-                                        subscript.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content).ToString().Split(new char[] { '.' })[0] 
+                                        subscript.Append(CommandLine.Commands.COMMAND_LOG + " " + (c.Content).ToString().Split(new char[] { '.' })[0]
                                             + "_subscript" + (i - 1) + ".log" + "\n");
                                         break;
                                 }
@@ -475,11 +476,15 @@ namespace ScriptGenerator
                             foreach (Container nfp in nfpContainer)
                             {
                                 List<NFProperty> prop = (List<NFProperty>)nfp.Content;
+                                System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                                if (!pretestSampling(runs, varModel.FullName, ((FileInfo)measurementContainer.Content).ToString()))
+                                {
+                                    MessageBox.Show("Warning: " + varModel.Name + " might not produce sampling results.");
+                                }
 
                                 foreach (NFProperty pro in prop)
                                 {
 
-                                    System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
                                     System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
                                     NFProperty nfpName = (NFProperty)pro;
 
@@ -503,15 +508,22 @@ namespace ScriptGenerator
                     }
                 }
                 scriptContent.Append(Commands.COMMAND_CLEAR_LEARNING + System.Environment.NewLine);
-            } else if (subscriptEachNfp.Checked)
+            }
+            else if (subscriptEachNfp.Checked)
             {
                 int i = 0;
                 foreach (ML_Settings setting in mlSettings)
                 {
                     foreach (Container varModelContainer in runs["variabilityModel"])
                     {
+
                         foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
                         {
+                            System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                            if (!pretestSampling(runs, varModel.FullName, ((FileInfo)measurementContainer.Content).ToString()))
+                            {
+                                MessageBox.Show("Warning: " + varModel.Name + " might not produce sampling results.");
+                            }
                             List<Container> nfpContainer = measurementContainer.AdditionalInformation;
 
                             foreach (Container nfp in nfpContainer)
@@ -543,7 +555,6 @@ namespace ScriptGenerator
                                         }
                                     }
                                     subscript.Append(mlSettingsContent(setting));
-                                    System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
                                     System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
                                     NFProperty nfpName = (NFProperty)pro;
 
@@ -568,7 +579,8 @@ namespace ScriptGenerator
                     }
                 }
                 scriptContent.Append(Commands.COMMAND_CLEAR_LEARNING + System.Environment.NewLine);
-            } else
+            }
+            else
             {
                 foreach (ML_Settings setting in mlSettings)
                 {
@@ -580,8 +592,14 @@ namespace ScriptGenerator
 
                     foreach (Container varModelContainer in runs["variabilityModel"])
                     {
+
                         foreach (Container measurementContainer in varModelContainer.AdditionalInformation)
                         {
+                            System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                            if (!pretestSampling(runs, varModel.FullName, ((FileInfo)measurementContainer.Content).ToString()))
+                            {
+                                MessageBox.Show("Warning: " + varModel.FullName + " might not produce sampling results.");
+                            }
                             List<Container> nfpContainer = measurementContainer.AdditionalInformation;
 
                             foreach (Container nfp in nfpContainer)
@@ -591,7 +609,7 @@ namespace ScriptGenerator
                                 foreach (NFProperty pro in prop)
                                 {
 
-                                    System.IO.FileInfo varModel = (System.IO.FileInfo)varModelContainer.Content;
+                                    varModel = (System.IO.FileInfo)varModelContainer.Content;
                                     System.IO.FileInfo measurement = (System.IO.FileInfo)measurementContainer.Content;
                                     NFProperty nfpName = (NFProperty)pro;
 
@@ -739,7 +757,8 @@ namespace ScriptGenerator
                                     sb.Append(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR + System.Environment.NewLine);
                                     sb.Append(Commands.COMMAND_ANALYZE_LEARNING + System.Environment.NewLine);
                                     sb.Append(Commands.COMMAND_CLEAR_SAMPLING + System.Environment.NewLine);
-                                } else
+                                }
+                                else
                                 {
                                     foreach (Container cont in addedElementsList.Items)
                                     {
@@ -893,22 +912,28 @@ namespace ScriptGenerator
             if (svrRadioButton.Checked)
             {
                 parameters.Append("SVR");
-            } else if (randomForestRadioButton.Checked)
+            }
+            else if (randomForestRadioButton.Checked)
             {
                 parameters.Append("randomforestregressor");
-            } else if (decisionTreeRegression.Checked)
+            }
+            else if (decisionTreeRegression.Checked)
             {
                 parameters.Append("decisiontreeregression");
-            } else if (baggingSVRRadioButton.Checked)
+            }
+            else if (baggingSVRRadioButton.Checked)
             {
                 parameters.Append("baggingsvr");
-            } else if (KNeighborsRadioButton.Checked)
+            }
+            else if (KNeighborsRadioButton.Checked)
             {
                 parameters.Append("kneighborsregressor");
-            } else if (kernelridgeRadioButton.Checked)
+            }
+            else if (kernelridgeRadioButton.Checked)
             {
                 parameters.Append("kernelridge");
-            } else
+            }
+            else
             {
                 canContinue = false;
                 MessageBox.Show("No learner selected!", "Error");
@@ -924,6 +949,56 @@ namespace ScriptGenerator
                 addedElementsList.Items.Add(new Container(learnPythonCommand, parameters.ToString()));
             }
         }
+
+        private bool pretestSampling(Dictionary<string, List<ScriptGenerator.Container>> runs, string varModel, string measurement)
+        {
+            List<string> samplingNamesBinary = null;
+            if (runs.ContainsKey(CONTAINERKEY_BINARY))
+            {
+                Container cBSamp = runs[CONTAINERKEY_BINARY].First();
+                if (cBSamp.Content != null)
+                {
+                    samplingNamesBinary = (List<string>)cBSamp.Content;
+                }
+            }
+
+            List<string> samplingNamesNumeric = null;
+            if (runs.ContainsKey(CONTAINERKEY_NUMERIC))
+            {
+                Container cNumeric = runs[CONTAINERKEY_NUMERIC].First();
+                if (cNumeric.Content != null)
+                {
+                    samplingNamesNumeric = (List<string>)cNumeric.Content;
+                }
+            }
+            if ((samplingNamesBinary == null || samplingNamesBinary.Count == 0) 
+                && (samplingNamesNumeric == null || samplingNamesNumeric.Count == 0))
+            {
+                return false;
+            }
+
+            if (samplingNamesBinary.Contains(Commands.COMMAND_SAMPLE_ALLBINARY) 
+                && samplingNamesNumeric.Contains(Commands.COMMAND_EXPDESIGN_FULLFACTORIAL))
+            {
+                return true;
+            }
+
+            Commands cmd = new Commands();
+            cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + varModel);
+            if (samplingNamesBinary != null)
+                cmd.performOneCommand(samplingNamesBinary.First());
+            if (samplingNamesNumeric != null)
+                cmd.performOneCommand(samplingNamesNumeric.First());
+            var sampled = MachineLearning.Sampling.ConfigurationBuilder.buildConfigs(GlobalState.varModel, cmd.BinaryToSample
+                , cmd.NumericToSample, new List<MachineLearning.Sampling.Hybrid.HybridStrategy>());
+            var existing = ConfigurationReader.readConfigurations(measurement, GlobalState.varModel);
+            return ((sampled.Intersect(existing)).Count() > 0);
+        }
+
+
+
+
+
 
         private void convertLegacyScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -959,34 +1034,41 @@ namespace ScriptGenerator
             while (!sr.EndOfStream)
             {
                 line = sr.ReadLine();
-                if (binarySampling.Any(sampling => line.Contains(sampling)) 
+                if (binarySampling.Any(sampling => line.Contains(sampling))
                     && !line.StartsWith(Commands.COMMAND_BINARY_SAMPLING))
                 {
                     line = Commands.COMMAND_BINARY_SAMPLING + " " + line;
-                } else if (line.Contains(Commands.COMMAND_LOAD_MLSETTINGS))
+                }
+                else if (line.Contains(Commands.COMMAND_LOAD_MLSETTINGS))
                 {
                     line = line.Replace(Commands.COMMAND_LOAD_MLSETTINGS, Commands.COMMAND_LOAD_MLSETTINGS_UNIFORM);
-                } else if (line.Contains(Commands.COMMAND_EXPERIMENTALDESIGN))
+                }
+                else if (line.Contains(Commands.COMMAND_EXPERIMENTALDESIGN))
                 {
                     line = line.Replace(Commands.COMMAND_EXPERIMENTALDESIGN, Commands.COMMAND_NUMERIC_SAMPLING);
-                } else if (line.Contains(Commands.COMMAND_PREDICT_CONFIGURATIONS))
+                }
+                else if (line.Contains(Commands.COMMAND_PREDICT_CONFIGURATIONS))
                 {
                     line = line.Replace(Commands.COMMAND_PREDICT_CONFIGURATIONS,
                         Commands.COMMAND_PREDICT_CONFIGURATIONS_SPLC);
-                } else if (line.Contains(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS))
+                }
+                else if (line.Contains(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS))
                 {
                     line = line.Replace(Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS,
                         Commands.COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC);
-                } else if (line.Contains(Commands.COMMAND_START_ALLMEASUREMENTS))
+                }
+                else if (line.Contains(Commands.COMMAND_START_ALLMEASUREMENTS))
                 {
-                    line = Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true" + Environment.NewLine 
-                        + Commands.COMMAND_START_LEARNING_SPL_CONQUEROR + Environment.NewLine 
+                    line = Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true" + Environment.NewLine
+                        + Commands.COMMAND_START_LEARNING_SPL_CONQUEROR + Environment.NewLine
                         + Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " false";
-                } else if (line.Contains(Commands.COMMAND_START_LEARNING))
+                }
+                else if (line.Contains(Commands.COMMAND_START_LEARNING))
                 {
                     line = line.Replace(Commands.COMMAND_START_LEARNING
                         , Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
-                } else if (line.Contains(Commands.COMMAND_OPTIMIZE_PARAMETER))
+                }
+                else if (line.Contains(Commands.COMMAND_OPTIMIZE_PARAMETER))
                 {
                     line = line.Replace(Commands.COMMAND_OPTIMIZE_PARAMETER
                         , Commands.COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR);
@@ -1001,4 +1083,4 @@ namespace ScriptGenerator
         }
     }
 
-    }
+}
