@@ -434,7 +434,9 @@ namespace CommandLine
                         .Where(conf => !GlobalState.varModel.isInModel(conf)).ToList();
                     CheckConfigSAT constraintSystem = new CheckConfigSAT();
                     invalid = invalid.Union(GlobalState.allMeasurements.Configurations
-                        .Where(conf => constraintSystem.checkConfigurationSAT(conf,GlobalState.varModel))).ToList();
+                        .Where(conf => !constraintSystem.checkConfigurationSAT(conf.BinaryOptions.ToList()
+                        .Where(kv => kv.Value == BinaryOption.BinaryValue.Selected).ToList()
+                        .Select(kv => kv.Key).ToList(),GlobalState.varModel, false))).ToList();
                     invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
 
                     GlobalState.measurementSource = task.TrimEnd();
@@ -878,7 +880,7 @@ namespace CommandLine
 
                 case COMMAND_SAMPLE_PAIRWISE:
                     addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
-                        "PAIRWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
+                        "PW", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
                 case COMMAND_SAMPLE_BINARY_TWISE:
@@ -896,7 +898,7 @@ namespace CommandLine
                                 parameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
                             }
                         }
-                        addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameters,
+                        addBinSamplingParams(SamplingStrategies.T_WISE, "TW", parameters,
                             para.Contains(Commands.COMMAND_VALIDATION));
                     }
                     break;
@@ -908,7 +910,7 @@ namespace CommandLine
                 case COMMAND_SAMPLE_FEATUREWISE:
                 case COMMAND_SAMPLE_OPTIONWISE:
                     addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
-                        "OPTIONWISE", taskAsParameter.Contains(COMMAND_VALIDATION));
+                        "OW", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
                 case COMMAND_PREDICT_CONFIGURATIONS:
@@ -934,7 +936,7 @@ namespace CommandLine
                         break;
 
                 case COMMAND_SAMPLE_ALLBINARY:
-                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLBINARY",
+                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLB",
                         taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
@@ -1009,7 +1011,7 @@ namespace CommandLine
                             String value = para[i].Split(':')[1];
                             parameter.Add(key, value);
                         }
-                        addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM",
+                        addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "RANDB",
                             parameter, taskAsParameter.Contains(COMMAND_VALIDATION));
 
                         break;
@@ -1018,7 +1020,7 @@ namespace CommandLine
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     // TODO there are two different variants in generating NegFW configurations. 
                     addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
-                        "NEGATIVE_OPTIONISE", taskAsParameter.Contains(COMMAND_VALIDATION));
+                        "NEGOW", taskAsParameter.Contains(COMMAND_VALIDATION));
                     break;
 
                 default:
@@ -1068,7 +1070,7 @@ namespace CommandLine
             // add numeric sampling strategy to the identifier
             foreach (ExperimentalDesign sampling in numericToSample)
             {
-                sb.Append("_" + sampling.getName() + "--" + sampling.parameterIdentifier());
+                sb.Append("_" + sampling.getTag() + "--" + sampling.parameterIdentifier());
             }
             return sb.ToString();
         }
@@ -1179,7 +1181,7 @@ namespace CommandLine
                     File.Delete(nfpLearnFile);
                     File.Delete(nfpValFile);
                     var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
-                        StringSplitOptions.None).ToList();
+                        StringSplitOptions.RemoveEmptyEntries).ToList();
                     optimalParameters.Insert(0, taskAsParameter[0]);
                     handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());
                 } else
@@ -1442,29 +1444,29 @@ namespace CommandLine
             {
                 case COMMAND_SAMPLE_ALLBINARY:
                     addBinarySamplingDomain(SamplingStrategies.ALLBINARY, optionsToConsider);
-                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLBINARY", isValidation);
+                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLB", isValidation);
                     break;
                 case COMMAND_SAMPLE_FEATUREWISE:
                 case COMMAND_SAMPLE_OPTIONWISE:
                     addBinarySamplingDomain(SamplingStrategies.OPTIONWISE, optionsToConsider);
-                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE, "OPTIONWISE", isValidation);
+                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE, "OW", isValidation);
                     break;
                 case COMMAND_SAMPLE_PAIRWISE:
                     addBinarySamplingDomain(SamplingStrategies.PAIRWISE, optionsToConsider);
-                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE, "PAIRWISE", isValidation);
+                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE, "PW", isValidation);
                     break;
                 case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
                     addBinarySamplingDomain(SamplingStrategies.NEGATIVE_OPTIONWISE, optionsToConsider);
-                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE, "NEGATIVE_OPTIONISE", isValidation);
+                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE, "NEGOW", isValidation);
                     break;
                 case COMMAND_SAMPLE_BINARY_RANDOM:
                     addBinarySamplingDomain(SamplingStrategies.BINARY_RANDOM, optionsToConsider);
-                    addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "BINARY_RANDOM", parameterKeyAndValue,
+                    addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "RANDB", parameterKeyAndValue,
                         isValidation);
                     break;
                 case COMMAND_SAMPLE_BINARY_TWISE:
                     addBinarySamplingDomain(SamplingStrategies.T_WISE, optionsToConsider);
-                    addBinSamplingParams(SamplingStrategies.T_WISE, "T_WISE", parameterKeyAndValue, isValidation);
+                    addBinSamplingParams(SamplingStrategies.T_WISE, "TW", parameterKeyAndValue, isValidation);
                     break;
                 //TODO:hybrid as bin/num
                 //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
@@ -1524,12 +1526,12 @@ namespace CommandLine
             if (isValidation)
             {
                 this.hybridToSampleValidation.Add(hybrid);
-                this.exp.info.numericSamplings_Validation = hybrid.GetName();
+                this.exp.info.numericSamplings_Validation = hybrid.getTag();
             }
             else
             {
                 this.hybridToSample.Add(hybrid);
-                this.exp.info.numericSamplings_Learning = hybrid.GetName();
+                this.exp.info.numericSamplings_Learning = hybrid.getTag();
             }
 
         }

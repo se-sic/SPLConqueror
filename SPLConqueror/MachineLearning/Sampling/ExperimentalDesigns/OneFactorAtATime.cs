@@ -54,6 +54,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "ONEFACTORATATIME";
         }
 
+        public override string getTag()
+        {
+            return "OFAAT";
+        }
+
         public Dictionary<NumericOption, double> computeCenterPoint()
         {
             Dictionary<NumericOption, double> centerPoint = new Dictionary<NumericOption, double>();

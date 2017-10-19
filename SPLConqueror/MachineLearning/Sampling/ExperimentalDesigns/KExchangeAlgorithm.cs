@@ -27,6 +27,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "KEXCHANGE";
         }
 
+        public override string getTag()
+        {
+            return "KEX";
+        }
+
         public KExchangeAlgorithm(List<NumericOption> options) 
             : base(options){
         }

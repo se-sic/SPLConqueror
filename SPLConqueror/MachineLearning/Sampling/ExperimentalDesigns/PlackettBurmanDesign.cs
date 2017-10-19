@@ -88,6 +88,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "PLACKETTBURMAN";
         }
 
+        public override string getTag()
+        {
+            return "PBD";
+        }
+
 
         public PlackettBurmanDesign(List<NumericOption> options)
             : base(options)

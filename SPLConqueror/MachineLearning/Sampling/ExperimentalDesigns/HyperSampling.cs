@@ -16,6 +16,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "HYPERSAMPLING";
         }
 
+        public override string getTag()
+        {
+            return "HS";
+        }
+
         public HyperSampling(List<NumericOption> options)
             : base(options)
         {

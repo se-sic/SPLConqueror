@@ -129,6 +129,12 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         public abstract string getName();
 
         /// <summary>
+        /// Return the tag that identifies the experimental design.
+        /// </summary>
+        /// <returns>Tag of the experimental design as string.</returns>
+        public abstract string getTag();
+
+        /// <summary>
         /// Set the sampling parameters of the experimental design.
         /// </summary>
         /// <param name="parameterNameToValue">Dictionary with the parameter names and the values that will be set.</param>

@@ -24,6 +24,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "FULLFACTORIAL";
         }
 
+        public override string getTag()
+        {
+            return "FFA";
+        }
+
         public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue) { }
 
         public override bool computeDesign()

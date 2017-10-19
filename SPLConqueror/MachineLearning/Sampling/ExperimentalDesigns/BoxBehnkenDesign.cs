@@ -31,6 +31,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "BOXBEHNKEN";
         }
 
+        public override string getTag()
+        {
+            return "BBD";
+        }
+
         public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue) { }
 
         public override bool computeDesign()

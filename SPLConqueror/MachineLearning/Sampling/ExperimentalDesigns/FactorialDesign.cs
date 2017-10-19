@@ -35,6 +35,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "FACTORIAL";
         }
 
+        public override string getTag()
+        {
+            return "FA";
+        }
+
         public override string parameterIdentifier ()
         {
             return "n-" + this.n + "_";
