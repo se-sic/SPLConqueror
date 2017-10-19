@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Reflection;
 
 namespace SPLConqueror_Core
 {
@@ -90,13 +91,12 @@ namespace SPLConqueror_Core
         /// </summary>
         public static void clear()
         {
-            varModel = null;
-            currentNFP = null;
-            allMeasurements = new ResultDB();
-            evaluationSet = new ResultDB();
-            nfProperties = new Dictionary<string,NFProperty>();
-            optionOrder = new List<ConfigurationOption>();
-            substitutedConfigs = new Dictionary<Configuration, Configuration>();
+            Logger tempInf = logInfo;
+            Logger tempErr = logError;
+            ConstructorInfo constructor = typeof(GlobalState).GetConstructor(BindingFlags.Static | BindingFlags.NonPublic, null, new Type[0], null);
+            constructor.Invoke(null, null);
+            logInfo = tempInf;
+            logError = tempErr;
         }
 
 
