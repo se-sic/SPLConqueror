@@ -38,14 +38,9 @@ namespace MachineLearningTest
             consoleOutput.Flush();
         }
 
-
-        [Test, Order(1)]
-        public void TestLearning()
+        private void initModel(Commands cmd)
         {
-            consoleOutput.Flush();
-            consoleOutput.NewLine = "\r\n";
             string command = null;
-
             if (isCIEnvironment)
             {
                 command = Commands.COMMAND_VARIABILITYMODEL + " " + modelPathCI;
@@ -55,11 +50,11 @@ namespace MachineLearningTest
                 command = Commands.COMMAND_VARIABILITYMODEL + " " + modelPathVS;
             }
 
-            cmd.performOneCommand(command);
-            Equals(consoleOutput.ToString()
-                .Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None)[1], "");
-            command = null;
+        }
 
+        private void initMeasurements(Commands cmd)
+        {
+            string command = null;
             if (isCIEnvironment)
             {
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathCI;
@@ -68,18 +63,35 @@ namespace MachineLearningTest
             {
                 command = Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementPathVS;
             }
-
             cmd.performOneCommand(command);
-            Console.Error.Write(consoleOutput.ToString());
-            bool allConfigurationsLoaded = consoleOutput.ToString()
-                .Contains("2560 configurations loaded.");
-            Assert.True(allConfigurationsLoaded);
+        }
+
+        private void performSimpleLearning(Commands cmd)
+        {
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
+        }
 
+
+        [Test, Order(1)]
+        public void TestLearning()
+        {
+            consoleOutput.Flush();
+            consoleOutput.NewLine = "\r\n";
+            initModel(cmd);
+            Equals(consoleOutput.ToString()
+                .Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None)[1], "");
+
+            initMeasurements(cmd);
+            Console.Error.Write(consoleOutput.ToString());
+            bool allConfigurationsLoaded = consoleOutput.ToString()
+                .Contains("2560 configurations loaded.");
+            Assert.True(allConfigurationsLoaded);
+
+            performSimpleLearning(cmd);
             Console.Error.Write(consoleOutput.ToString());
             string rawLearningRounds = consoleOutput.ToString()
                 .Split(new string[] { "Learning progress:" }, StringSplitOptions.None)[1];
@@ -128,6 +140,24 @@ namespace MachineLearningTest
             Assert.IsTrue(consoleOutput.ToString()
                 .Split(new string[] { "Parameters:" }, StringSplitOptions.None)[1].Contains("lossFunction:RELATIVE"));
 
+        }
+
+        [Test, Order(4)]
+        public void testCleanGlobal()
+        {
+            Assert.DoesNotThrow(() => {
+                cmd = new Commands();
+                performSimpleUseCase(cmd);
+                cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
+                performSimpleUseCase(cmd);
+            });
+        }
+
+        private void performSimpleUseCase(Commands cmd)
+        {
+            initModel(cmd);
+            initMeasurements(cmd);
+            performSimpleLearning(cmd);
         }
 
         private bool isExpectedResult(string learningResult)

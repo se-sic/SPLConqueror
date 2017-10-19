@@ -30,7 +30,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// Path the variablity model is located.
         /// </summary>
-        public static string vmSource;
+        public static string vmSource = null;
 
         /// <summary>
         /// The property being considered. 
