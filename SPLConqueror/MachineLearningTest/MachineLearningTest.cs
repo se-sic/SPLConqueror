@@ -49,7 +49,7 @@ namespace MachineLearningTest
             {
                 command = Commands.COMMAND_VARIABILITYMODEL + " " + modelPathVS;
             }
-
+            cmd.performOneCommand(command);
         }
 
         private void initMeasurements(Commands cmd)
@@ -145,12 +145,12 @@ namespace MachineLearningTest
         [Test, Order(4)]
         public void testCleanGlobal()
         {
-            Assert.DoesNotThrow(() => {
+            Assert.That(() => {
                 cmd = new Commands();
                 performSimpleUseCase(cmd);
                 cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
                 performSimpleUseCase(cmd);
-            });
+            }, Throws.Nothing);
         }
 
         private void performSimpleUseCase(Commands cmd)
