@@ -9,8 +9,6 @@ namespace ProcessWrapper
 
         private StreamWriter csvWriter = null;
 
-        private string learningSettingsAttachment = null;
-
         public const string csvFilename = "PreVal";
         public const string csv = ".csv";
 
@@ -43,7 +41,6 @@ namespace ProcessWrapper
 
             FileStream csvFileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
             csvWriter = new StreamWriter(csvFileStream);
-            learningSettingsAttachment = parseLearningSettings(learningSettings);
         }
 
         /// <summary>
@@ -52,7 +49,7 @@ namespace ProcessWrapper
         /// <param name="toWrite">The string that should be written.</param>
         public void writePredictions(string toWrite)
         {
-            csvWriter.Write(learningSettingsAttachment + toWrite);
+            csvWriter.Write(toWrite);
             csvWriter.Flush();
         }
 
