@@ -145,10 +145,10 @@ namespace MachineLearningTest
         [Test, Order(4)]
         public void testCleanGlobal()
         {
-            cmd = new Commands();
+            Assert.DoesNotThrow(() => { Commands cmd = new Commands();
             performSimpleUseCase(cmd);
             cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
-            performSimpleUseCase(cmd);
+            performSimpleUseCase(cmd); });
         }
 
         private void performSimpleUseCase(Commands cmd)
