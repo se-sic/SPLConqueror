@@ -1,5 +1,6 @@
 ﻿using SPLConqueror_Core;
 using System.Collections.Generic;
+using System;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
@@ -28,6 +29,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public override string GetName()
         {
             return "DISTRIBUTION-AWARE";
+        }
+
+        public override string getTag()
+        {
+            return "DISTAW";
         }
     }
 }

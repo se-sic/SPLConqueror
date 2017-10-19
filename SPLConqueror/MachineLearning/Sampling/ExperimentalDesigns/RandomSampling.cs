@@ -36,6 +36,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "RANDOM";
         }
 
+        public override string getTag()
+        {
+            return "RANDN";
+        }
+
         public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue)
         {
             if (parameterNameToValue.ContainsKey("seed"))

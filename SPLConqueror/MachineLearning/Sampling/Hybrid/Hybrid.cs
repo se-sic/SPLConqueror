@@ -99,5 +99,10 @@ namespace MachineLearning.Sampling.Hybrid
         /// <returns>Name of the experimental design.</returns>
         public abstract string GetName();
 
+        /// <summary>
+        /// Return the tag that identifies the hybrid design.
+        /// </summary>
+        /// <returns>Tag of the hybrid design as string.</returns>
+        public abstract string getTag();
     }
 }

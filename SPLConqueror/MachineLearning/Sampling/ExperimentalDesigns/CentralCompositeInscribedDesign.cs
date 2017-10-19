@@ -34,6 +34,11 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "CENTRALCOMPOSITE";
         }
 
+        public override string getTag()
+        {
+            return "CC";
+        }
+
         public override void setSamplingParameters(Dictionary<string, string> parameterNameToValue) { }
 
         public override bool computeDesign()

@@ -114,5 +114,10 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         {
             return "DISTRIBUTION-PRESERVING";
         }
+
+        public override string getTag()
+        {
+            return "DISTPR";
+        }
     }
 }
