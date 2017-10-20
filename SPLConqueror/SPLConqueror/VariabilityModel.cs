@@ -231,6 +231,91 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static VariabilityModel loadFromSFXM(string path)
+        {
+            VariabilityModel model = new VariabilityModel("to_change");
+            if (model.loadSXFM(path))
+            {
+                return model;
+            } else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public bool loadSXFM(string path)
+        {
+            if (!File.Exists(path))
+                return false;
+
+            XmlDocument doc = new XmlDocument();
+
+            try
+            {
+                doc.Load(Path);
+            } catch (XmlException)
+            {
+                return false;
+            }
+
+            XmlElement root = doc.DocumentElement;
+            this.name = root.Attributes["name"].Value.ToString();
+
+            XmlNode featureTree = root.SelectSingleNode("//feature_tree");
+            string featureModel = featureTree.Value.ToString();
+
+            string eol = "\n";
+            if (featureModel.ElementAt(featureModel.IndexOf('\n') - 1) == '\r')
+            {
+                eol = "\r\n";
+            }
+
+            string[] features = featureModel.Split(new string[] { eol }, StringSplitOptions.None);
+            parseFeaturesSXFM(features);
+
+
+            XmlNode constraints = root.SelectSingleNode("//constraints");
+            string[] booleanConstraints = constraints.Value.ToString().Split(new string[] { eol }, StringSplitOptions.None);
+            parseConstraintsSXFM(booleanConstraints);
+            return true;
+        }
+
+        private void parseFeaturesSXFM(string[] features)
+        {
+
+        }
+
+        private void parseConstraintsSXFM(string[] booleanConstraints)
+        {
+            foreach (string constraint in booleanConstraints)
+            {
+                string cleanedConstraint = constraint.Split(new char[] { ':' })[1];
+                cleanedConstraint.Replace("~", "!");
+                cleanedConstraint.Replace("OR", "|");
+                cleanedConstraint.Replace("or", "|");
+                cleanedConstraint.Replace("Or", "|");
+                this.binaryConstraints.Add(cleanedConstraint.Trim());
+            }
+        } 
+
+        private string trimFeature(string feature, out int depth)
+        {
+            // ident used to determine the depth of the feature
+            string[] cleanedFeature = feature.Split(new string[] { "\t" }, StringSplitOptions.None);
+            depth = cleanedFeature.Length - 1;
+            return cleanedFeature.Last();
+        }
+
+        /// <summary>
         /// Static method that reads an xml file and constructs a variability model using the stored information
         /// </summary>
         /// <param name="path">Path to the XML File</param>
