@@ -14,7 +14,7 @@ class MissingPipError(ImportError):
 It is advised to use this version, as some needed
 functions will be removed in sklearn >= 0.20
 """
-sklearn_version = "scikit-learn==0.17.1"
+sklearn_version = "scikit-learn==0.19.0"
 
 """numpy package needed for sklearn"""
 numpy_version = "numpy==1.11.1"
