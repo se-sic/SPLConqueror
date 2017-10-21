@@ -286,14 +286,126 @@ namespace SPLConqueror_Core
             XmlNode constraints = root.SelectSingleNode("//constraints");
             string[] booleanConstraints = constraints.Value.ToString().Split(new string[] { eol }, StringSplitOptions.None);
             parseConstraintsSXFM(booleanConstraints);
+
+            initOptions();
             return true;
         }
 
         private void parseFeaturesSXFM(string[] features)
         {
+            int previousDepth = 0;
+            BinaryOption previousOption = null;
+            string cardinality = null;
+            List<BinaryOption> optionsInGroup = null;
+            foreach (string feature in features)
+            {
+                int currentDepth = getDepth(feature);
+                string[] information = splitWhiteSpaces(feature);
 
+                if (optionsInGroup != null && feature.Contains(": "))
+                    resolveGroup(optionsInGroup, cardinality);
+           
+                if (feature.Contains(":r"))
+                {
+                    this.root.Name = information[2];
+                    this.root.OutputString = information[1];
+                    previousOption = this.root;
+                } else if (feature.Contains(":m"))
+                {
+                    BinaryOption mandatory = new BinaryOption(this, information[2]);
+                    mandatory.Optional = false;
+                    mandatory.OutputString = removeBrackets(information[1]);
+                    this.binaryOptions.Add(mandatory);
+
+                    setParent(mandatory, previousOption, currentDepth, previousDepth);
+
+                    previousOption = mandatory;
+                } else if (feature.Contains(":o"))
+                {
+                    BinaryOption optional = new BinaryOption(this, information[2]);
+                    optional.Optional = true;
+                    optional.OutputString = removeBrackets(information[1]);
+                    this.binaryOptions.Add(optional);
+
+                    cardinality = information[3];
+
+                    setParent(optional, previousOption, currentDepth, previousDepth);
+
+                    previousOption = optional;
+                } else if (feature.Contains(":g"))
+                {
+                    BinaryOption groupParent = new BinaryOption(this, information[2]);
+                    groupParent.Optional = false;
+                    groupParent.OutputString = removeBrackets(information[1]);
+
+                    setParent(groupParent, previousOption, currentDepth, previousDepth);
+
+                    previousOption = groupParent;
+                } else if (feature.Contains(":"))
+                {
+                    if (optionsInGroup == null)
+                        optionsInGroup = new List<BinaryOption>();
+
+                    BinaryOption mandatory = new BinaryOption(this, information[2]);
+                    mandatory.Optional = false;
+                    mandatory.OutputString = removeBrackets(information[1]);
+                    this.binaryOptions.Add(mandatory);
+
+                    setParent(mandatory, previousOption, currentDepth, previousDepth);
+
+                    optionsInGroup.Add(mandatory);
+                    previousOption = mandatory;
+                }
+
+                previousDepth = currentDepth;
+            }
         }
 
+        private void resolveGroup(List<BinaryOption> group, string cardinality)
+        {
+            if (cardinality.Equals("[1,1]"))
+            {
+                foreach (BinaryOption binOpt in group)
+                {
+                    List<ConfigurationOption> excluded = new List<ConfigurationOption>();
+                    foreach (BinaryOption otherOption in group)
+                    {
+                        if (otherOption.Name != binOpt.Name)
+                        {
+                            excluded.Add(otherOption);
+                        }
+                    }
+                    binOpt.Excluded_Options.Add(excluded);
+                }
+            } else
+            {
+                //TODO
+            }
+        }
+
+        private string removeBrackets(string name)
+        {
+            return name.Substring(1, name.Length);
+        }
+
+        private void setParent(BinaryOption current, BinaryOption previous, int currentDepth, int prevDepth)
+        {
+            if (currentDepth == prevDepth - 1)
+            {
+                current.ParentName = previous.Name;
+                current.Parent = previous;
+            } else
+            {
+                current.Parent = previous.Parent;
+                current.ParentName = previous.ParentName;
+            }
+        }
+
+        private string[] splitWhiteSpaces(string line)
+        {
+            return line.Trim().Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+        }
+ 
         private void parseConstraintsSXFM(string[] booleanConstraints)
         {
             foreach (string constraint in booleanConstraints)
@@ -307,12 +419,11 @@ namespace SPLConqueror_Core
             }
         } 
 
-        private string trimFeature(string feature, out int depth)
+        private int getDepth(string feature)
         {
             // ident used to determine the depth of the feature
             string[] cleanedFeature = feature.Split(new string[] { "\t" }, StringSplitOptions.None);
-            depth = cleanedFeature.Length - 1;
-            return cleanedFeature.Last();
+            return cleanedFeature.Length - 1;
         }
 
         /// <summary>
