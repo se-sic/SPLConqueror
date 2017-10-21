@@ -30,17 +30,5 @@ namespace SPLConquerorCoreTest
             measured.Add(toAdd);
             Assert.AreEqual(toAdd.GetNFPValue(), GlobalState.getMeasuredConfigs(measured).ToArray()[0].GetNFPValue());
         }
-
-        [Test, Order(3)]
-        public void TestClearGlobalState()
-        {
-            GlobalState.clear();
-            Assert.IsNull(GlobalState.varModel);
-            Assert.IsNull(GlobalState.currentNFP);
-            Assert.AreEqual(0, GlobalState.allMeasurements.Configurations.Count);
-            Assert.AreEqual(0, GlobalState.evaluationSet.Configurations.Count);
-            Assert.AreEqual(0, GlobalState.nfProperties.Count);
-            Assert.AreEqual(0, GlobalState.optionOrder.Count);
-        }
     }
 }

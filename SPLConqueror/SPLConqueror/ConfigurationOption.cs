@@ -96,6 +96,7 @@ namespace SPLConqueror_Core
         public String ParentName
         {
             get { return parentName; }
+            set { parentName = value;  }
         }
 
         /// <summary>
