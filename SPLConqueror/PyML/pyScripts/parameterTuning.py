@@ -10,38 +10,27 @@ import numpy as np
 
 # default parameter spaces used for parameter tuning.
 
-param_SVR = [
-    {'C': [0.5, 1, 2, 5], 'epsilon': [0.3, 0.2, 0.1], 'kernel': ['rbf', 'poly'],'degree': [1, 2, 3], 'coef0': [0, 1, 2], 'shrinking': [True, False], 'tol': [5e-2, 1e-1, 2e-1, 5e-1]}
-]
+param_SVR = {'C': [0.5, 1, 2, 5], 'epsilon': [0.3, 0.2, 0.1], 'kernel': ['rbf', 'poly'],'degree': [1, 2, 3], 'coef0': [0, 1, 2], 'shrinking': [True, False], 'tol': [5e-2, 1e-1, 2e-1, 5e-1]}
 
-param_DecisionTree = [
-    {'splitter': ['best', 'random'], 'max_features': ['auto', 'sqrt', 'log2'], 'min_samples_leaf': [1, 2],
+param_DecisionTree = {'splitter': ['best', 'random'], 'max_features': ['auto', 'sqrt', 'log2'], 'min_samples_leaf': [1, 2],
      'random_state': [1, 2, 3]}
-]
 
-param_RandomForest = [
-    {'n_estimators': [10, 12, 15, 18, 20], 'max_features': ['auto', 'sqrt', 'log2'], 'random_state': [1, 2, 3]}
-]
 
-param_kNNRegressor = [
-    {'n_neighbors': [8, 9, 10, 11, 12, 13, 14, 15], 'weights': ['uniform', 'distance'], 'algorithm': ['auto'],
+param_RandomForest = {'n_estimators': [10, 12, 15, 18, 20], 'max_features': ['auto', 'sqrt', 'log2'], 'random_state': [1, 2, 3]}
+
+
+param_kNNRegressor = {'n_neighbors': [8, 9, 10, 11, 12, 13, 14, 15], 'weights': ['uniform', 'distance'], 'algorithm': ['auto'],
      'p': [1, 2, 3]}
-]
 
-param_kernelRidge = [
-    {'alpha': [0.1, 1e-2, 1e-3, 1e-4], 'kernel': ['rbf', 'poly'],
-     'degree': [1, 2, 3], 'gamma': [0.01, 0.05, 0.1, 0.2]}
-]
+param_kernelRidge = {'alpha': [ 1e-6], 'kernel': ['rbf', 'poly','linear'],
+     'degree': [1, 2, 3], 'gamma': [0.01, 0.05, 0.1, 0.2], 'eps': [1,2]}
 
-param_baggingSVR = [
-    {'n_estimators': [5, 8, 10, 12, 15], 'max_samples': [0.75, 0.875, 1], 'max_features': [0.5, 0.625, 0.75, 0.875, 1],
+param_baggingSVR = {'n_estimators': [5, 8, 10, 12, 15], 'max_samples': [0.75, 0.875, 1], 'max_features': [0.5, 0.625, 0.75, 0.875, 1],
      'bootstrap': [True, False], 'bootstrap_features': [True, False], 'random_state': [1, 2, 3],
      'base_estimator__C': [0.1, 0.2, 0.5, 1, 2, 5, 10], 'base_estimator__epsilon': [0.5, 0.3, 0.2, 0.1, 0.01],
      'base_estimator__kernel': ['rbf', 'linear', 'poly', 'sigmoid'], 'base_estimator__degree': [1, 2, 3, 4, 5],
      'base_estimator__coef0': [0, 1, 2, 3], 'base_estimator__shrinking': [True, False],
      'base_estimator__tol': [1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 1e-1]}
-
-]
 
 target_path = ""
 
@@ -86,38 +75,38 @@ def scoreFunction(estimator, configurations, measurements):
 
 
 def optimize_SVR(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator = sk.SVR(cache_size = 1000), param_grid = param_SVR, cv=5 , scoring =scoreFunction, n_jobs = 1, pre_dispatch = '2*n_jobs')
+    opt = modelSel.RandomizedSearchCV(estimator = sk.SVR(cache_size = 2000), param_distributions = param_SVR, cv=5 , scoring =scoreFunction)
     opt.fit(X_train, y_train)
 
     return formatOptimal(opt.best_params_)
 
 
 def optimize_DecisionTree(X_train, y_train):
-    opt = modelSel.GridSearchCV(skTr.DecisionTreeRegressor(), param_DecisionTree, cv=5, scoring=scoreFunction)
+    opt = modelSel.RandomizedSearchCV(estimator = skTr.DecisionTreeRegressor(), param_distributions = param_DecisionTree, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_RandomForestRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(skEn.RandomForestRegressor(), param_RandomForest, cv=5, scoring=scoreFunction)
+    opt = modelSel.RandomizedSearchCV(estimator = skEn.RandomForestRegressor(), param_distributions = param_RandomForest, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_KNNeighborsRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(skNE.KNeighborsRegressor(), param_kNNRegressor, cv=5, scoring=scoreFunction)
+    opt = modelSel.RandomizedSearchCV(estimator = skNE.KNeighborsRegressor(), param_distributions = param_kNNRegressor, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_KernelRidge(X_train, y_train):
-    opt = modelSel.GridSearchCV(skKR.KernelRidge(), param_kernelRidge, cv=5, scoring=scoreFunction)
+    opt = modelSel.RandomizedSearchCV(estimator = skKR.KernelRidge(), param_distributions = param_kernelRidge, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
 
 
 def optimize_BaggingSVR(X_train, y_train):
-    opt = modelSel.GridSearchCV(skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500)), param_baggingSVR, cv=5,
+    opt = modelSel.RandomizedSearchCV(estimator = skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500)), param_distributions = param_baggingSVR, cv=5,
                                 scoring=scoreFunction)
     opt.fit(X_train, y_train)
 
