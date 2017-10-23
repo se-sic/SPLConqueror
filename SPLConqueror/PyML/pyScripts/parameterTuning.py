@@ -5,6 +5,7 @@ import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
 import sklearn.model_selection as modelSel
 import sys
+import sklearn.metrics as skMet
 
 import numpy as np
 
@@ -71,7 +72,8 @@ def scoreFunction(estimator, configurations, measurements):
     for i in range(len(measurements)):
         sum = np.abs(measurements[i] - predictions[i]) / measurements[i]
     
-    return sum
+    return sum * -1
+
 
 
 def optimize_SVR(X_train, y_train):
