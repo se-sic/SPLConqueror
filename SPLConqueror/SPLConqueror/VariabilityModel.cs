@@ -363,23 +363,128 @@ namespace SPLConqueror_Core
 
         private void resolveGroup(List<BinaryOption> group, string cardinality)
         {
-            if (cardinality.Equals("[1,1]"))
+            if (cardinality == "[1,1]")
             {
-                foreach (BinaryOption binOpt in group)
-                {
-                    List<ConfigurationOption> excluded = new List<ConfigurationOption>();
-                    foreach (BinaryOption otherOption in group)
-                    {
-                        if (otherOption.Name != binOpt.Name)
-                        {
-                            excluded.Add(otherOption);
-                        }
-                    }
-                    binOpt.Excluded_Options.Add(excluded);
-                }
+                createExclusiveGroup(group);    
+            } else if (cardinality == "[1,*]" | cardinality == ("[1," + group.Count + "]"))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("!" + group.First().ParentName + " | ");
+                sb.Append("(");
+                group.ForEach(option => sb.Append(option.Name + " | "));
+
+                // remove trailing "| "
+                sb.Length--;
+                sb.Length--;
+
+                sb.Append(")");
+                this.BinaryConstraints.Add(sb.ToString());
+            } else if (cardinality == "[0,1]")
+            {
+                group.ForEach(option => option.Optional = true);
+                createExclusiveGroup(group);
+            } else if (cardinality.StartsWith("[0,"))
+            {
+                group.ForEach(option => option.Optional = true);
+                this.BinaryConstraints.Add(resolveUpperBounds(group, cardinality));
             } else
             {
-                //TODO
+                this.BinaryConstraints.Add(resolveLowerBounds(group, cardinality));
+                this.BinaryConstraints.Add(resolveUpperBounds(group, cardinality));
+            }
+        }
+
+        private string resolveLowerBounds(List<BinaryOption> group, string cardinality)
+        {
+            // Resolve the lower bounds by building a formula of all possible combinations of
+            // |lower bounds|  Features, which are combined by a transformed & term, and then combine
+            // all combinations with a |. This means at least one of the combinations has to be taken.
+            // E.g. 3 Features a,b,c and at least 2 elements would result in:
+            // !(!a|!b) |!(!a|!c) | !(!b|!c)
+            StringBuilder expression = new StringBuilder();
+            char boundaryChar = cardinality.Split(new string[] { "," }, StringSplitOptions.None)[0].ElementAt(1);
+            int boundary = (int)char.GetNumericValue(boundaryChar);
+
+            for (int i = 0; i < group.Count - boundary; ++i)
+            {
+                StringBuilder orClause = new StringBuilder();
+                orClause.Append("!");
+                orClause.Append(group.ElementAt(i).Name);
+                for (int j = i + 1; j < i + boundary - 1; ++j)
+                {
+                    orClause.Append("|");
+                    orClause.Append("!");
+                    orClause.Append(group.ElementAt(j).Name);
+                }
+                expression.Append("!(");
+                expression.Append(orClause);
+                expression.Append(")");
+                expression.Append(" |");
+            }
+            expression.Length--;
+            return expression.ToString();
+        }
+
+        private string resolveUpperBounds(List<BinaryOption> group, string cardinality)
+        {
+            // Resolve upper bounds by building a formula of all possible combinations of features
+            // that can be produced by taking group.Count - bound elements and putting
+            // them into an not clause. This means that at least one combination of features
+            // should not be selected.
+            // E.g. 3 Features a,b,c and at max 1 elements would result in:
+            // !(a|b) | !(a|c) | !(b|c)
+
+            StringBuilder expression = new StringBuilder();
+            char boundaryChar = cardinality.Split(new string[] { "," }, StringSplitOptions.None)[1].ElementAt(0);
+            int boundary;
+
+            if (boundaryChar == '*')
+            {
+                boundary = group.Count;
+            } else
+            {
+                boundary = (int)char.GetNumericValue(boundaryChar);
+                if (boundary > group.Count)
+                    boundary = group.Count;
+            }
+
+            int diff = group.Count - boundary;
+
+            if (diff > 0)
+            {
+                for (int i = 0; i < group.Count - diff; ++i)
+                {
+                    StringBuilder orClause = new StringBuilder();
+                    orClause.Append(group.ElementAt(i).Name);
+                    for (int j = i + 1; j < i + diff -1; ++i)
+                    {
+                        if (j < group.Count)
+                        {
+                            orClause.Append("|");
+                            orClause.Append(group.ElementAt(j).Name);
+                        }
+                    }
+                    expression.Append("!(" + orClause + ") |");
+                }
+            }
+
+            expression.Length--;
+            return expression.ToString();
+        }
+
+        private void createExclusiveGroup(List<BinaryOption> group)
+        {
+            foreach (BinaryOption binOpt in group)
+            {
+                List<ConfigurationOption> excluded = new List<ConfigurationOption>();
+                foreach (BinaryOption otherOption in group)
+                {
+                    if (otherOption.Name != binOpt.Name)
+                    {
+                        excluded.Add(otherOption);
+                    }
+                }
+                binOpt.Excluded_Options.Add(excluded);
             }
         }
 
