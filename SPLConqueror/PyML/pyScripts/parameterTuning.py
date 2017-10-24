@@ -24,7 +24,7 @@ param_kNNRegressor = {'n_neighbors': [8, 9, 10, 11, 12, 13, 14, 15], 'weights': 
      'p': [1, 2, 3]}
 
 param_kernelRidge = {'alpha': [ 1e-6], 'kernel': ['rbf', 'poly','linear'],
-     'degree': [1, 2, 3], 'gamma': [0.01, 0.05, 0.1, 0.2], 'eps': [1,2]}
+     'degree': [1, 2, 3], 'gamma': [0.01, 0.05, 0.1, 0.2]}
 
 param_baggingSVR = {'n_estimators': [5, 8, 10, 12, 15], 'max_samples': [0.75, 0.875, 1], 'max_features': [0.5, 0.625, 0.75, 0.875, 1],
      'bootstrap': [True, False], 'bootstrap_features': [True, False], 'random_state': [1, 2, 3],
