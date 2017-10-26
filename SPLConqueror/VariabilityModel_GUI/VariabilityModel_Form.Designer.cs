@@ -46,12 +46,13 @@
             this.convertNumericOptionsToBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertMeasurementsToBinaryOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertLegacyVariabilityModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAlternativeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertLegacyVariabilityModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSXFMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -88,6 +89,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newModelToolStripMenuItem,
             this.loadModelToolStripMenuItem,
+            this.loadSXFMToolStripMenuItem,
             this.saveModelToolStripMenuItem,
             this.saveModelAsToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -200,6 +202,13 @@
             this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Text = "Convert measurements to binary only";
             this.convertMeasurementsToBinaryOnlyToolStripMenuItem.Click += new System.EventHandler(this.convertMeasurementsToBinaryOnlyToolStripMenuItem_Click);
             // 
+            // convertLegacyVariabilityModelToolStripMenuItem
+            // 
+            this.convertLegacyVariabilityModelToolStripMenuItem.Name = "convertLegacyVariabilityModelToolStripMenuItem";
+            this.convertLegacyVariabilityModelToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
+            this.convertLegacyVariabilityModelToolStripMenuItem.Text = "Convert legacy Variability Model";
+            this.convertLegacyVariabilityModelToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyVariabilityModelToolStripMenuItem_Click);
+            // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -239,12 +248,12 @@
             this.addAlternativeGroupToolStripMenuItem.Text = "Add Alternative Group";
             this.addAlternativeGroupToolStripMenuItem.Click += new System.EventHandler(this.addAlternativeGroupToolStripMenuItem_Click);
             // 
-            // convertLegacyVariabilityModelToolStripMenuItem
+            // loadSXFMToolStripMenuItem
             // 
-            this.convertLegacyVariabilityModelToolStripMenuItem.Name = "convertLegacyVariabilityModelToolStripMenuItem";
-            this.convertLegacyVariabilityModelToolStripMenuItem.Size = new System.Drawing.Size(330, 26);
-            this.convertLegacyVariabilityModelToolStripMenuItem.Text = "Convert legacy Variability Model";
-            this.convertLegacyVariabilityModelToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyVariabilityModelToolStripMenuItem_Click);
+            this.loadSXFMToolStripMenuItem.Name = "loadSXFMToolStripMenuItem";
+            this.loadSXFMToolStripMenuItem.Size = new System.Drawing.Size(191, 26);
+            this.loadSXFMToolStripMenuItem.Text = "Load SXFM...";
+            this.loadSXFMToolStripMenuItem.Click += new System.EventHandler(this.loadSXFMToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 
@@ -291,6 +300,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportToDimacsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertMeasurementsToBinaryOnlyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertLegacyVariabilityModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadSXFMToolStripMenuItem;
     }
 }
 
