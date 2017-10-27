@@ -11,7 +11,7 @@ import numpy as np
 
 # default parameter spaces used for parameter tuning.
 
-param_SVR = {'C': [0.5, 1, 2, 5], 'epsilon': [0.3, 0.2, 0.1], 'kernel': ['rbf', 'poly'],'degree': [1, 2, 3], 'coef0': [0, 1, 2], 'shrinking': [True, False], 'tol': [5e-2, 1e-1, 2e-1, 5e-1]}
+param_SVR = {'C': [0.5, 1, 2, 5], 'epsilon': [0.3, 0.2, 0.1], 'coef0': [0, 1, 2], 'shrinking': [True, False], 'tol': [5e-2, 1e-1, 2e-1, 5e-1]}
 
 param_DecisionTree = {'splitter': ['best', 'random'], 'max_features': ['auto', 'sqrt', 'log2'], 'min_samples_leaf': [1, 2],
      'random_state': [1, 2, 3]}
@@ -77,7 +77,7 @@ def scoreFunction(estimator, configurations, measurements):
 
 
 def optimize_SVR(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator = sk.SVR(cache_size = 2000), param_distributions = param_SVR, cv=5 , scoring =scoreFunction)
+    opt = modelSel.RandomizedSearchCV(estimator = sk.SVR(cache_size = 4000), param_distributions = param_SVR, cv=5 , scoring =scoreFunction)
     opt.fit(X_train, y_train)
 
     return formatOptimal(opt.best_params_)
