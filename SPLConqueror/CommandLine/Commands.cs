@@ -814,8 +814,14 @@ namespace CommandLine
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
                         parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
 
+                        parameterSettings = ML_SettingsGenerator.getRandomCombinations(parameterSettings, 10);
+
+
                         ML_Settings optimalParameters = null;
                         double minimalError = Double.MaxValue;
+
+
+
 
                         foreach (ML_Settings parameters in parameterSettings)
                         {
@@ -838,11 +844,16 @@ namespace CommandLine
                         experiment.learn();
                         StringBuilder taskAsString = new StringBuilder();
                         taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
-                        printPredictedConfigurations("./CrossValidationResultPrediction"
-                            + taskAsString.ToString()
-                            .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
-                            .Replace(Environment.NewLine, "").Substring(0)
-                            + ".csv", experiment);
+
+                        string samplingIdentifier = "PreVal_SPLCon_"+GlobalState.varModel.Name+"_"+createSmallerSamplingIdentifier()+".csv";
+
+                        printPredictedConfigurations(samplingIdentifier, experiment);
+
+                        //printPredictedConfigurations("./CrossValidationResultPrediction"
+                        //    + taskAsString.ToString()
+                        //    .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
+                        //    .Replace(Environment.NewLine, "").Substring(0)
+                        //    + ".csv", experiment);
 
                         break;
                     }
@@ -1783,7 +1794,7 @@ namespace CommandLine
         private void predict(string task, Learning exp, bool useTrueModel = false)
         {
             StreamWriter sw = new StreamWriter(task);
-            sw.Write("configuration;real value;prediction;deviation;percentage;" + Environment.NewLine);
+            sw.Write("configuration;MeasuredValue;PredictedValue" + Environment.NewLine);
             for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
             {
                 Configuration currentConfiguration = GlobalState.allMeasurements.Configurations.ElementAt(i);
@@ -1805,7 +1816,8 @@ namespace CommandLine
                 {
                     percentage = difference / realValue;
                 }
-                sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + difference + ";" + percentage + ";" + Environment.NewLine);
+                sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + Environment.NewLine);
+                //sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + difference + ";" + percentage + ";" + Environment.NewLine);
             }
             sw.Flush();
             sw.Close();
