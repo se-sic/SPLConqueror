@@ -196,22 +196,7 @@ namespace VariabilitModel_GUI
             if (!dataSaved && handleUnsavedData() == DialogResult.Cancel)
                 return;
 
-            OpenFileDialog pfd = new OpenFileDialog();
-            pfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
-            if (pfd.ShowDialog() == DialogResult.OK)
-            {
-                System.IO.FileInfo fi = new FileInfo(pfd.FileName);
-                GlobalState.varModel = VariabilityModel.loadFromXML(fi.FullName);
-                this.saveModelToolStripMenuItem.Enabled = true;
-                this.saveModelAsToolStripMenuItem.Enabled = true;
-                this.editToolStripMenuItem.Enabled = true;
-                this.addAlternativeGroupToolStripMenuItem.Enabled = true;
-
-                currentFilePath = fi.FullName;
-                dataSaved = true;
-
-                InitTreeView();
-            }
+            loadModel(false);
         }
 
         /// <summary>
@@ -1000,6 +985,42 @@ namespace VariabilitModel_GUI
             sourceModel.Save(target);
             sourceModel = null;
             MessageBox.Show("Converted model.");
+        }
+
+        private void loadSXFMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!dataSaved && handleUnsavedData() == DialogResult.Cancel)
+                return;
+
+            loadModel(true);
+        }
+
+        private void loadModel(bool isSXFM)
+        {
+            OpenFileDialog pfd = new OpenFileDialog();
+            if (isSXFM)
+                pfd.Title = "Select SXFM model";
+            pfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+            if (pfd.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new FileInfo(pfd.FileName);
+                if (isSXFM)
+                    GlobalState.varModel = VariabilityModel.loadFromSXFM(fi.FullName);
+                else
+                    GlobalState.varModel = VariabilityModel.loadFromXML(fi.FullName);
+                if (isSXFM)
+                    this.saveModelToolStripMenuItem.Enabled = false;
+                else
+                    this.saveModelToolStripMenuItem.Enabled = true;
+                this.saveModelAsToolStripMenuItem.Enabled = true;
+                this.editToolStripMenuItem.Enabled = true;
+                this.addAlternativeGroupToolStripMenuItem.Enabled = true;
+
+                currentFilePath = fi.FullName;
+                dataSaved = true;
+
+                InitTreeView();
+            }
         }
     }
 }

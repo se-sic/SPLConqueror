@@ -231,11 +231,12 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// TODO
+        /// Read a Feature model in SXFM format and create a new VaribilityModel that 
+        /// equals the Feature model.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static VariabilityModel loadFromSFXM(string path)
+        /// <param name="path">The path of the SXFM Feature model.</param>
+        /// <returns>VaribilityModel object that equals the SXFM Feature model.</returns>
+        public static VariabilityModel loadFromSXFM(string path)
         {
             VariabilityModel model = new VariabilityModel("to_change");
             if (model.loadSXFM(path))
@@ -248,10 +249,10 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// TODO
+        /// Read a SXFM Feature Model and store all information in this VaribilityModel object.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="path">The path of the feature model.</param>
+        /// <returns>True if reading the model was succesful false otherwise.</returns>
         public bool loadSXFM(string path)
         {
             if (!File.Exists(path))
@@ -261,7 +262,7 @@ namespace SPLConqueror_Core
 
             try
             {
-                doc.Load(Path);
+                doc.Load(path);
             } catch (XmlException)
             {
                 return false;
@@ -271,7 +272,7 @@ namespace SPLConqueror_Core
             this.name = root.Attributes["name"].Value.ToString();
 
             XmlNode featureTree = root.SelectSingleNode("//feature_tree");
-            string featureModel = featureTree.Value.ToString();
+            string featureModel = featureTree.InnerText;
 
             string eol = "\n";
             if (featureModel.ElementAt(featureModel.IndexOf('\n') - 1) == '\r')
@@ -279,15 +280,15 @@ namespace SPLConqueror_Core
                 eol = "\r\n";
             }
 
-            string[] features = featureModel.Split(new string[] { eol }, StringSplitOptions.None);
+            string[] features = featureModel.Split(new string[] { eol }, StringSplitOptions.RemoveEmptyEntries);
             parseFeaturesSXFM(features);
 
 
             XmlNode constraints = root.SelectSingleNode("//constraints");
-            string[] booleanConstraints = constraints.Value.ToString().Split(new string[] { eol }, StringSplitOptions.None);
+            string[] booleanConstraints = constraints.InnerText.Split(new string[] { eol }, StringSplitOptions.RemoveEmptyEntries);
             parseConstraintsSXFM(booleanConstraints);
-
-            initOptions();
+            this.binaryConstraints.Remove("");
+            
             return true;
         }
 
@@ -301,20 +302,17 @@ namespace SPLConqueror_Core
             {
                 int currentDepth = getDepth(feature);
                 string[] information = splitWhiteSpaces(feature);
-
-                if (optionsInGroup != null && feature.Contains(": "))
-                    resolveGroup(optionsInGroup, cardinality);
            
                 if (feature.Contains(":r"))
                 {
-                    this.root.Name = information[2];
+                    this.root.Name = "root";
                     this.root.OutputString = information[1];
                     previousOption = this.root;
                 } else if (feature.Contains(":m"))
                 {
                     BinaryOption mandatory = new BinaryOption(this, information[2]);
                     mandatory.Optional = false;
-                    mandatory.OutputString = removeBrackets(information[1]);
+                    mandatory.OutputString = information[1];
                     this.binaryOptions.Add(mandatory);
 
                     setParent(mandatory, previousOption, currentDepth, previousDepth);
@@ -324,19 +322,24 @@ namespace SPLConqueror_Core
                 {
                     BinaryOption optional = new BinaryOption(this, information[2]);
                     optional.Optional = true;
-                    optional.OutputString = removeBrackets(information[1]);
+                    optional.OutputString = information[1];
                     this.binaryOptions.Add(optional);
-
-                    cardinality = information[3];
 
                     setParent(optional, previousOption, currentDepth, previousDepth);
 
                     previousOption = optional;
                 } else if (feature.Contains(":g"))
                 {
+                    if (optionsInGroup != null && optionsInGroup.Count > 0)
+                        resolveGroup(optionsInGroup, cardinality);
+
+                    optionsInGroup = null;
                     BinaryOption groupParent = new BinaryOption(this, information[2]);
                     groupParent.Optional = false;
-                    groupParent.OutputString = removeBrackets(information[1]);
+                    groupParent.OutputString = information[1];
+                    this.binaryOptions.Add(groupParent);
+
+                    cardinality = information[3];
 
                     setParent(groupParent, previousOption, currentDepth, previousDepth);
 
@@ -348,7 +351,7 @@ namespace SPLConqueror_Core
 
                     BinaryOption mandatory = new BinaryOption(this, information[2]);
                     mandatory.Optional = false;
-                    mandatory.OutputString = removeBrackets(information[1]);
+                    mandatory.OutputString = information[1];
                     this.binaryOptions.Add(mandatory);
 
                     setParent(mandatory, previousOption, currentDepth, previousDepth);
@@ -359,63 +362,205 @@ namespace SPLConqueror_Core
 
                 previousDepth = currentDepth;
             }
+            if (optionsInGroup != null && optionsInGroup.Count > 0)
+                resolveGroup(optionsInGroup, cardinality);
         }
 
         private void resolveGroup(List<BinaryOption> group, string cardinality)
         {
-            if (cardinality.Equals("[1,1]"))
+            if (cardinality == "[1,1]")
             {
-                foreach (BinaryOption binOpt in group)
-                {
-                    List<ConfigurationOption> excluded = new List<ConfigurationOption>();
-                    foreach (BinaryOption otherOption in group)
-                    {
-                        if (otherOption.Name != binOpt.Name)
-                        {
-                            excluded.Add(otherOption);
-                        }
-                    }
-                    binOpt.Excluded_Options.Add(excluded);
-                }
+                createExclusiveGroup(group);    
+            } else if (cardinality == "[1,*]" | cardinality == ("[1," + group.Count + "]"))
+            {
+                group.ForEach(opt => opt.Optional = true);
+                StringBuilder sb = new StringBuilder();
+                sb.Append("!" + group.First().ParentName + " | ");
+                sb.Append("(");
+                group.ForEach(option => sb.Append(option.Name + " | "));
+
+                // remove trailing "| "
+                sb.Length--;
+                sb.Length--;
+
+                sb.Append(")");
+                this.BinaryConstraints.Add(sb.ToString());
+            } else if (cardinality == "[0,1]")
+            {
+                group.ForEach(option => option.Optional = true);
+                createExclusiveGroup(group);
+            } else if (cardinality.StartsWith("[0,"))
+            {
+                group.ForEach(option => option.Optional = true);
+                this.BinaryConstraints.Add(resolveUpperBounds(group, cardinality));
             } else
             {
-                //TODO
+                group.ForEach(option => option.Optional = true);
+                this.BinaryConstraints.Add(resolveLowerBounds(group, cardinality));
+                this.BinaryConstraints.Add(resolveUpperBounds(group, cardinality));
             }
         }
 
-        private string removeBrackets(string name)
+        private string resolveLowerBounds(List<BinaryOption> group, string cardinality)
         {
-            return name.Substring(1, name.Length);
+            // Resolve the lower bounds by building a formula of all possible combinations of
+            // |lower bounds|  Features, which are combined by a transformed & term, and then combine
+            // all combinations with a |. This means at least one of the combinations has to be taken.
+            // E.g. 3 Features a,b,c and at least 2 elements would result in:
+            // !(!a|!b) |!(!a|!c) | !(!b|!c)
+            StringBuilder expression = new StringBuilder();
+            char boundaryChar = cardinality.Split(new string[] { "," }, StringSplitOptions.None)[0].ElementAt(1);
+            int boundary = (int)char.GetNumericValue(boundaryChar);
+            expression.Append("(!" + group.First().ParentName + ") | ");
+            expression.Append("(");
+
+            for (int i = 0; i <= group.Count - boundary; ++i)
+            {
+                int z = i + 1;
+                while (z <= group.Count)
+                {
+                    StringBuilder orClause = new StringBuilder();
+                    orClause.Append("(!");
+                    int count = 1;
+                    orClause.Append(group.ElementAt(i).Name + ")");
+                    for (int j = z ; j < z + boundary - 1; ++j)
+                    {
+                        if (j < group.Count)
+                        {
+                            orClause.Append("|");
+                            orClause.Append("(!");
+                            count++;
+                            orClause.Append(group.ElementAt(j).Name + ")");
+                        }
+                    }
+
+                    if (count == boundary)
+                    {
+                        expression.Append("!(");
+                        expression.Append(orClause);
+                        expression.Append(")");
+                        expression.Append(" | ");
+                    }
+
+                    z++;
+                }
+            }
+            expression.Length--;
+            expression.Length--;
+            expression.Length--;
+            expression.Append(")");
+            return expression.ToString();
+        }
+
+        private string resolveUpperBounds(List<BinaryOption> group, string cardinality)
+        {
+            // Resolve upper bounds by building a formula of all possible combinations of features
+            // that can be produced by taking group.Count - bound elements and putting
+            // them into an not clause. This means that at least one combination of features
+            // should not be selected.
+            // E.g. 3 Features a,b,c and at max 1 elements would result in:
+            // !(a|b) | !(a|c) | !(b|c)
+
+            StringBuilder expression = new StringBuilder();
+            char boundaryChar = cardinality.Split(new string[] { "," }, StringSplitOptions.None)[1].ElementAt(0);
+            int boundary;
+
+            if (boundaryChar == '*')
+            {
+                boundary = group.Count;
+            } else
+            {
+                boundary = (int)char.GetNumericValue(boundaryChar);
+                if (boundary > group.Count)
+                    boundary = group.Count;
+            }
+
+            int diff = group.Count - boundary;
+
+            if (diff > 0)
+            {
+                for (int i = 0; i <= group.Count - diff; ++i)
+                {
+                    int z = i + 1;
+                    while (z <= group.Count)
+                    {
+                        int count = 1;
+                        StringBuilder orClause = new StringBuilder();
+                        orClause.Append(group.ElementAt(i).Name);
+                        for (int j = z; j < z + diff - 1; ++j)
+                        {
+                            if (j < group.Count)
+                            {
+                                orClause.Append("|");
+                                count++;
+                                orClause.Append(group.ElementAt(j).Name);
+                            }
+                        }
+                        if (count == diff)
+                            expression.Append("!(" + orClause + ") |");
+                        z++;
+                    }
+                }
+            }
+
+            if (expression.Length > 0)
+                expression.Length--;
+            return expression.ToString().Trim();
+        }
+
+        private void createExclusiveGroup(List<BinaryOption> group)
+        {
+            foreach (BinaryOption binOpt in group)
+            {
+                List<ConfigurationOption> excluded = new List<ConfigurationOption>();
+                foreach (BinaryOption otherOption in group)
+                {
+                    if (otherOption.Name != binOpt.Name)
+                    {
+                        excluded.Add(otherOption);
+                    }
+                }
+                binOpt.Excluded_Options.Add(excluded);
+            }
         }
 
         private void setParent(BinaryOption current, BinaryOption previous, int currentDepth, int prevDepth)
         {
-            if (currentDepth == prevDepth - 1)
+            if (currentDepth - 1 == prevDepth)
             {
                 current.ParentName = previous.Name;
                 current.Parent = previous;
             } else
             {
-                current.Parent = previous.Parent;
-                current.ParentName = previous.ParentName;
+                BinaryOption tempParent = previous;
+                while (prevDepth > currentDepth - 1)
+                {
+                    tempParent = (BinaryOption)tempParent.Parent;
+                    prevDepth--;
+                }
+                current.ParentName = tempParent.Name;
+                current.Parent = tempParent;
             }
         }
 
         private string[] splitWhiteSpaces(string line)
         {
-            return line.Trim().Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            return line.Trim().Split(new string[] { " ", "(", ")" }, StringSplitOptions.RemoveEmptyEntries);
         }
  
         private void parseConstraintsSXFM(string[] booleanConstraints)
         {
             foreach (string constraint in booleanConstraints)
             {
-                string cleanedConstraint = constraint.Split(new char[] { ':' })[1];
-                cleanedConstraint.Replace("~", "!");
-                cleanedConstraint.Replace("OR", "|");
-                cleanedConstraint.Replace("or", "|");
-                cleanedConstraint.Replace("Or", "|");
-                this.binaryConstraints.Add(cleanedConstraint.Trim());
+                if (constraint.Contains(":"))
+                {
+                    string cleanedConstraint = constraint.Split(new char[] { ':' })[1];
+                    cleanedConstraint = cleanedConstraint.Replace("~", "!");
+                    cleanedConstraint = cleanedConstraint.Replace("OR", "|");
+                    cleanedConstraint = cleanedConstraint.Replace("or", "|");
+                    cleanedConstraint = cleanedConstraint.Replace("Or", "|");
+                    this.binaryConstraints.Add(cleanedConstraint.Trim());
+                }
             }
         } 
 
