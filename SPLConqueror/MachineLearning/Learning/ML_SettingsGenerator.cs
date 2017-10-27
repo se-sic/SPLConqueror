@@ -235,5 +235,33 @@ namespace MachineLearning.Learning
             }
             return settingsInParameterSpace;
         }
+
+        /// <summary>
+        /// Implementation for the selection of a RandomizedSearch for optimal parameters. 
+        /// </summary>
+        /// <param name="wholeSpace">Whole search space.</param>
+        /// <param name="numSamples">Number of samples to be selected.</param>
+        /// <returns>Random distributed set of parameter combinations.</returns>
+        public static List<ML_Settings> getRandomCombinations(List<ML_Settings> wholeSpace, int numSamples)
+        {
+            List<ML_Settings> sampleSet = new List<ML_Settings>();
+            if (numSamples >= wholeSpace.Count)
+                return wholeSpace;
+
+            Random r = new Random(0);
+            List<int> selected = new List<int>();
+
+            while (selected.Count < numSamples)
+            {
+                int next = r.Next(wholeSpace.Count);
+
+                if (!selected.Contains(next))
+                {
+                    sampleSet.Add(wholeSpace[next]);
+                    selected.Add(next);
+                }
+            }
+            return sampleSet;
+        }
     }
 }
