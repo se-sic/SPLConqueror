@@ -100,7 +100,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandLine\CommandLine.csproj">
@@ -117,6 +119,18 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">mkdir $(TargetDir)ViPe
+mkdir $(TargetDir)ViPe\Resources
+mkdir $(TargetDir)ViPe\temp
+copy $(ProjectDir)\ViPe\R-scripts\* $(TargetDir)\ViPe
+copy $(ProjectDir)\ViPe\R-scripts\Resources\* $(TargetDir)\ViPe\Resources</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">mkdir $(TargetDir)ViPe
+mkdir $(TargetDir)ViPe\Resources
+mkdir $(TargetDir)ViPe\temp
+copy $(ProjectDir)\ViPe\R-scripts\* $(TargetDir)\ViPe
+copy $(ProjectDir)\ViPe\R-scripts\Resources\* $(TargetDir)\ViPe\Resources</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
