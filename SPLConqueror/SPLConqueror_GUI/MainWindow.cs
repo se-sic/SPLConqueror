@@ -86,6 +86,10 @@ namespace SPLConqueror_GUI
         private Color calculatedColor = Color.Red;
         private Color measurementColor = Color.Green;
 
+        // CSV files for ViPe
+        private string data1 = "";
+        private string data2 = "";
+
         /// <summary>
         /// Constructor of this class.
         /// </summary>
@@ -93,7 +97,25 @@ namespace SPLConqueror_GUI
         {
             InitializeComponent();
 
+            initViPeData();
+            this.initializationCheckBox.Checked = bool.Parse(System.Configuration.ConfigurationManager
+                .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None).AppSettings.Settings["INITIALIZE_R"].Value);
+
             initializeHelp();
+        }
+
+        private void initDataTextBox()
+        {
+            this.data2TextBox.Text = data2;
+            this.data1TextBox.Text = data1;
+        }
+
+        private void initViPeData()
+        {
+            System.Configuration.Configuration config = System.Configuration.ConfigurationManager
+                .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+            this.pathToRExe.Text = config.AppSettings.Settings["R_PATH"].Value;
+            this.pathToRLib.Text = config.AppSettings.Settings["R_LIB_PATH"].Value;
         }
 
         private void initializeHelp()
@@ -3754,6 +3776,171 @@ namespace SPLConqueror_GUI
             });
 
             chart.Model = model;
+        }
+
+        private void pathToLibButton_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                saveSetting("R_LIB_PATH", dialog.SelectedPath);
+                initViPeData();
+            }
+        }
+
+        private void pathToExeButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Select R exe";
+            dialog.Filter = "exe files (*.exe)|*.exe";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(dialog.FileName);
+                saveSetting("R_PATH", fi.FullName);
+                initViPeData();
+            }
+        }
+
+        private void saveSetting(string key, string value)
+        {
+            System.Configuration.Configuration config = System.Configuration.ConfigurationManager
+                .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+            config.AppSettings.Settings[key].Value = value;
+            config.Save(System.Configuration.ConfigurationSaveMode.Modified);
+            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+        }
+
+        private void initializationCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.initializationCheckBox.Checked)
+            {
+                saveSetting("INITIALIZE_R", "true");
+            } else
+            {
+                saveSetting("INITIALIZE_R", "false");
+            }
+        }
+
+        private string dataButtonClick()
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Select csv file";
+            dialog.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(dialog.FileName);
+                return fi.FullName;
+            } else
+            {
+                return null;
+            }
+        }
+
+        private void data1Button_Click(object sender, EventArgs e)
+        {
+            string result = dataButtonClick();
+            data1 = result == null ? "" : result;
+            initDataTextBox();
+        }
+
+        private void data2Button_Click(object sender, EventArgs e)
+        {
+            string result = dataButtonClick();
+            data2 = result == null ? "" : result;
+            initDataTextBox();
+        }
+
+        private void plotButton_Click(object sender, EventArgs e)
+        {
+            if (allArgumentsSet())
+            {
+                performViPeInitialization();
+
+                System.Diagnostics.ProcessStartInfo proc = new System.Diagnostics.ProcessStartInfo();
+                proc.RedirectStandardOutput = true;
+                proc.UseShellExecute = false;
+
+                if (System.Environment.OSVersion.ToString().Contains("Windows"))
+                {
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "Visualizer.sh";
+                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "temp" + " "
+                        + "\"" + pathToRLib.Text + "\"" + " \"" + pathToRExe + "\"";
+                    if (initializationCheckBox.Checked)
+                    {
+                        proc.Arguments += " true";
+                    }
+                }
+                else
+                { 
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "Visualizer.sh";
+                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "temp" + " "
+                        + "\"" + pathToRLib.Text + "\"";
+                    if (initializationCheckBox.Checked)
+                    {
+                        proc.Arguments += " true";
+                    }
+                }
+
+                System.Diagnostics.Process vipe = System.Diagnostics.Process.Start(proc);
+                vipe.WaitForExit();
+            }
+        }
+
+        private void performViPeInitialization()
+        {
+            clearTempFolder();
+            copyDataFile(data1);
+            copyDataFile(data2);
+        }
+
+        private bool allArgumentsSet()
+        {
+            data1 = data1TextBox.Text;
+            data2 = data2TextBox.Text;
+
+            if (data1 == "" ||  data1 == null || data2 == "" || data2 == null)
+            {
+                MessageBox.Show("Not all required csv files are set.");
+                return false;
+            } else if (pathToRLib.Text == null || pathToRLib.Text == "")
+            {
+                MessageBox.Show("Path to the R library folder is not specified.");
+                return false;
+            } else if (System.Environment.OSVersion.ToString().Contains("Windows") &&
+                pathToRExe.Text == null || pathToRExe.Text == "")
+            {
+                MessageBox.Show("R execution needs to specified.");
+                return false;
+            }
+            return true;
+        }
+
+        private void clearTempFolder()
+        {
+            System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory 
+                + Path.DirectorySeparatorChar + "ViPe" 
+                + Path.DirectorySeparatorChar + "temp" + Path.DirectorySeparatorChar);
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                if (file.Extension == ".csv")
+                {
+                    file.Delete();
+                }
+            }
+        }
+
+        private void copyDataFile(string name)
+        {
+            File.Copy(name, AppDomain.CurrentDomain.BaseDirectory
+                + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar 
+                + "temp" + Path.DirectorySeparatorChar 
+                + name.Split(new char[] { Path.DirectorySeparatorChar }, 
+                StringSplitOptions.RemoveEmptyEntries).Last());
+
         }
     }
 }
