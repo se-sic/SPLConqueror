@@ -19,7 +19,7 @@
             }
             base.Dispose(disposing);
         }
-
+        
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -111,30 +111,30 @@
             this.helpTabPage = new System.Windows.Forms.TabPage();
             this.helpTextBox = new System.Windows.Forms.RichTextBox();
             this.vipeTab = new System.Windows.Forms.TabPage();
+            this.vipeSettingsPanel = new System.Windows.Forms.Panel();
+            this.plotButton = new System.Windows.Forms.Button();
+            this.dataPanel = new System.Windows.Forms.Panel();
+            this.data2Button = new System.Windows.Forms.Button();
+            this.data1Button = new System.Windows.Forms.Button();
+            this.data2TextBox = new System.Windows.Forms.TextBox();
+            this.data1TextBox = new System.Windows.Forms.TextBox();
+            this.data2Label = new System.Windows.Forms.Label();
+            this.data1Label = new System.Windows.Forms.Label();
+            this.vipeRSettings = new System.Windows.Forms.Panel();
+            this.initializationCheckBox = new System.Windows.Forms.CheckBox();
+            this.pathToExeButton = new System.Windows.Forms.Button();
+            this.pathToLibButton = new System.Windows.Forms.Button();
+            this.pathToRExe = new System.Windows.Forms.TextBox();
+            this.performInitialization = new System.Windows.Forms.Label();
+            this.pathToRExeLabel = new System.Windows.Forms.Label();
+            this.pathToRLibLabel = new System.Windows.Forms.Label();
+            this.pathToRLib = new System.Windows.Forms.TextBox();
             this.constraintTextbox = new System.Windows.Forms.RichTextBox();
             this.factorizationSettingsButton = new System.Windows.Forms.Button();
             this.adjustedFunctionGroupBox = new System.Windows.Forms.GroupBox();
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.constraintsGroupBox = new System.Windows.Forms.GroupBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.vipeSettingsPanel = new System.Windows.Forms.Panel();
-            this.vipeRSettings = new System.Windows.Forms.Panel();
-            this.pathToRLib = new System.Windows.Forms.TextBox();
-            this.pathToRLibLabel = new System.Windows.Forms.Label();
-            this.pathToRExeLabel = new System.Windows.Forms.Label();
-            this.performInitialization = new System.Windows.Forms.Label();
-            this.pathToRExe = new System.Windows.Forms.TextBox();
-            this.pathToLibButton = new System.Windows.Forms.Button();
-            this.pathToExeButton = new System.Windows.Forms.Button();
-            this.dataPanel = new System.Windows.Forms.Panel();
-            this.data1Label = new System.Windows.Forms.Label();
-            this.data2Label = new System.Windows.Forms.Label();
-            this.data1TextBox = new System.Windows.Forms.TextBox();
-            this.data2TextBox = new System.Windows.Forms.TextBox();
-            this.data1Button = new System.Windows.Forms.Button();
-            this.data2Button = new System.Windows.Forms.Button();
-            this.initializationCheckBox = new System.Windows.Forms.CheckBox();
-            this.plotButton = new System.Windows.Forms.Button();
             this.evaluationGroupBox.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -159,11 +159,11 @@
             this.bothGraphsPanel.SuspendLayout();
             this.helpTabPage.SuspendLayout();
             this.vipeTab.SuspendLayout();
+            this.vipeSettingsPanel.SuspendLayout();
+            this.dataPanel.SuspendLayout();
+            this.vipeRSettings.SuspendLayout();
             this.adjustedFunctionGroupBox.SuspendLayout();
             this.constraintsGroupBox.SuspendLayout();
-            this.vipeSettingsPanel.SuspendLayout();
-            this.vipeRSettings.SuspendLayout();
-            this.dataPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // interactionChartRepl
@@ -1178,6 +1178,188 @@
             this.vipeTab.Text = "ViPe";
             this.vipeTab.UseVisualStyleBackColor = true;
             // 
+            // vipeSettingsPanel
+            // 
+            this.vipeSettingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vipeSettingsPanel.Controls.Add(this.plotButton);
+            this.vipeSettingsPanel.Controls.Add(this.dataPanel);
+            this.vipeSettingsPanel.Controls.Add(this.vipeRSettings);
+            this.vipeSettingsPanel.Location = new System.Drawing.Point(3, 6);
+            this.vipeSettingsPanel.Name = "vipeSettingsPanel";
+            this.vipeSettingsPanel.Size = new System.Drawing.Size(871, 163);
+            this.vipeSettingsPanel.TabIndex = 1;
+            // 
+            // plotButton
+            // 
+            this.plotButton.Location = new System.Drawing.Point(744, 101);
+            this.plotButton.Name = "plotButton";
+            this.plotButton.Size = new System.Drawing.Size(119, 57);
+            this.plotButton.TabIndex = 2;
+            this.plotButton.Text = "Plot";
+            this.plotButton.UseVisualStyleBackColor = true;
+            this.plotButton.Click += new System.EventHandler(this.plotButton_Click);
+            // 
+            // dataPanel
+            // 
+            this.dataPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.dataPanel.Controls.Add(this.data2Button);
+            this.dataPanel.Controls.Add(this.data1Button);
+            this.dataPanel.Controls.Add(this.data2TextBox);
+            this.dataPanel.Controls.Add(this.data1TextBox);
+            this.dataPanel.Controls.Add(this.data2Label);
+            this.dataPanel.Controls.Add(this.data1Label);
+            this.dataPanel.Location = new System.Drawing.Point(490, 3);
+            this.dataPanel.Name = "dataPanel";
+            this.dataPanel.Size = new System.Drawing.Size(373, 92);
+            this.dataPanel.TabIndex = 1;
+            // 
+            // data2Button
+            // 
+            this.data2Button.Location = new System.Drawing.Point(292, 33);
+            this.data2Button.Name = "data2Button";
+            this.data2Button.Size = new System.Drawing.Size(75, 26);
+            this.data2Button.TabIndex = 5;
+            this.data2Button.Text = "set";
+            this.data2Button.UseVisualStyleBackColor = true;
+            this.data2Button.Click += new System.EventHandler(this.data2Button_Click);
+            // 
+            // data1Button
+            // 
+            this.data1Button.Location = new System.Drawing.Point(293, 1);
+            this.data1Button.Name = "data1Button";
+            this.data1Button.Size = new System.Drawing.Size(75, 26);
+            this.data1Button.TabIndex = 4;
+            this.data1Button.Text = "set";
+            this.data1Button.UseVisualStyleBackColor = true;
+            this.data1Button.Click += new System.EventHandler(this.data1Button_Click);
+            // 
+            // data2TextBox
+            // 
+            this.data2TextBox.Location = new System.Drawing.Point(53, 32);
+            this.data2TextBox.Name = "data2TextBox";
+            this.data2TextBox.Size = new System.Drawing.Size(233, 22);
+            this.data2TextBox.TabIndex = 3;
+            // 
+            // data1TextBox
+            // 
+            this.data1TextBox.Location = new System.Drawing.Point(53, 3);
+            this.data1TextBox.Name = "data1TextBox";
+            this.data1TextBox.Size = new System.Drawing.Size(233, 22);
+            this.data1TextBox.TabIndex = 2;
+            // 
+            // data2Label
+            // 
+            this.data2Label.AutoSize = true;
+            this.data2Label.Location = new System.Drawing.Point(5, 32);
+            this.data2Label.Name = "data2Label";
+            this.data2Label.Size = new System.Drawing.Size(42, 17);
+            this.data2Label.TabIndex = 1;
+            this.data2Label.Text = "Data:";
+            // 
+            // data1Label
+            // 
+            this.data1Label.AutoSize = true;
+            this.data1Label.Location = new System.Drawing.Point(5, 4);
+            this.data1Label.Name = "data1Label";
+            this.data1Label.Size = new System.Drawing.Size(42, 17);
+            this.data1Label.TabIndex = 0;
+            this.data1Label.Text = "Data:";
+            // 
+            // vipeRSettings
+            // 
+            this.vipeRSettings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vipeRSettings.Controls.Add(this.initializationCheckBox);
+            this.vipeRSettings.Controls.Add(this.pathToExeButton);
+            this.vipeRSettings.Controls.Add(this.pathToLibButton);
+            this.vipeRSettings.Controls.Add(this.pathToRExe);
+            this.vipeRSettings.Controls.Add(this.performInitialization);
+            this.vipeRSettings.Controls.Add(this.pathToRExeLabel);
+            this.vipeRSettings.Controls.Add(this.pathToRLibLabel);
+            this.vipeRSettings.Controls.Add(this.pathToRLib);
+            this.vipeRSettings.Location = new System.Drawing.Point(3, 3);
+            this.vipeRSettings.Name = "vipeRSettings";
+            this.vipeRSettings.Size = new System.Drawing.Size(480, 92);
+            this.vipeRSettings.TabIndex = 0;
+            // 
+            // initializationCheckBox
+            // 
+            this.initializationCheckBox.AutoSize = true;
+            this.initializationCheckBox.Location = new System.Drawing.Point(201, 59);
+            this.initializationCheckBox.Name = "initializationCheckBox";
+            this.initializationCheckBox.Size = new System.Drawing.Size(18, 17);
+            this.initializationCheckBox.TabIndex = 8;
+            this.initializationCheckBox.UseVisualStyleBackColor = true;
+            this.initializationCheckBox.CheckedChanged += new System.EventHandler(this.initializationCheckBox_CheckedChanged);
+            // 
+            // pathToExeButton
+            // 
+            this.pathToExeButton.Location = new System.Drawing.Point(379, 29);
+            this.pathToExeButton.Enabled = System.Environment.OSVersion.ToString().Contains("Windows");
+            this.pathToExeButton.Visible = System.Environment.OSVersion.ToString().Contains("Windows");
+            this.pathToExeButton.Name = "pathToExeButton";
+            this.pathToExeButton.Size = new System.Drawing.Size(75, 26);
+            this.pathToExeButton.TabIndex = 7;
+            this.pathToExeButton.Text = "set";
+            this.pathToExeButton.UseVisualStyleBackColor = true;
+            this.pathToExeButton.Click += new System.EventHandler(this.pathToExeButton_Click);
+            // 
+            // pathToLibButton
+            // 
+            this.pathToLibButton.Location = new System.Drawing.Point(379, 1);
+            this.pathToLibButton.Name = "pathToLibButton";
+            this.pathToLibButton.Size = new System.Drawing.Size(75, 26);
+            this.pathToLibButton.TabIndex = 6;
+            this.pathToLibButton.Text = "set";
+            this.pathToLibButton.UseVisualStyleBackColor = true;
+            this.pathToLibButton.Click += new System.EventHandler(this.pathToLibButton_Click);
+            // 
+            // pathToRExe
+            // 
+            this.pathToRExe.Location = new System.Drawing.Point(201, 31);
+            this.pathToRExe.Name = "pathToRExe";
+            this.pathToRExe.ReadOnly = true;
+            this.pathToRExe.Enabled = System.Environment.OSVersion.ToString().Contains("Windows");
+            this.pathToRExe.Visible = System.Environment.OSVersion.ToString().Contains("Windows");
+            this.pathToRExe.Size = new System.Drawing.Size(172, 22);
+            this.pathToRExe.TabIndex = 4;
+            // 
+            // performInitialization
+            // 
+            this.performInitialization.AutoSize = true;
+            this.performInitialization.Location = new System.Drawing.Point(0, 60);
+            this.performInitialization.Name = "performInitialization";
+            this.performInitialization.Size = new System.Drawing.Size(176, 17);
+            this.performInitialization.TabIndex = 3;
+            this.performInitialization.Text = "Perform initialization tasks:";
+            // 
+            // pathToRExeLabel
+            // 
+            this.pathToRExeLabel.AutoSize = true;
+            this.pathToRExeLabel.Location = new System.Drawing.Point(0, 32);
+            this.pathToRExeLabel.Name = "pathToRExeLabel";
+            this.pathToRExeLabel.Enabled = System.Environment.OSVersion.ToString().Contains("Windows");
+            this.pathToRExeLabel.Visible = System.Environment.OSVersion.ToString().Contains("Windows");
+            this.pathToRExeLabel.Size = new System.Drawing.Size(135, 17);
+            this.pathToRExeLabel.TabIndex = 2;
+            this.pathToRExeLabel.Text = "Path to R execution:";
+            // 
+            // pathToRLibLabel
+            // 
+            this.pathToRLibLabel.AutoSize = true;
+            this.pathToRLibLabel.Location = new System.Drawing.Point(0, 3);
+            this.pathToRLibLabel.Name = "pathToRLibLabel";
+            this.pathToRLibLabel.Size = new System.Drawing.Size(173, 17);
+            this.pathToRLibLabel.TabIndex = 1;
+            this.pathToRLibLabel.Text = "Path to R library directory:";
+            // 
+            // pathToRLib
+            // 
+            this.pathToRLib.Location = new System.Drawing.Point(201, 3);
+            this.pathToRLib.Name = "pathToRLib";
+            this.pathToRLib.ReadOnly = true;
+            this.pathToRLib.Size = new System.Drawing.Size(172, 22);
+            this.pathToRLib.TabIndex = 0;
+            // 
             // constraintTextbox
             // 
             this.constraintTextbox.BackColor = System.Drawing.SystemColors.Window;
@@ -1248,175 +1430,6 @@
             this.constraintsGroupBox.TabStop = false;
             this.constraintsGroupBox.Text = "Constraints";
             // 
-            // vipeSettingsPanel
-            // 
-            this.vipeSettingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vipeSettingsPanel.Controls.Add(this.plotButton);
-            this.vipeSettingsPanel.Controls.Add(this.dataPanel);
-            this.vipeSettingsPanel.Controls.Add(this.vipeRSettings);
-            this.vipeSettingsPanel.Location = new System.Drawing.Point(3, 6);
-            this.vipeSettingsPanel.Name = "vipeSettingsPanel";
-            this.vipeSettingsPanel.Size = new System.Drawing.Size(871, 163);
-            this.vipeSettingsPanel.TabIndex = 1;
-            // 
-            // vipeRSettings
-            // 
-            this.vipeRSettings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vipeRSettings.Controls.Add(this.initializationCheckBox);
-            this.vipeRSettings.Controls.Add(this.pathToExeButton);
-            this.vipeRSettings.Controls.Add(this.pathToLibButton);
-            this.vipeRSettings.Controls.Add(this.pathToRExe);
-            this.vipeRSettings.Controls.Add(this.performInitialization);
-            this.vipeRSettings.Controls.Add(this.pathToRExeLabel);
-            this.vipeRSettings.Controls.Add(this.pathToRLibLabel);
-            this.vipeRSettings.Controls.Add(this.pathToRLib);
-            this.vipeRSettings.Location = new System.Drawing.Point(3, 3);
-            this.vipeRSettings.Name = "vipeRSettings";
-            this.vipeRSettings.Size = new System.Drawing.Size(480, 92);
-            this.vipeRSettings.TabIndex = 0;
-            // 
-            // pathToRLib
-            // 
-            this.pathToRLib.Location = new System.Drawing.Point(201, 3);
-            this.pathToRLib.Name = "pathToRLib";
-            this.pathToRLib.Size = new System.Drawing.Size(172, 22);
-            this.pathToRLib.TabIndex = 0;
-            // 
-            // pathToRLibLabel
-            // 
-            this.pathToRLibLabel.AutoSize = true;
-            this.pathToRLibLabel.Location = new System.Drawing.Point(0, 3);
-            this.pathToRLibLabel.Name = "pathToRLibLabel";
-            this.pathToRLibLabel.Size = new System.Drawing.Size(173, 17);
-            this.pathToRLibLabel.TabIndex = 1;
-            this.pathToRLibLabel.Text = "Path to R library directory:";
-            // 
-            // pathToRExeLabel
-            // 
-            this.pathToRExeLabel.AutoSize = true;
-            this.pathToRExeLabel.Location = new System.Drawing.Point(0, 32);
-            this.pathToRExeLabel.Name = "pathToRExeLabel";
-            this.pathToRExeLabel.Size = new System.Drawing.Size(135, 17);
-            this.pathToRExeLabel.TabIndex = 2;
-            this.pathToRExeLabel.Text = "Path to R execution:";
-            // 
-            // performInitialization
-            // 
-            this.performInitialization.AutoSize = true;
-            this.performInitialization.Location = new System.Drawing.Point(0, 60);
-            this.performInitialization.Name = "performInitialization";
-            this.performInitialization.Size = new System.Drawing.Size(176, 17);
-            this.performInitialization.TabIndex = 3;
-            this.performInitialization.Text = "Perform initialization tasks:";
-            // 
-            // pathToRExe
-            // 
-            this.pathToRExe.Location = new System.Drawing.Point(201, 31);
-            this.pathToRExe.Name = "pathToRExe";
-            this.pathToRExe.Size = new System.Drawing.Size(172, 22);
-            this.pathToRExe.TabIndex = 4;
-            // 
-            // pathToLibButton
-            // 
-            this.pathToLibButton.Location = new System.Drawing.Point(379, 1);
-            this.pathToLibButton.Name = "pathToLibButton";
-            this.pathToLibButton.Size = new System.Drawing.Size(75, 26);
-            this.pathToLibButton.TabIndex = 6;
-            this.pathToLibButton.Text = "set";
-            this.pathToLibButton.UseVisualStyleBackColor = true;
-            // 
-            // pathToExeButton
-            // 
-            this.pathToExeButton.Location = new System.Drawing.Point(379, 29);
-            this.pathToExeButton.Name = "pathToExeButton";
-            this.pathToExeButton.Size = new System.Drawing.Size(75, 26);
-            this.pathToExeButton.TabIndex = 7;
-            this.pathToExeButton.Text = "set";
-            this.pathToExeButton.UseVisualStyleBackColor = true;
-            // 
-            // dataPanel
-            // 
-            this.dataPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.dataPanel.Controls.Add(this.data2Button);
-            this.dataPanel.Controls.Add(this.data1Button);
-            this.dataPanel.Controls.Add(this.data2TextBox);
-            this.dataPanel.Controls.Add(this.data1TextBox);
-            this.dataPanel.Controls.Add(this.data2Label);
-            this.dataPanel.Controls.Add(this.data1Label);
-            this.dataPanel.Location = new System.Drawing.Point(490, 3);
-            this.dataPanel.Name = "dataPanel";
-            this.dataPanel.Size = new System.Drawing.Size(373, 92);
-            this.dataPanel.TabIndex = 1;
-            // 
-            // data1Label
-            // 
-            this.data1Label.AutoSize = true;
-            this.data1Label.Location = new System.Drawing.Point(5, 4);
-            this.data1Label.Name = "data1Label";
-            this.data1Label.Size = new System.Drawing.Size(42, 17);
-            this.data1Label.TabIndex = 0;
-            this.data1Label.Text = "Data:";
-            // 
-            // data2Label
-            // 
-            this.data2Label.AutoSize = true;
-            this.data2Label.Location = new System.Drawing.Point(5, 32);
-            this.data2Label.Name = "data2Label";
-            this.data2Label.Size = new System.Drawing.Size(42, 17);
-            this.data2Label.TabIndex = 1;
-            this.data2Label.Text = "Data:";
-            // 
-            // data1TextBox
-            // 
-            this.data1TextBox.Location = new System.Drawing.Point(53, 3);
-            this.data1TextBox.Name = "data1TextBox";
-            this.data1TextBox.Size = new System.Drawing.Size(233, 22);
-            this.data1TextBox.TabIndex = 2;
-            // 
-            // data2TextBox
-            // 
-            this.data2TextBox.Location = new System.Drawing.Point(53, 32);
-            this.data2TextBox.Name = "data2TextBox";
-            this.data2TextBox.Size = new System.Drawing.Size(233, 22);
-            this.data2TextBox.TabIndex = 3;
-            // 
-            // data1Button
-            // 
-            this.data1Button.Location = new System.Drawing.Point(293, 1);
-            this.data1Button.Name = "data1Button";
-            this.data1Button.Size = new System.Drawing.Size(75, 26);
-            this.data1Button.TabIndex = 4;
-            this.data1Button.Text = "set";
-            this.data1Button.UseVisualStyleBackColor = true;
-            // 
-            // data2Button
-            // 
-            this.data2Button.Location = new System.Drawing.Point(292, 33);
-            this.data2Button.Name = "data2Button";
-            this.data2Button.Size = new System.Drawing.Size(75, 26);
-            this.data2Button.TabIndex = 5;
-            this.data2Button.Text = "set";
-            this.data2Button.UseVisualStyleBackColor = true;
-            // 
-            // initializationCheckBox
-            // 
-            this.initializationCheckBox.AutoSize = true;
-            this.initializationCheckBox.Location = new System.Drawing.Point(201, 59);
-            this.initializationCheckBox.Name = "initializationCheckBox";
-            this.initializationCheckBox.Size = new System.Drawing.Size(18, 17);
-            this.initializationCheckBox.TabIndex = 8;
-            this.initializationCheckBox.Checked = true;
-            this.initializationCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // plotButton
-            // 
-            this.plotButton.Location = new System.Drawing.Point(744, 101);
-            this.plotButton.Name = "plotButton";
-            this.plotButton.Size = new System.Drawing.Size(119, 57);
-            this.plotButton.TabIndex = 2;
-            this.plotButton.Text = "Plot";
-            this.plotButton.UseVisualStyleBackColor = true;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1470,14 +1483,14 @@
             this.bothGraphsPanel.ResumeLayout(false);
             this.helpTabPage.ResumeLayout(false);
             this.vipeTab.ResumeLayout(false);
+            this.vipeSettingsPanel.ResumeLayout(false);
+            this.dataPanel.ResumeLayout(false);
+            this.dataPanel.PerformLayout();
+            this.vipeRSettings.ResumeLayout(false);
+            this.vipeRSettings.PerformLayout();
             this.adjustedFunctionGroupBox.ResumeLayout(false);
             this.adjustedFunctionGroupBox.PerformLayout();
             this.constraintsGroupBox.ResumeLayout(false);
-            this.vipeSettingsPanel.ResumeLayout(false);
-            this.vipeRSettings.ResumeLayout(false);
-            this.vipeRSettings.PerformLayout();
-            this.dataPanel.ResumeLayout(false);
-            this.dataPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1571,7 +1584,6 @@
         private OxyPlot.WindowsForms.PlotView maxOccChartRepl;
         private OxyPlot.WindowsForms.PlotView rangeChartRepl;
         private System.Windows.Forms.TabPage vipeTab;
-        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel vipeSettingsPanel;
         private System.Windows.Forms.Panel vipeRSettings;
         private System.Windows.Forms.Label pathToRLibLabel;
