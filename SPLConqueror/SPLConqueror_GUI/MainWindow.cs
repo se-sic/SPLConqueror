@@ -3865,9 +3865,9 @@ namespace SPLConqueror_GUI
 
                 if (System.Environment.OSVersion.ToString().Contains("Windows"))
                 {
-                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "Visualizer.sh";
-                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "temp" + " "
-                        + "\"" + pathToRLib.Text + "\"" + " \"" + pathToRExe + "\"";
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + "Visualizer.bat";
+                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " " +
+                         "\"\"\"" + pathToRLib.Text  + "\"\"\" " + "\"\"\"" + pathToRExe.Text + "\"\"\"";
                     if (initializationCheckBox.Checked)
                     {
                         proc.Arguments += " true";
@@ -3875,9 +3875,9 @@ namespace SPLConqueror_GUI
                 }
                 else
                 { 
-                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "Visualizer.sh";
-                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar + "temp" + " "
-                        + "\"" + pathToRLib.Text + "\"";
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory +  "Visualizer.sh";
+                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " "
+                        + "\"\"\"" + pathToRLib.Text + "\"\"\"";
                     if (initializationCheckBox.Checked)
                     {
                         proc.Arguments += " true";
@@ -3885,7 +3885,13 @@ namespace SPLConqueror_GUI
                 }
 
                 System.Diagnostics.Process vipe = System.Diagnostics.Process.Start(proc);
-                vipe.WaitForExit();
+                vipe.WaitForExit(1000 * 300);
+                if (!vipe.HasExited)
+                {
+                    vipe.Kill();
+                }
+                this.saveButton.Enabled = true;
+                this.previewComboBox.Enabled = true;
             }
         }
 
@@ -3921,8 +3927,7 @@ namespace SPLConqueror_GUI
         private void clearTempFolder()
         {
             System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory 
-                + Path.DirectorySeparatorChar + "ViPe" 
-                + Path.DirectorySeparatorChar + "temp" + Path.DirectorySeparatorChar);
+                + "temp" + Path.DirectorySeparatorChar);
 
             foreach (FileInfo file in di.GetFiles())
             {
@@ -3936,11 +3941,45 @@ namespace SPLConqueror_GUI
         private void copyDataFile(string name)
         {
             File.Copy(name, AppDomain.CurrentDomain.BaseDirectory
-                + Path.DirectorySeparatorChar + "ViPe" + Path.DirectorySeparatorChar 
                 + "temp" + Path.DirectorySeparatorChar 
                 + name.Split(new char[] { Path.DirectorySeparatorChar }, 
                 StringSplitOptions.RemoveEmptyEntries).Last());
 
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory
+                + "temp" + Path.DirectorySeparatorChar);
+
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    if (file.Extension == ".pdf")
+                    {
+                        File.Copy(file.FullName, dialog.SelectedPath 
+                            + Path.DirectorySeparatorChar + file.Name + file.Extension);
+                    }
+                }
+            }
+        }
+
+        private void previewComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string url = AppDomain.CurrentDomain.BaseDirectory
+                + "temp" + Path.DirectorySeparatorChar
+                + previewComboBox.SelectedText + ".pdf";
+
+            if (File.Exists(url))
+            {
+                this.pdfBrowser.Navigate(@url);
+            } else
+            {
+                MessageBox.Show("A error occured during rendering the plot. Please check the log.");
+            }
         }
     }
 }
