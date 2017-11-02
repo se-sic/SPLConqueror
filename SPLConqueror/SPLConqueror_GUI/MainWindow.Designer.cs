@@ -111,7 +111,11 @@
             this.helpTabPage = new System.Windows.Forms.TabPage();
             this.helpTextBox = new System.Windows.Forms.RichTextBox();
             this.vipeTab = new System.Windows.Forms.TabPage();
+            this.pdfBrowser = new System.Windows.Forms.WebBrowser();
             this.vipeSettingsPanel = new System.Windows.Forms.Panel();
+            this.previewComboBox = new System.Windows.Forms.ComboBox();
+            this.previewLabel = new System.Windows.Forms.Label();
+            this.saveButton = new System.Windows.Forms.Button();
             this.plotButton = new System.Windows.Forms.Button();
             this.dataPanel = new System.Windows.Forms.Panel();
             this.data2Button = new System.Windows.Forms.Button();
@@ -1169,6 +1173,7 @@
             // 
             // vipeTab
             // 
+            this.vipeTab.Controls.Add(this.pdfBrowser);
             this.vipeTab.Controls.Add(this.vipeSettingsPanel);
             this.vipeTab.Location = new System.Drawing.Point(4, 25);
             this.vipeTab.Name = "vipeTab";
@@ -1178,9 +1183,20 @@
             this.vipeTab.Text = "ViPe";
             this.vipeTab.UseVisualStyleBackColor = true;
             // 
+            // pdfBrowser
+            // 
+            this.pdfBrowser.Location = new System.Drawing.Point(6, 171);
+            this.pdfBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.pdfBrowser.Name = "pdfBrowser";
+            this.pdfBrowser.Size = new System.Drawing.Size(865, 705);
+            this.pdfBrowser.TabIndex = 3;
+            // 
             // vipeSettingsPanel
             // 
             this.vipeSettingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vipeSettingsPanel.Controls.Add(this.previewComboBox);
+            this.vipeSettingsPanel.Controls.Add(this.previewLabel);
+            this.vipeSettingsPanel.Controls.Add(this.saveButton);
             this.vipeSettingsPanel.Controls.Add(this.plotButton);
             this.vipeSettingsPanel.Controls.Add(this.dataPanel);
             this.vipeSettingsPanel.Controls.Add(this.vipeRSettings);
@@ -1188,6 +1204,39 @@
             this.vipeSettingsPanel.Name = "vipeSettingsPanel";
             this.vipeSettingsPanel.Size = new System.Drawing.Size(871, 163);
             this.vipeSettingsPanel.TabIndex = 1;
+            // 
+            // previewComboBox
+            // 
+            this.previewComboBox.Enabled = false;
+            this.previewComboBox.FormattingEnabled = true;
+            this.previewComboBox.Items.AddRange(new object[] {
+            "StarPlot.pdf",
+            "TextPlot.pdf"});
+            this.previewComboBox.Location = new System.Drawing.Point(10, 123);
+            this.previewComboBox.Name = "previewComboBox";
+            this.previewComboBox.Size = new System.Drawing.Size(121, 24);
+            this.previewComboBox.TabIndex = 5;
+            this.previewComboBox.SelectedIndexChanged += new System.EventHandler(this.previewComboBox_SelectedIndexChanged);
+            // 
+            // previewLabel
+            // 
+            this.previewLabel.AutoSize = true;
+            this.previewLabel.Location = new System.Drawing.Point(7, 102);
+            this.previewLabel.Name = "previewLabel";
+            this.previewLabel.Size = new System.Drawing.Size(150, 17);
+            this.previewLabel.TabIndex = 4;
+            this.previewLabel.Text = "Select PDF to preview:";
+            // 
+            // saveButton
+            // 
+            this.saveButton.Enabled = false;
+            this.saveButton.Location = new System.Drawing.Point(619, 101);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(119, 57);
+            this.saveButton.TabIndex = 3;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // plotButton
             // 
@@ -1294,8 +1343,6 @@
             // pathToExeButton
             // 
             this.pathToExeButton.Location = new System.Drawing.Point(379, 29);
-            this.pathToExeButton.Enabled = System.Environment.OSVersion.ToString().Contains("Windows");
-            this.pathToExeButton.Visible = System.Environment.OSVersion.ToString().Contains("Windows");
             this.pathToExeButton.Name = "pathToExeButton";
             this.pathToExeButton.Size = new System.Drawing.Size(75, 26);
             this.pathToExeButton.TabIndex = 7;
@@ -1318,8 +1365,6 @@
             this.pathToRExe.Location = new System.Drawing.Point(201, 31);
             this.pathToRExe.Name = "pathToRExe";
             this.pathToRExe.ReadOnly = true;
-            this.pathToRExe.Enabled = System.Environment.OSVersion.ToString().Contains("Windows");
-            this.pathToRExe.Visible = System.Environment.OSVersion.ToString().Contains("Windows");
             this.pathToRExe.Size = new System.Drawing.Size(172, 22);
             this.pathToRExe.TabIndex = 4;
             // 
@@ -1337,8 +1382,6 @@
             this.pathToRExeLabel.AutoSize = true;
             this.pathToRExeLabel.Location = new System.Drawing.Point(0, 32);
             this.pathToRExeLabel.Name = "pathToRExeLabel";
-            this.pathToRExeLabel.Enabled = System.Environment.OSVersion.ToString().Contains("Windows");
-            this.pathToRExeLabel.Visible = System.Environment.OSVersion.ToString().Contains("Windows");
             this.pathToRExeLabel.Size = new System.Drawing.Size(135, 17);
             this.pathToRExeLabel.TabIndex = 2;
             this.pathToRExeLabel.Text = "Path to R execution:";
@@ -1484,6 +1527,7 @@
             this.helpTabPage.ResumeLayout(false);
             this.vipeTab.ResumeLayout(false);
             this.vipeSettingsPanel.ResumeLayout(false);
+            this.vipeSettingsPanel.PerformLayout();
             this.dataPanel.ResumeLayout(false);
             this.dataPanel.PerformLayout();
             this.vipeRSettings.ResumeLayout(false);
@@ -1602,5 +1646,9 @@
         private System.Windows.Forms.Label pathToRExeLabel;
         private System.Windows.Forms.CheckBox initializationCheckBox;
         private System.Windows.Forms.Button plotButton;
+        private System.Windows.Forms.WebBrowser pdfBrowser;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Label previewLabel;
+        private System.Windows.Forms.ComboBox previewComboBox;
     }
 }
