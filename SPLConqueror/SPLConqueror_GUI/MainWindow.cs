@@ -3860,14 +3860,13 @@ namespace SPLConqueror_GUI
                 performViPeInitialization();
 
                 System.Diagnostics.ProcessStartInfo proc = new System.Diagnostics.ProcessStartInfo();
-                proc.RedirectStandardOutput = true;
                 proc.UseShellExecute = false;
 
                 if (System.Environment.OSVersion.ToString().Contains("Windows"))
                 {
                     proc.FileName = AppDomain.CurrentDomain.BaseDirectory + "Visualizer.bat";
                     proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " " +
-                         "\"\"\"" + pathToRLib.Text  + "\"\"\" " + "\"\"\"" + pathToRExe.Text + "\"\"\"";
+                         "\"" + pathToRLib.Text  + "\" " + "\"\"\"" + pathToRExe.Text + "\"\"\"";
                     if (initializationCheckBox.Checked)
                     {
                         proc.Arguments += " true";
@@ -3877,7 +3876,7 @@ namespace SPLConqueror_GUI
                 { 
                     proc.FileName = AppDomain.CurrentDomain.BaseDirectory +  "Visualizer.sh";
                     proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " "
-                        + "\"\"\"" + pathToRLib.Text + "\"\"\"";
+                        + "\"" + pathToRLib.Text + "\"";
                     if (initializationCheckBox.Checked)
                     {
                         proc.Arguments += " true";
@@ -3888,6 +3887,8 @@ namespace SPLConqueror_GUI
                 vipe.WaitForExit(1000 * 300);
                 if (!vipe.HasExited)
                 {
+                    vipe.Dispose();
+                    vipe.Close();
                     vipe.Kill();
                 }
                 this.saveButton.Enabled = true;
@@ -3931,10 +3932,7 @@ namespace SPLConqueror_GUI
 
             foreach (FileInfo file in di.GetFiles())
             {
-                if (file.Extension == ".csv")
-                {
-                    file.Delete();
-                }
+                file.Delete();
             }
         }
 
@@ -3958,10 +3956,10 @@ namespace SPLConqueror_GUI
 
                 foreach (FileInfo file in di.GetFiles())
                 {
-                    if (file.Extension == ".pdf")
+                    if (file.Extension == ".pdf" && !file.Name.Contains("_"))
                     {
                         File.Copy(file.FullName, dialog.SelectedPath 
-                            + Path.DirectorySeparatorChar + file.Name + file.Extension);
+                            + Path.DirectorySeparatorChar + file.Name);
                     }
                 }
             }
@@ -3971,7 +3969,7 @@ namespace SPLConqueror_GUI
         {
             string url = AppDomain.CurrentDomain.BaseDirectory
                 + "temp" + Path.DirectorySeparatorChar
-                + previewComboBox.SelectedText + ".pdf";
+                + previewComboBox.SelectedItem.ToString();
 
             if (File.Exists(url))
             {
