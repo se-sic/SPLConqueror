@@ -1188,7 +1188,7 @@
             this.pdfBrowser.Location = new System.Drawing.Point(6, 171);
             this.pdfBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this.pdfBrowser.Name = "pdfBrowser";
-            this.pdfBrowser.Size = new System.Drawing.Size(865, 705);
+            this.pdfBrowser.Size = new System.Drawing.Size(868, 709);
             this.pdfBrowser.TabIndex = 3;
             // 
             // vipeSettingsPanel
