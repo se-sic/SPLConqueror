@@ -3933,6 +3933,8 @@ namespace SPLConqueror_GUI
 
             System.Threading.Thread clear = 
                 new System.Threading.Thread(new System.Threading.ThreadStart(clearTempPDFs));
+            clear.Start();
+
             foreach (FileInfo file in di.GetFiles())
             {
                 file.Delete();
