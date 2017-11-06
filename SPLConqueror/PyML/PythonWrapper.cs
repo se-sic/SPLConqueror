@@ -3,6 +3,7 @@ using SPLConqueror_Core;
 using System.Collections.Generic;
 using System;
 using System.Text;
+using System.Threading;
 
 namespace ProcessWrapper
 {
@@ -65,7 +66,23 @@ namespace ProcessWrapper
             pythonSetup.UseShellExecute = false;
             pythonSetup.RedirectStandardInput = true;
             pythonSetup.RedirectStandardOutput = true;
+            pythonSetup.RedirectStandardError = true;
             pythonProcess = Process.Start(pythonSetup);
+            Thread errorRedirect = new Thread(() => redirectOutputThread(pythonProcess));
+            errorRedirect.Start();
+        }
+
+
+        private void redirectOutputThread(Process python)
+        {
+            while (!python.HasExited)
+            {
+                if (!python.StandardError.EndOfStream)
+                {
+                    GlobalState.logError.logLine("Python error/warning:");
+                    GlobalState.logError.logLine(python.StandardError.ReadToEnd());
+                }
+            }
         }
 
         private string waitForNextReceivedLine()
