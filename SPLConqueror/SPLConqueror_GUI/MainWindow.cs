@@ -3898,6 +3898,7 @@ namespace SPLConqueror_GUI
 
         private void performViPeInitialization()
         {
+            pdfBrowser.Navigate("about:blank");
             clearTempFolder();
             copyDataFile(data1);
             copyDataFile(data2);
@@ -3930,9 +3931,31 @@ namespace SPLConqueror_GUI
             System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory 
                 + "temp" + Path.DirectorySeparatorChar);
 
+            System.Threading.Thread clear = 
+                new System.Threading.Thread(new System.Threading.ThreadStart(clearTempPDFs));
             foreach (FileInfo file in di.GetFiles())
             {
                 file.Delete();
+            }
+        }
+
+        private static void clearTempPDFs()
+        {
+            System.IO.DirectoryInfo di = new DirectoryInfo(Path.GetTempPath());
+            try
+            {
+                foreach (FileInfo file in di.GetFiles("TextPlot*"))
+                {
+                    file.Delete();
+                }
+
+                foreach (FileInfo file in di.GetFiles("StarPlot*"))
+                {
+                    file.Delete();
+                }
+            } catch (IOException)
+            {
+
             }
         }
 
@@ -3970,10 +3993,11 @@ namespace SPLConqueror_GUI
             string url = AppDomain.CurrentDomain.BaseDirectory
                 + "temp" + Path.DirectorySeparatorChar
                 + previewComboBox.SelectedItem.ToString();
-
+            string tempFile = Path.GetTempPath() + previewComboBox.SelectedItem.ToString() + DateTime.Now.ToString("HH_mm_ss");
             if (File.Exists(url))
             {
-                this.pdfBrowser.Navigate(@url);
+                File.Copy(url, tempFile);
+                this.pdfBrowser.Navigate(tempFile);
             } else
             {
                 MessageBox.Show("A error occured during rendering the plot. Please check the log.");
