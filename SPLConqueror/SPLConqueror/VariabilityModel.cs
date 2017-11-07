@@ -215,6 +215,18 @@ namespace SPLConqueror_Core
             }
             xmlroot.AppendChild(nonBooleanConstraints);
 
+            //Add mixed constraints
+            XmlNode mixedConstraints = doc.CreateNode(XmlNodeType.Element, "mixedConstraints", "");
+            foreach (var constraint in this.MixedConstraints)
+            {
+                XmlNode constrNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
+                XmlAttribute attr = doc.CreateAttribute("req");
+                attr.Value = constraint.ToString().Split(new char[] { ':' })[0];
+                constrNode.Attributes.Append(attr);
+                constrNode.InnerText = constraint.ToString().Split(new char[] { ':' })[1];
+                mixedConstraints.AppendChild(constrNode);
+            }
+            xmlroot.AppendChild(mixedConstraints);
 
             doc.AppendChild(xmlroot);
 
@@ -376,14 +388,12 @@ namespace SPLConqueror_Core
                 group.ForEach(opt => opt.Optional = true);
                 StringBuilder sb = new StringBuilder();
                 sb.Append("!" + group.First().ParentName + " | ");
-                sb.Append("(");
                 group.ForEach(option => sb.Append(option.Name + " | "));
 
                 // remove trailing "| "
                 sb.Length--;
                 sb.Length--;
-
-                sb.Append(")");
+                
                 this.BinaryConstraints.Add(sb.ToString());
             } else if (cardinality == "[0,1]")
             {
@@ -392,75 +402,40 @@ namespace SPLConqueror_Core
             } else if (cardinality.StartsWith("[0,"))
             {
                 group.ForEach(option => option.Optional = true);
-                this.BinaryConstraints.Add(resolveUpperBounds(group, cardinality));
+                this.MixedConstraints.Add(new MixedConstraint(resolveUpperBounds(group, cardinality),
+                    this, "none"));
             } else
             {
                 group.ForEach(option => option.Optional = true);
-                this.BinaryConstraints.Add(resolveLowerBounds(group, cardinality));
-                this.BinaryConstraints.Add(resolveUpperBounds(group, cardinality));
+                this.MixedConstraints.Add(new MixedConstraint(resolveLowerBounds(group, cardinality),
+                    this, "none"));
+                this.MixedConstraints.Add(new MixedConstraint(resolveUpperBounds(group, cardinality),
+                    this, "none"));
             }
         }
 
         private string resolveLowerBounds(List<BinaryOption> group, string cardinality)
         {
-            // Resolve the lower bounds by building a formula of all possible combinations of
-            // |lower bounds|  Features, which are combined by a transformed & term, and then combine
-            // all combinations with a |. This means at least one of the combinations has to be taken.
-            // E.g. 3 Features a,b,c and at least 2 elements would result in:
-            // !(!a|!b) |!(!a|!c) | !(!b|!c)
             StringBuilder expression = new StringBuilder();
             char boundaryChar = cardinality.Split(new string[] { "," }, StringSplitOptions.None)[0].ElementAt(1);
             int boundary = (int)char.GetNumericValue(boundaryChar);
-            expression.Append("(!" + group.First().ParentName + ") | ");
-            expression.Append("(");
 
-            for (int i = 0; i <= group.Count - boundary; ++i)
-            {
-                int z = i + 1;
-                while (z <= group.Count)
-                {
-                    StringBuilder orClause = new StringBuilder();
-                    orClause.Append("(!");
-                    int count = 1;
-                    orClause.Append(group.ElementAt(i).Name + ")");
-                    for (int j = z ; j < z + boundary - 1; ++j)
-                    {
-                        if (j < group.Count)
-                        {
-                            orClause.Append("|");
-                            orClause.Append("(!");
-                            count++;
-                            orClause.Append(group.ElementAt(j).Name + ")");
-                        }
-                    }
+            expression.Append(group.First().ParentName + " * (");
+            expression.Append(boundary);
+            expression.Append(" - ");
 
-                    if (count == boundary)
-                    {
-                        expression.Append("!(");
-                        expression.Append(orClause);
-                        expression.Append(")");
-                        expression.Append(" | ");
-                    }
-
-                    z++;
-                }
-            }
-            expression.Length--;
+            group.ForEach(opt => expression.Append(opt.ToString() + " - "));
             expression.Length--;
             expression.Length--;
             expression.Append(")");
+
+            expression.Append(" < 1");
+
             return expression.ToString();
         }
 
         private string resolveUpperBounds(List<BinaryOption> group, string cardinality)
         {
-            // Resolve upper bounds by building a formula of all possible combinations of features
-            // that can be produced by taking group.Count - bound elements and putting
-            // them into an not clause. This means that at least one combination of features
-            // should not be selected.
-            // E.g. 3 Features a,b,c and at max 1 elements would result in:
-            // !(a|b) | !(a|c) | !(b|c)
-
             StringBuilder expression = new StringBuilder();
             char boundaryChar = cardinality.Split(new string[] { "," }, StringSplitOptions.None)[1].ElementAt(0);
             int boundary;
@@ -475,36 +450,13 @@ namespace SPLConqueror_Core
                     boundary = group.Count;
             }
 
-            int diff = group.Count - boundary;
+            group.ForEach(opt => expression.Append(opt.ToString() + " + "));
+            expression.Length--;
+            expression.Length--;
 
-            if (diff > 0)
-            {
-                for (int i = 0; i <= group.Count - diff; ++i)
-                {
-                    int z = i + 1;
-                    while (z <= group.Count)
-                    {
-                        int count = 1;
-                        StringBuilder orClause = new StringBuilder();
-                        orClause.Append(group.ElementAt(i).Name);
-                        for (int j = z; j < z + diff - 1; ++j)
-                        {
-                            if (j < group.Count)
-                            {
-                                orClause.Append("|");
-                                count++;
-                                orClause.Append(group.ElementAt(j).Name);
-                            }
-                        }
-                        if (count == diff)
-                            expression.Append("!(" + orClause + ") |");
-                        z++;
-                    }
-                }
-            }
-
-            if (expression.Length > 0)
-                expression.Length--;
+            expression.Append(" < ");
+            expression.Append(boundary + 1);
+            
             return expression.ToString().Trim();
         }
 
@@ -767,11 +719,11 @@ namespace SPLConqueror_Core
             {
                 if (mixedConstraint.Attributes.Count == 1)
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, mixedConstraint.Attributes[0].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText.Replace("&lt;", "<").Replace("&gt;",">"), this, mixedConstraint.Attributes[0].Value));
                 }
                 else
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText, this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText.Replace("&lt;", "<").Replace("&gt;", ">"), this, mixedConstraint.Attributes[0].Value, mixedConstraint.Attributes[1].Value));
                 }
             }
         }
