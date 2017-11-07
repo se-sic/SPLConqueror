@@ -14,6 +14,8 @@ namespace SPLConqueror_Core
 
         private const string REQUIRE_ONE = "one";
 
+        private const string REQUIRE_NONE = "none";
+
         private const string NEGATIVE = "neg";
 
         private const string POSITIVE = "pos";
@@ -46,6 +48,10 @@ namespace SPLConqueror_Core
             else if (requirement.Trim().ToLower().Equals(REQUIRE_ONE))
             {
                 this.requirement = REQUIRE_ONE;
+            }
+            else if (requirement.Trim().ToLower().Equals(REQUIRE_NONE))
+            {
+                this.requirement = REQUIRE_NONE;
             }
             else
             {
@@ -145,6 +151,17 @@ namespace SPLConqueror_Core
                 {
                     return base.configIsValid(conf);
                 }
+            } else if (requirement.Equals(REQUIRE_NONE))
+            {
+                foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                {
+                    if (!conf.BinaryOptions.ContainsKey(binOpt))
+                    {
+                        conf.BinaryOptions.Add(binOpt, BinaryOption.BinaryValue.Deselected);
+                    }
+                }
+
+                return base.configIsValid(conf);
             }
             else
             {
