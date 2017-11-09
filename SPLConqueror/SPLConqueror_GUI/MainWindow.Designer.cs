@@ -139,6 +139,10 @@
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.constraintsGroupBox = new System.Windows.Forms.GroupBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.modelButton = new System.Windows.Forms.Button();
+            this.featureLimitTextBox = new System.Windows.Forms.TextBox();
+            this.featureLimitLabel = new System.Windows.Forms.Label();
+            this.featureLimitComboBox = new System.Windows.Forms.ComboBox();
             this.evaluationGroupBox.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -1251,7 +1255,11 @@
             // dataPanel
             // 
             this.dataPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.dataPanel.Controls.Add(this.featureLimitComboBox);
+            this.dataPanel.Controls.Add(this.featureLimitLabel);
             this.dataPanel.Controls.Add(this.data2Button);
+            this.dataPanel.Controls.Add(this.modelButton);
+            this.dataPanel.Controls.Add(this.featureLimitTextBox);
             this.dataPanel.Controls.Add(this.data1Button);
             this.dataPanel.Controls.Add(this.data2TextBox);
             this.dataPanel.Controls.Add(this.data1TextBox);
@@ -1473,6 +1481,45 @@
             this.constraintsGroupBox.TabStop = false;
             this.constraintsGroupBox.Text = "Constraints";
             // 
+            // modelButton
+            // 
+            this.modelButton.Location = new System.Drawing.Point(291, 64);
+            this.modelButton.Name = "modelButton";
+            this.modelButton.Size = new System.Drawing.Size(76, 25);
+            this.modelButton.TabIndex = 6;
+            this.modelButton.Text = "model";
+            this.modelButton.UseVisualStyleBackColor = true;
+            this.modelButton.Click += new System.EventHandler(this.modelButton_Click);
+            // 
+            // featureLimitTextBox
+            // 
+            this.featureLimitTextBox.Location = new System.Drawing.Point(225, 63);
+            this.featureLimitTextBox.Name = "featureLimitTextBox";
+            this.featureLimitTextBox.Size = new System.Drawing.Size(61, 22);
+            this.featureLimitTextBox.TabIndex = 7;
+            this.featureLimitTextBox.Text = "20";
+            this.featureLimitTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // featureLimitLabel
+            // 
+            this.featureLimitLabel.AutoSize = true;
+            this.featureLimitLabel.Location = new System.Drawing.Point(5, 66);
+            this.featureLimitLabel.Name = "featureLimitLabel";
+            this.featureLimitLabel.Size = new System.Drawing.Size(94, 17);
+            this.featureLimitLabel.TabIndex = 8;
+            this.featureLimitLabel.Text = "Feature Limit:";
+            // 
+            // featureLimitComboBox
+            // 
+            this.featureLimitComboBox.FormattingEnabled = true;
+            this.featureLimitComboBox.Items.AddRange(new object[] {
+            "Influence",
+            "Frequency"});
+            this.featureLimitComboBox.Location = new System.Drawing.Point(99, 60);
+            this.featureLimitComboBox.Name = "featureLimitComboBox";
+            this.featureLimitComboBox.Size = new System.Drawing.Size(117, 24);
+            this.featureLimitComboBox.TabIndex = 10;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1650,5 +1697,9 @@
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Label previewLabel;
         private System.Windows.Forms.ComboBox previewComboBox;
+        private System.Windows.Forms.Button modelButton;
+        private System.Windows.Forms.Label featureLimitLabel;
+        private System.Windows.Forms.TextBox featureLimitTextBox;
+        private System.Windows.Forms.ComboBox featureLimitComboBox;
     }
 }
