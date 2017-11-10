@@ -2,6 +2,8 @@
 using ILNumerics;
 using ILNumerics.Drawing;
 using ILNumerics.Drawing.Plotting;
+using MachineLearning.Sampling;
+using MachineLearning.Sampling.ExperimentalDesigns;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -86,6 +88,10 @@ namespace SPLConqueror_GUI
         private Color calculatedColor = Color.Red;
         private Color measurementColor = Color.Green;
 
+        // CSV files for ViPe
+        private string data1 = "";
+        private string data2 = "";
+
         /// <summary>
         /// Constructor of this class.
         /// </summary>
@@ -93,7 +99,28 @@ namespace SPLConqueror_GUI
         {
             InitializeComponent();
 
+            initViPeData();
+            this.initializationCheckBox.Checked = bool.Parse(System.Configuration.ConfigurationManager
+                .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None).AppSettings.Settings["INITIALIZE_R"].Value);
+
+            featureLimitTextBox.ReadOnly = true;
+            featureLimitComboBox.Enabled = false;
+
             initializeHelp();
+        }
+
+        private void initDataTextBox()
+        {
+            this.data2TextBox.Text = data2;
+            this.data1TextBox.Text = data1;
+        }
+
+        private void initViPeData()
+        {
+            System.Configuration.Configuration config = System.Configuration.ConfigurationManager
+                .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+            this.pathToRExe.Text = config.AppSettings.Settings["R_PATH"].Value;
+            this.pathToRLib.Text = config.AppSettings.Settings["R_LIB_PATH"].Value;
         }
 
         private void initializeHelp()
@@ -3754,6 +3781,387 @@ namespace SPLConqueror_GUI
             });
 
             chart.Model = model;
+        }
+
+        private void pathToLibButton_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                saveSetting("R_LIB_PATH", dialog.SelectedPath);
+                initViPeData();
+            }
+        }
+
+        private void pathToExeButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Select R exe";
+            dialog.Filter = "exe files (*.exe)|*.exe";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(dialog.FileName);
+                saveSetting("R_PATH", fi.FullName);
+                initViPeData();
+            }
+        }
+
+        private void saveSetting(string key, string value)
+        {
+            System.Configuration.Configuration config = System.Configuration.ConfigurationManager
+                .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+            config.AppSettings.Settings[key].Value = value;
+            config.Save(System.Configuration.ConfigurationSaveMode.Modified);
+            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+        }
+
+        private void initializationCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.initializationCheckBox.Checked)
+            {
+                saveSetting("INITIALIZE_R", "true");
+            } else
+            {
+                saveSetting("INITIALIZE_R", "false");
+            }
+        }
+
+        private string dataButtonClick()
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Select csv file";
+            dialog.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(dialog.FileName);
+                return fi.FullName;
+            } else
+            {
+                return null;
+            }
+        }
+
+        private void data1Button_Click(object sender, EventArgs e)
+        {
+            string result = dataButtonClick();
+            data1 = result == null ? "" : result;
+            initDataTextBox();
+        }
+
+        private void data2Button_Click(object sender, EventArgs e)
+        {
+            string result = dataButtonClick();
+            data2 = result == null ? "" : result;
+            initDataTextBox();
+        }
+
+        private void plotButton_Click(object sender, EventArgs e)
+        {
+            if (allArgumentsSet())
+            {
+                performViPeInitialization();
+
+                System.Diagnostics.ProcessStartInfo proc = new System.Diagnostics.ProcessStartInfo();
+                proc.UseShellExecute = false;
+
+                if (System.Environment.OSVersion.ToString().Contains("Windows"))
+                {
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + "Visualizer.bat";
+                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " " +
+                         "\"" + pathToRLib.Text  + "\" " + "\"\"\"" + pathToRExe.Text + "\"\"\"";
+                    if (initializationCheckBox.Checked)
+                    {
+                        proc.Arguments += " true";
+                    }
+                }
+                else
+                { 
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory +  "Visualizer.sh";
+                    proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " "
+                        + "\"" + pathToRLib.Text + "\"";
+                    if (initializationCheckBox.Checked)
+                    {
+                        proc.Arguments += " true";
+                    }
+                }
+
+                System.Diagnostics.Process vipe = System.Diagnostics.Process.Start(proc);
+                vipe.WaitForExit(1000 * 300);
+                if (!vipe.HasExited)
+                {
+                    vipe.Dispose();
+                    vipe.Close();
+                    vipe.Kill();
+                }
+                this.saveButton.Enabled = true;
+                this.previewComboBox.Enabled = true;
+            }
+        }
+
+        private void performViPeInitialization()
+        {
+            pdfBrowser.Navigate("about:blank");
+            clearTempFolder();
+        }
+
+        private void setupData()
+        {
+            if (GlobalState.varModel == null || featureLimitComboBox.SelectedText == null 
+                || featureLimitComboBox.SelectedText == "")
+            {
+                copyDataFile(data1);
+                copyDataFile(data2);
+            } else
+            {
+
+                StreamReader sr = new StreamReader(data1);
+                string[] headerOne = sr.ReadLine().Split(new char[] { ';' });
+                string[] coefficientsOne = sr.ReadLine().Split(new char[] { ';' });
+                sr.Close();
+
+                sr = new StreamReader(data2);
+                string[] headerTwo = sr.ReadLine().Split(new char[] { ';' });
+                string[] coefficientsTwo = sr.ReadLine().Split(new char[] { ';' });
+                sr.Close();
+
+                if (headerOne.Length - 1 <= Int32.Parse(featureLimitTextBox.Text))
+                {
+                    copyDataFile(data1);
+                    copyDataFile(data2);
+                } else
+                {
+                    setupDataFeatureLimit(headerOne, coefficientsOne, headerTwo, coefficientsTwo);
+                }
+            }
+        }
+
+        private void setupDataFeatureLimit(string[] headerOne, string[] coefficientsOne,
+            string[] headerTwo, string[] coefficientsTwo)
+        {
+            Dictionary<string, double> featureRanking = new Dictionary<string, double>();
+            Dictionary<string, double> featureCoefficients = new Dictionary<string, double>();
+
+            for (int i = 1; i < headerOne.Length; i++)
+            {
+                featureRanking.Add(headerOne[i], 0);
+                featureCoefficients.Add(headerOne[i], Double.Parse(coefficientsOne[i]));
+            }
+
+            for (int i = 1; i < headerTwo.Length; i++)
+            {
+                featureCoefficients[headerTwo[i]] = featureCoefficients[headerTwo[i]] 
+                    + Double.Parse(coefficientsTwo[i]);
+
+                InfluenceFunction func = new InfluenceFunction(featureCoefficients[headerTwo[i]] 
+                    + " * " + headerTwo[i], GlobalState.varModel);
+                Dictionary<BinaryOption, BinaryOption.BinaryValue> binSelec = 
+                    new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+                Dictionary<NumericOption, double> numericSelection = new Dictionary<NumericOption, double>();
+
+                foreach (BinaryOption binOpt in func.participatingBoolOptions)
+                {
+                    binSelec.Add(binOpt, BinaryOption.BinaryValue.Deselected);
+                }
+
+                foreach (NumericOption numOpt in func.participatingNumOptions)
+                {
+                    numericSelection.Add(numOpt, numOpt.Min_value);
+                }
+
+                double minValue = func.eval(new Configuration(binSelec, numericSelection));
+
+                foreach (BinaryOption binOpt in binSelec.Keys)
+                {
+                    binSelec[binOpt] = BinaryOption.BinaryValue.Selected;
+                }
+
+                foreach (NumericOption numOpt in numericSelection.Keys)
+                {
+                    numericSelection[numOpt] = numOpt.Max_value;
+                }
+
+                double maxValue = func.eval(new Configuration(binSelec, numericSelection));
+
+                featureRanking[headerTwo[i]] = maxValue - minValue;
+            }
+
+            if (featureLimitComboBox.SelectedText.ToLower() == "influence")
+            {
+                featureRanking.OrderByDescending(kv => kv.Value);
+            } else if (featureLimitComboBox.SelectedText.ToLower() == "frequency")
+            {
+                Dictionary<string, int> frequency = new Dictionary<string, int>();
+
+                foreach(string feature in featureRanking.Keys)
+                {
+                    frequency.Add(feature, 0);
+                }
+
+                List<SamplingStrategies> binStrat = new List<SamplingStrategies>();
+                binStrat.Add(SamplingStrategies.ALLBINARY);
+                List<ExperimentalDesign> expDesigns = new List<ExperimentalDesign>();
+                expDesigns.Add(new FullFactorialDesign());
+                List<Configuration> configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binStrat, expDesigns,
+                    new List<MachineLearning.Sampling.Hybrid.HybridStrategy>());
+
+                foreach (Configuration config in configs)
+                {
+                    foreach (string feature in frequency.Keys)
+                    {
+                        InfluenceFunction func = new InfluenceFunction(feature, GlobalState.varModel);
+                        List<BinaryOption> boolOptions = func.participatingBoolOptions.ToList();
+                        List<NumericOption> numOptions = func.participatingNumOptions.ToList();
+
+                        foreach (BinaryOption binOpt in boolOptions)
+                        {
+                            if (!config.BinaryOptions.Keys.Contains(binOpt) || config.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Deselected)
+                            {
+                                continue;
+                            }
+                        }
+
+                        foreach (NumericOption numOpt in numOptions)
+                        {
+                            if (!config.NumericOptions.Keys.Contains(numOpt))
+                            {
+                                continue;
+                            }
+                        }
+
+                        frequency[feature] += 1;
+                    }
+                }
+
+                int numberOfConfigs = configs.Count;
+
+                foreach (string feature in featureRanking.Keys)
+                {
+                    featureRanking[feature] *= ((double)frequency[feature] / (double)numberOfConfigs);
+                }
+
+                featureRanking.OrderByDescending(x => x.Value);
+            }
+
+
+        }
+
+        private bool allArgumentsSet()
+        {
+            data1 = data1TextBox.Text;
+            data2 = data2TextBox.Text;
+
+            if (data1 == "" ||  data1 == null || data2 == "" || data2 == null)
+            {
+                MessageBox.Show("Not all required csv files are set.");
+                return false;
+            } else if (pathToRLib.Text == null || pathToRLib.Text == "")
+            {
+                MessageBox.Show("Path to the R library folder is not specified.");
+                return false;
+            } else if (System.Environment.OSVersion.ToString().Contains("Windows") &&
+                pathToRExe.Text == null || pathToRExe.Text == "")
+            {
+                MessageBox.Show("R execution needs to specified.");
+                return false;
+            }
+            return true;
+        }
+
+        private void clearTempFolder()
+        {
+            System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory 
+                + "temp" + Path.DirectorySeparatorChar);
+
+            System.Threading.Thread clear = 
+                new System.Threading.Thread(new System.Threading.ThreadStart(clearTempPDFs));
+            clear.Start();
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+        }
+
+        private static void clearTempPDFs()
+        {
+            System.IO.DirectoryInfo di = new DirectoryInfo(Path.GetTempPath());
+            try
+            {
+                foreach (FileInfo file in di.GetFiles("TextPlot*"))
+                {
+                    file.Delete();
+                }
+
+                foreach (FileInfo file in di.GetFiles("StarPlot*"))
+                {
+                    file.Delete();
+                }
+            } catch (IOException)
+            {
+
+            }
+        }
+
+        private void copyDataFile(string name)
+        {
+            File.Copy(name, AppDomain.CurrentDomain.BaseDirectory
+                + "temp" + Path.DirectorySeparatorChar 
+                + name.Split(new char[] { Path.DirectorySeparatorChar }, 
+                StringSplitOptions.RemoveEmptyEntries).Last());
+
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory
+                + "temp" + Path.DirectorySeparatorChar);
+
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    if (file.Extension == ".pdf" && !file.Name.Contains("_"))
+                    {
+                        File.Copy(file.FullName, dialog.SelectedPath 
+                            + Path.DirectorySeparatorChar + file.Name);
+                    }
+                }
+            }
+        }
+
+        private void previewComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string url = AppDomain.CurrentDomain.BaseDirectory
+                + "temp" + Path.DirectorySeparatorChar
+                + previewComboBox.SelectedItem.ToString();
+            string tempFile = Path.GetTempPath() + previewComboBox.SelectedItem.ToString() + DateTime.Now.ToString("HH_mm_ss");
+            if (File.Exists(url))
+            {
+                File.Copy(url, tempFile);
+                this.pdfBrowser.Navigate(tempFile);
+            } else
+            {
+                MessageBox.Show("A error occured during rendering the plot. Please check the log.");
+            }
+        }
+
+        private void modelButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Select feature model";
+            ofd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                GlobalState.varModel = VariabilityModel.loadFromXML(ofd.FileName);
+                featureLimitTextBox.ReadOnly = false;
+                featureLimitComboBox.Enabled = true;
+            }
         }
     }
 }

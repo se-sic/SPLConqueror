@@ -19,7 +19,7 @@
             }
             base.Dispose(disposing);
         }
-
+        
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.AutoSize = true;
-            this.AutoScroll = true;
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.interactionChartRepl = new OxyPlot.WindowsForms.PlotView();
@@ -39,7 +36,7 @@
             this.maxOccChartRepl = new OxyPlot.WindowsForms.PlotView();
             this.rangeChartRepl = new OxyPlot.WindowsForms.PlotView();
             this.evaluationGroupBox = new System.Windows.Forms.GroupBox();
-            this .evaluationFunctionPanel = new System.Windows.Forms.Panel();
+            this.evaluationFunctionPanel = new System.Windows.Forms.Panel();
             this.defaultNumericOptionLabel = new System.Windows.Forms.Label();
             this.numericDefaultPanel = new System.Windows.Forms.Panel();
             this.failureLabel = new System.Windows.Forms.Label();
@@ -113,12 +110,39 @@
             this.loadMeasurementButton = new System.Windows.Forms.Button();
             this.helpTabPage = new System.Windows.Forms.TabPage();
             this.helpTextBox = new System.Windows.Forms.RichTextBox();
+            this.vipeTab = new System.Windows.Forms.TabPage();
+            this.pdfBrowser = new System.Windows.Forms.WebBrowser();
+            this.vipeSettingsPanel = new System.Windows.Forms.Panel();
+            this.previewComboBox = new System.Windows.Forms.ComboBox();
+            this.previewLabel = new System.Windows.Forms.Label();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.plotButton = new System.Windows.Forms.Button();
+            this.dataPanel = new System.Windows.Forms.Panel();
+            this.data2Button = new System.Windows.Forms.Button();
+            this.data1Button = new System.Windows.Forms.Button();
+            this.data2TextBox = new System.Windows.Forms.TextBox();
+            this.data1TextBox = new System.Windows.Forms.TextBox();
+            this.data2Label = new System.Windows.Forms.Label();
+            this.data1Label = new System.Windows.Forms.Label();
+            this.vipeRSettings = new System.Windows.Forms.Panel();
+            this.initializationCheckBox = new System.Windows.Forms.CheckBox();
+            this.pathToExeButton = new System.Windows.Forms.Button();
+            this.pathToLibButton = new System.Windows.Forms.Button();
+            this.pathToRExe = new System.Windows.Forms.TextBox();
+            this.performInitialization = new System.Windows.Forms.Label();
+            this.pathToRExeLabel = new System.Windows.Forms.Label();
+            this.pathToRLibLabel = new System.Windows.Forms.Label();
+            this.pathToRLib = new System.Windows.Forms.TextBox();
             this.constraintTextbox = new System.Windows.Forms.RichTextBox();
             this.factorizationSettingsButton = new System.Windows.Forms.Button();
             this.adjustedFunctionGroupBox = new System.Windows.Forms.GroupBox();
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.constraintsGroupBox = new System.Windows.Forms.GroupBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.modelButton = new System.Windows.Forms.Button();
+            this.featureLimitTextBox = new System.Windows.Forms.TextBox();
+            this.featureLimitLabel = new System.Windows.Forms.Label();
+            this.featureLimitComboBox = new System.Windows.Forms.ComboBox();
             this.evaluationGroupBox.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -142,6 +166,10 @@
             this.measurementsOnlyPanel.SuspendLayout();
             this.bothGraphsPanel.SuspendLayout();
             this.helpTabPage.SuspendLayout();
+            this.vipeTab.SuspendLayout();
+            this.vipeSettingsPanel.SuspendLayout();
+            this.dataPanel.SuspendLayout();
+            this.vipeRSettings.SuspendLayout();
             this.adjustedFunctionGroupBox.SuspendLayout();
             this.constraintsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -668,6 +696,7 @@
             this.tabControl.Controls.Add(this.interactionsInfluencesTabPage);
             this.tabControl.Controls.Add(this.measurementsTabPage);
             this.tabControl.Controls.Add(this.helpTabPage);
+            this.tabControl.Controls.Add(this.vipeTab);
             this.tabControl.Location = new System.Drawing.Point(443, 1);
             this.tabControl.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl.Name = "tabControl";
@@ -1146,6 +1175,242 @@
             this.helpTextBox.TabIndex = 0;
             this.helpTextBox.Text = "";
             // 
+            // vipeTab
+            // 
+            this.vipeTab.Controls.Add(this.pdfBrowser);
+            this.vipeTab.Controls.Add(this.vipeSettingsPanel);
+            this.vipeTab.Location = new System.Drawing.Point(4, 25);
+            this.vipeTab.Name = "vipeTab";
+            this.vipeTab.Padding = new System.Windows.Forms.Padding(3);
+            this.vipeTab.Size = new System.Drawing.Size(877, 884);
+            this.vipeTab.TabIndex = 5;
+            this.vipeTab.Text = "ViPe";
+            this.vipeTab.UseVisualStyleBackColor = true;
+            // 
+            // pdfBrowser
+            // 
+            this.pdfBrowser.Location = new System.Drawing.Point(6, 171);
+            this.pdfBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.pdfBrowser.Name = "pdfBrowser";
+            this.pdfBrowser.Size = new System.Drawing.Size(868, 709);
+            this.pdfBrowser.TabIndex = 3;
+            // 
+            // vipeSettingsPanel
+            // 
+            this.vipeSettingsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vipeSettingsPanel.Controls.Add(this.previewComboBox);
+            this.vipeSettingsPanel.Controls.Add(this.previewLabel);
+            this.vipeSettingsPanel.Controls.Add(this.saveButton);
+            this.vipeSettingsPanel.Controls.Add(this.plotButton);
+            this.vipeSettingsPanel.Controls.Add(this.dataPanel);
+            this.vipeSettingsPanel.Controls.Add(this.vipeRSettings);
+            this.vipeSettingsPanel.Location = new System.Drawing.Point(3, 6);
+            this.vipeSettingsPanel.Name = "vipeSettingsPanel";
+            this.vipeSettingsPanel.Size = new System.Drawing.Size(871, 163);
+            this.vipeSettingsPanel.TabIndex = 1;
+            // 
+            // previewComboBox
+            // 
+            this.previewComboBox.Enabled = false;
+            this.previewComboBox.FormattingEnabled = true;
+            this.previewComboBox.Items.AddRange(new object[] {
+            "StarPlot.pdf",
+            "TextPlot.pdf"});
+            this.previewComboBox.Location = new System.Drawing.Point(10, 123);
+            this.previewComboBox.Name = "previewComboBox";
+            this.previewComboBox.Size = new System.Drawing.Size(121, 24);
+            this.previewComboBox.TabIndex = 5;
+            this.previewComboBox.SelectedIndexChanged += new System.EventHandler(this.previewComboBox_SelectedIndexChanged);
+            // 
+            // previewLabel
+            // 
+            this.previewLabel.AutoSize = true;
+            this.previewLabel.Location = new System.Drawing.Point(7, 102);
+            this.previewLabel.Name = "previewLabel";
+            this.previewLabel.Size = new System.Drawing.Size(150, 17);
+            this.previewLabel.TabIndex = 4;
+            this.previewLabel.Text = "Select PDF to preview:";
+            // 
+            // saveButton
+            // 
+            this.saveButton.Enabled = false;
+            this.saveButton.Location = new System.Drawing.Point(619, 101);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(119, 57);
+            this.saveButton.TabIndex = 3;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // plotButton
+            // 
+            this.plotButton.Location = new System.Drawing.Point(744, 101);
+            this.plotButton.Name = "plotButton";
+            this.plotButton.Size = new System.Drawing.Size(119, 57);
+            this.plotButton.TabIndex = 2;
+            this.plotButton.Text = "Plot";
+            this.plotButton.UseVisualStyleBackColor = true;
+            this.plotButton.Click += new System.EventHandler(this.plotButton_Click);
+            // 
+            // dataPanel
+            // 
+            this.dataPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.dataPanel.Controls.Add(this.featureLimitComboBox);
+            this.dataPanel.Controls.Add(this.featureLimitLabel);
+            this.dataPanel.Controls.Add(this.data2Button);
+            this.dataPanel.Controls.Add(this.modelButton);
+            this.dataPanel.Controls.Add(this.featureLimitTextBox);
+            this.dataPanel.Controls.Add(this.data1Button);
+            this.dataPanel.Controls.Add(this.data2TextBox);
+            this.dataPanel.Controls.Add(this.data1TextBox);
+            this.dataPanel.Controls.Add(this.data2Label);
+            this.dataPanel.Controls.Add(this.data1Label);
+            this.dataPanel.Location = new System.Drawing.Point(490, 3);
+            this.dataPanel.Name = "dataPanel";
+            this.dataPanel.Size = new System.Drawing.Size(373, 92);
+            this.dataPanel.TabIndex = 1;
+            // 
+            // data2Button
+            // 
+            this.data2Button.Location = new System.Drawing.Point(292, 33);
+            this.data2Button.Name = "data2Button";
+            this.data2Button.Size = new System.Drawing.Size(75, 26);
+            this.data2Button.TabIndex = 5;
+            this.data2Button.Text = "set";
+            this.data2Button.UseVisualStyleBackColor = true;
+            this.data2Button.Click += new System.EventHandler(this.data2Button_Click);
+            // 
+            // data1Button
+            // 
+            this.data1Button.Location = new System.Drawing.Point(293, 1);
+            this.data1Button.Name = "data1Button";
+            this.data1Button.Size = new System.Drawing.Size(75, 26);
+            this.data1Button.TabIndex = 4;
+            this.data1Button.Text = "set";
+            this.data1Button.UseVisualStyleBackColor = true;
+            this.data1Button.Click += new System.EventHandler(this.data1Button_Click);
+            // 
+            // data2TextBox
+            // 
+            this.data2TextBox.Location = new System.Drawing.Point(53, 32);
+            this.data2TextBox.Name = "data2TextBox";
+            this.data2TextBox.Size = new System.Drawing.Size(233, 22);
+            this.data2TextBox.TabIndex = 3;
+            // 
+            // data1TextBox
+            // 
+            this.data1TextBox.Location = new System.Drawing.Point(53, 3);
+            this.data1TextBox.Name = "data1TextBox";
+            this.data1TextBox.Size = new System.Drawing.Size(233, 22);
+            this.data1TextBox.TabIndex = 2;
+            // 
+            // data2Label
+            // 
+            this.data2Label.AutoSize = true;
+            this.data2Label.Location = new System.Drawing.Point(5, 32);
+            this.data2Label.Name = "data2Label";
+            this.data2Label.Size = new System.Drawing.Size(42, 17);
+            this.data2Label.TabIndex = 1;
+            this.data2Label.Text = "Data:";
+            // 
+            // data1Label
+            // 
+            this.data1Label.AutoSize = true;
+            this.data1Label.Location = new System.Drawing.Point(5, 4);
+            this.data1Label.Name = "data1Label";
+            this.data1Label.Size = new System.Drawing.Size(42, 17);
+            this.data1Label.TabIndex = 0;
+            this.data1Label.Text = "Data:";
+            // 
+            // vipeRSettings
+            // 
+            this.vipeRSettings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vipeRSettings.Controls.Add(this.initializationCheckBox);
+            this.vipeRSettings.Controls.Add(this.pathToExeButton);
+            this.vipeRSettings.Controls.Add(this.pathToLibButton);
+            this.vipeRSettings.Controls.Add(this.pathToRExe);
+            this.vipeRSettings.Controls.Add(this.performInitialization);
+            this.vipeRSettings.Controls.Add(this.pathToRExeLabel);
+            this.vipeRSettings.Controls.Add(this.pathToRLibLabel);
+            this.vipeRSettings.Controls.Add(this.pathToRLib);
+            this.vipeRSettings.Location = new System.Drawing.Point(3, 3);
+            this.vipeRSettings.Name = "vipeRSettings";
+            this.vipeRSettings.Size = new System.Drawing.Size(480, 92);
+            this.vipeRSettings.TabIndex = 0;
+            // 
+            // initializationCheckBox
+            // 
+            this.initializationCheckBox.AutoSize = true;
+            this.initializationCheckBox.Location = new System.Drawing.Point(201, 59);
+            this.initializationCheckBox.Name = "initializationCheckBox";
+            this.initializationCheckBox.Size = new System.Drawing.Size(18, 17);
+            this.initializationCheckBox.TabIndex = 8;
+            this.initializationCheckBox.UseVisualStyleBackColor = true;
+            this.initializationCheckBox.CheckedChanged += new System.EventHandler(this.initializationCheckBox_CheckedChanged);
+            // 
+            // pathToExeButton
+            // 
+            this.pathToExeButton.Location = new System.Drawing.Point(379, 29);
+            this.pathToExeButton.Name = "pathToExeButton";
+            this.pathToExeButton.Size = new System.Drawing.Size(75, 26);
+            this.pathToExeButton.TabIndex = 7;
+            this.pathToExeButton.Text = "set";
+            this.pathToExeButton.UseVisualStyleBackColor = true;
+            this.pathToExeButton.Click += new System.EventHandler(this.pathToExeButton_Click);
+            // 
+            // pathToLibButton
+            // 
+            this.pathToLibButton.Location = new System.Drawing.Point(379, 1);
+            this.pathToLibButton.Name = "pathToLibButton";
+            this.pathToLibButton.Size = new System.Drawing.Size(75, 26);
+            this.pathToLibButton.TabIndex = 6;
+            this.pathToLibButton.Text = "set";
+            this.pathToLibButton.UseVisualStyleBackColor = true;
+            this.pathToLibButton.Click += new System.EventHandler(this.pathToLibButton_Click);
+            // 
+            // pathToRExe
+            // 
+            this.pathToRExe.Location = new System.Drawing.Point(201, 31);
+            this.pathToRExe.Name = "pathToRExe";
+            this.pathToRExe.ReadOnly = true;
+            this.pathToRExe.Size = new System.Drawing.Size(172, 22);
+            this.pathToRExe.TabIndex = 4;
+            // 
+            // performInitialization
+            // 
+            this.performInitialization.AutoSize = true;
+            this.performInitialization.Location = new System.Drawing.Point(0, 60);
+            this.performInitialization.Name = "performInitialization";
+            this.performInitialization.Size = new System.Drawing.Size(176, 17);
+            this.performInitialization.TabIndex = 3;
+            this.performInitialization.Text = "Perform initialization tasks:";
+            // 
+            // pathToRExeLabel
+            // 
+            this.pathToRExeLabel.AutoSize = true;
+            this.pathToRExeLabel.Location = new System.Drawing.Point(0, 32);
+            this.pathToRExeLabel.Name = "pathToRExeLabel";
+            this.pathToRExeLabel.Size = new System.Drawing.Size(135, 17);
+            this.pathToRExeLabel.TabIndex = 2;
+            this.pathToRExeLabel.Text = "Path to R execution:";
+            // 
+            // pathToRLibLabel
+            // 
+            this.pathToRLibLabel.AutoSize = true;
+            this.pathToRLibLabel.Location = new System.Drawing.Point(0, 3);
+            this.pathToRLibLabel.Name = "pathToRLibLabel";
+            this.pathToRLibLabel.Size = new System.Drawing.Size(173, 17);
+            this.pathToRLibLabel.TabIndex = 1;
+            this.pathToRLibLabel.Text = "Path to R library directory:";
+            // 
+            // pathToRLib
+            // 
+            this.pathToRLib.Location = new System.Drawing.Point(201, 3);
+            this.pathToRLib.Name = "pathToRLib";
+            this.pathToRLib.ReadOnly = true;
+            this.pathToRLib.Size = new System.Drawing.Size(172, 22);
+            this.pathToRLib.TabIndex = 0;
+            // 
             // constraintTextbox
             // 
             this.constraintTextbox.BackColor = System.Drawing.SystemColors.Window;
@@ -1216,10 +1481,51 @@
             this.constraintsGroupBox.TabStop = false;
             this.constraintsGroupBox.Text = "Constraints";
             // 
+            // modelButton
+            // 
+            this.modelButton.Location = new System.Drawing.Point(291, 64);
+            this.modelButton.Name = "modelButton";
+            this.modelButton.Size = new System.Drawing.Size(76, 25);
+            this.modelButton.TabIndex = 6;
+            this.modelButton.Text = "model";
+            this.modelButton.UseVisualStyleBackColor = true;
+            this.modelButton.Click += new System.EventHandler(this.modelButton_Click);
+            // 
+            // featureLimitTextBox
+            // 
+            this.featureLimitTextBox.Location = new System.Drawing.Point(225, 63);
+            this.featureLimitTextBox.Name = "featureLimitTextBox";
+            this.featureLimitTextBox.Size = new System.Drawing.Size(61, 22);
+            this.featureLimitTextBox.TabIndex = 7;
+            this.featureLimitTextBox.Text = "20";
+            this.featureLimitTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // featureLimitLabel
+            // 
+            this.featureLimitLabel.AutoSize = true;
+            this.featureLimitLabel.Location = new System.Drawing.Point(5, 66);
+            this.featureLimitLabel.Name = "featureLimitLabel";
+            this.featureLimitLabel.Size = new System.Drawing.Size(94, 17);
+            this.featureLimitLabel.TabIndex = 8;
+            this.featureLimitLabel.Text = "Feature Limit:";
+            // 
+            // featureLimitComboBox
+            // 
+            this.featureLimitComboBox.FormattingEnabled = true;
+            this.featureLimitComboBox.Items.AddRange(new object[] {
+            "Influence",
+            "Frequency"});
+            this.featureLimitComboBox.Location = new System.Drawing.Point(99, 60);
+            this.featureLimitComboBox.Name = "featureLimitComboBox";
+            this.featureLimitComboBox.Size = new System.Drawing.Size(117, 24);
+            this.featureLimitComboBox.TabIndex = 10;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1767, 918);
             this.Controls.Add(this.constraintsGroupBox);
             this.Controls.Add(this.adjustedFunctionGroupBox);
@@ -1228,6 +1534,7 @@
             this.Controls.Add(this.variableConfigurationGroupBox);
             this.Controls.Add(this.constantConfigurationGroupBox);
             this.Controls.Add(this.functionGroupBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "MainWindow";
@@ -1265,6 +1572,13 @@
             this.measurementsOnlyPanel.ResumeLayout(false);
             this.bothGraphsPanel.ResumeLayout(false);
             this.helpTabPage.ResumeLayout(false);
+            this.vipeTab.ResumeLayout(false);
+            this.vipeSettingsPanel.ResumeLayout(false);
+            this.vipeSettingsPanel.PerformLayout();
+            this.dataPanel.ResumeLayout(false);
+            this.dataPanel.PerformLayout();
+            this.vipeRSettings.ResumeLayout(false);
+            this.vipeRSettings.PerformLayout();
             this.adjustedFunctionGroupBox.ResumeLayout(false);
             this.adjustedFunctionGroupBox.PerformLayout();
             this.constraintsGroupBox.ResumeLayout(false);
@@ -1360,5 +1674,32 @@
         private OxyPlot.WindowsForms.PlotView maxChartRepl;
         private OxyPlot.WindowsForms.PlotView maxOccChartRepl;
         private OxyPlot.WindowsForms.PlotView rangeChartRepl;
+        private System.Windows.Forms.TabPage vipeTab;
+        private System.Windows.Forms.Panel vipeSettingsPanel;
+        private System.Windows.Forms.Panel vipeRSettings;
+        private System.Windows.Forms.Label pathToRLibLabel;
+        private System.Windows.Forms.TextBox pathToRLib;
+        private System.Windows.Forms.Panel dataPanel;
+        private System.Windows.Forms.Button data2Button;
+        private System.Windows.Forms.Button data1Button;
+        private System.Windows.Forms.TextBox data2TextBox;
+        private System.Windows.Forms.TextBox data1TextBox;
+        private System.Windows.Forms.Label data2Label;
+        private System.Windows.Forms.Label data1Label;
+        private System.Windows.Forms.Button pathToExeButton;
+        private System.Windows.Forms.Button pathToLibButton;
+        private System.Windows.Forms.TextBox pathToRExe;
+        private System.Windows.Forms.Label performInitialization;
+        private System.Windows.Forms.Label pathToRExeLabel;
+        private System.Windows.Forms.CheckBox initializationCheckBox;
+        private System.Windows.Forms.Button plotButton;
+        private System.Windows.Forms.WebBrowser pdfBrowser;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Label previewLabel;
+        private System.Windows.Forms.ComboBox previewComboBox;
+        private System.Windows.Forms.Button modelButton;
+        private System.Windows.Forms.Label featureLimitLabel;
+        private System.Windows.Forms.TextBox featureLimitTextBox;
+        private System.Windows.Forms.ComboBox featureLimitComboBox;
     }
 }
