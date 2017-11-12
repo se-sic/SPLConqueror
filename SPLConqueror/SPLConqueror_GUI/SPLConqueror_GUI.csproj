@@ -127,7 +127,7 @@ copy $(ProjectDir)\ViPe\R-scripts\Resources\* $(TargetDir)\Resources</PostBuildE
     <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">mkdir $(TargetDir)ViPe
 mkdir $(TargetDir)Resources
 mkdir $(TargetDir)temp
-cp -r $(ProjectDir)ViPe\R-scripts\* $(TargetDir)</PostBuildEvent>
+cp -r $(ProjectDir)ViPe\R-Scripts\* $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
