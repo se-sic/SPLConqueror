@@ -812,16 +812,33 @@ namespace CommandLine
                             break;
 
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
-                        parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
 
-                        parameterSettings = ML_SettingsGenerator.getRandomCombinations(parameterSettings, 10);
+                        string[] cleanedParameters = taskAsParameter.Where(x => !x.ToLowerInvariant().Contains("seed") 
+                            && !x.ToLowerInvariant().Contains("samples") 
+                            && !x.ToLowerInvariant().Contains("randomized")).ToArray();
 
+                        parameterSettings = ML_SettingsGenerator.generateSettings(cleanedParameters);
+
+                        if (containsArgInvariant(taskAsParameter, "randomized"))
+                        {
+                            int seed = 0;
+                            int numSamples = 10;
+
+                            if (containsArgInvariant(taskAsParameter, "seed"))
+                            {
+                                seed = Int32.Parse(getArgValue(taskAsParameter, "seed"));
+                            }
+
+                            if (containsArgInvariant(taskAsParameter, "samples"))
+                            {
+                                numSamples = Int32.Parse(getArgValue(taskAsParameter, "samples"));
+                            }
+
+                            parameterSettings = ML_SettingsGenerator.getRandomCombinations(parameterSettings, numSamples, seed);
+                        }
 
                         ML_Settings optimalParameters = null;
                         double minimalError = Double.MaxValue;
-
-
-
 
                         foreach (ML_Settings parameters in parameterSettings)
                         {
@@ -1042,6 +1059,39 @@ namespace CommandLine
         }
         #endregion
 
+        private bool containsArgInvariant(string[] args, string toTest)
+        {
+            foreach (string arg in args)
+            {
+                if (arg.ToLowerInvariant().Contains(toTest.ToLowerInvariant()))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private string getArgValue(string[] args, string name)
+        {
+            string value = null;
+
+            foreach (string arg in args)
+            {
+                if (arg.ToLowerInvariant().Contains(name.ToLowerInvariant()))
+                {
+                    if (arg.Contains(":"))
+                    {
+                        return arg.Split(new char[] { ':' }, 2)[1];
+                    } else
+                    {
+                        GlobalState.logError.logLine("Arguement " + name + " has no value.");
+                    }
+                }
+            }
+            return value;
+
+        }
 
         private void cleanGlobal()
         {

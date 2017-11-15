@@ -242,13 +242,13 @@ namespace MachineLearning.Learning
         /// <param name="wholeSpace">Whole search space.</param>
         /// <param name="numSamples">Number of samples to be selected.</param>
         /// <returns>Random distributed set of parameter combinations.</returns>
-        public static List<ML_Settings> getRandomCombinations(List<ML_Settings> wholeSpace, int numSamples)
+        public static List<ML_Settings> getRandomCombinations(List<ML_Settings> wholeSpace, int numSamples, int seed)
         {
             List<ML_Settings> sampleSet = new List<ML_Settings>();
             if (numSamples >= wholeSpace.Count)
                 return wholeSpace;
 
-            Random r = new Random(0);
+            Random r = new Random(seed);
             List<int> selected = new List<int>();
 
             while (selected.Count < numSamples)
