@@ -570,6 +570,16 @@ learn-splconqueror
 analyze-learning
 ```
 
+#### Parameter optimization
+
+```learn-splconqueror-opt``` can be used to perform parameter optimization.
+
+This command requires the parameter space ,that should be tested, as arguments in the form ```settingName=[v1,v2,v3,...,vn]```.
+Additionally the following arguments are available: ```randomized```(use random approach instead of exhaustive search), ```seed:<value>```(seed for random approach) and ```samples```(number of settings that will be tested during random approach).
+
+Example: ```learn-splconqueror-opt epsilon=[0.1,0.2,0.3,0.4] numberOfRounds=[10,20,30] randomized samples:2 seed:10```
+
+
 #### Cleaning sampling
 
 ```clean-sampling```
