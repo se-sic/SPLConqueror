@@ -48,13 +48,34 @@ namespace MachineLearning.Sampling
                     case SamplingStrategies.ALLBINARY:
                         if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
                         {
-                            List<List<BinaryOption>> variants = 
+                            List<List<BinaryOption>> variants =
                                 vg.generateAllVariantsFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]));
                             binaryConfigs.AddRange(changeModel(vm, variants));
                         }
                         else
                         {
                             binaryConfigs.AddRange(vg.generateAllVariantsFast(vm));
+                        }
+                        break;
+                    case SamplingStrategies.SAT:
+                        int numberSamples = -1;
+                        foreach (Dictionary<string, string> parameters in binaryParams.satParameters)
+                        {
+                            if (parameters.ContainsKey("numberSamples"))
+                            {
+                                numberSamples = Int32.Parse("numberSamples");
+                            }
+                            if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
+                            {
+                                List<List<BinaryOption>> variants =
+                                    vg.generateUpToNFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]), numberSamples);
+                                binaryConfigs.AddRange(changeModel(vm, variants));
+                            }
+                            else
+                            {
+                                binaryConfigs.AddRange(vg.generateUpToNFast(vm, numberSamples));
+                            }
+                            numberSamples = -1;
                         }
                         break;
                     case SamplingStrategies.BINARY_RANDOM:

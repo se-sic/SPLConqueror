@@ -6,11 +6,13 @@ namespace MachineLearning.Sampling
     {
         public List<Dictionary<string, string>> tWiseParameters { get; set; }
         public List<Dictionary<string, string>> randomBinaryParameters { get; set; }
+        public List<Dictionary<string, string>> satParameters { get; set; }
 
         public BinaryParameters()
         {
             tWiseParameters = new List<Dictionary<string, string>>();
             randomBinaryParameters = new List<Dictionary<string, string>>();
+            satParameters = new List<Dictionary<string, string>>();
         }
 
     }

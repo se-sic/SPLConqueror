@@ -118,7 +118,11 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.plotButton = new System.Windows.Forms.Button();
             this.dataPanel = new System.Windows.Forms.Panel();
+            this.featureLimitComboBox = new System.Windows.Forms.ComboBox();
+            this.featureLimitLabel = new System.Windows.Forms.Label();
             this.data2Button = new System.Windows.Forms.Button();
+            this.modelButton = new System.Windows.Forms.Button();
+            this.featureLimitTextBox = new System.Windows.Forms.TextBox();
             this.data1Button = new System.Windows.Forms.Button();
             this.data2TextBox = new System.Windows.Forms.TextBox();
             this.data1TextBox = new System.Windows.Forms.TextBox();
@@ -139,10 +143,6 @@
             this.resetFactorizationButton = new System.Windows.Forms.Button();
             this.constraintsGroupBox = new System.Windows.Forms.GroupBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.modelButton = new System.Windows.Forms.Button();
-            this.featureLimitTextBox = new System.Windows.Forms.TextBox();
-            this.featureLimitLabel = new System.Windows.Forms.Label();
-            this.featureLimitComboBox = new System.Windows.Forms.ComboBox();
             this.evaluationGroupBox.SuspendLayout();
             this.evaluationFunctionPanel.SuspendLayout();
             this.noNumericOptionPanel.SuspendLayout();
@@ -1244,7 +1244,7 @@
             // 
             // plotButton
             // 
-            this.plotButton.Location = new System.Drawing.Point(744, 101);
+            this.plotButton.Location = new System.Drawing.Point(744, 102);
             this.plotButton.Name = "plotButton";
             this.plotButton.Size = new System.Drawing.Size(119, 57);
             this.plotButton.TabIndex = 2;
@@ -1270,6 +1270,26 @@
             this.dataPanel.Size = new System.Drawing.Size(373, 92);
             this.dataPanel.TabIndex = 1;
             // 
+            // featureLimitComboBox
+            // 
+            this.featureLimitComboBox.FormattingEnabled = true;
+            this.featureLimitComboBox.Items.AddRange(new object[] {
+            "Influence",
+            "Frequency"});
+            this.featureLimitComboBox.Location = new System.Drawing.Point(99, 60);
+            this.featureLimitComboBox.Name = "featureLimitComboBox";
+            this.featureLimitComboBox.Size = new System.Drawing.Size(117, 24);
+            this.featureLimitComboBox.TabIndex = 10;
+            // 
+            // featureLimitLabel
+            // 
+            this.featureLimitLabel.AutoSize = true;
+            this.featureLimitLabel.Location = new System.Drawing.Point(5, 66);
+            this.featureLimitLabel.Name = "featureLimitLabel";
+            this.featureLimitLabel.Size = new System.Drawing.Size(94, 17);
+            this.featureLimitLabel.TabIndex = 8;
+            this.featureLimitLabel.Text = "Feature Limit:";
+            // 
             // data2Button
             // 
             this.data2Button.Location = new System.Drawing.Point(292, 33);
@@ -1279,6 +1299,25 @@
             this.data2Button.Text = "set";
             this.data2Button.UseVisualStyleBackColor = true;
             this.data2Button.Click += new System.EventHandler(this.data2Button_Click);
+            // 
+            // modelButton
+            // 
+            this.modelButton.Location = new System.Drawing.Point(291, 64);
+            this.modelButton.Name = "modelButton";
+            this.modelButton.Size = new System.Drawing.Size(76, 25);
+            this.modelButton.TabIndex = 6;
+            this.modelButton.Text = "model";
+            this.modelButton.UseVisualStyleBackColor = true;
+            this.modelButton.Click += new System.EventHandler(this.modelButton_Click);
+            // 
+            // featureLimitTextBox
+            // 
+            this.featureLimitTextBox.Location = new System.Drawing.Point(225, 63);
+            this.featureLimitTextBox.Name = "featureLimitTextBox";
+            this.featureLimitTextBox.Size = new System.Drawing.Size(61, 22);
+            this.featureLimitTextBox.TabIndex = 7;
+            this.featureLimitTextBox.Text = "20";
+            this.featureLimitTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // data1Button
             // 
@@ -1480,45 +1519,6 @@
             this.constraintsGroupBox.TabIndex = 20;
             this.constraintsGroupBox.TabStop = false;
             this.constraintsGroupBox.Text = "Constraints";
-            // 
-            // modelButton
-            // 
-            this.modelButton.Location = new System.Drawing.Point(291, 64);
-            this.modelButton.Name = "modelButton";
-            this.modelButton.Size = new System.Drawing.Size(76, 25);
-            this.modelButton.TabIndex = 6;
-            this.modelButton.Text = "model";
-            this.modelButton.UseVisualStyleBackColor = true;
-            this.modelButton.Click += new System.EventHandler(this.modelButton_Click);
-            // 
-            // featureLimitTextBox
-            // 
-            this.featureLimitTextBox.Location = new System.Drawing.Point(225, 63);
-            this.featureLimitTextBox.Name = "featureLimitTextBox";
-            this.featureLimitTextBox.Size = new System.Drawing.Size(61, 22);
-            this.featureLimitTextBox.TabIndex = 7;
-            this.featureLimitTextBox.Text = "20";
-            this.featureLimitTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // featureLimitLabel
-            // 
-            this.featureLimitLabel.AutoSize = true;
-            this.featureLimitLabel.Location = new System.Drawing.Point(5, 66);
-            this.featureLimitLabel.Name = "featureLimitLabel";
-            this.featureLimitLabel.Size = new System.Drawing.Size(94, 17);
-            this.featureLimitLabel.TabIndex = 8;
-            this.featureLimitLabel.Text = "Feature Limit:";
-            // 
-            // featureLimitComboBox
-            // 
-            this.featureLimitComboBox.FormattingEnabled = true;
-            this.featureLimitComboBox.Items.AddRange(new object[] {
-            "Influence",
-            "Frequency"});
-            this.featureLimitComboBox.Location = new System.Drawing.Point(99, 60);
-            this.featureLimitComboBox.Name = "featureLimitComboBox";
-            this.featureLimitComboBox.Size = new System.Drawing.Size(117, 24);
-            this.featureLimitComboBox.TabIndex = 10;
             // 
             // MainWindow
             // 

@@ -116,16 +116,28 @@ namespace MachineLearning.Solver
         /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present)</returns>
         public List<List<BinaryOption>> generateAllVariantsFast(VariabilityModel vm)
         {
+            return generateUpToNFast(vm, -1);
+        }
+
+        /// <summary>
+        /// Generates up to n valid binary combinations of all binary configuration options in the given model.
+        /// In case n < 0 all valid binary combinations will be generated. 
+        /// </summary>
+        /// <param name="m">The variability model containing the binary options and their constraints.</param>
+        /// <param name="n">The maximum number of samples that will be generated.</param>
+        /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present)</returns>
+        public List<List<BinaryOption>> generateUpToNFast(VariabilityModel m, int n)
+        {
             List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
             Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
-            ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+            ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, m);
 
             ConstraintSolverSolution soln = S.Solve();
 
-
-            while (soln.HasFoundSolution)
+            // TODO: Better solution than magic number?
+            while (soln.HasFoundSolution && (configurations.Count < n || n < 0))
             {
                 List<BinaryOption> config = new List<BinaryOption>();
                 foreach (CspTerm cT in variables)
