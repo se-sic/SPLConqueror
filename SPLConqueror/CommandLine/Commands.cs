@@ -60,6 +60,7 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_NEGATIVE_OPTIONWISE = "negfw";
         public const string COMMAND_SAMPLE_BINARY_RANDOM = "random";
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
+        public const string COMMAND_SAMPLE_BINARY_SAT = "satoutput";
 
         #region splconqueror learn with all measurements
         // deprecated
@@ -1529,6 +1530,10 @@ namespace CommandLine
                     addBinarySamplingDomain(SamplingStrategies.T_WISE, optionsToConsider);
                     addBinSamplingParams(SamplingStrategies.T_WISE, "TW", parameterKeyAndValue, isValidation);
                     break;
+                case COMMAND_SAMPLE_BINARY_SAT:
+                    addBinarySamplingDomain(SamplingStrategies.SAT, optionsToConsider);
+                    addBinSamplingParams(SamplingStrategies.SAT, "SAT", parameterKeyAndValue, isValidation);
+                    break;
                 //TODO:hybrid as bin/num
                 //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
                 //    addHybridAsBin(new DistributionAware(), task.Contains(COMMAND_VALIDATION), parameterKeyAndValue);
@@ -1622,6 +1627,9 @@ namespace CommandLine
                     break;
                 case SamplingStrategies.T_WISE:
                     ConfigurationBuilder.binaryParams.tWiseParameters.Add(parameter);
+                    break;
+                case SamplingStrategies.SAT:
+                    ConfigurationBuilder.binaryParams.satParameters.Add(parameter);
                     break;
             }
 

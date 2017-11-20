@@ -198,7 +198,6 @@ namespace MicrosoftSolverFoundation
                 else
                     S.AddConstraints(S.Or(cspTerms));
             }
-
             return S;
         }
 

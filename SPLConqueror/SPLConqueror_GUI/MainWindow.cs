@@ -3955,8 +3955,7 @@ namespace SPLConqueror_GUI
                 featureCoefficients[headerTwo[i]] = featureCoefficients[headerTwo[i]] 
                     + Double.Parse(coefficientsTwo[i]);
 
-                InfluenceFunction func = new InfluenceFunction(featureCoefficients[headerTwo[i]] 
-                    + " * " + headerTwo[i], GlobalState.varModel);
+                InfluenceFunction func = new InfluenceFunction(headerTwo[i], GlobalState.varModel);
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binSelec = 
                     new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
                 Dictionary<NumericOption, double> numericSelection = new Dictionary<NumericOption, double>();
@@ -3971,7 +3970,8 @@ namespace SPLConqueror_GUI
                     numericSelection.Add(numOpt, numOpt.Min_value);
                 }
 
-                double minValue = func.eval(new Configuration(binSelec, numericSelection));
+                double minValue = featureCoefficients[headerTwo[i]] 
+                    * func.eval(new Configuration(binSelec, numericSelection));
 
                 foreach (BinaryOption binOpt in binSelec.Keys)
                 {
@@ -3983,7 +3983,8 @@ namespace SPLConqueror_GUI
                     numericSelection[numOpt] = numOpt.Max_value;
                 }
 
-                double maxValue = func.eval(new Configuration(binSelec, numericSelection));
+                double maxValue = featureCoefficients[headerTwo[i]]  
+                    * func.eval(new Configuration(binSelec, numericSelection));
 
                 featureRanking[headerTwo[i]] = maxValue - minValue;
             }
