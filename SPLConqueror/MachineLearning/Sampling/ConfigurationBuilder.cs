@@ -58,13 +58,15 @@ namespace MachineLearning.Sampling
                         }
                         break;
                     case SamplingStrategies.SAT:
-                        int numberSamples = -1;
+                        int numberSamples = 2;
                         foreach (Dictionary<string, string> parameters in binaryParams.satParameters)
                         {
-                            if (parameters.ContainsKey("numberSamples"))
+                            if (parameters.ContainsKey("asT"))
                             {
-                                numberSamples = Int32.Parse("numberSamples");
+                                numberSamples = Int32.Parse("asT");
                             }
+                            TWise tw = new TWise();
+                            numberSamples = tw.generateT_WiseVariants_new(GlobalState.varModel, numberSamples).Count;
                             if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
                             {
                                 List<List<BinaryOption>> variants =
