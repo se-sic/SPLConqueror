@@ -61,12 +61,17 @@ namespace MachineLearning.Sampling
                         int numberSamples = 2;
                         foreach (Dictionary<string, string> parameters in binaryParams.satParameters)
                         {
-                            if (parameters.ContainsKey("asTW"))
+                            if (parameters.ContainsKey("numConfigs"))
                             {
-                                numberSamples = Int32.Parse(parameters["asTW"]);
+                                try
+                                {
+                                    numberSamples = Int32.Parse(parameters["numConfigs"]);
+                                } catch (FormatException)
+                                {
+                                    TWise tw = new TWise();
+                                    numberSamples = tw.generateT_WiseVariants_new(GlobalState.varModel, Int32.Parse(parameters["numConfigs"].Remove(0,4))).Count;
+                                }
                             }
-                            TWise tw = new TWise();
-                            numberSamples = tw.generateT_WiseVariants_new(GlobalState.varModel, numberSamples).Count;
                             if (optionsToConsider.ContainsKey(SamplingStrategies.SAT))
                             {
                                 List<List<BinaryOption>> variants =
