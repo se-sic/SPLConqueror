@@ -663,6 +663,17 @@ namespace SPLConqueror_Core
                 }
 
             }
+
+            if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+            {
+                result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+                if (this.nfpValues.ContainsKey(GlobalState.currentNFP)) {
+                    result.Append(this.nfpValues[GlobalState.currentNFP]);
+                } else
+                {
+                    result.Append(Double.NaN);
+                }
+            }
             result.Append (ConfigurationPrinter.CSV_ROW_DELIMITER);
             return result.ToString();
         }
