@@ -114,6 +114,13 @@ namespace SPLConqueror_Core
                 }
                 csvContent.Append (c.Name);
             }
+
+            if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+            {
+                csvContent.Append(CSV_ELEMENT_DELIMITER);
+                csvContent.Append(GlobalState.currentNFP.Name);
+            }
+
             csvContent.Append (CSV_ROW_DELIMITER);
 
             foreach (Configuration c in configurations) {
