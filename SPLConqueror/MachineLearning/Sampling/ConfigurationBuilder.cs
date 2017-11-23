@@ -61,23 +61,23 @@ namespace MachineLearning.Sampling
                         int numberSamples = 2;
                         foreach (Dictionary<string, string> parameters in binaryParams.satParameters)
                         {
-                            if (parameters.ContainsKey("asT"))
+                            if (parameters.ContainsKey("asTW"))
                             {
-                                numberSamples = Int32.Parse("asT");
+                                numberSamples = Int32.Parse(parameters["asTW"]);
                             }
                             TWise tw = new TWise();
                             numberSamples = tw.generateT_WiseVariants_new(GlobalState.varModel, numberSamples).Count;
-                            if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
+                            if (optionsToConsider.ContainsKey(SamplingStrategies.SAT))
                             {
                                 List<List<BinaryOption>> variants =
-                                    vg.generateUpToNFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]), numberSamples);
+                                    vg.generateUpToNFast(vm.reduce(optionsToConsider[SamplingStrategies.SAT]), numberSamples);
                                 binaryConfigs.AddRange(changeModel(vm, variants));
                             }
                             else
                             {
                                 binaryConfigs.AddRange(vg.generateUpToNFast(vm, numberSamples));
                             }
-                            numberSamples = -1;
+                            numberSamples = 2;
                         }
                         break;
                     case SamplingStrategies.BINARY_RANDOM:
