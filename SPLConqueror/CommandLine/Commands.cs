@@ -1444,10 +1444,12 @@ namespace CommandLine
             switch (designName.ToLower())
             {
                 case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                    parameter.Remove (designName);
                     hybridDesign = new DistributionAware();
                     hybridDesign.SetSamplingDomain(optionsToConsider);
                     break;
                 case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
+                    parameter.Remove (designName);
                     hybridDesign = new DistributionPreserving();
                     hybridDesign.SetSamplingDomain(optionsToConsider);
                     break;
