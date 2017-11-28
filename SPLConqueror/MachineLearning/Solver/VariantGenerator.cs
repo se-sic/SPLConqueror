@@ -50,7 +50,9 @@ namespace MachineLearning.Solver
                     if (variables[ct])
                     {
                         BinaryOption.BinaryValue isSelected = soln.GetIntegerValue(ct) == 1 ? BinaryOption.BinaryValue.Selected : BinaryOption.BinaryValue.Deselected;
-                        binOpts.Add((BinaryOption)termToOption[ct], isSelected);
+                        if (isSelected == BinaryOption.BinaryValue.Selected) {
+                            binOpts.Add((BinaryOption)termToOption[ct], isSelected);
+                        }
                     } else
                     {
                         numOpts.Add((NumericOption)termToOption[ct], soln.GetIntegerValue(ct));
