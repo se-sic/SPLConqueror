@@ -1,6 +1,8 @@
 ﻿using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Sampling.Hybrid.Distributive;
+using MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic;
 using MachineLearning.Solver;
+using System.Reflection;
 using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
@@ -25,6 +27,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const string ONLY_NUMERIC = "onlyNumeric";
         public const string ONLY_BINARY = "onlyBinary";
         public const string SEED = "seed";
+        public const string SELECTION_HEURISTIC = "selection";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
         public static Distribution[] distributions = { new UniformDistribution() };
@@ -32,6 +35,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
 
         protected DistanceMetric metric = null;
         protected Distribution distribution = null;
+        protected ISelectionHeuristic selection = null;
         #endregion
 
         /// <summary>
@@ -47,7 +51,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {NUM_CONFIGS, "asTW2" },
                 {ONLY_NUMERIC, "false" },
                 {ONLY_BINARY, "false" },
-                {SEED, "0" }
+                {SEED, "0" },
+                {SELECTION_HEURISTIC, "RandomSelection" }
             };
         }
 
@@ -116,6 +121,25 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 throw new ArgumentException("The metric " + distributionToUse + " is not supported.");
             }
 
+            string selectionMechanism = this.strategyParameter[SELECTION_HEURISTIC];
+            Type selectionType = Type.GetType("MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic." 
+                + selectionMechanism);
+            if (typeof(ISelectionHeuristic).IsAssignableFrom(selectionType))
+            {
+                this.selection = (ISelectionHeuristic)Activator.CreateInstance(selectionType);
+
+                if (this.selection is RandomSelection)
+                {
+                    int seed = 0;
+                    Int32.TryParse(this.strategyParameter[SEED], out seed);
+                    ((RandomSelection)selection).setSeed(seed);
+                }
+            } else
+            {
+                throw new ArgumentException("The selection mechanism " + selectionMechanism + "is not supported");
+            }
+
+
             string onlyNumeric = this.strategyParameter[ONLY_NUMERIC];
             if (onlyNumeric.ToLower().Equals("true"))
             {
@@ -163,41 +187,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public void SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets, int count)
         {
             Dictionary<double, double> wantedDistribution = CreateDistribution(wholeDistribution, allBuckets);
-            int seed = 0;
-            Int32.TryParse(strategyParameter[SEED], out seed);
-            Random rand = new Random(seed);
-
-            while (this.selectedConfigurations.Count < count && HasSamples(wholeDistribution))
-            {
-                double randomDouble = rand.NextDouble();
-                double currentProbability = 0;
-                int currentBucket = 0;
-
-                while (randomDouble > currentProbability + wantedDistribution.ElementAt(currentBucket).Value)
-                {
-                    currentBucket++;
-                    currentProbability += wantedDistribution.ElementAt(currentBucket).Value;
-                }
-
-                double distanceOfBucket = wantedDistribution.ElementAt(currentBucket).Key;
-
-                // If a bucket was selected that contains no more configurations, repeat the procedure
-                if (wholeDistribution[distanceOfBucket].Count == 0)
-                {
-                    continue;
-                }
-
-                int numberConfiguration = rand.Next(0, wholeDistribution[distanceOfBucket].Count);
-
-                this.selectedConfigurations.Add(wholeDistribution[distanceOfBucket][numberConfiguration]);
-                wholeDistribution[distanceOfBucket].RemoveAt(numberConfiguration);
-
-            }
-
-            if (this.selectedConfigurations.Count < count)
-            {
-                GlobalState.logError.logLine("Sampled only " + this.selectedConfigurations.Count + " configurations as there are no more configurations.");
-            }
+            this.selectedConfigurations  = selection
+                .SampleFromDistribution(wholeDistribution, wantedDistribution, allBuckets, count);
         }
 
         /// <summary>
