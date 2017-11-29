@@ -5,15 +5,21 @@ using System.Linq;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 {
-    class RandomSelection : ISelectionHeuristic
+    public class RandomSelection : ISelectionHeuristic
     {
-        private int seed;
+        private int seed = 0;
 
         /// <summary>
         /// Create RandomSelection object.
         /// </summary>
-        /// <param name="seed">The seed used for the random number generator.</param>
-        public RandomSelection(int seed)
+        public RandomSelection() {
+        }
+
+        /// <summary>
+        /// Sets the seed of the random number generator.
+        /// </summary>
+        /// <param name="seed">Value of the seed.</param>
+        public void setSeed(int seed)
         {
             this.seed = seed;
         }
@@ -28,7 +34,6 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         public List<Configuration> SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, 
             Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count)
         {
-            int seed = 0;
             Random rand = new Random(seed);
             List<Configuration> selectedConfigurations = new List<Configuration>();
 
