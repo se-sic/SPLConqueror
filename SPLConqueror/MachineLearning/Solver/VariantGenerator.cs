@@ -198,6 +198,52 @@ namespace MachineLearning.Solver
         }
 
         /// <summary>
+        /// This method has two objectives:
+        ///     1. To sample a configuration where n features are selected
+        ///     2. To build the sumproduct of the selected variables and their weight and minimize it
+        /// The configuration with the minimum weight is returned.
+        /// </summary>
+        /// <returns>The first fitting configuration.</returns>
+        /// <param name="vm">The variability model.</param>
+        /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
+        /// <param name="featureWeight">The weight for the selection of each feature. This parameter is <code>null</code> if not needed.</param>
+        public List<BinaryOption> weightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, double> featureWeight) {
+            List<CspTerm> variables = new List<CspTerm> ();
+            Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
+            Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
+            // Build the constraint system
+            ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+
+            // The first goal of this method is, to have an exact number of features selected
+            S.AddConstraints(S.Equal(numberSelectedFeatures, S.Sum(variables)));
+
+            // The second goal is to minimize the weight (only if not null)
+            if (featureWeight != null) {
+                List<CspTerm> weights = new List<CspTerm> ();
+                foreach (CspTerm variable in variables) {
+                    weights.Add (S.Constant(featureWeight[termToElem (variable)]));
+                }
+                // Minimize the sum product of the variables and the weights
+                S.TryAddMinimizationGoals (S.SumProduct(variables, weights));
+            }
+
+            // Next, solve the constraint system
+            ConstraintSolverSolution soln = S.Solve();
+            List<string> erg2 = new List<string>();
+            List<BinaryOption> tempConfig = new List<BinaryOption>();
+            if (soln.HasFoundSolution)
+            {
+                tempConfig.Clear();
+                foreach (CspTerm cT in variables)
+                {
+                    if (soln.GetIntegerValue(cT) == 1)
+                        tempConfig.Add(termToElem[cT]);
+                }
+            }
+            return tempConfig;
+        }
+
+        /// <summary>
         /// This method searches for a corresponding methods in the dynamically loadeda assemblies and calls it if found. It prefers due to performance reasons the Microsoft Solver Foundation implementation.
         /// </summary>
         /// <param name="config">The (partial) configuration which needs to be expaned to be valid.</param>
