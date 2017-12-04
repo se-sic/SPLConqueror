@@ -1486,9 +1486,6 @@ namespace CommandLine
                     {
                         string[] keyAndValue = param.Split(new string[] { ":" }, StringSplitOptions.None);
                         parameters.Add(keyAndValue[0], keyAndValue[1]);
-                    } else
-                    {
-                        parameters.Add(param, "");
                     }
                 }
             }
