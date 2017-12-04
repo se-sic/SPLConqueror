@@ -17,7 +17,6 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// <param name="wantedDistribution">The distribution used for selection.</param>
         /// <param name="count">the number of configurations to sample</param>
         /// <returns>The configurations that were selected.</returns>
-        List<Configuration> SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, 
-            Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count);
+        List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count);
     }
 }
