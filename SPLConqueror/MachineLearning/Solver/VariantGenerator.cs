@@ -207,7 +207,7 @@ namespace MachineLearning.Solver
         /// <param name="vm">The variability model.</param>
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
         /// <param name="featureWeight">The weight for the selection of each feature. This parameter is <code>null</code> if not needed.</param>
-        public List<BinaryOption> weightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, double> featureWeight) {
+        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight) {
             List<CspTerm> variables = new List<CspTerm> ();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
             Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
@@ -215,30 +215,31 @@ namespace MachineLearning.Solver
             ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
 
             // The first goal of this method is, to have an exact number of features selected
-            S.AddConstraints(S.Equal(numberSelectedFeatures, S.Sum(variables)));
+            S.AddConstraints(S.ExactlyMofN(numberSelectedFeatures, variables.ToArray()));
+            //S.AddConstraints(S.Equal(numberSelectedFeatures, S.Sum(variables.ToArray())));
 
             // The second goal is to minimize the weight (only if not null)
             if (featureWeight != null) {
                 List<CspTerm> weights = new List<CspTerm> ();
                 foreach (CspTerm variable in variables) {
-                    weights.Add (S.Constant(featureWeight[termToElem (variable)]));
+                    weights.Add (S.Constant(featureWeight[termToElem [variable]]));
                 }
                 // Minimize the sum product of the variables and the weights
-                S.TryAddMinimizationGoals (S.SumProduct(variables, weights));
+                S.TryAddMinimizationGoals (S.SumProduct(variables.ToArray(), weights.ToArray()));
             }
 
             // Next, solve the constraint system
             ConstraintSolverSolution soln = S.Solve();
             List<string> erg2 = new List<string>();
             List<BinaryOption> tempConfig = new List<BinaryOption>();
-            if (soln.HasFoundSolution)
-            {
-                tempConfig.Clear();
-                foreach (CspTerm cT in variables)
-                {
-                    if (soln.GetIntegerValue(cT) == 1)
-                        tempConfig.Add(termToElem[cT]);
+            if (soln.HasFoundSolution) {
+                tempConfig.Clear ();
+                foreach (CspTerm cT in variables) {
+                    if (soln.GetIntegerValue (cT) == 1)
+                        tempConfig.Add (termToElem [cT]);
                 }
+            } else {
+                return null;
             }
             return tempConfig;
         }

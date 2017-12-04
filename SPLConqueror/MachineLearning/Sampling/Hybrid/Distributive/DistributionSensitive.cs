@@ -75,8 +75,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             // Now, compute all buckets according to the given features
             List<double> allBuckets = ComputeBuckets();
 
-            // Compute the whole population needed for sampling from the buckets
-            Dictionary<double, List<Configuration>> wholeDistribution = ComputeDistribution(allBuckets);
+            Dictionary<double, List<Configuration>> wholeDistribution = null;
+            if (this.selection is RandomSelection) {
+                // Compute the whole population needed for randomly sampling from the buckets
+                wholeDistribution = ComputeDistribution (allBuckets);
+            }
 
             // Then, sample from all buckets according to the given distribution
             SampleFromDistribution(wholeDistribution, allBuckets, numberConfigs);
@@ -128,11 +131,14 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             {
                 this.selection = (ISelectionHeuristic)Activator.CreateInstance(selectionType);
 
-                if (this.selection is RandomSelection)
-                {
+                if (this.selection is RandomSelection) {
                     int seed = 0;
-                    Int32.TryParse(this.strategyParameter[SEED], out seed);
-                    ((RandomSelection)selection).setSeed(seed);
+                    Int32.TryParse (this.strategyParameter [SEED], out seed);
+                    ((RandomSelection)selection).setSeed (seed);
+                } else if (this.selection is SolverSelection) {
+                    int seed = 0;
+                    Int32.TryParse (this.strategyParameter [SEED], out seed);
+                    ((SolverSelection)selection).setSeed (seed);
                 }
             } else
             {
@@ -187,8 +193,13 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public void SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets, int count)
         {
             Dictionary<double, double> wantedDistribution = CreateDistribution(wholeDistribution, allBuckets);
+
+            if (this.selection is RandomSelection) {
+                ((RandomSelection)selection).setDistribution (wholeDistribution);
+            }
+
             this.selectedConfigurations  = selection
-                .SampleFromDistribution(wholeDistribution, wantedDistribution, allBuckets, count);
+                .SampleFromDistribution(wantedDistribution, allBuckets, count);
         }
 
         /// <summary>
