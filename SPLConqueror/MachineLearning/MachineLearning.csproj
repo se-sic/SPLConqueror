@@ -118,6 +118,8 @@
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\UniformDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionAware.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionPreserving.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\SelectionHeuristic\ISelectionHeuristic.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\SelectionHeuristic\RandomSelection.cs" />
     <Compile Include="Sampling\Hybrid\Hybrid.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
