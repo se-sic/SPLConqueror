@@ -207,7 +207,8 @@ namespace MachineLearning.Solver
         /// <param name="vm">The variability model.</param>
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
         /// <param name="featureWeight">The weight for the selection of each feature. This parameter is <code>null</code> if not needed.</param>
-        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight) {
+        /// <param name="sampledConfigurations">The sampled configurations until now.</param>
+        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, List<Configuration> sampledConfigurations) {
             List<CspTerm> variables = new List<CspTerm> ();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
             Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
@@ -230,17 +231,30 @@ namespace MachineLearning.Solver
 
             // Next, solve the constraint system
             ConstraintSolverSolution soln = S.Solve();
+
             List<string> erg2 = new List<string>();
             List<BinaryOption> tempConfig = new List<BinaryOption>();
-            if (soln.HasFoundSolution) {
+            bool isIncluded = true;
+
+            while (soln.HasFoundSolution && isIncluded) {
                 tempConfig.Clear ();
                 foreach (CspTerm cT in variables) {
                     if (soln.GetIntegerValue (cT) == 1)
                         tempConfig.Add (termToElem [cT]);
                 }
-            } else {
+
+                isIncluded = sampledConfigurations.Contains(new Configuration(tempConfig));
+
+                // Only seach for the next solution if it is really needed.
+                if (isIncluded)
+                    soln.GetNext();
+            } 
+
+            if (!soln.HasFoundSolution && isIncluded)
+            {
                 return null;
             }
+
             return tempConfig;
         }
 

@@ -74,7 +74,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 Dictionary<BinaryOption, int> featureWeight = GetFeatureWeight(GlobalState.varModel, selectedConfigurations);
 
                 // Now select the configuration by using the solver
-                List<BinaryOption> solution = generator.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight);
+                List<BinaryOption> solution = generator.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight, selectedConfigurations);
 
                 // If a bucket was selected that now contains no more configurations, repeat the procedure
                 if (solution == null)
