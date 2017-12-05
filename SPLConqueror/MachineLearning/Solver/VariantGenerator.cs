@@ -217,7 +217,9 @@ namespace MachineLearning.Solver
 
             // The first goal of this method is, to have an exact number of features selected
             S.AddConstraints(S.ExactlyMofN(numberSelectedFeatures, variables.ToArray()));
-            //S.AddConstraints(S.Equal(numberSelectedFeatures, S.Sum(variables.ToArray())));
+
+            // Add the previous configurations as constraints
+            AddBinaryConfigurationsToConstraintSystem(vm, S, sampledConfigurations, elemToTerm);
 
             // The second goal is to minimize the weight (only if not null)
             if (featureWeight != null) {
@@ -232,30 +234,43 @@ namespace MachineLearning.Solver
             // Next, solve the constraint system
             ConstraintSolverSolution soln = S.Solve();
 
-            List<string> erg2 = new List<string>();
             List<BinaryOption> tempConfig = new List<BinaryOption>();
-            bool isIncluded = true;
 
-            while (soln.HasFoundSolution && isIncluded) {
+            if (soln.HasFoundSolution) {
                 tempConfig.Clear ();
                 foreach (CspTerm cT in variables) {
                     if (soln.GetIntegerValue (cT) == 1)
                         tempConfig.Add (termToElem [cT]);
                 }
 
-                isIncluded = sampledConfigurations.Contains(new Configuration(tempConfig));
-
-                // Only seach for the next solution if it is really needed.
-                if (isIncluded)
-                    soln.GetNext();
-            } 
-
-            if (!soln.HasFoundSolution && isIncluded)
+            }  else
             {
                 return null;
             }
 
             return tempConfig;
+        }
+
+        private void AddBinaryConfigurationsToConstraintSystem(VariabilityModel vm, ConstraintSystem s, List<Configuration> configurationsToExclude, Dictionary<BinaryOption, CspTerm> elemToTerm)
+        {
+            List<BinaryOption> allBinaryOptions = vm.BinaryOptions;
+
+            foreach (Configuration c in configurationsToExclude)
+            {
+                CspTerm termToExclude = s.True;
+                foreach (BinaryOption binOpt in allBinaryOptions)
+                {
+                    if (c.BinaryOptions.ContainsKey(binOpt) && c.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
+                    {
+                        termToExclude = s.And(termToExclude, elemToTerm[binOpt]);
+                    } else
+                    {
+                        termToExclude = s.And(termToExclude, s.Not(elemToTerm[binOpt]));
+                    }
+                }
+
+                s.AddConstraints(s.Not(termToExclude));
+            }
         }
 
         /// <summary>
