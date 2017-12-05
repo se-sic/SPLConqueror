@@ -254,23 +254,29 @@ namespace MachineLearning.Solver
         private void AddBinaryConfigurationsToConstraintSystem(VariabilityModel vm, ConstraintSystem s, List<Configuration> configurationsToExclude, Dictionary<BinaryOption, CspTerm> elemToTerm)
         {
             List<BinaryOption> allBinaryOptions = vm.BinaryOptions;
-
+            List<CspTerm> allConfigurationConstraints = new List<CspTerm>();
             foreach (Configuration c in configurationsToExclude)
             {
-                CspTerm termToExclude = s.True;
+                List<CspTerm> positiveTerms = new List<CspTerm>();
+                List<CspTerm> negativeTerms = new List<CspTerm>();
                 foreach (BinaryOption binOpt in allBinaryOptions)
                 {
                     if (c.BinaryOptions.ContainsKey(binOpt) && c.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
                     {
-                        termToExclude = s.And(termToExclude, elemToTerm[binOpt]);
+                        positiveTerms.Add(elemToTerm[binOpt]);
                     } else
                     {
-                        termToExclude = s.And(termToExclude, s.Not(elemToTerm[binOpt]));
+                        negativeTerms.Add(elemToTerm[binOpt]);
                     }
                 }
 
-                s.AddConstraints(s.Not(termToExclude));
+                if (negativeTerms.Count > 0)
+                {
+                    positiveTerms.Add(s.Not(s.And(negativeTerms.ToArray())));
+                }
+                allConfigurationConstraints.Add(s.And(positiveTerms.ToArray()));
             }
+            s.AddConstraints(allConfigurationConstraints.ToArray());
         }
 
         /// <summary>
