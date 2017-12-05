@@ -47,6 +47,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             Random rand = new Random(seed);
             List<Configuration> selectedConfigurations = new List<Configuration>();
 
+            // Create and initialize the weight function
+            Dictionary<BinaryOption, int> featureWeight = InitializeWeightDict(GlobalState.varModel);
+
             bool[] noSamples = new bool[allBuckets.Count];
 
 
@@ -70,9 +73,6 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                     continue;
                 }
 
-                // Create the weight function
-                Dictionary<BinaryOption, int> featureWeight = GetFeatureWeight(GlobalState.varModel, selectedConfigurations);
-
                 // Now select the configuration by using the solver
                 List<BinaryOption> solution = generator.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight, selectedConfigurations);
 
@@ -86,6 +86,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 Configuration currentSelectedConfiguration = new Configuration (solution);
 
                 selectedConfigurations.Add (currentSelectedConfiguration);
+                UpdateWeights(GlobalState.varModel, featureWeight, currentSelectedConfiguration);
             }
 
             if (selectedConfigurations.Count < count)
@@ -96,27 +97,37 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         }
 
         /// <summary>
-        /// This method counts the occurences of each feature in the current configurations.
-        /// The count is then the weight of the feature.
+        /// This method initializes the weight function. 
         /// </summary>
-        /// <returns>The feature weight of each feature.</returns>
+        /// <returns>A new dictionary with initialized values.</returns>
         /// <param name="vm">The variability model.</param>
-        /// <param name="configurations">All configurations that have been sampled.</param>
-        private Dictionary<BinaryOption, int> GetFeatureWeight(VariabilityModel vm, List<Configuration> configurations) {
+        private Dictionary<BinaryOption, int> InitializeWeightDict(VariabilityModel vm)
+        {
             List<BinaryOption> features = vm.BinaryOptions;
+            Dictionary<BinaryOption, int> weights = new Dictionary<BinaryOption, int>();
 
-            Dictionary<BinaryOption, int> featureCount = new Dictionary<BinaryOption, int> ();
-
-            foreach (BinaryOption binOpt in features) {
-                featureCount.Add (binOpt, 0);
-                foreach (Configuration config in configurations) {
-                    if (config.BinaryOptions.ContainsKey(binOpt) && config.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected) {
-                        featureCount [binOpt]++;
-                    }
-                }
+            foreach (BinaryOption binOpt in features)
+            {
+                weights.Add(binOpt, 0);
             }
 
-            return featureCount;
+            return weights;
+        }
+
+        /// <summary>
+        /// This method updates the weight-dictionary by incrementing the counts.
+        /// </summary>
+        /// <param name="vm">The variability model.</param>
+        /// <param name="weights">The dictionary containing the number of features in all configurations.</param>
+        /// <param name="addedConfiguration">The newly added configuration.</param>
+        private void UpdateWeights(VariabilityModel vm, Dictionary<BinaryOption, int> weights, Configuration addedConfiguration) {
+            List<BinaryOption> features = vm.BinaryOptions;
+
+            foreach (BinaryOption binOpt in features) {
+                if (addedConfiguration.BinaryOptions.ContainsKey(binOpt) && addedConfiguration.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected) {
+                    weights [binOpt]++;
+                }
+            }
         }
 
         /// <summary>
