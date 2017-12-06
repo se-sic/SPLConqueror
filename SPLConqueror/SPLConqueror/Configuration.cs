@@ -94,7 +94,15 @@ namespace SPLConqueror_Core
                 {
                     if (GlobalState.allMeasurements.blacklisted == null || GlobalState.allMeasurements.blacklisted.Count == 0)
                     {
-                        optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                        try
+                        {
+                            optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                        } catch(KeyNotFoundException)
+                        {
+                            GlobalState.logError.logLine(option.Value.Name + "not found in selected numeric options."
+                                + "This option is usually mandatory. Unless you removed it from your sampling domain"
+                                + ", make sure your measurements contain all numeric options.");
+                        }
                     } else if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
                     {
                         optionValues[option.Key - shift] = numericOptions[option.Value as NumericOption];
