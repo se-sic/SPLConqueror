@@ -429,7 +429,7 @@ namespace SPLConqueror_Core
 
             StreamReader sr = new StreamReader(file);
             
-            String[] optionOrder = new String[model.getOptions().Count - 1];
+            String[] optionOrder = new String[model.getOptions().Count];
             String[] nfpOrder = null;
 
             bool isHeader = true;
