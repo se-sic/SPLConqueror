@@ -251,15 +251,14 @@ namespace MachineLearning.Sampling
                 }
             }
 
-
             if (vm.MixedConstraints.Count == 0)
             {
                 if (binaryStrategies.Count == 1 && binaryStrategies.Last().Equals(SamplingStrategies.ALLBINARY) && experimentalDesigns.Count == 1 && experimentalDesigns.Last() is FullFactorialDesign)
                 {
-                    return result.ToList();
+                    return replaceReference(result.ToList());
                 } else
                 {
-                    return result.Distinct().ToList();
+                    return replaceReference(result.Distinct().ToList());
                 }
             } else
             {
@@ -281,8 +280,17 @@ namespace MachineLearning.Sampling
                         filteredConfiguration.Add(toTest);
                     }
                 }
-                return filteredConfiguration;
+                return replaceReference(filteredConfiguration);
             }
+        }
+
+        private static List<Configuration> replaceReference(List<Configuration> sampled)
+        {
+            // Replaces the reference of the sampled configuration with the corresponding measured configurstion if it exists
+
+            var measured = GlobalState.allMeasurements.Configurations.Intersect(sampled);
+            var notMeasured = sampled.Except(measured);
+            return measured.Concat(notMeasured).ToList();
         }
 
         private static List<Configuration> ExecuteHybridStrategy(List<HybridStrategy> hybridStrategies, VariabilityModel vm)
