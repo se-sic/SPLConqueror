@@ -42,7 +42,7 @@
             this.selectedOptionLabel.AutoSize = true;
             this.selectedOptionLabel.Location = new System.Drawing.Point(12, 9);
             this.selectedOptionLabel.Name = "selectedOptionLabel";
-            this.selectedOptionLabel.Size = new System.Drawing.Size(84, 13);
+            this.selectedOptionLabel.Size = new System.Drawing.Size(110, 17);
             this.selectedOptionLabel.TabIndex = 0;
             this.selectedOptionLabel.Text = "Selected option:";
             // 
@@ -55,7 +55,7 @@
             this.selectedOptionComboBox.Location = new System.Drawing.Point(118, 6);
             this.selectedOptionComboBox.Name = "selectedOptionComboBox";
             this.helpProvider1.SetShowHelp(this.selectedOptionComboBox, true);
-            this.selectedOptionComboBox.Size = new System.Drawing.Size(121, 21);
+            this.selectedOptionComboBox.Size = new System.Drawing.Size(121, 24);
             this.selectedOptionComboBox.TabIndex = 1;
             // 
             // selectedOptionAddButton
@@ -75,18 +75,22 @@
             // currAltGroupsListBox
             // 
             this.currAltGroupsListBox.FormattingEnabled = true;
+            this.helpProvider1.SetHelpString(this.currAltGroupsListBox, "The children of these configurations are in an alternative group.");
             this.currAltGroupsListBox.ItemHeight = 16;
             this.currAltGroupsListBox.Location = new System.Drawing.Point(20, 114);
             this.currAltGroupsListBox.Margin = new System.Windows.Forms.Padding(4);
             this.currAltGroupsListBox.Name = "currAltGroupsListBox";
+            this.helpProvider1.SetShowHelp(this.currAltGroupsListBox, true);
             this.currAltGroupsListBox.Size = new System.Drawing.Size(297, 212);
             this.currAltGroupsListBox.TabIndex = 3;
             // 
             // currAltGroupsDeleteButton
             // 
+            this.helpProvider1.SetHelpString(this.currAltGroupsDeleteButton, "Remove the alternative group at the feature, that is selected in the list above.");
             this.currAltGroupsDeleteButton.Location = new System.Drawing.Point(219, 335);
             this.currAltGroupsDeleteButton.Margin = new System.Windows.Forms.Padding(4);
             this.currAltGroupsDeleteButton.Name = "currAltGroupsDeleteButton";
+            this.helpProvider1.SetShowHelp(this.currAltGroupsDeleteButton, true);
             this.currAltGroupsDeleteButton.Size = new System.Drawing.Size(100, 28);
             this.currAltGroupsDeleteButton.TabIndex = 4;
             this.currAltGroupsDeleteButton.Text = "Delete";

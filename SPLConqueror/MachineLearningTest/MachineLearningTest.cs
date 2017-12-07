@@ -114,11 +114,7 @@ namespace MachineLearningTest
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
 
-            Assert.AreEqual(5, polynoms.Length);
-            Assert.AreEqual("1085.73333333333 * PAGESIZE", polynoms[0].Trim());
-            Assert.AreEqual("5.20000000000012 * DIAGNOSTIC", polynoms[1].Trim());
-            Assert.AreEqual("14.1333333333333 * HAVE_CRYPTO", polynoms[2].Trim());
-            Assert.AreEqual("24.1333333333334 * HAVE_STATISTICS", polynoms[3].Trim());
+            Assert.AreEqual(6, polynoms.Length);
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
