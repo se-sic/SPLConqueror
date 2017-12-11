@@ -46,10 +46,10 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         public List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count) {
             Random rand = new Random(seed);
             List<Configuration> selectedConfigurations = new List<Configuration>();
-            Dictionary<int, List<Configuration>> selectedConfigurationsFromBucket = new Dictionary<int, List<Configuration>>();
+            Dictionary<int, Configuration> selectedConfigurationsFromBucket = new Dictionary<int, Configuration>();
             for (int i = 0; i < allBuckets.Count; i++)
             {
-                selectedConfigurationsFromBucket[i] = new List<Configuration>();
+                selectedConfigurationsFromBucket[i] = null;
             }
 
             // Create and initialize the weight function
@@ -91,7 +91,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 Configuration currentSelectedConfiguration = new Configuration (solution);
 
                 selectedConfigurations.Add (currentSelectedConfiguration);
-                selectedConfigurationsFromBucket[currentBucket].Add(currentSelectedConfiguration);
+                selectedConfigurationsFromBucket[currentBucket] = currentSelectedConfiguration;
                 UpdateWeights(GlobalState.varModel, featureWeight, currentSelectedConfiguration);
             }
 

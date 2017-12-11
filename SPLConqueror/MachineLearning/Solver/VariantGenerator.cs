@@ -17,6 +17,8 @@ namespace MachineLearning.Solver
     public class VariantGenerator 
     {
 
+        Dictionary<int, ConstraintSystemCache> constraintSystemCache;
+
         /// <summary>
         /// Generates all valid combinations of all configuration options in the given model.
         /// </summary>
@@ -208,27 +210,67 @@ namespace MachineLearning.Solver
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
         /// <param name="featureWeight">The weight for the selection of each feature. This parameter is <code>null</code> if not needed.</param>
         /// <param name="sampledConfigurations">The sampled configurations until now.</param>
-        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, List<Configuration> sampledConfigurations) {
-            List<CspTerm> variables = new List<CspTerm> ();
-            Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
-            Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
-            // Build the constraint system
-            ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration) {
+            if (this.constraintSystemCache == null)
+            {
+                this.constraintSystemCache = new Dictionary<int, ConstraintSystemCache>();
+            }
 
-            // The first goal of this method is, to have an exact number of features selected
-            S.AddConstraints(S.ExactlyMofN(numberSelectedFeatures, variables.ToArray()));
+            List<CspTerm> variables;
+            Dictionary<BinaryOption, CspTerm> elemToTerm;
+            Dictionary<CspTerm, BinaryOption> termToElem;
+            ConstraintSystem S;
 
-            // Add the previous configurations as constraints
-            AddBinaryConfigurationsToConstraintSystem(vm, S, sampledConfigurations, elemToTerm);
+            if (this.constraintSystemCache.Keys.Contains(numberSelectedFeatures))
+            {
+                variables = constraintSystemCache[numberSelectedFeatures].GetVariables();
+                elemToTerm = constraintSystemCache[numberSelectedFeatures].GetElemToTermMapping();
+                termToElem = constraintSystemCache[numberSelectedFeatures].GetTermToElemMapping();
+                S = constraintSystemCache[numberSelectedFeatures].GetConstraintSystem();
 
-            // The second goal is to minimize the weight (only if not null)
-            if (featureWeight != null) {
-                List<CspTerm> weights = new List<CspTerm> ();
-                foreach (CspTerm variable in variables) {
-                    weights.Add (S.Constant(featureWeight[termToElem [variable]]));
+                S.ResetSolver();
+                //List<Configuration> toAdd = new List<Configuration>();
+                //foreach (Configuration c in sampledConfigurations)
+                //{
+                //    if (!constraintSystemCache[numberSelectedFeatures].ContainsSampledConfiguration(c))
+                //    {
+                //        toAdd.Add(c);
+                //    }
+                //}
+                // Add the missing configurations
+                AddBinaryConfigurationsToConstraintSystem(vm, S, lastSampledConfiguration, elemToTerm);
+            }
+            else
+            {
+                variables = new List<CspTerm>();
+                elemToTerm = new Dictionary<BinaryOption, CspTerm>();
+                termToElem = new Dictionary<CspTerm, BinaryOption>();
+
+                // Build the constraint system
+                S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+
+                // The first goal of this method is, to have an exact number of features selected
+                S.AddConstraints(S.ExactlyMofN(numberSelectedFeatures, variables.ToArray()));
+
+                if (lastSampledConfiguration != null)
+                {
+                    // Add the previous configurations as constraints
+                    AddBinaryConfigurationsToConstraintSystem(vm, S, lastSampledConfiguration, elemToTerm);
                 }
-                // Minimize the sum product of the variables and the weights
-                S.TryAddMinimizationGoals (S.SumProduct(variables.ToArray(), weights.ToArray()));
+
+                // The second goal is to minimize the weight (only if not null)
+                if (featureWeight != null)
+                {
+                    List<CspTerm> weights = new List<CspTerm>();
+                    foreach (CspTerm variable in variables)
+                    {
+                        weights.Add(S.Constant(featureWeight[termToElem[variable]]));
+                    }
+                    // Minimize the sum product of the variables and the weights
+                    S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
+                }
+
+                this.constraintSystemCache.Add(numberSelectedFeatures, new ConstraintSystemCache(S, variables, elemToTerm, termToElem));
             }
 
             // Next, solve the constraint system
@@ -251,32 +293,29 @@ namespace MachineLearning.Solver
             return tempConfig;
         }
 
-        private void AddBinaryConfigurationsToConstraintSystem(VariabilityModel vm, ConstraintSystem s, List<Configuration> configurationsToExclude, Dictionary<BinaryOption, CspTerm> elemToTerm)
+        private void AddBinaryConfigurationsToConstraintSystem(VariabilityModel vm, ConstraintSystem s, Configuration configurationToExclude, Dictionary<BinaryOption, CspTerm> elemToTerm)
         {
             List<BinaryOption> allBinaryOptions = vm.BinaryOptions;
-            List<CspTerm> allConfigurationConstraints = new List<CspTerm>();
-            foreach (Configuration c in configurationsToExclude)
-            {
-                List<CspTerm> positiveTerms = new List<CspTerm>();
-                List<CspTerm> negativeTerms = new List<CspTerm>();
-                foreach (BinaryOption binOpt in allBinaryOptions)
-                {
-                    if (c.BinaryOptions.ContainsKey(binOpt) && c.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
-                    {
-                        positiveTerms.Add(elemToTerm[binOpt]);
-                    } else
-                    {
-                        negativeTerms.Add(elemToTerm[binOpt]);
-                    }
-                }
 
-                if (negativeTerms.Count > 0)
+            List<CspTerm> positiveTerms = new List<CspTerm>();
+            List<CspTerm> negativeTerms = new List<CspTerm>();
+            foreach (BinaryOption binOpt in allBinaryOptions)
+            {
+                if (configurationToExclude.BinaryOptions.ContainsKey(binOpt) && configurationToExclude.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
                 {
-                    positiveTerms.Add(s.Not(s.And(negativeTerms.ToArray())));
+                    positiveTerms.Add(elemToTerm[binOpt]);
+                } else
+                {
+                    negativeTerms.Add(elemToTerm[binOpt]);
                 }
-                allConfigurationConstraints.Add(s.And(positiveTerms.ToArray()));
             }
-            s.AddConstraints(allConfigurationConstraints.ToArray());
+
+            if (negativeTerms.Count > 0)
+            {
+                positiveTerms.Add(s.Not(s.And(negativeTerms.ToArray())));
+            }
+            
+            s.AddConstraints(s.Not(s.And(positiveTerms.ToArray())));
         }
 
         /// <summary>
