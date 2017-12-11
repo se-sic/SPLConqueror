@@ -123,6 +123,7 @@
     <Compile Include="Sampling\Hybrid\Hybrid.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
+    <Compile Include="Solver\ConstraintSystemCache.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />
     <Compile Include="Solver\IVariantGenerator.cs" />
