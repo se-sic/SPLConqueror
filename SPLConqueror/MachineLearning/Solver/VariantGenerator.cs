@@ -229,14 +229,7 @@ namespace MachineLearning.Solver
                 S = constraintSystemCache[numberSelectedFeatures].GetConstraintSystem();
 
                 S.ResetSolver();
-                //List<Configuration> toAdd = new List<Configuration>();
-                //foreach (Configuration c in sampledConfigurations)
-                //{
-                //    if (!constraintSystemCache[numberSelectedFeatures].ContainsSampledConfiguration(c))
-                //    {
-                //        toAdd.Add(c);
-                //    }
-                //}
+
                 // Add the missing configurations
                 AddBinaryConfigurationsToConstraintSystem(vm, S, lastSampledConfiguration, elemToTerm);
             }

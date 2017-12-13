@@ -39,6 +39,7 @@ namespace SamplingUnitTest
         private const int EXPECTED_T_WISE_2 = 287;
         private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
         private const int EXPECTED_DIST_AW = 41;
+        private const int EXPECTED_DIST_AW_SOLVER = 41;
         private const int EXPECTED_DIST_PRESERVING = 41;
 
         [Test, Order(1)]
@@ -328,11 +329,41 @@ namespace SamplingUnitTest
         private List<Configuration> buildSampleSetHybrid(HybridStrategy design)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
+            return buildSampleSetHybrid(design, parameters);
+        }
+
+        private List<Configuration> buildSampleSetHybrid(HybridStrategy design, Dictionary<string, string> parameters)
+        {
             List<HybridStrategy> hybridStrategies = new List<HybridStrategy>();
             design.SetSamplingParameters(parameters);
             hybridStrategies.Add(design);
-            return ConfigurationBuilder.buildConfigs(model, new List<SamplingStrategies>(), 
+            return ConfigurationBuilder.buildConfigs(model, new List<SamplingStrategies>(),
                 new List<ExperimentalDesign>(), hybridStrategies);
+        }
+
+        [Test, Order(17)]
+        public void TestDistributionAwareSolverSelection()
+        {
+            // Load another model containing only numeric features
+            modelPath.Replace(".xml", "_onlyNumeric.xml");
+            Assert.IsTrue(model.loadXML(modelPath));
+            GlobalState.varModel = model;
+
+            // Execute the test
+            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar;
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("selection", "SolverSelection");
+            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware(), parameters);
+            Assert.AreEqual(EXPECTED_DIST_AW_SOLVER, distAwareBinAndNum.Count);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
+                locTemplate + "DistributionAwareSolverSampling.csv", GlobalState.varModel);
+            Assert.True(containsAllMeasurements(distAwareBinAndNum, expected));
+
+            // Now, load the previous model
+            modelPath.Replace("_onlyNumeric.xml", ".xml");
+            Assert.IsTrue(model.loadXML(modelPath));
+            GlobalState.varModel = model;
         }
 
         [Test, Order(15)]
