@@ -353,6 +353,12 @@ namespace SPLConqueror_Core
             return this.name.Equals(other.name);
         }
 
+        /// <summary>
+        /// Returns <code>true</code> if the given constraint is included in the given list of constraints;<code>false</code> otherwise.
+        /// </summary>
+        /// <param name="list">A list of all constraints.</param>
+        /// <param name="newContstraint">The constraint to search for.</param>
+        /// <returns><code>true</code> if the given constraint is included in the given list of constraints;<code>false</code> otherwise.</returns>
         public static bool hasConstraint(List<List<ConfigurationOption>> list, List<ConfigurationOption> newContstraint)
         {
             foreach(List<ConfigurationOption> existingConstraint in list)

@@ -6,13 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace SPLConqueror_Core
 {
-
+    /// <summary>
+    /// This class represents an influence function containing the affected configuration options.
+    /// </summary>
     public class InfluenceFunction
     {
 
         double noise = 0.0;
         private VariabilityModel varModel = null;
 
+        /// <summary>
+        /// Includes the well-formed expression of the <see cref="InfluenceFunction"/>.
+        /// </summary>
         protected string wellFormedExpression = "";
 
 
@@ -26,9 +31,20 @@ namespace SPLConqueror_Core
         /// </summary>
         public HashSet<NumericOption> participatingNumOptions = new HashSet<NumericOption>();
 
+        /// <summary>
+        /// The number of configuration options (features) that are participating in this influence function.
+        /// </summary>
         protected int numberOfParticipatingFeatures = 0;
+
+        /// <summary>
+        /// Contains the whole expression in the array.
+        /// Every element of this array contains an operand or an operator.
+        /// </summary>
         protected string[] expressionArray = null;
 
+        /// <summary>
+        /// The <see cref="NumericOption"/>, the <see cref="InfluenceFunction"/> is related to.
+        /// </summary>
         protected NumericOption numOption = null;
 
 
@@ -69,6 +85,9 @@ namespace SPLConqueror_Core
             parseExpressionToPolishNotation(expression);
         }
 
+        /// <summary>
+        /// An empty constructor for the <see cref="InfluenceFunction"/>.
+        /// </summary>
         protected InfluenceFunction()
         {
         }
@@ -711,7 +730,10 @@ namespace SPLConqueror_Core
             this.noise = noise;
         }
 
-
+        /// <summary>
+        /// Returns the textual representation of the <see cref="InfluenceFunction"/>.
+        /// </summary>
+        /// <returns>The textual representation of the <see cref="InfluenceFunction"/>.</returns>
         public override String ToString()
         {
             String returnString = wellFormedExpression;
