@@ -26,7 +26,7 @@ namespace MachineLearning.Sampling.Heuristics
         public List<List<BinaryOption>> generateT_WiseVariants_new(VariabilityModel vm, int t)
         {
             // dirty fix for twise issue
-            if (t == 0)
+            if (t == 1)
             {
                 FeatureWise fw = new FeatureWise();
                 return fw.generateFeatureWiseConfigurations(vm);
