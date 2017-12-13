@@ -305,6 +305,12 @@ namespace SPLConqueror_Core
             return configInGS;
         }
 
+        /// <summary>
+        /// Returns a list of <see cref="Configuration"/>s containing the given binary features and the numeric features with exactly the same values.
+        /// </summary>
+        /// <param name="list">A list of one or more binary option lists, that have to be included.</param>
+        /// <param name="numericSelections">A list of the numeric values of the numeric options.</param>
+        /// <returns>A list of <see cref="Configuration"/> that matches to at one of the binary and numeric option selections.</returns>
         public static List<Configuration> getAvailableBinary(List<List<BinaryOption>> list, List<Dictionary<NumericOption, double>> numericSelections)
         {
             HashSet<Configuration> result = new HashSet<Configuration>();

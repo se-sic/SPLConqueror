@@ -121,6 +121,12 @@ namespace SPLConqueror_Core
             return count;
         }
 
+        /// <summary>
+        /// Returns the step number for a given parameter, as <see cref="getStep(double)"/>.
+        /// The difference to the method <see cref="getStep(double)"/> is, that the step is retrieved with less effort if the <see cref="stepFunction"/> is given.
+        /// </summary>
+        /// <param name="parameter">The value for which the step number should be returned.</param>
+        /// <returns>The step within the value range.</returns>
         public int getStepFast(double parameter)
         {
             if (stepFunction == null)

@@ -319,7 +319,7 @@ namespace MachineLearning.Solver
         }
 
         /// <summary>
-        /// This method searches for a corresponding methods in the dynamically loadeda assemblies and calls it if found. It prefers due to performance reasons the Microsoft Solver Foundation implementation.
+        /// This method searches for a corresponding methods in the dynamically loaded assemblies and calls it if found. It prefers due to performance reasons the Microsoft Solver Foundation implementation.
         /// </summary>
         /// <param name="config">The (partial) configuration which needs to be expaned to be valid.</param>
         /// <param name="vm">Variability model containing all options and their constraints.</param>
