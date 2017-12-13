@@ -74,7 +74,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 // Repeat if there are currently no solutions in the bucket.
                 // This is intended to reduce the work of the solver.
-                if (noSamples [currentBucket]) {
+                if (noSamples [currentBucket] || !allBuckets.Contains(distanceOfBucket)) {
                     continue;
                 }
 
