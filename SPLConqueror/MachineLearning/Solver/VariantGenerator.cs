@@ -229,9 +229,24 @@ namespace MachineLearning.Solver
                 S = constraintSystemCache[numberSelectedFeatures].GetConstraintSystem();
 
                 S.ResetSolver();
+                S.RemoveAllMinimizationGoals();
 
                 // Add the missing configurations
                 AddBinaryConfigurationsToConstraintSystem(vm, S, lastSampledConfiguration, elemToTerm);
+
+                // The second goal is to minimize the weight (only if not null)
+                if (featureWeight != null)
+                {
+                    List<CspTerm> weights = new List<CspTerm>();
+                    foreach (CspTerm variable in variables)
+                    {
+                        weights.Add(S.Constant(featureWeight[termToElem[variable]]));
+                    }
+                    // Minimize the sum product of the variables and the weights
+                    S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
+                }
+
+
             }
             else
             {
