@@ -344,26 +344,27 @@ namespace SamplingUnitTest
         [Test, Order(17)]
         public void TestDistributionAwareSolverSelection()
         {
-            // Load another model containing only numeric features
-            modelPath.Replace(".xml", "_onlyNumeric.xml");
-            Assert.IsTrue(model.loadXML(modelPath));
-            GlobalState.varModel = model;
-
             // Execute the test
             string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
                 + Path.DirectorySeparatorChar;
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("selection", "SolverSelection");
-            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware(), parameters);
-            Assert.AreEqual(EXPECTED_DIST_AW_SOLVER, distAwareBinAndNum.Count);
+
+            List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
+            List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
+            numericStrat.Add(new CentralCompositeInscribedDesign());
+
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            HybridStrategy distAwSolver = new DistributionAware();
+            distAwSolver.SetSamplingParameters(parameters);
+            hybridStrat.Add(distAwSolver);
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
                 locTemplate + "DistributionAwareSolverSampling.csv", GlobalState.varModel);
-            Assert.True(containsAllMeasurements(distAwareBinAndNum, expected));
 
-            // Now, load the previous model
-            modelPath.Replace("_onlyNumeric.xml", ".xml");
-            Assert.IsTrue(model.loadXML(modelPath));
-            GlobalState.varModel = model;
+            Assert.AreEqual(EXPECTED_DIST_AW_SOLVER, result.Count);
+            
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(15)]
