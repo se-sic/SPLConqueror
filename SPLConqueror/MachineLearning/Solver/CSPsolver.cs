@@ -369,6 +369,11 @@ namespace MicrosoftSolverFoundation
             vm_global = vm;
             termToOption_global = termToOption;
             variables_global = variables;
+
+            // The following two lines are needed because it resets the initial variable allocation
+            S.Solve();
+            S.ResetSolver();
+
             return S;
         }
     }

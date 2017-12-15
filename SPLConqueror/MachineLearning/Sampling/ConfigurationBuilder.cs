@@ -16,7 +16,6 @@ namespace MachineLearning.Sampling
         public static Dictionary<SamplingStrategies, List<BinaryOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<BinaryOption>>();
         public static BinaryParameters binaryParams = new BinaryParameters();
 
-        // Added by Ch.K.
         private static List<String> blacklisted;
 
         public static void setBlacklisted(List<String> blacklist)
