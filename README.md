@@ -417,8 +417,8 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | learn-mirrowedFunction (alternatively: learn_mirrowedFunction) | Allows the creation of functions with the form (numericOption.maxValue - soptions). | false | true, false |
 | numberOfRounds | Defines the number of rounds the learning process have to be performed. | 70 | int |
 | backwardErrorDelta | Defines the maximum increase of the error when removing a feature from the model. | 1 | double |
-|minImprovementPerRound | Defines the minimum error in improved a round must reach before either the learning is aborted or the hierarchy is increased for hierarchy learning. | 0.1 | double |
-| withHierarchy | Defines whether we learn our model in hierarchical steps. | true | true, false |
+|minImprovementPerRound | Defines the minimum error in improved a round must reach before either the learning is aborted or the hierarchy is increased for hierarchy learning. In combination with withHierarchy instead of aborting learning, minImprovementPerRound results in increasing the hierachy level.| 0.1 | double |
+| withHierarchy | Defines whether we learn our model in hierarchical steps. | false | true, false |
 | bruteForceCandidates | Defines how candidate features are generated. | false | true, false |
 | ignoreBadFeatures | Enables an optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvement in accuracy relative to all other candidates. | false | true, false |
 | stopOnLongRound | If true, stop learning if the whole process is running longer than 1 hour and the current round runs longer then 30 minutes. | true | true, false |
