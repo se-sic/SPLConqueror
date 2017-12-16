@@ -106,7 +106,7 @@ namespace MachineLearningTest
         public void testBagging()
         {
             cleanUp(cmd, "");
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " withHierarchy:true false bagging:true baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " withHierarchy:true bagging:true baggingNumbers:3");
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
 
             string averageModel = consoleOutput.ToString()
@@ -124,7 +124,7 @@ namespace MachineLearningTest
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false withHierarchy:true baggingNumbers:3");
         }
 
         [Test, Order(3)]
