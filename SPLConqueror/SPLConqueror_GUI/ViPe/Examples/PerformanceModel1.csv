@@ -1,2 +1,0 @@
-Group;root;NewRatio;NewRatio*UseAdaptiveSizePolicy;NewRatio*NewRatio*UseAdaptiveSizePolicy;NewRatio*log(NewRatio);NewRatio*log(NewRatio)*log(MaxTenuringThreshold);NewRatio*UseAdaptiveSizePolicy*NewRatio*log(SurvivorRatio);UseAdaptiveSizePolicy;DisableExplicitGC;log(MaxTenuringThreshold)
-Uniform;24.33;1.13;15.13;-0.047;0;0;-0.18;-17.12;5.11;-2.81
