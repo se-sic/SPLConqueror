@@ -88,8 +88,7 @@ namespace SPLConqueror_Core
 
         private ConfigurationOption parent = null;
         private String parentName = "";
-
-
+        
         /// <summary>
         /// Restuns the name of the parent feature.
         /// </summary>
@@ -107,6 +106,17 @@ namespace SPLConqueror_Core
             get { return parent; }
             set { parent = value; }
         }
+
+        /// <summary>
+        /// A list of all configuration options with this option as parent.
+        /// </summary>
+        public List<ConfigurationOption> Children
+        {
+            get { return children; }
+            set { children = value; }
+        }
+
+        private List<ConfigurationOption> children = new List<ConfigurationOption>();
 
         /// <summary>
         /// Creates a new configuration option of the given name for the variability model. 
@@ -212,11 +222,6 @@ namespace SPLConqueror_Core
                 {
                     case "name":
                         this.Name = xmlInfo.InnerText;
-
-                        if (Name.Equals("File"))
-                        {
-                            
-                        }
                         break;
                     case "outputString":
                         this.outputString = xmlInfo.InnerText;
@@ -251,6 +256,9 @@ namespace SPLConqueror_Core
             {
                 this.parent = vm.getBinaryOption(parentName);
             }
+
+            if (this.parent != null)
+                this.parent.Children.Add(this);
 
             foreach (var imply_names in this.implied_Options_names)
             {

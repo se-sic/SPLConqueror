@@ -114,6 +114,22 @@ namespace SPLConqueror_Core
             return true;
         }
 
+        public bool isParentOfAlternativeGroup()
+        {
+            if (Children.Count == 0)
+                return false;
+
+            foreach(ConfigurationOption option in this.Children)
+            {
+                List<ConfigurationOption> alternatives = ((BinaryOption) option).collectAlternativeOptions();
+
+                if (this.Children.Count != (alternatives.Count + 1))
+                    return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Checks whether this binary option has alternative options meaning that there are other binary options with the same parents, but cannot be present in the same configuration as this option.
         /// </summary>

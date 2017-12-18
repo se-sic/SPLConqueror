@@ -30,6 +30,8 @@ namespace CommandLine
 
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
 
+        public const string COMMAND_ANALYZE_MODEL = "analyze-model";
+
         #region load ml settings
         // deprecated
         public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
@@ -285,6 +287,22 @@ namespace CommandLine
                         }
                         break;
                     }
+
+                case COMMAND_ANALYZE_MODEL:
+                    {
+                        if(taskAsParameter.Length != 1)
+                        {
+                            GlobalState.logError.log("Number of parameters for analyze-model is not equal 1. (Parameter need to be the file)");
+                            break;
+                        }
+                        
+                        ModelAnalyzer mo = new ModelAnalyzer(VariabilityModel.loadFromXML(task.Trim()));
+                        mo.analyzeModel();
+
+
+                        break;
+                    }
+
                 case COMMAND_SAVE:
                     {
                         CommandPersistence.dump(taskAsParameter, this.mlSettings, this.binaryToSample,
