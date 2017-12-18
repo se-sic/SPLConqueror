@@ -556,7 +556,7 @@ namespace SPLConqueror_Core
             {
                 GlobalState.logInfo.logLine("Warning: Variability model contains outdated notation. " +
                     "Children nodes will no longer have effect on the model. Instead use the parent node " +
-                    "to describe the parent of an configuration option. You can also use the converter provided" +
+                    "to describe the parent of an configuration option. You can also use the converter provided " +
                     "by the Variability Model GUI in export>convert legacy model.");
             }
             var defaultValueNode = currentElemt.SelectSingleNode("//defaultValue");
