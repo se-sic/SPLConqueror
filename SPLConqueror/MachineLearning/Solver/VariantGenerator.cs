@@ -17,7 +17,7 @@ namespace MachineLearning.Solver
     public class VariantGenerator 
     {
 
-        Dictionary<int, ConstraintSystemCache> constraintSystemCache;
+        private Dictionary<int, ConstraintSystemCache> _constraintSystemCache;
 
         /// <summary>
         /// Generates all valid combinations of all configuration options in the given model.
@@ -211,9 +211,9 @@ namespace MachineLearning.Solver
         /// <param name="featureWeight">The weight for the selection of each feature. This parameter is <code>null</code> if not needed.</param>
         /// <param name="sampledConfigurations">The sampled configurations until now.</param>
         public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration) {
-            if (this.constraintSystemCache == null)
+            if (this._constraintSystemCache == null)
             {
-                this.constraintSystemCache = new Dictionary<int, ConstraintSystemCache>();
+                this._constraintSystemCache = new Dictionary<int, ConstraintSystemCache>();
             }
 
             List<CspTerm> variables;
@@ -221,31 +221,18 @@ namespace MachineLearning.Solver
             Dictionary<CspTerm, BinaryOption> termToElem;
             ConstraintSystem S;
 
-            if (this.constraintSystemCache.Keys.Contains(numberSelectedFeatures))
+            if (this._constraintSystemCache.Keys.Contains(numberSelectedFeatures))
             {
-                variables = constraintSystemCache[numberSelectedFeatures].GetVariables();
-                elemToTerm = constraintSystemCache[numberSelectedFeatures].GetElemToTermMapping();
-                termToElem = constraintSystemCache[numberSelectedFeatures].GetTermToElemMapping();
-                S = constraintSystemCache[numberSelectedFeatures].GetConstraintSystem();
+                variables = _constraintSystemCache[numberSelectedFeatures].GetVariables();
+                elemToTerm = _constraintSystemCache[numberSelectedFeatures].GetElemToTermMapping();
+                termToElem = _constraintSystemCache[numberSelectedFeatures].GetTermToElemMapping();
+                S = _constraintSystemCache[numberSelectedFeatures].GetConstraintSystem();
 
                 S.ResetSolver();
                 S.RemoveAllMinimizationGoals();
 
                 // Add the missing configurations
                 AddBinaryConfigurationsToConstraintSystem(vm, S, lastSampledConfiguration, elemToTerm);
-
-                // The second goal is to minimize the weight (only if not null)
-                if (featureWeight != null)
-                {
-                    List<CspTerm> weights = new List<CspTerm>();
-                    foreach (CspTerm variable in variables)
-                    {
-                        weights.Add(S.Constant(featureWeight[termToElem[variable]]));
-                    }
-                    // Minimize the sum product of the variables and the weights
-                    S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
-                }
-
 
             }
             else
@@ -266,19 +253,19 @@ namespace MachineLearning.Solver
                     AddBinaryConfigurationsToConstraintSystem(vm, S, lastSampledConfiguration, elemToTerm);
                 }
 
-                // The second goal is to minimize the weight (only if not null)
-                if (featureWeight != null)
-                {
-                    List<CspTerm> weights = new List<CspTerm>();
-                    foreach (CspTerm variable in variables)
-                    {
-                        weights.Add(S.Constant(featureWeight[termToElem[variable]]));
-                    }
-                    // Minimize the sum product of the variables and the weights
-                    S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
-                }
+                this._constraintSystemCache.Add(numberSelectedFeatures, new ConstraintSystemCache(S, variables, elemToTerm, termToElem));
+            }
 
-                this.constraintSystemCache.Add(numberSelectedFeatures, new ConstraintSystemCache(S, variables, elemToTerm, termToElem));
+            // The second goal is to minimize the weight (only if not null)
+            if (featureWeight != null)
+            {
+                List<CspTerm> weights = new List<CspTerm>();
+                foreach (CspTerm variable in variables)
+                {
+                    weights.Add(S.Constant(featureWeight[termToElem[variable]]));
+                }
+                // Minimize the sum product of the variables and the weights
+                S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
             }
 
             // Next, solve the constraint system
@@ -299,6 +286,14 @@ namespace MachineLearning.Solver
             }
 
             return tempConfig;
+        }
+
+        /// <summary>
+        /// Clears the cache-object needed for an optimization.
+        /// </summary>
+        public void ClearCache()
+        {
+            this._constraintSystemCache = null;
         }
 
         private void AddBinaryConfigurationsToConstraintSystem(VariabilityModel vm, ConstraintSystem s, Configuration configurationToExclude, Dictionary<BinaryOption, CspTerm> elemToTerm)

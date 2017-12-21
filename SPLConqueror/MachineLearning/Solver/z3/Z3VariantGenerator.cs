@@ -13,6 +13,8 @@ namespace MachineLearning.Solver
     /// </summary>
     public class Z3VariantGenerator : IVariantGenerator
     {
+        private Dictionary<int, Z3Cache> _z3Cache;
+
         /// <summary>
         /// Generates all valid configurations by using the given <see cref="VariabilityModel"/>.
         /// </summary>
@@ -125,17 +127,15 @@ namespace MachineLearning.Solver
 
                 //Defining Goals
                 ArithExpr[] optimizationGoals = new ArithExpr[variables.Count];
-                Dictionary<BinaryOption, ArithExpr> termToNumeric = new Dictionary<BinaryOption, ArithExpr>();
 
                 for (int r = 0; r < variables.Count; r++)
                 {
                     BinaryOption currOption = termToOption[variables[r]];
                     ArithExpr numericVariable = z3Context.MkInt(currOption.Name);
-                    termToNumeric.Add(currOption, numericVariable);
 
                     int weight = 1;
                     if (unWantedOptions != null && (unWantedOptions.Contains(termToOption[variables[r]]) && !config.Contains(termToOption[variables[r]]))) {
-                        weight = 100;
+                        weight = 1000;
                     }
 
                     constraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(variables[r], z3Context.MkInt(weight), z3Context.MkInt(0))));
@@ -179,9 +179,108 @@ namespace MachineLearning.Solver
             return result;
         }
 
-        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, List<Configuration> lastSampledConfigurations)
+        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration)
         {
-            throw new NotImplementedException();
+            if (_z3Cache == null)
+            {
+                _z3Cache = new Dictionary<int, Z3Cache>();
+            }
+
+            List<BoolExpr> variables = null;
+            Dictionary<BoolExpr, BinaryOption> termToOption = null;
+            Dictionary<BinaryOption, BoolExpr> optionToTerm = null;
+            Tuple<Context, BoolExpr> z3Tuple;
+            Context z3Context;
+            Optimize optimizer;
+
+            // Reuse the solver if it is already in the cache
+            if (this._z3Cache.Keys.Contains(numberSelectedFeatures))
+            {
+                Z3Cache cache = this._z3Cache[numberSelectedFeatures];
+                z3Context = cache.GetContext();
+                optimizer = cache.GetOptimizer();
+                variables = cache.GetVariables();
+                termToOption = cache.GetTermToOptionMapping();
+                optionToTerm = cache.GetOptionToTermMapping();
+
+                // Remove the previous optimization goal
+                optimizer.Pop();
+
+                if (lastSampledConfiguration != null)
+                {
+                    // Add the previous configurations as constraints
+                    optimizer.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
+                }
+
+                // Create a new backtracking point for the next run
+                optimizer.Push();
+
+            } else
+            {
+                z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+                z3Context = z3Tuple.Item1;
+                BoolExpr z3Constraints = z3Tuple.Item2;
+                optimizer = z3Context.MkOptimize();
+
+                optimizer.Assert(z3Constraints);
+
+                if (lastSampledConfiguration != null)
+                {
+                    // Add the previous configurations as constraints
+                    optimizer.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
+                }
+
+                // The first goal of this method is, to have an exact number of features selected
+
+                // Therefore, initialize an integer array with the value '1' for the pseudo-boolean equal function
+                int[] neutralWeights = new int[variables.Count];
+                for (int i = 0; i < variables.Count; i++)
+                {
+                    neutralWeights[i] = 1;
+                }
+                optimizer.Assert(z3Context.MkPBEq(neutralWeights, variables.ToArray(), numberSelectedFeatures));
+
+                // Create a backtracking point before adding the optimization goal
+                optimizer.Push();
+
+                this._z3Cache[numberSelectedFeatures] = new Z3Cache(z3Context, optimizer, variables, optionToTerm, termToOption);
+            }
+
+            // The second goal is to minimize the weight (only if not null)
+            if (featureWeight != null)
+            {
+                List<ArithExpr> arithmeticExpressions = new List<ArithExpr>();
+                List<BoolExpr> booleanNumericConstraints = new List<BoolExpr>();
+                foreach (BinaryOption binOpt in featureWeight.Keys)
+                {
+                    ArithExpr numericVariable = z3Context.MkInt(binOpt.Name);
+                    int weight = featureWeight[binOpt];
+
+                    arithmeticExpressions.Add(numericVariable);
+                    booleanNumericConstraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(optionToTerm[binOpt], z3Context.MkInt(weight), z3Context.MkInt(0))));
+                }
+                optimizer.Assert(booleanNumericConstraints.ToArray());
+                optimizer.MkMinimize(z3Context.MkAdd(arithmeticExpressions.ToArray()));
+            }
+
+            
+            // Solve the model and return the configuration
+            if (optimizer.Check() == Status.SATISFIABLE)
+            {
+                Model model = optimizer.Model;
+                return RetrieveConfiguration(variables, model, termToOption);
+            } else
+            {
+                return null;
+            }            
+        }
+
+        /// <summary>
+        /// Clears the cache needed for an optimization.
+        /// </summary>
+        public void ClearCache()
+        {
+            this._z3Cache = null;
         }
     }
 }
