@@ -8,6 +8,8 @@ namespace MachineLearning.Sampling.Heuristics
     {
         public const string NUMBER_SAMPLES = "numConfigs";
 
+        public const string OPTION_WEIGHT = "optionWeight";
+
         private VariabilityModel vm;
 
         public DistanceBased(VariabilityModel vm)
@@ -18,6 +20,8 @@ namespace MachineLearning.Sampling.Heuristics
         public List<List<BinaryOption>> getSample(Dictionary<string, string> parameter)
         {
             int numberConfigs;
+
+            int optionWeight = 1;
 
             string numConfigsValue = null;
 
@@ -47,9 +51,14 @@ namespace MachineLearning.Sampling.Heuristics
                 numberConfigs = Int32.Parse(numConfigsValue);
             }
 
+            if (parameter.ContainsKey(OPTION_WEIGHT))
+            {
+                optionWeight = Int32.Parse(parameter[OPTION_WEIGHT]);
+            }
+
             Solver.VariantGenerator vg = new Solver.VariantGenerator();
             List<BinaryOption> minimalConfiguration = vg.minimizeConfig(new List<BinaryOption>(), vm, true, null);
-            return vg.distanceMaximization(vm, minimalConfiguration, numberConfigs);
+            return vg.distanceMaximization(vm, minimalConfiguration, numberConfigs, optionWeight);
         }
     }
 }
