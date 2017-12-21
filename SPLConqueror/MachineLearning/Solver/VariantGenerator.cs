@@ -261,8 +261,9 @@ namespace MachineLearning.Solver
         /// <param name="vm">The domain for sampling.</param>
         /// <param name="minimalConfiguration">A minimal configuration that will be used as starting point.</param>
         /// <param name="numberToSample">The number of configurations that should be sampled.</param>
+        /// <param name="optionWeight">Weight assigned to optional binary options.</param>
         /// <returns>A list of distance maximized configurations.</returns>
-        public List<List<BinaryOption>> distanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample)
+        public List<List<BinaryOption>> distanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
         {
             List<Configuration> sample = new List<Configuration>();
             List<List<BinaryOption>> convertedSample = new List<List<BinaryOption>>();
@@ -277,7 +278,7 @@ namespace MachineLearning.Solver
             while (sample.Count < numberToSample)
             {
                 ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
-                addDistanceMaximiationGoal(sample, vm, elemToTerm, S);
+                addDistanceMaximiationGoal(sample, vm, elemToTerm, S, optionWeight);
                 ConstraintSolverSolution sol = S.Solve();
                 if (sol.HasFoundSolution)
                 {
@@ -309,7 +310,7 @@ namespace MachineLearning.Solver
         }
 
         private void addDistanceMaximiationGoal(List<Configuration> sample, VariabilityModel vm,
-            Dictionary<BinaryOption, CspTerm> elemToTerm, ConstraintSystem cs)
+            Dictionary<BinaryOption, CspTerm> elemToTerm, ConstraintSystem cs, int weight)
         {
             List<CspTerm> goals = new List<CspTerm>();
             foreach (Configuration config in sample)
@@ -321,11 +322,23 @@ namespace MachineLearning.Solver
                 {
                     if (!configInSample.Contains(binOpt))
                     {
-                        sum.Add(elemToTerm[binOpt]);
+                        if (binOpt.Optional)
+                        {
+                            sum.Add(weight * elemToTerm[binOpt]);
+                        } else
+                        {
+                            sum.Add(elemToTerm[binOpt]);
+                        }
                     }
                     else
                     {
-                        sum.Add(cs.Abs(elemToTerm[binOpt] - cs.Constant(1)));
+                        if (binOpt.Optional)
+                        {
+                            sum.Add(weight * (cs.Abs(elemToTerm[binOpt] - cs.Constant(1))));
+                        } else
+                        {
+                            sum.Add(cs.Abs(elemToTerm[binOpt] - cs.Constant(1)));
+                        }
                     }
                 }
                 // negate term because we search for the biggest distance
