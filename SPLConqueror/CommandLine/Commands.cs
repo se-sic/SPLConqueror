@@ -430,7 +430,16 @@ namespace CommandLine
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
-                    GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations.Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+
+                    try {
+                        GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations
+                            .Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+                    } catch (ArgumentNullException)
+                    {
+                        throw new ArgumentException("There was a problem when reading your configuration file." +
+                            " Please check the error log for further inforamtion about the cause of the error." +
+                            " Filename of the file that caused the error:\"" + task.TrimEnd() + "\"");
+                    }
 
                     List<Configuration> invalid = GlobalState.allMeasurements.Configurations
                         .Where(conf => !GlobalState.varModel.isInModel(conf)).ToList();
