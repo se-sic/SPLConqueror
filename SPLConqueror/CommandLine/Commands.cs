@@ -92,6 +92,7 @@ namespace CommandLine
         public const string COMMAND_VARIABILITYMODEL = "vm";
         public const string COMMAND_SET_NFP = "nfp";
         public const string COMMAND_SET_MLSETTING = "mlsettings";
+        public const string COMMAND_SET_SOLVER = "solver";
 
         #region splconqueror learn with sampling
         public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
@@ -419,7 +420,6 @@ namespace CommandLine
                     break;
                 case COMMAND_CLEAR_GLOBAL:
                     cleanGlobal();
-                    
                     break;
                 case COMMAND_CLEAR_SAMPLING:
                     cleanSampling();
@@ -502,7 +502,19 @@ namespace CommandLine
                     writer.Close();
                     ostrm.Close();
                     break;
-
+                case COMMAND_SET_SOLVER:
+                    // Select the solver
+                    string solverToSet = task.Trim();
+                    IVariantGenerator selectedVariantGenerator = VariantGeneratorFactory.GetVariantGenerator(solverToSet);
+                    if (selectedVariantGenerator == null)
+                    {
+                        throw new ArgumentException("The solver '" + solverToSet + "' was not found. Please specify one of the following: " 
+                            + VariantGeneratorFactory.GetSolver());
+                    } else
+                    {
+                        ConfigurationBuilder.vg = selectedVariantGenerator;
+                    }
+                    break;
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC:
                     {
                         printPredictedConfigurations(task, this.exp);

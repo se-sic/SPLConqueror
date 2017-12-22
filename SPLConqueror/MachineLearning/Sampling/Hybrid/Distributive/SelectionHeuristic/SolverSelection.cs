@@ -17,8 +17,6 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         // The seed for the random-class
         private int seed = 0;
 
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
-
         /// <summary>
         /// Initializes a new instance of the
         /// <see cref="MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic.SolverSelection"/> class.
@@ -79,7 +77,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 }
 
                 // Now select the configuration by using the solver
-                List<BinaryOption> solution = generator.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight, selectedConfigurationsFromBucket[currentBucket]);
+                List<BinaryOption> solution = ConfigurationBuilder.vg.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight, selectedConfigurationsFromBucket[currentBucket]);
 
                 // If a bucket was selected that now contains no more configurations, repeat the procedure
                 if (solution == null)
@@ -100,7 +98,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 GlobalState.logError.logLine("Sampled only " + selectedConfigurations.Count + " configurations as there are no more configurations.");
             }
 
-            generator.ClearCache();
+            ConfigurationBuilder.vg.ClearCache();
 
             return selectedConfigurations;
         }

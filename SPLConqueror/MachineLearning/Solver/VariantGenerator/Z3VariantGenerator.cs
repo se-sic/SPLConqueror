@@ -16,6 +16,44 @@ namespace MachineLearning.Solver
         private Dictionary<int, Z3Cache> _z3Cache;
 
         /// <summary>
+        /// Generates all valid combinations of all configuration options in the given model.
+        /// </summary>
+        /// <param name="vm">the variability model containing the binary options and their constraints</param>
+        /// <param name="optionsToConsider">the options that should be considered. All other options are ignored</param>
+        /// <returns>Returns a list of <see cref="Configuration"/></returns>
+        public List<Configuration> GenerateAllVariants(VariabilityModel vm, List<ConfigurationOption> optionsToConsider)
+        {
+            List<Configuration> allConfigurations = new List<Configuration>();
+            List<BoolExpr> variables;
+            Dictionary<BoolExpr, BinaryOption> termToOption;
+            Dictionary<BinaryOption, BoolExpr> optionToTerm;
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Context z3Context = z3Tuple.Item1;
+            BoolExpr z3Constraints = z3Tuple.Item2;
+
+            Microsoft.Z3.Solver solver = z3Context.MkSolver();
+            solver.Assert(z3Constraints);
+
+            while (solver.Check() == Status.SATISFIABLE)
+            {
+                Model model = solver.Model;
+
+                List<BinaryOption> binOpts = RetrieveConfiguration(variables, model, termToOption, optionsToConsider);
+
+                Configuration c = new Configuration(binOpts);
+                // Check if the non-boolean constraints are satisfied
+                if (vm.configurationIsValid(c) && !VariantGenerator.IsInConfigurationFile(c, allConfigurations) && VariantGenerator.FulfillsMixedConstraints(c, vm))
+                {
+                    allConfigurations.Add(c);
+                }
+
+                solver.Assert(Z3Solver.ConvertConfiguration(z3Context, binOpts, optionToTerm, vm));
+            }
+
+            return allConfigurations;
+        }
+
+        /// <summary>
         /// Generates all valid configurations by using the given <see cref="VariabilityModel"/>.
         /// </summary>
         /// <param name="vm">The <see cref="VariabilityModel"/> that describes the software.</param>
@@ -63,11 +101,16 @@ namespace MachineLearning.Solver
             return configurations;
         }
 
-        private List<BinaryOption> RetrieveConfiguration(List<BoolExpr> variables, Model model, Dictionary<BoolExpr, BinaryOption> termToOption)
+        private List<BinaryOption> RetrieveConfiguration(List<BoolExpr> variables, Model model, Dictionary<BoolExpr, BinaryOption> termToOption, List<ConfigurationOption> optionsToConsider = null)
         {
             List<BinaryOption> config = new List<BinaryOption>();
             foreach (BoolExpr variable in variables)
             {
+                if (optionsToConsider != null && !optionsToConsider.Contains(termToOption[variable]))
+                {
+                    continue;
+                }
+
                 Expr allocation = model.Evaluate(variable);
                 BoolExpr boolExpr = (BoolExpr)allocation;
                 if (boolExpr.IsTrue)
@@ -79,11 +122,6 @@ namespace MachineLearning.Solver
         }
 
         public List<BinaryOption> GenerateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<List<BinaryOption>> GenerateRandomVariants(VariabilityModel vm, int treshold, int modulu)
         {
             throw new NotImplementedException();
         }

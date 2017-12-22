@@ -130,15 +130,17 @@
     <Compile Include="Solver\ConstraintSystemCache.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />
-    <Compile Include="Solver\IVariantGenerator.cs" />
+    <Compile Include="Solver\VariantGenerator\IVariantGenerator.cs" />
     <Compile Include="Learning\LinearProgramming\SolverLP.cs" />
     <Compile Include="Solver\CSPsolver.cs" />
-    <Compile Include="Solver\VariantGenerator.cs" />
+    <Compile Include="Solver\VariantGenerator\VariantGenerator.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\FactorialDesign.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\SelectionHeuristic\SolverSelection.cs" />
     <Compile Include="Solver\ISolver.cs" />
+    <Compile Include="Solver\VariantGenerator\VariantGeneratorFactory.cs" />
+    <Compile Include="Solver\z3\Z3Cache.cs" />
     <Compile Include="Solver\z3\Z3Solver.cs" />
-    <Compile Include="Solver\z3\Z3VariantGenerator.cs" />
+    <Compile Include="Solver\VariantGenerator\Z3VariantGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">

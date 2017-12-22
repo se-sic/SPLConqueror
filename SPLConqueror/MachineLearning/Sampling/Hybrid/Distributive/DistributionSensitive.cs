@@ -235,7 +235,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 result[d] = new List<Configuration>();
             }
 
-            List<Configuration> allConfigurations = VariantGenerator.GenerateAllVariants(GlobalState.varModel, this.optionsToConsider);
+            List<Configuration> allConfigurations = ConfigurationBuilder.vg.GenerateAllVariants(GlobalState.varModel, this.optionsToConsider);
 
             foreach (Configuration c in allConfigurations)
             {

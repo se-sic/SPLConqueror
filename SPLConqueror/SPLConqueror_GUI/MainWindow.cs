@@ -76,7 +76,6 @@ namespace SPLConqueror_GUI
         private Dictionary<ConfigurationOption, double> factorizationPriorities =
             new Dictionary<ConfigurationOption, double>();
         private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT();
-        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator();
 
         // Everything for the measurements
         private bool measurementsLoaded = false;
@@ -460,7 +459,7 @@ namespace SPLConqueror_GUI
         {
             occuranceOfOptions.Clear();
 
-            foreach (List<BinaryOption> variant in varGen.generateAllVariantsFast(currentModel))
+            foreach (List<BinaryOption> variant in ConfigurationBuilder.vg.GenerateAllVariantsFast(currentModel))
             {
                 foreach (BinaryOption opt in variant)
                 {
@@ -1869,7 +1868,7 @@ namespace SPLConqueror_GUI
 
             populatePlot(constantChartRepl, constantValues, constantLabels);
 
-            int amountOfVariants = varGen.generateAllVariantsFast(currentModel).Count;
+            int amountOfVariants = ConfigurationBuilder.vg.GenerateAllVariantsFast(currentModel).Count;
 
             // Update max and max occurance chart
             foreach (KeyValuePair<string, double> entry in constantMaxInfluences)
