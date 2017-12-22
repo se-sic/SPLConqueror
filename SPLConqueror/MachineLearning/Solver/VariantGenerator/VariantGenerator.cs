@@ -14,7 +14,7 @@ namespace MachineLearning.Solver
     /// <summary>
     /// This class provides methods for generating all configurations of a given variability model.
     /// </summary>
-    public class VariantGenerator 
+    public class VariantGenerator : IVariantGenerator
     {
 
         private Dictionary<int, ConstraintSystemCache> _constraintSystemCache;
@@ -25,7 +25,7 @@ namespace MachineLearning.Solver
         /// <param name="vm">the variability model containing the binary options and their constraints</param>
         /// <param name="optionsToConsider">the options that should be considered. All other options are ignored</param>
         /// <returns>Returns a list of <see cref="Configuration"/></returns>
-        public static List<Configuration> GenerateAllVariants(VariabilityModel vm, List<ConfigurationOption> optionsToConsider)
+        public List<Configuration> GenerateAllVariants(VariabilityModel vm, List<ConfigurationOption> optionsToConsider)
         {
             List<Configuration> allConfigurations = new List<Configuration>();
             Dictionary<CspTerm, bool> variables;
@@ -82,7 +82,7 @@ namespace MachineLearning.Solver
         /// <param name="vm">the variability model</param>
         /// <returns><code>true</code> if the mixed constraints are satisfied by the given configuration and
         /// <code>false</code> if not.</returns>
-        private static bool FulfillsMixedConstraints(Configuration c, VariabilityModel vm)
+        public static bool FulfillsMixedConstraints(Configuration c, VariabilityModel vm)
         {
             List<MixedConstraint> mixedConstraints = vm.MixedConstraints;
             foreach(MixedConstraint constraint in mixedConstraints)
@@ -101,7 +101,7 @@ namespace MachineLearning.Solver
         /// <param name="c">the configuration to search for</param>
         /// <param name="configurations">a list containing all configurations</param>
         /// <returns><code>true</code> if the configuration is already included;<code>false</code> otherwise</returns>
-        private static bool IsInConfigurationFile(Configuration c, List<Configuration> configurations)
+        public static bool IsInConfigurationFile(Configuration c, List<Configuration> configurations)
         {
             foreach (Configuration conf in configurations)
             {
@@ -118,9 +118,9 @@ namespace MachineLearning.Solver
         /// </summary>
         /// <param name="vm">The variability model containing the binary options and their constraints.</param>
         /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present)</returns>
-        public List<List<BinaryOption>> generateAllVariantsFast(VariabilityModel vm)
+        public List<List<BinaryOption>> GenerateAllVariantsFast(VariabilityModel vm)
         {
-            return generateUpToNFast(vm, -1);
+            return GenerateUpToNFast(vm, -1);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace MachineLearning.Solver
         /// <param name="m">The variability model containing the binary options and their constraints.</param>
         /// <param name="n">The maximum number of samples that will be generated.</param>
         /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present)</returns>
-        public List<List<BinaryOption>> generateUpToNFast(VariabilityModel m, int n)
+        public List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel m, int n)
         {
             List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
             List<CspTerm> variables = new List<CspTerm>();
@@ -166,7 +166,7 @@ namespace MachineLearning.Solver
         /// <param name="treshold">Maximum number of configurations</param>
         /// <param name="modulu">Each configuration that is % modulu == 0 is taken to the result set</param>
         /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present</returns>
-        public List<List<BinaryOption>> generateRandomVariants(VariabilityModel vm, int treshold, int modulu)
+        public List<List<BinaryOption>> GenerateRandomVariants(VariabilityModel vm, int treshold, int modulu)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
@@ -329,7 +329,7 @@ namespace MachineLearning.Solver
         /// <param name="minimize">If true, we search for the smallest (in terms of selected options) valid configuration. If false, we search for the largest one.</param>
         /// <param name="unWantedOptions">Binary options that we do not want to become part of the configuration. Might be part if there is no other valid configuration without them.</param>
         /// <returns>The valid configuration (or null if there is none) that satisfies the VM and the goal.</returns>
-        public List<BinaryOption> minimizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unWantedOptions)
+        public List<BinaryOption> MinimizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unWantedOptions)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
@@ -388,7 +388,7 @@ namespace MachineLearning.Solver
         /// <param name="minimize">If true, we search for the smallest (in terms of selected options) valid configuration. If false, we search for the largest one.</param>
         /// <param name="unwantedOptions">Binary options that we do not want to become part of the configuration. Might be part if there is no other valid configuration without them</param>
         /// <returns>A list of configurations that satisfies the VM and the goal (or null if there is none).</returns>
-        public List<List<BinaryOption>> maximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedOptions)
+        public List<List<BinaryOption>> MaximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedOptions)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
@@ -470,7 +470,7 @@ namespace MachineLearning.Solver
         /// <param name="removedElements">If further options need to be removed from the given configuration to build a valid configuration, they are outputed in this list.</param>
         /// <param name="vm">The variability model containing all options and their constraints.</param>
         /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved.</returns>
-        public List<BinaryOption> generateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
+        public List<BinaryOption> GenerateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();

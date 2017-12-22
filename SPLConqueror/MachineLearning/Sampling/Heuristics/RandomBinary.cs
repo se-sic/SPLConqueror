@@ -70,8 +70,7 @@ namespace MachineLearning.Sampling.Heuristics
                 int.TryParse(parameters["seed"],out seed);
 
             // build set of all valid binary partial configurations
-            VariantGenerator vg = new VariantGenerator();
-            List<List<BinaryOption>> allConfigs = vg.generateAllVariantsFast(varModel);
+            List<List<BinaryOption>> allConfigs = ConfigurationBuilder.vg.GenerateAllVariantsFast(varModel);
 
             //repair wrong parameters
             if (numConfigs >= allConfigs.Count)

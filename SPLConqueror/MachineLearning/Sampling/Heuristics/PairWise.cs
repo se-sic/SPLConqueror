@@ -9,8 +9,6 @@ namespace MachineLearning.Sampling.Heuristics
     public class PairWise
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
-
         
 
         /// <summary>
@@ -64,7 +62,7 @@ namespace MachineLearning.Sampling.Heuristics
                         List<BinaryOption> tempConfig = new List<BinaryOption>();
                         tempConfig.Add(current);
                         tempConfig.Add(pair);
-                        tempConfig = generator.minimizeConfig(tempConfig, vm, true, null);
+                        tempConfig = ConfigurationBuilder.vg.MinimizeConfig(tempConfig, vm, true, null);
 
                         if (tempConfig.Count > 0 && !Configuration.containsBinaryConfiguration(configurations,tempConfig))
                             configurations.Add(tempConfig);

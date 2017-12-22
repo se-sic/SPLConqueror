@@ -16,6 +16,9 @@ namespace MachineLearning.Sampling
         public static Dictionary<SamplingStrategies, List<BinaryOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<BinaryOption>>();
         public static BinaryParameters binaryParams = new BinaryParameters();
 
+        // The default variant generator is the one using the CSP solver of the Microsoft solver foundation
+        public static IVariantGenerator vg = new VariantGenerator();
+
         private static List<String> blacklisted;
 
         public static void setBlacklisted(List<String> blacklist)
@@ -35,7 +38,6 @@ namespace MachineLearning.Sampling
             List<ExperimentalDesign> experimentalDesigns, List<HybridStrategy> hybridStrategies)
         {
             List<Configuration> result = new List<Configuration>();
-            VariantGenerator vg = new VariantGenerator();
 
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
             List<Dictionary<NumericOption, Double>> numericConfigs = new List<Dictionary<NumericOption, double>>();
@@ -48,12 +50,12 @@ namespace MachineLearning.Sampling
                         if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
                         {
                             List<List<BinaryOption>> variants =
-                                vg.generateAllVariantsFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]));
+                                vg.GenerateAllVariantsFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]));
                             binaryConfigs.AddRange(changeModel(vm, variants));
                         }
                         else
                         {
-                            binaryConfigs.AddRange(vg.generateAllVariantsFast(vm));
+                            binaryConfigs.AddRange(vg.GenerateAllVariantsFast(vm));
                         }
                         break;
                     case SamplingStrategies.SAT:
@@ -74,12 +76,12 @@ namespace MachineLearning.Sampling
                             if (optionsToConsider.ContainsKey(SamplingStrategies.SAT))
                             {
                                 List<List<BinaryOption>> variants =
-                                    vg.generateUpToNFast(vm.reduce(optionsToConsider[SamplingStrategies.SAT]), numberSamples);
+                                    vg.GenerateUpToNFast(vm.reduce(optionsToConsider[SamplingStrategies.SAT]), numberSamples);
                                 binaryConfigs.AddRange(changeModel(vm, variants));
                             }
                             else
                             {
-                                binaryConfigs.AddRange(vg.generateUpToNFast(vm, numberSamples));
+                                binaryConfigs.AddRange(vg.GenerateUpToNFast(vm, numberSamples));
                             }
                             numberSamples = 2;
                         }

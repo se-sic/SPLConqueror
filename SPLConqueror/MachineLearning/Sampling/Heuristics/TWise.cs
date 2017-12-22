@@ -1,4 +1,5 @@
-﻿using SPLConqueror_Core;
+﻿using MachineLearning.Solver;
+using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace MachineLearning.Sampling.Heuristics
     /// </summary>
     class TWise
     {
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
 
         public const string PARAMETER_T_NAME = "t";
 
@@ -59,7 +59,7 @@ namespace MachineLearning.Sampling.Heuristics
         {
             if (candidates.Count == t)
             {
-                candidates = generator.minimizeConfig(candidates, vm, true, null);
+                candidates = ConfigurationBuilder.vg.MinimizeConfig(candidates, vm, true, null);
                 if (candidates.Count != 0)
                 {
                     result.Add(candidates);

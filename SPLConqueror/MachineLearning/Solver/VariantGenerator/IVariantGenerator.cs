@@ -9,6 +9,15 @@ namespace MachineLearning.Solver
 {
     public interface IVariantGenerator
     {
+
+        /// <summary>
+        /// Generates all valid combinations of all configuration options in the given model.
+        /// </summary>
+        /// <param name="vm">the variability model containing the binary options and their constraints</param>
+        /// <param name="optionsToConsider">the options that should be considered. All other options are ignored</param>
+        /// <returns>Returns a list of <see cref="Configuration"/></returns>
+        List<Configuration> GenerateAllVariants(VariabilityModel vm, List<ConfigurationOption> optionsToConsider);
+
         /// <summary>
         /// Generates all valid binary combinations of all binary configurations options in the given model
         /// </summary>
@@ -24,21 +33,8 @@ namespace MachineLearning.Solver
         /// <param name="vm">The <see cref="VariabilityModel"/> to obtain solutions for.</param>
         /// <param name="n">The number of solutions to obtain.</param>
         /// <returns>A list of configurations, in which a configuration is a list of SELECTED binary options.</returns>
-        List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel vm, int n);
+        List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel vm, int n);        
 
-
-        /// <summary>
-        /// Simulates a simple method to get valid configurations of binary options of a variability model. The randomness is simulated by the modulu value.
-        /// We take only the modulu'th configuration into the result set based on the CSP solvers output.
-        /// </summary>
-        /// <param name="vm">The variability model containing the binary options and their constraints.</param>
-        /// <param name="treshold">Maximum number of configurations</param>
-        /// <param name="modulu">Each configuration that is % modulu == 0 is taken to the result set</param>
-        /// <returns>Returns a list of configurations, in which a configuration is a list of SELECTED binary options (deselected options are not present</returns>
-        List<List<BinaryOption>> GenerateRandomVariants(VariabilityModel vm, int treshold, int modulu);
-        
-
-        //Configuration size
         /// <summary>
         /// Based on a given (partial) configuration and a variability, we aim at finding the smallest (or largest if minimize == false) valid configuration that has all options.
         /// </summary>
@@ -78,5 +74,10 @@ namespace MachineLearning.Solver
         /// <param name="lastSampledConfiguration">The last included sampled configuration.</param>
         /// <returns>A list of <see cref="BinaryOption"/>, which should be selected.</returns>
         List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration);
+
+        /// <summary>
+        /// This method clears the cache if caches are used.
+        /// </summary>
+        void ClearCache();
     }
 }
