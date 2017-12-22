@@ -60,7 +60,20 @@ namespace SPLConqueror_Core
             if (file.EndsWith(".xml"))
             {
                 XmlDocument dat = new System.Xml.XmlDocument();
-                dat.Load(file);
+                try
+                {
+                    dat.Load(file);
+                } catch(FileNotFoundException)
+                {
+                    GlobalState.logError.logLine("Configuration file \"" + file + "\" coud not be found."
+                        + " Could not read configurations.");
+                    return null;
+                } catch (XmlException xmlExc)
+                {
+                    GlobalState.logError.logLine("Configuration file \"" + file + "\" has invalid xml format."
+                        + " Could not read configurations. Additional information:" + xmlExc.Message);
+                    return null;
+                }
                 return readConfigurations(dat, model);
             }
             else
@@ -429,7 +442,7 @@ namespace SPLConqueror_Core
 
             StreamReader sr = new StreamReader(file);
             
-            String[] optionOrder = new String[model.getOptions().Count - 1];
+            String[] optionOrder = new String[model.getOptions().Count];
             String[] nfpOrder = null;
 
             bool isHeader = true;
@@ -516,7 +529,22 @@ namespace SPLConqueror_Core
         //Two formats are possible: with header and 0,1s for binary selection or no header and giving the names of config options per per line (this excludex numeric options)
         private static List<Configuration> readCSV(string file, VariabilityModel model)
         {
-            StreamReader sr = new StreamReader(file);
+            StreamReader sr;
+            try
+            {
+                sr = new StreamReader(file);
+            } catch (ArgumentException)
+            {
+                GlobalState.logError.logLine("Loading a configuration file with empty filename \"\" is not possible." +
+                    " The \"all\" command requires an argument.");
+                return null;
+            } catch (FileNotFoundException)
+            {
+                GlobalState.logError.logLine("Configuration file \"" + file + "\" does not exist." +
+                    " Could not read the configuration file.");
+                return null;
+            }
+
             String line1, line2;
             if (!sr.EndOfStream)
                 line1 = sr.ReadLine();

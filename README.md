@@ -41,7 +41,7 @@ On Ubuntu 16.04
 
 1. Clone git repository
 
-2. Install Mono and MonoDevelop
+2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ und die MonoDevelop-Version 5.10.0+)
 ```
 sudo apt install mono-complete monodevelop
 ```
@@ -98,7 +98,7 @@ On Windows 10
 
 1. Clone git repository
 
-2. Install Visual Studio
+2. Install Visual Studio(Recommended: Visual Studio 2015 or newer)
 
 3. Open Visual Studio and open the solution
 
@@ -417,8 +417,8 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | learn-mirrowedFunction (alternatively: learn_mirrowedFunction) | Allows the creation of functions with the form (numericOption.maxValue - soptions). | false | true, false |
 | numberOfRounds | Defines the number of rounds the learning process have to be performed. | 70 | int |
 | backwardErrorDelta | Defines the maximum increase of the error when removing a feature from the model. | 1 | double |
-|minImprovementPerRound | Defines the minimum error in improved a round must reach before either the learning is aborted or the hierarchy is increased for hierarchy learning. | 0.1 | double |
-| withHierarchy | Defines whether we learn our model in hierarchical steps. | true | true, false |
+|minImprovementPerRound | Defines the minimum error in improved a round must reach before either the learning is aborted or the hierarchy is increased for hierarchy learning. In combination with withHierarchy instead of aborting learning, minImprovementPerRound results in increasing the hierachy level.| 0.1 | double |
+| withHierarchy | Defines whether we learn our model in hierarchical steps. | false | true, false |
 | bruteForceCandidates | Defines how candidate features are generated. | false | true, false |
 | ignoreBadFeatures | Enables an optimization: we do not want to consider candidates in the next X rounds that showed no or only a slight improvement in accuracy relative to all other candidates. | false | true, false |
 | stopOnLongRound | If true, stop learning if the whole process is running longer than 1 hour and the current round runs longer then 30 minutes. | true | true, false |
@@ -517,6 +517,7 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary pairwise``` | binary pairwise |
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
 | Binary | random | Get certain number of random valid configurations. Seed sets the seed of the random number generator. The number of configurations that will be produced is set with numConfigs(Can either be an integer, or asOW/asTWX with X being an integer). | ```binary random seed:<int> numConfigs:<int/asOW/asTWX>``` | binary random seed:10 numConfigs:asTW2 |
+| Binary | distance-based | Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance to the configurations that were previously selected. | ```binary distance-based optionWeight:<int> numConfigs:<int/asOW/asTWX>``` | binary distance-based optionWeight:1 numConfigs:10 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```numeric random sampleSize:<size> seed:<seed>``` | numeric random sampleSize:50 seed:2 |

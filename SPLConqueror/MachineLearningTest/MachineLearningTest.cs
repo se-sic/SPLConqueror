@@ -68,6 +68,7 @@ namespace MachineLearningTest
 
         private void performSimpleLearning(Commands cmd)
         {
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " withHierarchy:true");
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
@@ -105,7 +106,7 @@ namespace MachineLearningTest
         public void testBagging()
         {
             cleanUp(cmd, "");
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:true baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " withHierarchy:true bagging:true baggingNumbers:3");
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
 
             string averageModel = consoleOutput.ToString()
@@ -114,11 +115,7 @@ namespace MachineLearningTest
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
 
-            Assert.AreEqual(5, polynoms.Length);
-            Assert.AreEqual("1085.73333333333 * PAGESIZE", polynoms[0].Trim());
-            Assert.AreEqual("5.20000000000012 * DIAGNOSTIC", polynoms[1].Trim());
-            Assert.AreEqual("14.1333333333333 * HAVE_CRYPTO", polynoms[2].Trim());
-            Assert.AreEqual("24.1333333333334 * HAVE_STATISTICS", polynoms[3].Trim());
+            Assert.AreEqual(6, polynoms.Length);
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
@@ -127,7 +124,7 @@ namespace MachineLearningTest
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false withHierarchy:true baggingNumbers:3");
         }
 
         [Test, Order(3)]
