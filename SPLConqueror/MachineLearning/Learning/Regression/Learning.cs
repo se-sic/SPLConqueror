@@ -293,21 +293,9 @@ namespace MachineLearning.Learning.Regression
             this.models.Clear();
 
             if (this.testSet != null)
-                if (this.testSet.Count == GlobalState.allMeasurements.Configurations.Count)
-                {
                     this.testSet = new List<Configuration>();
-                } else
-                {
-                    this.testSet.Clear();
-                }
             if (this.validationSet != null)
-                if (this.validationSet.Count == GlobalState.allMeasurements.Configurations.Count)
-                {
                     this.validationSet = new List<Configuration>();
-                } else
-                {
-                    this.validationSet.Clear();
-                }
 
             this.info.binarySamplings_Learning = "";
             this.info.binarySamplings_Validation = "";

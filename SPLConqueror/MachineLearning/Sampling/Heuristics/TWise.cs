@@ -25,6 +25,13 @@ namespace MachineLearning.Sampling.Heuristics
         /// <returns>A list of configurations in which each configuration is represented by a list of SELECTED binary options</returns>
         public List<List<BinaryOption>> generateT_WiseVariants_new(VariabilityModel vm, int t)
         {
+            // dirty fix for twise issue
+            if (t == 1)
+            {
+                FeatureWise fw = new FeatureWise();
+                return fw.generateFeatureWiseConfigurations(vm);
+            }
+
             List<BinaryOption> candidate = new List<BinaryOption>();
             List<List<BinaryOption>> result = new List<List<BinaryOption>>();
             generatePowerSet(vm, candidate, t, result, 0);

@@ -112,7 +112,7 @@ namespace MachineLearning.Learning
         /// <summary>
         /// Defines whether we learn our model in hierachical steps
         /// </summary>
-        public bool withHierarchy = true;
+        public bool withHierarchy = false;
 
         /// <summary>
         /// Defines how candidate features are generated.  False - candidates 

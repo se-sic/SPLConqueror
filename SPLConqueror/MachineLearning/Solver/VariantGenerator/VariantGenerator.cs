@@ -381,6 +381,100 @@ namespace MachineLearning.Solver
         }
 
         /// <summary>
+        /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
+        /// to the configurations that were previously selected.
+        /// </summary>
+        /// <param name="vm">The domain for sampling.</param>
+        /// <param name="minimalConfiguration">A minimal configuration that will be used as starting point.</param>
+        /// <param name="numberToSample">The number of configurations that should be sampled.</param>
+        /// <param name="optionWeight">Weight assigned to optional binary options.</param>
+        /// <returns>A list of distance maximized configurations.</returns>
+        public List<List<BinaryOption>> distanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
+        {
+            List<Configuration> sample = new List<Configuration>();
+            List<List<BinaryOption>> convertedSample = new List<List<BinaryOption>>();
+            sample.Add(new Configuration(minimalConfiguration));
+            convertedSample.Add(minimalConfiguration);
+
+            List<CspTerm> variables = new List<CspTerm>();
+            Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
+            Dictionary<CspTerm, BinaryOption> termToElem = new Dictionary<CspTerm, BinaryOption>();
+
+
+            while (sample.Count < numberToSample)
+            {
+                ConstraintSystem S = CSPsolver.getConstraintSystem(out variables, out elemToTerm, out termToElem, vm);
+                addDistanceMaximiationGoal(sample, vm, elemToTerm, S, optionWeight);
+                ConstraintSolverSolution sol = S.Solve();
+                if (sol.HasFoundSolution)
+                {
+                    List<BinaryOption> solution = new List<BinaryOption>();
+                    foreach (CspTerm cT in variables)
+                    {
+                        if (sol.GetIntegerValue(cT) == 1)
+                            solution.Add(termToElem[cT]);
+                    }
+                    S.ResetSolver();
+                    convertedSample.Add(solution);
+                    sample.Add(new Configuration(solution));
+                }
+                else
+                {
+                    GlobalState.logInfo.logLine("No more solutions available.");
+                    return convertedSample;
+                }
+            }
+
+            return convertedSample;
+        }
+
+        private List<BinaryOption> convertToBinaryOptionList(Configuration config)
+        {
+            return config.BinaryOptions.ToList()
+                    .Where(kv => kv.Value.Equals(BinaryOption.BinaryValue.Selected))
+                    .Select(kv => kv.Key).ToList();
+        }
+
+        private void addDistanceMaximiationGoal(List<Configuration> sample, VariabilityModel vm,
+            Dictionary<BinaryOption, CspTerm> elemToTerm, ConstraintSystem cs, int weight)
+        {
+            List<CspTerm> goals = new List<CspTerm>();
+            foreach (Configuration config in sample)
+            {
+                List<CspTerm> sum = new List<CspTerm>();
+                List<BinaryOption> configInSample = convertToBinaryOptionList(config);
+
+                foreach (BinaryOption binOpt in vm.BinaryOptions)
+                {
+                    if (!configInSample.Contains(binOpt))
+                    {
+                        if (binOpt.Optional)
+                        {
+                            sum.Add(weight * elemToTerm[binOpt]);
+                        } else
+                        {
+                            sum.Add(elemToTerm[binOpt]);
+                        }
+                    }
+                    else
+                    {
+                        if (binOpt.Optional)
+                        {
+                            sum.Add(weight * (cs.Abs(elemToTerm[binOpt] - cs.Constant(1))));
+                        } else
+                        {
+                            sum.Add(cs.Abs(elemToTerm[binOpt] - cs.Constant(1)));
+                        }
+                    }
+                }
+                // negate term because we search for the biggest distance
+                goals.Add(-1 * cs.Sum(sum.ToArray()));
+            }
+            cs.TryAddMinimizationGoals(cs.Sum(goals.ToArray()));
+        }
+
+
+        /// <summary>
         /// Based on a given (partial) configuration and a variability, we aim at finding all optimally maximal or minimal (in terms of selected binary options) configurations.
         /// </summary>
         /// <param name="config">The (partial) configuration which needs to be expaned to be valid.</param>

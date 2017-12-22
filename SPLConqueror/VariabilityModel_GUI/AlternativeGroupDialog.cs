@@ -125,15 +125,8 @@ namespace VariabilitModel_GUI
         {
             ConfigurationOption selectedOption = (ConfigurationOption)selectedOptionComboBox.SelectedItem;
             List<ConfigurationOption> opts = GlobalState.varModel.getOptions()
-                .Where(option => option.Parent != null && option.Equals(selectedOption)).ToList();
-            List<ConfigurationOption> temp = new List<ConfigurationOption>();
-            foreach (ConfigurationOption opt in opts)
-            {
-                if (opt is BinaryOption)
-                {
-                    temp.Add(opt);
-                }
-            }
+                .Where(option => option.Parent != null && option.Parent.Equals(selectedOption)).ToList();
+
             foreach (ConfigurationOption thisOpt in opts)
             {
                 foreach (ConfigurationOption otherOpt in opts)
