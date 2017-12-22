@@ -15,6 +15,21 @@ namespace MachineLearning.Solver
     {
         private Dictionary<int, Z3Cache> _z3Cache;
 
+
+        /// <summary>
+        /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
+        /// to the configurations that were previously selected.
+        /// </summary>
+        /// <param name="vm">The domain for sampling.</param>
+        /// <param name="minimalConfiguration">A minimal configuration that will be used as starting point.</param>
+        /// <param name="numberToSample">The number of configurations that should be sampled.</param>
+        /// <param name="optionWeight">Weight assigned to optional binary options.</param>
+        /// <returns>A list of distance maximized configurations.</returns>
+        public List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
+        {
+            throw new NotImplementedException("Distance maximization is not yet implemented in the z3 solver. Please try the csp solver.");
+        }
+
         /// <summary>
         /// Generates all valid combinations of all configuration options in the given model.
         /// </summary>
@@ -121,11 +136,27 @@ namespace MachineLearning.Solver
             return config;
         }
 
+        /// <summary>
+        /// The method aims at finding a configuration which is similar to the given configuration, but does not contain the optionToBeRemoved. If further options need to be removed from the given configuration, they are outputed in removedElements.
+        /// </summary>
+        /// <param name="optionToBeRemoved">The binary configuration option that must not be part of the new configuration.</param>
+        /// <param name="originalConfig">The configuration for which we want to find a similar one.</param>
+        /// <param name="removedElements">If further options need to be removed from the given configuration to build a valid configuration, they are outputed in this list.</param>
+        /// <param name="vm">The variability model containing all options and their constraints.</param>
+        /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved.</returns>
         public List<BinaryOption> GenerateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Based on a given (partial) configuration and a variability, we aim at finding all optimally maximal or minimal (in terms of selected binary options) configurations.
+        /// </summary>
+        /// <param name="config">The (partial) configuration which needs to be expaned to be valid.</param>
+        /// <param name="vm">Variability model containing all options and their constraints.</param>
+        /// <param name="minimize">If true, we search for the smallest (in terms of selected options) valid configuration. If false, we search for the largest one.</param>
+        /// <param name="unwantedOptions">Binary options that we do not want to become part of the configuration. Might be part if there is no other valid configuration without them</param>
+        /// <returns>A list of configurations that satisfies the VM and the goal (or null if there is none).</returns>
         public List<List<BinaryOption>> MaximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedOptions)
         {
             throw new NotImplementedException();
@@ -169,7 +200,7 @@ namespace MachineLearning.Solver
                 for (int r = 0; r < variables.Count; r++)
                 {
                     BinaryOption currOption = termToOption[variables[r]];
-                    ArithExpr numericVariable = z3Context.MkInt(currOption.Name);
+                    ArithExpr numericVariable = z3Context.MkIntConst(currOption.Name);
 
                     int weight = 1;
                     if (unWantedOptions != null && (unWantedOptions.Contains(termToOption[variables[r]]) && !config.Contains(termToOption[variables[r]]))) {
@@ -291,7 +322,7 @@ namespace MachineLearning.Solver
                 List<BoolExpr> booleanNumericConstraints = new List<BoolExpr>();
                 foreach (BinaryOption binOpt in featureWeight.Keys)
                 {
-                    ArithExpr numericVariable = z3Context.MkInt(binOpt.Name);
+                    ArithExpr numericVariable = z3Context.MkIntConst(binOpt.Name);
                     int weight = featureWeight[binOpt];
 
                     arithmeticExpressions.Add(numericVariable);

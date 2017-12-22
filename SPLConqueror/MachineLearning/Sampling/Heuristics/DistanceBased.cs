@@ -56,9 +56,8 @@ namespace MachineLearning.Sampling.Heuristics
                 optionWeight = Int32.Parse(parameter[OPTION_WEIGHT]);
             }
 
-            Solver.VariantGenerator vg = new Solver.VariantGenerator();
-            List<BinaryOption> minimalConfiguration = vg.minimizeConfig(new List<BinaryOption>(), vm, true, null);
-            return vg.distanceMaximization(vm, minimalConfiguration, numberConfigs, optionWeight);
+            List<BinaryOption> minimalConfiguration = ConfigurationBuilder.vg.MinimizeConfig(new List<BinaryOption>(), vm, true, null);
+            return ConfigurationBuilder.vg.DistanceMaximization(vm, minimalConfiguration, numberConfigs, optionWeight);
         }
     }
 }

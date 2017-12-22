@@ -389,7 +389,7 @@ namespace MachineLearning.Solver
         /// <param name="numberToSample">The number of configurations that should be sampled.</param>
         /// <param name="optionWeight">Weight assigned to optional binary options.</param>
         /// <returns>A list of distance maximized configurations.</returns>
-        public List<List<BinaryOption>> distanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
+        public List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
         {
             List<Configuration> sample = new List<Configuration>();
             List<List<BinaryOption>> convertedSample = new List<List<BinaryOption>>();
