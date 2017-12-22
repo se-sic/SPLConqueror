@@ -9,6 +9,16 @@ namespace MachineLearning.Solver
 {
     public interface IVariantGenerator
     {
+        /// <summary>
+        /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
+        /// to the configurations that were previously selected.
+        /// </summary>
+        /// <param name="vm">The domain for sampling.</param>
+        /// <param name="minimalConfiguration">A minimal configuration that will be used as starting point.</param>
+        /// <param name="numberToSample">The number of configurations that should be sampled.</param>
+        /// <param name="optionWeight">Weight assigned to optional binary options.</param>
+        /// <returns>A list of distance maximized configurations.</returns>
+        List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight);
 
         /// <summary>
         /// Generates all valid combinations of all configuration options in the given model.
