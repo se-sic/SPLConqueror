@@ -28,11 +28,11 @@ namespace SamplingUnitTest
         private const int EXPECTED_HYPERSAMPLING_50 = 160;
         private const int EXPECTED_HYPERSAMPLING_40 = 160;
         private const int EXPECTED_ONE_FACTOR_AT_A_TIME_5 = 200;
-        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_3 = 164;
+        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_3 = 160;
         private const int EXPECTED_RANDOM_12_1 = 480;
         private const int EXPECTED_RANDOM_10_0 = 400;
         private const int EXPECTED_PLACKETT_BURMAN_3_9 = 240;
-        private const int EXPECTED_PLACKETT_BURMAN_5_125 = 328;
+        private const int EXPECTED_PLACKETT_BURMAN_5_125 = 320;
         private const int EXPECTED_KEXCHANGE_7_2 = 240;
         private const int EXPECTED_KEXCHANGE_3_1 = 120;
         private const int EXPECTED_T_WISE_3 = 588;
@@ -347,8 +347,8 @@ namespace SamplingUnitTest
         public void TestDistributionAwareSolverSelection()
         {
             // Execute the test
-            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
-                + Path.DirectorySeparatorChar;
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "DistributionAwareSolverSampling.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("seed", "0");
             parameters.Add("selection", "SolverSelection");
@@ -363,8 +363,7 @@ namespace SamplingUnitTest
             distAwSolver.SetSamplingParameters(parameters);
             hybridStrat.Add(distAwSolver);
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
-            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
-                locTemplate + "DistributionAwareSolverSampling.csv", GlobalState.varModel);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
 
             Assert.AreEqual(EXPECTED_DIST_AW_SOLVER, result.Count);
             
