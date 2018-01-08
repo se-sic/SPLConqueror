@@ -316,21 +316,21 @@ namespace MachineLearning.Solver
             }
 
             // The second goal is to minimize the weight (only if not null)
-            if (featureWeight != null)
-            {
-                List<ArithExpr> arithmeticExpressions = new List<ArithExpr>();
-                List<BoolExpr> booleanNumericConstraints = new List<BoolExpr>();
-                foreach (BinaryOption binOpt in featureWeight.Keys)
-                {
-                    ArithExpr numericVariable = z3Context.MkIntConst(binOpt.Name);
-                    int weight = featureWeight[binOpt];
+            //if (featureWeight != null)
+            //{
+            //    List<ArithExpr> arithmeticExpressions = new List<ArithExpr>();
+            //    List<BoolExpr> booleanNumericConstraints = new List<BoolExpr>();
+            //    foreach (BinaryOption binOpt in featureWeight.Keys)
+            //    {
+            //        ArithExpr numericVariable = z3Context.MkIntConst(binOpt.Name);
+            //        int weight = featureWeight[binOpt];
 
-                    arithmeticExpressions.Add(numericVariable);
-                    booleanNumericConstraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(optionToTerm[binOpt], z3Context.MkInt(weight), z3Context.MkInt(0))));
-                }
-                optimizer.Assert(booleanNumericConstraints.ToArray());
-                optimizer.MkMinimize(z3Context.MkAdd(arithmeticExpressions.ToArray()));
-            }
+            //        arithmeticExpressions.Add(numericVariable);
+            //        booleanNumericConstraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(optionToTerm[binOpt], z3Context.MkInt(weight), z3Context.MkInt(0))));
+            //    }
+            //    optimizer.Assert(booleanNumericConstraints.ToArray());
+            //    optimizer.MkMinimize(z3Context.MkAdd(arithmeticExpressions.ToArray()));
+            //}
 
             
             // Solve the model and return the configuration
