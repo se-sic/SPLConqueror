@@ -260,43 +260,43 @@ namespace MachineLearning.Solver
             Dictionary<BinaryOption, BoolExpr> optionToTerm = null;
             Tuple<Context, BoolExpr> z3Tuple;
             Context z3Context;
-            Optimize optimizer;
+            Microsoft.Z3.Solver solver;
 
             // Reuse the solver if it is already in the cache
             if (this._z3Cache.Keys.Contains(numberSelectedFeatures))
             {
                 Z3Cache cache = this._z3Cache[numberSelectedFeatures];
                 z3Context = cache.GetContext();
-                optimizer = cache.GetOptimizer();
+                solver = cache.GetSolver();
                 variables = cache.GetVariables();
                 termToOption = cache.GetTermToOptionMapping();
                 optionToTerm = cache.GetOptionToTermMapping();
 
                 // Remove the previous optimization goal
-                optimizer.Pop();
+                solver.Pop();
 
                 if (lastSampledConfiguration != null)
                 {
                     // Add the previous configurations as constraints
-                    optimizer.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
+                    solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
                 }
 
                 // Create a new backtracking point for the next run
-                optimizer.Push();
+                solver.Push();
 
             } else
             {
                 z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
                 z3Context = z3Tuple.Item1;
                 BoolExpr z3Constraints = z3Tuple.Item2;
-                optimizer = z3Context.MkOptimize();
+                solver = z3Context.MkSolver();
 
-                optimizer.Assert(z3Constraints);
+                solver.Assert(z3Constraints);
 
                 if (lastSampledConfiguration != null)
                 {
                     // Add the previous configurations as constraints
-                    optimizer.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
+                    solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
                 }
 
                 // The first goal of this method is, to have an exact number of features selected
@@ -307,36 +307,18 @@ namespace MachineLearning.Solver
                 {
                     neutralWeights[i] = 1;
                 }
-                optimizer.Assert(z3Context.MkPBEq(neutralWeights, variables.ToArray(), numberSelectedFeatures));
+                solver.Assert(z3Context.MkPBEq(neutralWeights, variables.ToArray(), numberSelectedFeatures));
 
                 // Create a backtracking point before adding the optimization goal
-                optimizer.Push();
+                solver.Push();
 
-                this._z3Cache[numberSelectedFeatures] = new Z3Cache(z3Context, optimizer, variables, optionToTerm, termToOption);
+                this._z3Cache[numberSelectedFeatures] = new Z3Cache(z3Context, solver, variables, optionToTerm, termToOption);
             }
-
-            // The second goal is to minimize the weight (only if not null)
-            //if (featureWeight != null)
-            //{
-            //    List<ArithExpr> arithmeticExpressions = new List<ArithExpr>();
-            //    List<BoolExpr> booleanNumericConstraints = new List<BoolExpr>();
-            //    foreach (BinaryOption binOpt in featureWeight.Keys)
-            //    {
-            //        ArithExpr numericVariable = z3Context.MkIntConst(binOpt.Name);
-            //        int weight = featureWeight[binOpt];
-
-            //        arithmeticExpressions.Add(numericVariable);
-            //        booleanNumericConstraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(optionToTerm[binOpt], z3Context.MkInt(weight), z3Context.MkInt(0))));
-            //    }
-            //    optimizer.Assert(booleanNumericConstraints.ToArray());
-            //    optimizer.MkMinimize(z3Context.MkAdd(arithmeticExpressions.ToArray()));
-            //}
-
             
             // Solve the model and return the configuration
-            if (optimizer.Check() == Status.SATISFIABLE)
+            if (solver.Check() == Status.SATISFIABLE)
             {
-                Model model = optimizer.Model;
+                Model model = solver.Model;
                 return RetrieveConfiguration(variables, model, termToOption);
             } else
             {
