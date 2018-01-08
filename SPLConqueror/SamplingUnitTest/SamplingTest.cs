@@ -39,7 +39,7 @@ namespace SamplingUnitTest
         private const int EXPECTED_T_WISE_2 = 280;
         private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
         private const int EXPECTED_DIST_AW = 40;
-        private const int EXPECTED_DIST_AW_SOLVER = 40;
+        private const int EXPECTED_DIST_AW_SOLVER = 280;
         private const int EXPECTED_DIST_PRESERVING = 40;
 
         [Test, Order(1)]
