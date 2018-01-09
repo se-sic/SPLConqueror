@@ -357,6 +357,12 @@ namespace MachineLearning.Learning.Regression
             if (this.MLsettings.parallelization)
                 Task.WaitAll(tasks.ToArray());
 
+            // if no influences were found, null is returned
+            if (errorOfFeature.Count == 0)
+            {
+                return null;
+            }
+
             // Evaluation of the candidates
             List<Feature> sortedFeatures = errorOfFeature.Keys.ToList();
             sortedFeatures.Sort(sortedFeatures.First());
