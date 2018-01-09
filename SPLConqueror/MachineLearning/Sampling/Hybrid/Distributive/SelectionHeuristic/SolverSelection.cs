@@ -77,7 +77,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 }
 
                 // Now select the configuration by using the solver
-                List<BinaryOption> solution = ConfigurationBuilder.vg.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight, selectedConfigurationsFromBucket[currentBucket]);
+                List<BinaryOption> solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel, distanceOfBucket, selectedConfigurationsFromBucket[currentBucket]);
 
                 // If a bucket was selected that now contains no more configurations, repeat the procedure
                 if (solution == null)
