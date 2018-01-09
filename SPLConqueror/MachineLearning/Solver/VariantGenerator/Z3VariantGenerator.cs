@@ -248,7 +248,7 @@ namespace MachineLearning.Solver
             return result;
         }
 
-        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration)
+        public List<BinaryOption> GenerateConfigurationFromBucket(VariabilityModel vm, int numberSelectedFeatures, Configuration lastSampledConfiguration)
         {
             if (_z3Cache == null)
             {

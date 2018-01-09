@@ -76,14 +76,13 @@ namespace MachineLearning.Solver
         List<BinaryOption> GenerateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm);
 
         /// <summary>
-        /// This method returns a configuration, which is minimal according to the given featureweight.
+        /// This method returns a configuration with the given number of selected features.
         /// </summary>
         /// <param name="vm">The variability model containing all options and their constraints.</param>
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
-        /// <param name="featureWeight">The weight of every feature.</param>
         /// <param name="lastSampledConfiguration">The last included sampled configuration.</param>
         /// <returns>A list of <see cref="BinaryOption"/>, which should be selected.</returns>
-        List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration);
+        List<BinaryOption> GenerateConfigurationFromBucket(VariabilityModel vm, int numberSelectedFeatures, Configuration lastSampledConfiguration);
 
         /// <summary>
         /// This method clears the cache if caches are used.
