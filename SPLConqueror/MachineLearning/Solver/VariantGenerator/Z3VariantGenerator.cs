@@ -272,17 +272,14 @@ namespace MachineLearning.Solver
                 termToOption = cache.GetTermToOptionMapping();
                 optionToTerm = cache.GetOptionToTermMapping();
 
-                // Remove the previous optimization goal
-                solver.Pop();
-
                 if (lastSampledConfiguration != null)
                 {
                     // Add the previous configurations as constraints
                     solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
-                }
 
-                // Create a new backtracking point for the next run
-                solver.Push();
+                    // Create a new backtracking point for the next run
+                    solver.Push();
+                }
 
             } else
             {
@@ -299,7 +296,7 @@ namespace MachineLearning.Solver
                     solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, lastSampledConfiguration.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm)));
                 }
 
-                // The first goal of this method is, to have an exact number of features selected
+                // The goal of this method is, to have an exact number of features selected
 
                 // Therefore, initialize an integer array with the value '1' for the pseudo-boolean equal function
                 int[] neutralWeights = new int[variables.Count];
