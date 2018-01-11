@@ -15,7 +15,7 @@ namespace MachineLearning.Solver
     {
         private Dictionary<int, Z3Cache> _z3Cache;
 
-
+        private int features = 1;
         /// <summary>
         /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
         /// to the configurations that were previously selected.
@@ -28,6 +28,15 @@ namespace MachineLearning.Solver
         public List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
         {
             throw new NotImplementedException("Distance maximization is not yet implemented in the z3 solver. Please try the csp solver.");
+        }
+
+        /// <summary>
+        /// The number of features that will be used for weight minimization.
+        /// </summary>
+        /// <param name="features">Number of features.</param>
+        public void setNumberFeatures(int features)
+        {
+            this.features = features;
         }
 
         /// <summary>
@@ -61,10 +70,12 @@ namespace MachineLearning.Solver
                 {
                     allConfigurations.Add(c);
                 }
-
-                solver.Assert(Z3Solver.ConvertConfiguration(z3Context, binOpts, optionToTerm, vm));
+                solver.Push();
+                solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, binOpts, optionToTerm, vm)));
             }
 
+            solver.Push();
+            solver.Pop(Convert.ToUInt32(allConfigurations.Count() + 1));
             return allConfigurations;
         }
 
@@ -116,7 +127,15 @@ namespace MachineLearning.Solver
             return configurations;
         }
 
-        private List<BinaryOption> RetrieveConfiguration(List<BoolExpr> variables, Model model, Dictionary<BoolExpr, BinaryOption> termToOption, List<ConfigurationOption> optionsToConsider = null)
+        /// <summary>
+        /// Parses a z3 solution into a configuration.
+        /// </summary>
+        /// <param name="variables">List of all variables in the z3 context.</param>
+        /// <param name="model">Solution of the context.</param>
+        /// <param name="termToOption">Map from variables to binary options.</param>
+        /// <param name="optionsToConsider">The options that are considered for the solution.</param>
+        /// <returns>Configuration parsed from the solution.</returns>
+        public static List<BinaryOption> RetrieveConfiguration(List<BoolExpr> variables, Model model, Dictionary<BoolExpr, BinaryOption> termToOption, List<ConfigurationOption> optionsToConsider = null)
         {
             List<BinaryOption> config = new List<BinaryOption>();
             foreach (BoolExpr variable in variables)
@@ -255,6 +274,9 @@ namespace MachineLearning.Solver
                 _z3Cache = new Dictionary<int, Z3Cache>();
             }
 
+            List<KeyValuePair<BinaryOption,int>> featureRanking = featureWeight.ToList();
+            featureRanking.Sort((first, second) => first.Value.CompareTo(second.Value));
+
             List<BoolExpr> variables = null;
             Dictionary<BoolExpr, BinaryOption> termToOption = null;
             Dictionary<BinaryOption, BoolExpr> optionToTerm = null;
@@ -271,9 +293,6 @@ namespace MachineLearning.Solver
                 variables = cache.GetVariables();
                 termToOption = cache.GetTermToOptionMapping();
                 optionToTerm = cache.GetOptionToTermMapping();
-
-                // Remove the previous optimization goal
-                solver.Pop();
 
                 if (lastSampledConfiguration != null)
                 {
@@ -315,11 +334,22 @@ namespace MachineLearning.Solver
                 this._z3Cache[numberSelectedFeatures] = new Z3Cache(z3Context, solver, variables, optionToTerm, termToOption);
             }
             
-            // Solve the model and return the configuration
+            // Check if there is still a solution available by finding the first satisfiable configuration
             if (solver.Check() == Status.SATISFIABLE)
             {
                 Model model = solver.Model;
-                return RetrieveConfiguration(variables, model, termToOption);
+                List<BinaryOption> possibleSolution = RetrieveConfiguration(variables, model, termToOption);
+                List<BinaryOption> approximateOptimal = WeightMinimizer
+                    .getSmallWeightConfig(featureRanking, this._z3Cache[numberSelectedFeatures], features, numberSelectedFeatures, vm);
+
+                if (approximateOptimal == null)
+                {
+                    return possibleSolution;
+                } else
+                {
+                    return approximateOptimal;
+                }
+
             } else
             {
                 return null;

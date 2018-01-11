@@ -17,6 +17,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         // The seed for the random-class
         private int seed = 0;
 
+        // number of features considered for weight optimization
+        private int features = 1;
+
         /// <summary>
         /// Initializes a new instance of the
         /// <see cref="MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic.SolverSelection"/> class.
@@ -32,6 +35,15 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         public void setSeed(int seed)
         {
             this.seed = seed;
+        }
+
+        /// <summary>
+        /// Sets the number of features, that will be considered for weight optimization.
+        /// </summary>
+        /// <param name="features">The number of features.</param>
+        public void setNumberFeatures(int features)
+        {
+            this.features = features;
         }
 
         /// <summary>
@@ -76,8 +88,14 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                     continue;
                 }
 
+                if (ConfigurationBuilder.vg is Solver.Z3VariantGenerator)
+                {
+                    ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setNumberFeatures(this.features);
+                }
+
                 // Now select the configuration by using the solver
-                List<BinaryOption> solution = ConfigurationBuilder.vg.WeightMinimization(GlobalState.varModel, distanceOfBucket, featureWeight, selectedConfigurationsFromBucket[currentBucket]);
+                List<BinaryOption> solution = ConfigurationBuilder.vg.WeightMinimization(GlobalState.varModel,
+                    distanceOfBucket, featureWeight, selectedConfigurationsFromBucket[currentBucket]);
 
                 // If a bucket was selected that now contains no more configurations, repeat the procedure
                 if (solution == null)
