@@ -28,6 +28,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const string ONLY_BINARY = "onlyBinary";
         public const string SEED = "seed";
         public const string SELECTION_HEURISTIC = "selection";
+        public const string OPTIONS_FOR_WEIGHTOPTIMIZATION = "number-weight-optimization";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
         public static Distribution[] distributions = { new UniformDistribution() };
@@ -52,7 +53,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {ONLY_NUMERIC, "false" },
                 {ONLY_BINARY, "false" },
                 {SEED, "0" },
-                {SELECTION_HEURISTIC, "RandomSelection" }
+                {SELECTION_HEURISTIC, "RandomSelection" },
+                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "1" }
             };
         }
 
@@ -139,6 +141,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                     int seed = 0;
                     Int32.TryParse (this.strategyParameter [SEED], out seed);
                     ((SolverSelection)selection).setSeed (seed);
+                    int numberFeatures = 1;
+                    Int32.TryParse(this.strategyParameter[OPTIONS_FOR_WEIGHTOPTIMIZATION], out numberFeatures);
+                    ((SolverSelection)selection).setNumberFeatures(numberFeatures);
                 }
             } else
             {
