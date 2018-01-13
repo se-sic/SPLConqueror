@@ -114,11 +114,14 @@ namespace MachineLearningTest
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
 
-            Assert.AreEqual(5, polynoms.Length);
-            Assert.AreEqual("1085.73333333333 * PAGESIZE", polynoms[0].Trim());
-            Assert.AreEqual("5.20000000000012 * DIAGNOSTIC", polynoms[1].Trim());
-            Assert.AreEqual("14.1333333333333 * HAVE_CRYPTO", polynoms[2].Trim());
-            Assert.AreEqual("24.1333333333334 * HAVE_STATISTICS", polynoms[3].Trim());
+            Assert.AreEqual(9, polynoms.Length);
+            Assert.AreEqual("1884.70793650794 * PAGESIZE", polynoms[0].Trim());
+            Assert.AreEqual("209.292063492063 * DIAGNOSTIC", polynoms[1].Trim());
+            Assert.AreEqual("245.514285714285 * HAVE_CRYPTO", polynoms[2].Trim());
+            Assert.AreEqual("213.780952380952 * HAVE_SEQUENCE", polynoms[3].Trim());
+            Assert.AreEqual("210.047619047619 * HAVE_REPLICATION", polynoms[4].Trim());
+            Assert.AreEqual("96.9142857142858 * HAVE_VERIFY", polynoms[5].Trim());
+            Assert.AreEqual("93.4476190476191 * HAVE_HASH", polynoms[6].Trim());
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
@@ -177,7 +180,7 @@ namespace MachineLearningTest
             isExpected &= variables[0].Equals("PAGESIZE");
             isExpected &= variables[1].Equals("CS16MB");
             isExpected &= Math.Round(coefficients[0], 2) == 1955.51;
-            isExpected &= Math.Round(coefficients[1], 2) == 125.68;
+            isExpected &= Math.Round(coefficients[1], 2) == 125.69;
             return isExpected;
         }
 
