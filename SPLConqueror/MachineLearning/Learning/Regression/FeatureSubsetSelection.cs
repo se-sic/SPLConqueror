@@ -212,7 +212,10 @@ namespace MachineLearning.Learning.Regression
                 previous = current;
                 current = performForwardStep(previous);
                 if (current == null)
+                {
+                    updateInfluenceModel();
                     return;
+                }
                 learningHistory.Add(current);
                 GlobalState.logInfo.logLine(current.ToString());
 

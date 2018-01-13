@@ -176,8 +176,8 @@ namespace MachineLearningTest
             isExpected &= variables.Count == 2;
             isExpected &= variables[0].Equals("PAGESIZE");
             isExpected &= variables[1].Equals("CS16MB");
-            isExpected &= Math.Round(coefficients[0], 2) == 1657.71;
-            isExpected &= Math.Round(coefficients[1], 2) == -36.11;
+            isExpected &= Math.Round(coefficients[0], 2) == 1955.51;
+            isExpected &= Math.Round(coefficients[1], 2) == 125.68;
             return isExpected;
         }
 
