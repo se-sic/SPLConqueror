@@ -18,7 +18,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         private int seed = 0;
 
         // number of features considered for weight optimization
-        private int features = 1;
+        private Tuple<int, int> featureRange = new Tuple<int, int>(1,1);
 
         /// <summary>
         /// Initializes a new instance of the
@@ -41,9 +41,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// Sets the number of features, that will be considered for weight optimization.
         /// </summary>
         /// <param name="features">The number of features.</param>
-        public void setNumberFeatures(int features)
+        public void setNumberFeatures(Tuple<int, int> featureRange)
         {
-            this.features = features;
+            this.featureRange = featureRange;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             }
 
             // Create and initialize the weight function
-            Dictionary<BinaryOption, int> featureWeight = InitializeWeightDict(GlobalState.varModel);
+            Dictionary<List<BinaryOption>, int> featureWeight = InitializeWeightDict(GlobalState.varModel);
 
             bool[] noSamples = new bool[allBuckets.Count];
 
@@ -90,7 +90,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 if (ConfigurationBuilder.vg is Solver.Z3VariantGenerator)
                 {
-                    ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setNumberFeatures(this.features);
+                    ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setNumberFeatures(this.featureRange);
                 }
 
                 // Now select the configuration by using the solver
@@ -126,17 +126,73 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// </summary>
         /// <returns>A new dictionary with initialized values.</returns>
         /// <param name="vm">The variability model.</param>
-        private Dictionary<BinaryOption, int> InitializeWeightDict(VariabilityModel vm)
+        private Dictionary<List<BinaryOption>, int> InitializeWeightDict(VariabilityModel vm)
         {
             List<BinaryOption> features = vm.BinaryOptions;
-            Dictionary<BinaryOption, int> weights = new Dictionary<BinaryOption, int>();
+            Dictionary<List<BinaryOption>, int> weights = new Dictionary<List<BinaryOption>, int>();
 
-            foreach (BinaryOption binOpt in features)
+            List<List<BinaryOption>> allCombinations = BuildAllCombinations(vm, new List<BinaryOption>());
+
+            foreach (List<BinaryOption> combination in allCombinations)
             {
-                weights.Add(binOpt, 0);
+                weights.Add (combination, 0);
             }
 
             return weights;
+        }
+
+        /// <summary>
+        /// Builds all combinations of features according to feature range.
+        /// Thereby, mandatory features are excluded.
+        /// </summary>
+        /// <returns>All combinations of features according to the feature range.</returns>
+        /// <param name="vm">The variability model.</param>
+        /// <param name="listToExpand">The current list of binary options.</param>
+        private List<List<BinaryOption>> BuildAllCombinations (VariabilityModel vm, List<BinaryOption> listToExpand) {
+            List<List<BinaryOption>> result = new List<List<BinaryOption>> ();
+            if (listToExpand.Count == featureRange.Item2) {
+                return result;
+            }
+            List<BinaryOption> localCopy = new List<BinaryOption> (listToExpand);
+
+            foreach (BinaryOption binOpt in vm.BinaryOptions) {
+                // Skip mandatory features since they are included in every configuration
+                if (!binOpt.Optional && binOpt.Excluded_Options.Count == 0) {
+                    continue;
+                }
+
+                if (!listToExpand.Contains (binOpt)) {
+                    localCopy.Add (binOpt);
+                    if (!TestExcludedOptions(localCopy)) {
+                        result.Add (localCopy);
+                        result.AddRange(BuildAllCombinations (vm, localCopy));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static bool TestExcludedOptions(List<BinaryOption> binOpts)
+        {
+            if (binOpts.Count == 1)
+            {
+                return true;
+            } else
+            {
+                List<BinaryOption> excluded = new List<BinaryOption>();
+                binOpts.ForEach(opt => opt.Excluded_Options.
+                    ForEach(nonValid => excluded.AddRange(nonValid.Select(confOpt => (BinaryOption)confOpt))));
+
+                foreach (BinaryOption binOpt in binOpts)
+                {
+                    if (excluded.Contains(binOpt))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
 
         /// <summary>
@@ -145,12 +201,18 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// <param name="vm">The variability model.</param>
         /// <param name="weights">The dictionary containing the number of features in all configurations.</param>
         /// <param name="addedConfiguration">The newly added configuration.</param>
-        private void UpdateWeights(VariabilityModel vm, Dictionary<BinaryOption, int> weights, Configuration addedConfiguration) {
+        private void UpdateWeights(VariabilityModel vm, Dictionary<List<BinaryOption>, int> weights, Configuration addedConfiguration) {
             List<BinaryOption> features = vm.BinaryOptions;
 
-            foreach (BinaryOption binOpt in features) {
-                if (addedConfiguration.BinaryOptions.ContainsKey(binOpt) && addedConfiguration.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected) {
-                    weights [binOpt]++;
+            foreach (List<BinaryOption> combination in weights.Keys) {
+                bool isIncluded = true;
+                foreach (BinaryOption binOpt in combination) {
+                    if (!addedConfiguration.BinaryOptions.ContainsKey (binOpt) || addedConfiguration.BinaryOptions [binOpt] == BinaryOption.BinaryValue.Deselected) {
+                        isIncluded = false;
+                    }
+                }
+                if (isIncluded) {
+                    weights [combination]++;
                 }
             }
         }

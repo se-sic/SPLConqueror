@@ -210,7 +210,7 @@ namespace MachineLearning.Solver
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
         /// <param name="featureWeight">The weight for the selection of each feature. This parameter is <code>null</code> if not needed.</param>
         /// <param name="sampledConfigurations">The sampled configurations until now.</param>
-        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration) {
+        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<List<BinaryOption>, int> featureWeight, Configuration lastSampledConfiguration) {
             if (this._constraintSystemCache == null)
             {
                 this._constraintSystemCache = new Dictionary<int, ConstraintSystemCache>();
@@ -256,17 +256,17 @@ namespace MachineLearning.Solver
                 this._constraintSystemCache.Add(numberSelectedFeatures, new ConstraintSystemCache(S, variables, elemToTerm, termToElem));
             }
 
+            // TODO: Outdated
             // The second goal is to minimize the weight (only if not null)
-            if (featureWeight != null)
-            {
-                List<CspTerm> weights = new List<CspTerm>();
-                foreach (CspTerm variable in variables)
-                {
-                    weights.Add(S.Constant(featureWeight[termToElem[variable]]));
-                }
-                // Minimize the sum product of the variables and the weights
-                S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
-            }
+            //if (featureWeight != null)
+            //{
+            //    List<CspTerm> weights = new List<CspTerm>();
+            //    foreach (CspTerm variable in variables) {
+            //        weights.Add (S.Constant (featureWeight [termToElem [variable]]));
+            //    }
+            //    // Minimize the sum product of the variables and the weights
+            //    S.TryAddMinimizationGoals(S.SumProduct(variables.ToArray(), weights.ToArray()));
+            //}
 
             // Next, solve the constraint system
             ConstraintSolverSolution soln = S.Solve();
