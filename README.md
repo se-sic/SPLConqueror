@@ -454,6 +454,22 @@ or
 nfp nfp2
 ```
 
+#### Configuring the solver
+
+```
+solver <the_solver_to_use>
+```
+
+Using this command, the solver is selected, which should be used to select valid configurations.
+Currently, the following solver can be selected:
+
+| Name  | Description | Command | 
+| :---: | :---------: | :-----------: |
+| Microsoft Solver Foundation | The solver of the [Microsoft Solver Foundation](https://msdn.microsoft.com/en-us/library/ff524509(v=vs.93).aspx). | solver msf |
+| Z3 | The [Z3 solver](https://github.com/Z3Prover/z3). | solver z3 |
+
+By default, the solver from the Microsoft Solver Foundation is used to select valid configurations.
+
 #### Learning with all measurements
 
 To enable learning with all measurements, use ```select-all-measurements true``` command. After that just use the ```learn-splconqueror``` command for learning.
@@ -516,7 +532,7 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | featurewise | Determines all required binary options and then adds options until a valid configuration is reached. | ```binary featurewise``` | binary featurewise |
 | Binary | pairwise | Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary pairwise``` | binary pairwise |
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
-| Binary | random | Get certain number of random valid configurations. Seed sets the seed of the random number generator. The number of configurations that will be produced is set with numConfigs(Can either be an integer, or asOW/asTWX with X being an integer). | ```binary random seed:<int> numConfigs:<int/asOW/asTWX>``` | binary random seed:10 numConfigs:asTW2 |
+| Binary | random | Get certain number of random valid configurations. Seed sets the seed of the random number generator. The number of configurations that will be produced is set with numConfigs(Can either be an integer, or asOW/asTWX with X being an integer). If the whole population should not be computed but read in from a file, the fromFile-option should be used. | ```binary random seed:<int> numConfigs:<int/asOW/asTWX> fromFile:<csvFile>``` | binary random seed:10 numConfigs:asTW2 |
 | Binary | distance-based | Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance to the configurations that were previously selected. | ```binary distance-based optionWeight:<int> numConfigs:<int/asOW/asTWX>``` | binary distance-based optionWeight:1 numConfigs:10 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
