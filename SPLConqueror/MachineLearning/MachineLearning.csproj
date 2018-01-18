@@ -127,7 +127,6 @@
     <Compile Include="Sampling\Hybrid\Distributive\SelectionHeuristic\RandomSelection.cs" />
     <Compile Include="Sampling\Hybrid\Hybrid.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
-    <Compile Include="Solver\WeightMinimizer\WeightMinimizer.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
     <Compile Include="Solver\ConstraintSystemCache.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
@@ -143,6 +142,7 @@
     <Compile Include="Solver\z3\Z3Cache.cs" />
     <Compile Include="Solver\z3\Z3Solver.cs" />
     <Compile Include="Solver\VariantGenerator\Z3VariantGenerator.cs" />
+    <Compile Include="Solver\z3\WeightMinimizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">

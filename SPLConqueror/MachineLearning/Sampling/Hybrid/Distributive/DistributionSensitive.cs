@@ -54,7 +54,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {ONLY_BINARY, "false" },
                 {SEED, "0" },
                 {SELECTION_HEURISTIC, "RandomSelection" },
-                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "1" }
+                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "1-1" }
             };
         }
 
@@ -141,9 +141,24 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                     int seed = 0;
                     Int32.TryParse (this.strategyParameter [SEED], out seed);
                     ((SolverSelection)selection).setSeed (seed);
-                    int numberFeatures = 1;
-                    Int32.TryParse(this.strategyParameter[OPTIONS_FOR_WEIGHTOPTIMIZATION], out numberFeatures);
-                    ((SolverSelection)selection).setNumberFeatures(numberFeatures);
+                    Tuple<int, int> numberFeatureRange = new Tuple<int, int>(1,1);
+                    if (this.strategyParameter [OPTIONS_FOR_WEIGHTOPTIMIZATION].Contains ("-")) {
+                        string[] range = this.strategyParameter [OPTIONS_FOR_WEIGHTOPTIMIZATION].Split ('-');
+                        if (range.Length > 2) {
+                            throw new ArgumentException ("The argument " + OPTIONS_FOR_WEIGHTOPTIMIZATION + 
+                                " has to consist of at most two numbers separated by a minus sign ('-').");
+                        }
+                        int first = 1;
+                        int second = 1;
+                        Int32.TryParse (range [0], out first);
+                        Int32.TryParse (range [1], out second);
+                        numberFeatureRange = new Tuple<int, int> (first, second);
+                    } else {
+                        int numberFeatures = 1;
+                        Int32.TryParse (this.strategyParameter [OPTIONS_FOR_WEIGHTOPTIMIZATION], out numberFeatures);
+                        numberFeatureRange = new Tuple<int, int> (numberFeatures, numberFeatures);
+                    }
+                    ((SolverSelection)selection).setNumberFeatures(numberFeatureRange);
                 }
             } else
             {

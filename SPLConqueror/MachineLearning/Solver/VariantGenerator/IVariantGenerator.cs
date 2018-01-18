@@ -80,10 +80,10 @@ namespace MachineLearning.Solver
         /// </summary>
         /// <param name="vm">The variability model containing all options and their constraints.</param>
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
-        /// <param name="featureWeight">The weight of every feature.</param>
+        /// <param name="featureWeight">The weight of certain feature combinations.</param>
         /// <param name="lastSampledConfiguration">The last included sampled configuration.</param>
         /// <returns>A list of <see cref="BinaryOption"/>, which should be selected.</returns>
-        List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration);
+        List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<List<BinaryOption>, int> featureWeight, Configuration lastSampledConfiguration);
 
         /// <summary>
         /// This method clears the cache if caches are used.

@@ -15,7 +15,7 @@ namespace MachineLearning.Solver
     {
         private Dictionary<int, Z3Cache> _z3Cache;
 
-        private int features = 1;
+        private Tuple<int, int> featureRange = new Tuple<int, int>(1,1);
         /// <summary>
         /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
         /// to the configurations that were previously selected.
@@ -34,9 +34,9 @@ namespace MachineLearning.Solver
         /// The number of features that will be used for weight minimization.
         /// </summary>
         /// <param name="features">Number of features.</param>
-        public void setNumberFeatures(int features)
+        public void setNumberFeatures(Tuple<int, int> featureRange)
         {
-            this.features = features;
+            this.featureRange = featureRange;
         }
 
         /// <summary>
@@ -267,14 +267,14 @@ namespace MachineLearning.Solver
             return result;
         }
 
-        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<BinaryOption, int> featureWeight, Configuration lastSampledConfiguration)
+        public List<BinaryOption> WeightMinimization(VariabilityModel vm, int numberSelectedFeatures, Dictionary<List<BinaryOption>, int> featureWeight, Configuration lastSampledConfiguration)
         {
             if (_z3Cache == null)
             {
                 _z3Cache = new Dictionary<int, Z3Cache>();
             }
 
-            List<KeyValuePair<BinaryOption,int>> featureRanking = featureWeight.ToList();
+            List<KeyValuePair<List<BinaryOption>,int>> featureRanking = featureWeight.ToList();
             featureRanking.Sort((first, second) => first.Value.CompareTo(second.Value));
 
             List<BoolExpr> variables = null;
@@ -340,7 +340,7 @@ namespace MachineLearning.Solver
                 Model model = solver.Model;
                 List<BinaryOption> possibleSolution = RetrieveConfiguration(variables, model, termToOption);
                 List<BinaryOption> approximateOptimal = WeightMinimizer
-                    .getSmallWeightConfig(featureRanking, this._z3Cache[numberSelectedFeatures], features, numberSelectedFeatures, vm);
+                    .getSmallWeightConfig(featureRanking, this._z3Cache[numberSelectedFeatures], vm);
 
                 if (approximateOptimal == null)
                 {
