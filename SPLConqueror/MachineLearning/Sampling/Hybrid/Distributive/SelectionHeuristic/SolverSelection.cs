@@ -153,9 +153,10 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             if (listToExpand.Count == featureRange.Item2) {
                 return result;
             }
-            List<BinaryOption> localCopy = new List<BinaryOption> (listToExpand);
 
             foreach (BinaryOption binOpt in vm.BinaryOptions) {
+                List<BinaryOption> localCopy = new List<BinaryOption>(listToExpand);
+
                 // Skip mandatory features since they are included in every configuration
                 if (!binOpt.Optional && binOpt.Excluded_Options.Count == 0) {
                     continue;
@@ -163,14 +164,45 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 if (!listToExpand.Contains (binOpt)) {
                     localCopy.Add (binOpt);
-                    if (!TestExcludedOptions(localCopy)) {
-                        result.Add (localCopy);
-                        result.AddRange(BuildAllCombinations (vm, localCopy));
+                    if (TestExcludedOptions(localCopy)) {
+                        if (localCopy.Count >= featureRange.Item1) {
+                            result.Add (localCopy);
+                        }
+
+                        // Add the elements if they are not already included in another order
+                        List<List<BinaryOption>> allCombinations = BuildAllCombinations(vm, localCopy);
+                        foreach (List<BinaryOption> combination in allCombinations) {
+                            if (!IsIncluded(result, combination)) {
+                                result.Add (combination);
+                            }
+                        }
                     }
                 }
             }
 
             return result;
+        }
+
+        private static bool IsIncluded(List<List<BinaryOption>> allCombinations, List<BinaryOption> combinationToFind) {
+            foreach (List<BinaryOption> combination in allCombinations) {
+                List<BinaryOption> allRelevantOptions = new List<BinaryOption> ();
+                allRelevantOptions.AddRange (combination);
+                allRelevantOptions.AddRange (combinationToFind);
+
+                if (combination.Count == combinationToFind.Count) {
+                    bool found = true;
+                    foreach (BinaryOption binOpt in allRelevantOptions) {
+                        if (!combination.Contains (binOpt) || !combinationToFind.Contains (binOpt)) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private static bool TestExcludedOptions(List<BinaryOption> binOpts)
@@ -204,7 +236,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         private void UpdateWeights(VariabilityModel vm, Dictionary<List<BinaryOption>, int> weights, Configuration addedConfiguration) {
             List<BinaryOption> features = vm.BinaryOptions;
 
-            foreach (List<BinaryOption> combination in weights.Keys) {
+            for (int i = 0; i < weights.Keys.Count; i++) {
+                List<BinaryOption> combination = weights.Keys.ElementAt(i);
                 bool isIncluded = true;
                 foreach (BinaryOption binOpt in combination) {
                     if (!addedConfiguration.BinaryOptions.ContainsKey (binOpt) || addedConfiguration.BinaryOptions [binOpt] == BinaryOption.BinaryValue.Deselected) {
