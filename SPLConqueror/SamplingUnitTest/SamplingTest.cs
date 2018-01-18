@@ -21,26 +21,26 @@ namespace SamplingUnitTest
         private static VariabilityModel model = new VariabilityModel("test");
 
         private const int EXPECTED_CENTRALCOMP_ALLBINARY = 756;
-        private const int EXPECTED_NEG_FEATURE_WISE = 63;
-        private const int EXPECTED_PAIRWISE = 287;
+        private const int EXPECTED_NEG_FEATURE_WISE = 70;
+        private const int EXPECTED_PAIRWISE = 280;
         private const int EXPECTED_OPTIONWISE = 70;
-        private const int EXPECTED_BOXBEHNKEN = 205;
-        private const int EXPECTED_HYPERSAMPLING_50 = 164;
-        private const int EXPECTED_HYPERSAMPLING_40 = 164;
-        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_5 = 205;
-        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_3 = 164;
-        private const int EXPECTED_RANDOM_12_1 = 492;
-        private const int EXPECTED_RANDOM_10_0 = 410;
-        private const int EXPECTED_PLACKETT_BURMAN_3_9 = 246;
-        private const int EXPECTED_PLACKETT_BURMAN_5_125 = 328;
-        private const int EXPECTED_KEXCHANGE_7_2 = 246;
-        private const int EXPECTED_KEXCHANGE_3_1 = 123;
-        private const int EXPECTED_T_WISE_3 = 602;
-        private const int EXPECTED_T_WISE_2 = 287;
+        private const int EXPECTED_BOXBEHNKEN = 200;
+        private const int EXPECTED_HYPERSAMPLING_50 = 160;
+        private const int EXPECTED_HYPERSAMPLING_40 = 160;
+        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_5 = 200;
+        private const int EXPECTED_ONE_FACTOR_AT_A_TIME_3 = 160;
+        private const int EXPECTED_RANDOM_12_1 = 480;
+        private const int EXPECTED_RANDOM_10_0 = 400;
+        private const int EXPECTED_PLACKETT_BURMAN_3_9 = 240;
+        private const int EXPECTED_PLACKETT_BURMAN_5_125 = 320;
+        private const int EXPECTED_KEXCHANGE_7_2 = 240;
+        private const int EXPECTED_KEXCHANGE_3_1 = 120;
+        private const int EXPECTED_T_WISE_3 = 588;
+        private const int EXPECTED_T_WISE_2 = 280;
         private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
-        private const int EXPECTED_DIST_AW = 41;
-        private const int EXPECTED_DIST_AW_SOLVER = 41;
-        private const int EXPECTED_DIST_PRESERVING = 41;
+        private const int EXPECTED_DIST_AW = 40;
+        private const int EXPECTED_DIST_AW_SOLVER = 280;
+        private const int EXPECTED_DIST_PRESERVING = 40;
 
         [Test, Order(1)]
         public void TestLoadingTestVM()
@@ -278,8 +278,8 @@ namespace SamplingUnitTest
             List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
-            Assert.True(containsAllMeasurements(result, expected));
             Assert.AreEqual(EXPECTED_T_WISE_3, result.Count);
+            Assert.True(containsAllMeasurements(result, expected));
             ConfigurationBuilder.binaryParams.tWiseParameters.Clear();
             loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
                 + Path.DirectorySeparatorChar + "TwiseSampling2.csv";
@@ -317,7 +317,9 @@ namespace SamplingUnitTest
         {
             string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
                 + Path.DirectorySeparatorChar;
-            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware());
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("seed", "0");
+            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware(), parameters);
             Assert.AreEqual(EXPECTED_DIST_AW, distAwareBinAndNum.Count);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
                 locTemplate + "DistributionAwareCompleteConfigurations.csv", GlobalState.varModel);
@@ -344,26 +346,28 @@ namespace SamplingUnitTest
         [Test, Order(17)]
         public void TestDistributionAwareSolverSelection()
         {
-            // Load another model containing only numeric features
-            modelPath.Replace(".xml", "_onlyNumeric.xml");
-            Assert.IsTrue(model.loadXML(modelPath));
-            GlobalState.varModel = model;
-
             // Execute the test
-            string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
-                + Path.DirectorySeparatorChar;
+            string loc = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
+                + Path.DirectorySeparatorChar + "DistributionAwareSolverSampling.csv";
             Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("seed", "0");
             parameters.Add("selection", "SolverSelection");
-            List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(new DistributionAware(), parameters);
-            Assert.AreEqual(EXPECTED_DIST_AW_SOLVER, distAwareBinAndNum.Count);
-            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
-                locTemplate + "DistributionAwareSolverSampling.csv", GlobalState.varModel);
-            Assert.True(containsAllMeasurements(distAwareBinAndNum, expected));
+            parameters.Add("onlyBinary", "True");
 
-            // Now, load the previous model
-            modelPath.Replace("_onlyNumeric.xml", ".xml");
-            Assert.IsTrue(model.loadXML(modelPath));
-            GlobalState.varModel = model;
+            List<SamplingStrategies> binaryStrat = new List<SamplingStrategies>();
+            List<ExperimentalDesign> numericStrat = new List<ExperimentalDesign>();
+            numericStrat.Add(new CentralCompositeInscribedDesign());
+
+            List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
+            HybridStrategy distAwSolver = new DistributionAware();
+            distAwSolver.SetSamplingParameters(parameters);
+            hybridStrat.Add(distAwSolver);
+            List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
+            List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
+
+            Assert.AreEqual(EXPECTED_DIST_AW_SOLVER, result.Count);
+            
+            Assert.True(containsAllMeasurements(result, expected));
         }
 
         [Test, Order(15)]
@@ -371,7 +375,9 @@ namespace SamplingUnitTest
         {
             string locTemplate = (Assembly.GetExecutingAssembly().Location).Replace("SamplingUnitTest.dll", "sampleReference")
                 + Path.DirectorySeparatorChar;
-            List<Configuration> distPreserving = buildSampleSetHybrid(new DistributionPreserving());
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("seed", "0");
+            List<Configuration> distPreserving = buildSampleSetHybrid(new DistributionPreserving(), parameters);
             Assert.AreEqual(EXPECTED_DIST_PRESERVING, distPreserving.Count);
             List<Configuration> expected = ConfigurationReader.readConfigurations_Header_CSV(
                 locTemplate + "DistributionPreserving.csv", GlobalState.varModel);

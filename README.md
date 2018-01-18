@@ -39,7 +39,11 @@ It can be used to continue the execution of script files that are aborted in the
 On Ubuntu 16.04
 </summary>
 
-1. Clone git repository
+1. Clone the git repository and its submodules.
+Submodules can be cloned on the command line by:
+```
+git submodule update --init --recursive
+```
 
 2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ und die MonoDevelop-Version 5.10.0+)
 ```
@@ -64,7 +68,11 @@ Be aware that an internet connection is required to perform this step.
 On a Mac (OS X (10.11.6))
 </summary>
 
-a1. Clone git repository
+1. Clone the git repository and its submodules.
+Submodules can be cloned on the command line by:
+```
+git submodule update --init --recursive
+```
 
 2. Download and install latest Xamarin-IDE from https://www.xamarin.com
 
@@ -96,7 +104,11 @@ a1. Clone git repository
 On Windows 10
 </summary>
 
-1. Clone git repository
+1. Clone the git repository and its submodules.
+Submodules can be cloned on the command line by:
+```
+git submodule update --init --recursive
+```
 
 2. Install Visual Studio(Recommended: Visual Studio 2015 or newer)
 
