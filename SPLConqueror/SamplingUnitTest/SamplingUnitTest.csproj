@@ -137,6 +137,9 @@
     <None Include="sampleReference\TwiseSampling3.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+	<None Include="sampleReference\DistributionAwareSolverSampling.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
