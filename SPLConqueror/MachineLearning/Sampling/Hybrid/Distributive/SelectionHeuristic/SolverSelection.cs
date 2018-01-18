@@ -91,6 +91,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 if (ConfigurationBuilder.vg is Solver.Z3VariantGenerator)
                 {
                     ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setNumberFeatures(this.featureRange);
+                    ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setSeed(Convert.ToUInt32(this.seed));
                 }
 
                 // Now select the configuration by using the solver

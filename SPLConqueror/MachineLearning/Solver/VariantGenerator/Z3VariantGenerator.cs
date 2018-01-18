@@ -15,6 +15,9 @@ namespace MachineLearning.Solver
     {
         private Dictionary<int, Z3Cache> _z3Cache;
 
+        private uint z3RandomSeed = 1;
+        private const string RANDOM_SEED = ":random-seed";
+
         private Tuple<int, int> featureRange = new Tuple<int, int>(1,1);
         /// <summary>
         /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
@@ -28,6 +31,14 @@ namespace MachineLearning.Solver
         public List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
         {
             throw new NotImplementedException("Distance maximization is not yet implemented in the z3 solver. Please try the csp solver.");
+        }
+
+        /// <summary>
+        /// This method sets the random seed for the z3 solver.
+        /// </summary>
+        /// <param name="seed">The random seed for the z3 solver.</param>
+        public void setSeed(uint seed) {
+            this.z3RandomSeed = seed;
         }
 
         /// <summary>
@@ -56,6 +67,7 @@ namespace MachineLearning.Solver
             BoolExpr z3Constraints = z3Tuple.Item2;
 
             Microsoft.Z3.Solver solver = z3Context.MkSolver();
+            solver.Set (RANDOM_SEED, z3RandomSeed);
             solver.Assert(z3Constraints);
 
             while (solver.Check() == Status.SATISFIABLE)
@@ -109,6 +121,7 @@ namespace MachineLearning.Solver
             List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
 
             Microsoft.Z3.Solver s = z3Context.MkSolver();
+            s.Set (RANDOM_SEED, z3RandomSeed);
             s.Assert(z3Constraints);
             s.Push();
 
@@ -249,6 +262,7 @@ namespace MachineLearning.Solver
             {
                 // Return the first configuration returned by the solver
                 Microsoft.Z3.Solver solver = z3Context.MkSolver();
+                solver.Set (RANDOM_SEED, z3RandomSeed);
                 solver.Assert(constraints.ToArray());
                 
                 if (solver.Check() != Status.SATISFIABLE)
@@ -309,6 +323,7 @@ namespace MachineLearning.Solver
                 z3Context = z3Tuple.Item1;
                 BoolExpr z3Constraints = z3Tuple.Item2;
                 solver = z3Context.MkSolver();
+                solver.Set (RANDOM_SEED, z3RandomSeed);
 
                 solver.Assert(z3Constraints);
 
