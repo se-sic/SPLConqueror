@@ -58,7 +58,7 @@ def parse_configs_from_csv(configuration_file):
         else:
             config = []
             i = 0
-            while i < len(row):
+            while i < len(row) - 1:
                 config.append(int(row[i]))
                 i += 1
             config_selection.append(config)
