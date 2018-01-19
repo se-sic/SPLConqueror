@@ -67,7 +67,13 @@ namespace MachineLearning.Solver
             BoolExpr z3Constraints = z3Tuple.Item2;
 
             Microsoft.Z3.Solver solver = z3Context.MkSolver();
-            solver.Set (RANDOM_SEED, z3RandomSeed);
+
+            // TODO: The following line works for z3Solver version >= 4.6.0
+            //solver.Set (RANDOM_SEED, z3RandomSeed);
+            Params solverParameter = z3Context.MkParams ();
+            solverParameter.Add (RANDOM_SEED, z3RandomSeed);
+            solver.Parameters = solverParameter;
+
             solver.Assert(z3Constraints);
 
             while (solver.Check() == Status.SATISFIABLE)
@@ -121,7 +127,13 @@ namespace MachineLearning.Solver
             List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
 
             Microsoft.Z3.Solver s = z3Context.MkSolver();
-            s.Set (RANDOM_SEED, z3RandomSeed);
+
+            // TODO: The following line works for z3Solver version >= 4.6.0
+            //solver.Set (RANDOM_SEED, z3RandomSeed);
+            Params solverParameter = z3Context.MkParams ();
+            solverParameter.Add (RANDOM_SEED, z3RandomSeed);
+            s.Parameters = solverParameter;
+
             s.Assert(z3Constraints);
             s.Push();
 
@@ -262,7 +274,13 @@ namespace MachineLearning.Solver
             {
                 // Return the first configuration returned by the solver
                 Microsoft.Z3.Solver solver = z3Context.MkSolver();
-                solver.Set (RANDOM_SEED, z3RandomSeed);
+
+                // TODO: The following line works for z3Solver version >= 4.6.0
+                //solver.Set (RANDOM_SEED, z3RandomSeed);
+                Params solverParameter = z3Context.MkParams ();
+                solverParameter.Add (RANDOM_SEED, z3RandomSeed);
+                solver.Parameters = solverParameter;
+
                 solver.Assert(constraints.ToArray());
                 
                 if (solver.Check() != Status.SATISFIABLE)
@@ -324,7 +342,12 @@ namespace MachineLearning.Solver
                 z3Context = z3Tuple.Item1;
                 BoolExpr z3Constraints = z3Tuple.Item2;
                 solver = z3Context.MkSolver();
-                solver.Set (RANDOM_SEED, z3RandomSeed);
+
+                // TODO: The following line works for z3Solver version >= 4.6.0
+                //solver.Set (RANDOM_SEED, z3RandomSeed);
+                Params solverParameter = z3Context.MkParams ();
+                solverParameter.Add (RANDOM_SEED, z3RandomSeed);
+                solver.Parameters = solverParameter;
 
                 solver.Assert(z3Constraints);
 
