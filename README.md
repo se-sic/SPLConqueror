@@ -61,6 +61,9 @@ sudo apt install mono-complete monodevelop
 Be aware that an internet connection is required to perform this step.
 
 6. Build the root project
+
+7.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+
 </details>
 
 <details>
@@ -97,6 +100,8 @@ git submodule update --init --recursive
 -->
 
 5. Build root project
+
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
 </details>
 
 <details>
@@ -129,6 +134,8 @@ git submodule update --init --recursive
 -->
     
 5. Build the root project
+
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
 </details>
 
 <details>
@@ -618,6 +625,18 @@ An example would be as follows:
 </details>
 <details>
 <summary>Additional command-line commands</summary>
+
+#### Defining the path to the python interpreter
+
+```define-python-path <path-to-folder>```
+
+To set which python interpreter is used, use the ```define-python-path``` command.
+
+#### Learning with scikit-learn
+
+```learn-python <learner>```
+
+To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
 
 #### Printing configurations
 
