@@ -73,6 +73,13 @@ namespace MachineLearning.Sampling
                                     numberSamples = tw.generateT_WiseVariants_new(GlobalState.varModel, Int32.Parse(parameters["numConfigs"].Remove(0,4))).Count;
                                 }
                             }
+
+                            if (parameters.ContainsKey("seed") && vg is Z3VariantGenerator)
+                            {
+                                uint seed = 0;
+                                seed = UInt32.Parse(parameters["seed"]);
+                                ((Z3VariantGenerator)vg).setSeed(seed);
+                            }
                             if (optionsToConsider.ContainsKey(SamplingStrategies.SAT))
                             {
                                 List<List<BinaryOption>> variants =
