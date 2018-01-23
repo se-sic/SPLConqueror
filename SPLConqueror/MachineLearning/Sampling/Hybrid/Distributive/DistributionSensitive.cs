@@ -54,7 +54,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {ONLY_BINARY, "false" },
                 {SEED, "0" },
                 {SELECTION_HEURISTIC, "RandomSelection" },
-                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "1-1" }
+                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "0" }
             };
         }
 
