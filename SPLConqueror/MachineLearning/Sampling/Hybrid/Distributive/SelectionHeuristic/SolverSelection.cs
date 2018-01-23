@@ -63,7 +63,15 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             }
 
             // Create and initialize the weight function
-            Dictionary<List<BinaryOption>, int> featureWeight = InitializeWeightDict(GlobalState.varModel);
+            Dictionary<List<BinaryOption>, int> featureWeight;
+
+            if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0)
+            {
+                featureWeight = InitializeWeightDict(GlobalState.varModel);
+            } else
+            {
+                featureWeight = new Dictionary<List<BinaryOption>, int>();
+            }
 
             bool[] noSamples = new bool[allBuckets.Count];
 
@@ -90,7 +98,6 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 if (ConfigurationBuilder.vg is Solver.Z3VariantGenerator)
                 {
-                    ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setNumberFeatures(this.featureRange);
                     ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setSeed(Convert.ToUInt32(this.seed));
                 }
 

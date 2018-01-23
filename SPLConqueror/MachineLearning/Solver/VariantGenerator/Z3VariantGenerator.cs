@@ -18,7 +18,6 @@ namespace MachineLearning.Solver
         private uint z3RandomSeed = 1;
         private const string RANDOM_SEED = ":random-seed";
 
-        private Tuple<int, int> featureRange = new Tuple<int, int>(1,1);
         /// <summary>
         /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
         /// to the configurations that were previously selected.
@@ -39,15 +38,6 @@ namespace MachineLearning.Solver
         /// <param name="seed">The random seed for the z3 solver.</param>
         public void setSeed(uint seed) {
             this.z3RandomSeed = seed;
-        }
-
-        /// <summary>
-        /// The number of features that will be used for weight minimization.
-        /// </summary>
-        /// <param name="features">Number of features.</param>
-        public void setNumberFeatures(Tuple<int, int> featureRange)
-        {
-            this.featureRange = featureRange;
         }
 
         /// <summary>
@@ -378,8 +368,15 @@ namespace MachineLearning.Solver
             {
                 Model model = solver.Model;
                 List<BinaryOption> possibleSolution = RetrieveConfiguration(variables, model, termToOption);
-                List<BinaryOption> approximateOptimal = WeightMinimizer
+
+                // Disable finding a configuration where the least frequent feature/feature combinations are selected
+                // if no featureWeight is given.
+                List<BinaryOption> approximateOptimal = null;
+                if (featureRanking.Count != 0)
+                {
+                    approximateOptimal = WeightMinimizer
                     .getSmallWeightConfig(featureRanking, this._z3Cache[numberSelectedFeatures], vm);
+                }
 
                 if (approximateOptimal == null)
                 {
