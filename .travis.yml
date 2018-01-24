@@ -11,6 +11,7 @@ install:
 before_install: # add python
 - sudo apt-get update
 - sudo apt-get install python3
+- sudo apt-get install python3-pip
 script:
   - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
