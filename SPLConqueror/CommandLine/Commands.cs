@@ -384,8 +384,6 @@ namespace CommandLine
                             String filePath = fi.DirectoryName;
                             Directory.SetCurrentDirectory(filePath);
 
-                            reader = fi.OpenText();
-
                             co.currentHistory = this.currentHistory;
                             if (GlobalState.rollback)
                             {
