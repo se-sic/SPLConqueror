@@ -5,6 +5,15 @@ mono:
 install:
   - nuget restore ./SPLConqueror/SPLConqueror.sln #Download all packaged
   - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner #Additional to the Nunit test framework download the runner to execue the test.
+  - pip3 install scikit-learn==0.19.0
+  - pip3 install numpy==1.11.1
+  - pip3 install scipy==0.17.1
+addons: # add python interpreter
+  apt:
+    sources:
+      - deadsnakes 
+    packages:
+      - python3.5
 script:
   - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
