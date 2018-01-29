@@ -2,16 +2,19 @@ language: csharp
 solution: ./SPLConqueror/SPLConqueror.sln
 mono:
   - latest
+python:
+  -"3.4"
 install:
+  - sudo apt-get update
+  - sudo apt-get install python-virtualenv 
+  - virtualenv -p python3.4 /home/travis/pyenv
+  - source /home/travis/pyenv/bin/activate
   - pip3 install numpy==1.11.1
   - pip3 install scipy==0.17.1
   - pip3 install scikit-learn==0.19.0
   - nuget restore ./SPLConqueror/SPLConqueror.sln #Download all packaged
   - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner #Additional to the Nunit test framework download the runner to execue the test.
-before_install: # add python
-- sudo apt-get update
-- sudo apt-get install python3
-- sudo apt-get install python3-pip
+
 script:
   - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
