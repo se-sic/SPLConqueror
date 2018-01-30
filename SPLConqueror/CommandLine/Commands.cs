@@ -761,7 +761,12 @@ namespace CommandLine
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
                         List<Configuration> configurationsLearning;
                         List<Configuration> configurationsValidation;
-                        if (!configurationsPreparedForLearning(learnAndValidation, 
+                        if (allMeasurementsSelected)
+                        {
+                            configurationsLearning = GlobalState.allMeasurements.Configurations;
+                            configurationsValidation = configurationsLearning;
+                        }
+                        else if (!configurationsPreparedForLearning(learnAndValidation, 
                             out configurationsLearning, out configurationsValidation))
                             break;
 

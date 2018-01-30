@@ -31,7 +31,8 @@ namespace PythonTest
             }
 
             cmd.performOneCommand(Commands.COMMAND_LOG + " " + Path.GetTempPath() + "test.log");
-            cmd.performOneCommand(Commands.DEFINE_PYTHON_PATH + " /home/travis/pyenv/bin/");
+            //cmd.performOneCommand(Commands.DEFINE_PYTHON_PATH + " /home/travis/pyenv/bin/");
+            cmd.performOneCommand(Commands.DEFINE_PYTHON_PATH + " C:\\ProgramData\\Anaconda3\\");
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + model);
             cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurements);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
@@ -42,31 +43,29 @@ namespace PythonTest
         private int getNumberPredictions()
         {
             int numberPredictions = -1;
-            StreamReader sr = new StreamReader(Path.GetTempPath() + "x264-splc.csv");
-            while(sr.ReadLine() != "")
+            StreamReader sr = new StreamReader(Path.GetTempPath() + "PreVal_SVR_BerkeleyDbC__.csv");
+            while(sr.ReadLine() != "" && !sr.EndOfStream)
             {
                 numberPredictions += 1;
             }
             return numberPredictions;
         }
 
-        [Test]
+        [Test, Order(1)]
         public void testLearn()
         {
             Commands cmd = setupCommandLine();
             cmd.performOneCommand(Commands.COMMAND_PYTHON_LEARN + " SVR");
-            Assert.True(File.Exists(Path.GetTempPath() + "x264-splc.csv"));
-            Assert.Equals(4008, getNumberPredictions());
+            Assert.True(File.Exists(Path.GetTempPath() + "PreVal_SVR_BerkeleyDbC__.csv"));
+            Assert.AreEqual(2559, getNumberPredictions());
         }
 
-        [Test]
+        [Test, Order(2)]
         public void testParameterOpt()
         {
             Commands cmd = setupCommandLine();
             cmd.performOneCommand(Commands.COMMAND_PYTHON_LEARN_OPT + " SVR");
-            StreamReader sr = new StreamReader(Path.GetTempPath() + "test.log");
-            string log = sr.ReadToEnd();
-            Assert.True(log.Contains("Optimal parameters"));
+            cmd = null;
         }
     }
 }
