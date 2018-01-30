@@ -31,8 +31,7 @@ namespace PythonTest
             }
 
             cmd.performOneCommand(Commands.COMMAND_LOG + " " + Path.GetTempPath() + "test.log");
-            //cmd.performOneCommand(Commands.DEFINE_PYTHON_PATH + " /home/travis/pyenv/bin/");
-            cmd.performOneCommand(Commands.DEFINE_PYTHON_PATH + " C:\\ProgramData\\Anaconda3\\");
+            cmd.performOneCommand(Commands.DEFINE_PYTHON_PATH + " /home/travis/pyenv/bin/");
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + model);
             cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurements);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
