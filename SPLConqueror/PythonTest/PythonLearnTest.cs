@@ -39,11 +39,24 @@ namespace PythonTest
             return cmd;
         }
 
+        private int getNumberPredictions()
+        {
+            int numberPredictions = -1;
+            StreamReader sr = new StreamReader(Path.GetTempPath() + "x264-splc.csv");
+            while(sr.ReadLine() != "")
+            {
+                numberPredictions += 1;
+            }
+            return numberPredictions;
+        }
+
         [Test]
         public void testLearn()
         {
             Commands cmd = setupCommandLine();
             cmd.performOneCommand(Commands.COMMAND_PYTHON_LEARN + " SVR");
+            Assert.True(File.Exists(Path.GetTempPath() + "x264-splc.csv"));
+            Assert.Equals(4008, getNumberPredictions());
         }
 
         [Test]
@@ -51,6 +64,9 @@ namespace PythonTest
         {
             Commands cmd = setupCommandLine();
             cmd.performOneCommand(Commands.COMMAND_PYTHON_LEARN_OPT + " SVR");
+            StreamReader sr = new StreamReader(Path.GetTempPath() + "test.log");
+            string log = sr.ReadToEnd();
+            Assert.True(log.Contains("Optimal parameters"));
         }
     }
 }
