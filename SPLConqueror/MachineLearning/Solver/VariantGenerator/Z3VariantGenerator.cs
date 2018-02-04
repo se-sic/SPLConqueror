@@ -29,9 +29,103 @@ namespace MachineLearning.Solver
         /// <returns>A list of distance maximized configurations.</returns>
         public List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
         {
-            throw new NotImplementedException("Distance maximization is not yet implemented in the z3 solver. Please try the csp solver.");
+            List<BoolExpr> variables;
+            Dictionary<BoolExpr, BinaryOption> termToOption;
+            Dictionary<BinaryOption, BoolExpr> optionToTerm;
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Context z3Context = z3Tuple.Item1;
+            BoolExpr z3Constraints = z3Tuple.Item2;
+
+            List<BoolExpr> constraints = new List<BoolExpr>();
+            constraints.Add(z3Constraints);
+            List<List<BinaryOption>> sample = new List<List<BinaryOption>>();
+            sample.Add(minimalConfiguration);
+
+            Dictionary<BinaryOption, ArithExpr> optionToInt = generateIntConstants(z3Context, constraints, variables, termToOption);
+
+            while (numberToSample > sample.Count)
+            {
+                List<ArithExpr> goals = generateDistMaximizationGoals(sample, optionToInt, z3Context, vm, optionWeight);
+                Optimize optimizer = z3Context.MkOptimize();
+                optimizer.Assert(constraints);
+                optimizer.MkMaximize(z3Context.MkAdd(goals));
+
+                if (optimizer.Check() != Status.SATISFIABLE)
+                {
+                    GlobalState.logInfo.logLine("No more solutions available.");
+                    return sample;
+                }
+                else
+                {
+                    Model model = optimizer.Model;
+                    List<BinaryOption> maxDist = RetrieveConfiguration(variables, model, termToOption);
+                    sample.Add(maxDist);
+                    constraints.Add(z3Context.MkNot(Z3Solver.ConvertConfiguration(z3Context, maxDist, optionToTerm, vm)));
+                }
+
+            }
+            return sample;
         }
 
+        private Dictionary<BinaryOption, ArithExpr> generateIntConstants(Context z3Context, List<BoolExpr> constraints,
+            List<BoolExpr> variables, Dictionary<BoolExpr, BinaryOption> termToOption)
+        {
+            Dictionary<BinaryOption, ArithExpr> optionToInt = new Dictionary<BinaryOption, ArithExpr>();
+            for (int r = 0; r < variables.Count; r++)
+            {
+                BinaryOption currOption = termToOption[variables[r]];
+                ArithExpr numericVariable = z3Context.MkIntConst(currOption.Name);
+                optionToInt.Add(currOption, numericVariable);
+
+                constraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(variables[r], z3Context.MkInt(1), z3Context.MkInt(0))));
+            }
+
+            return optionToInt;
+        }
+
+        private List<ArithExpr> generateDistMaximizationGoals(List<List<BinaryOption>> samples, 
+            Dictionary<BinaryOption,ArithExpr> optionToInt, Context z3Context, VariabilityModel vm, int weight)
+        {
+            List<ArithExpr> distanceGoals = new List<ArithExpr>();
+
+            foreach(List<BinaryOption> sample in samples)
+            {
+                List<ArithExpr> variables = new List<ArithExpr>();
+
+                foreach (BinaryOption binOpt in vm.BinaryOptions)
+                {
+                    if (!sample.Contains(binOpt))
+                    {
+                        if (binOpt.Optional)
+                        {
+                            variables.Add(weight * optionToInt[binOpt]);
+                        }
+                        else
+                        {
+                            variables.Add(optionToInt[binOpt]);
+                        }
+                    }
+                    else
+                    {
+                        if (binOpt.Optional)
+                        {
+                            variables.Add(weight * (ArithExpr)(z3Context
+                                .MkITE(optionToInt[binOpt] - 1 >= 0, optionToInt[binOpt] - 1, -(optionToInt[binOpt] - 1))));
+                        }
+                        else
+                        {
+                            variables.Add((ArithExpr)(z3Context
+                                .MkITE(optionToInt[binOpt] - 1 >= 0, optionToInt[binOpt] - 1, -(optionToInt[binOpt] - 1))));
+                        }
+                    }
+                }
+
+                distanceGoals.Add(z3Context.MkAdd(variables));
+            }
+
+            return distanceGoals;
+        }
+ 
         /// <summary>
         /// This method sets the random seed for the z3 solver.
         /// </summary>
@@ -180,7 +274,59 @@ namespace MachineLearning.Solver
         /// <returns>A configuration that is valid, similar to the original configuration and does not contain the optionToBeRemoved.</returns>
         public List<BinaryOption> GenerateConfigWithoutOption(BinaryOption optionToBeRemoved, List<BinaryOption> originalConfig, out List<BinaryOption> removedElements, VariabilityModel vm)
         {
-            throw new NotImplementedException();
+            removedElements = new List<BinaryOption>();
+            var originalConfigWithoutRemoved = originalConfig.Where(x => !x.Equals(optionToBeRemoved));
+
+            List<BoolExpr> variables;
+            Dictionary<BoolExpr, BinaryOption> termToOption;
+            Dictionary<BinaryOption, BoolExpr> optionToTerm;
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Context z3Context = z3Tuple.Item1;
+            BoolExpr z3Constraints = z3Tuple.Item2;
+            List<BoolExpr> constraints = new List<BoolExpr>();
+            constraints.Add(z3Constraints);
+
+            constraints.Add(z3Context.MkNot(optionToTerm[optionToBeRemoved]));
+
+            ArithExpr[] minGoals = new ArithExpr[variables.Count];
+
+
+            for (int r = 0; r < variables.Count; r++)
+            {
+                BinaryOption currOption = termToOption[variables[r]];
+                ArithExpr numericVariable = z3Context.MkIntConst(currOption.Name);
+
+                int weight = -1000;
+
+                if (!originalConfigWithoutRemoved.Contains(currOption))
+                {
+                    weight = 1000;
+                } else if (currOption.Equals(optionToBeRemoved))
+                {
+                    weight = 100000;
+                }
+
+                constraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(variables[r], z3Context.MkInt(weight), z3Context.MkInt(0))));
+                minGoals[r] = numericVariable;
+
+            }
+
+            Optimize optimizer = z3Context.MkOptimize();
+            optimizer.Assert(constraints.ToArray());
+            optimizer.MkMinimize(z3Context.MkAdd(minGoals));
+
+            if (optimizer.Check() != Status.SATISFIABLE)
+            {
+                return null;
+            }
+            else
+            {
+                Model model = optimizer.Model;
+                List<BinaryOption> similarConfig = RetrieveConfiguration(variables, model, termToOption);
+                removedElements = originalConfigWithoutRemoved.Except(similarConfig).ToList();
+                return similarConfig;
+            }
+
         }
 
         /// <summary>
@@ -193,8 +339,77 @@ namespace MachineLearning.Solver
         /// <returns>A list of configurations that satisfies the VM and the goal (or null if there is none).</returns>
         public List<List<BinaryOption>> MaximizeConfig(List<BinaryOption> config, VariabilityModel vm, bool minimize, List<BinaryOption> unwantedOptions)
         {
-            throw new NotImplementedException();
+            List<List<BinaryOption>> optimalConfigurations = new List<List<BinaryOption>>();
+
+            List<BoolExpr> variables;
+            Dictionary<BoolExpr, BinaryOption> termToOption;
+            Dictionary<BinaryOption, BoolExpr> optionToTerm;
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Context z3Context = z3Tuple.Item1;
+            BoolExpr z3Constraints = z3Tuple.Item2;
+
+            List<BoolExpr> constraints = new List<BoolExpr>();
+            constraints.Add(z3Constraints);
+            List<BoolExpr> requireConfigs = new List<BoolExpr>();
+
+            if (config != null)
+            {
+                foreach (BinaryOption option in config)
+                {
+                    requireConfigs.Add(optionToTerm[option]);
+                }
+                constraints.Add(z3Context.MkAnd(requireConfigs.ToArray()));
+            }
+
+            ArithExpr[] optimizationGoals = new ArithExpr[variables.Count];
+
+            for (int r = 0; r < variables.Count; r++)
+            {
+                BinaryOption currOption = termToOption[variables[r]];
+                ArithExpr numericVariable = z3Context.MkIntConst(currOption.Name);
+
+                int weight;
+                if (minimize)
+                {
+                    weight = 1;
+                } else
+                {
+                    weight = -1;
+                }
+
+                if (unwantedOptions != null && (unwantedOptions.Contains(termToOption[variables[r]]) && !config.Contains(termToOption[variables[r]])))
+                {
+                    weight = 10000;
+                }
+
+                constraints.Add(z3Context.MkEq(numericVariable, z3Context.MkITE(variables[r], z3Context.MkInt(weight), z3Context.MkInt(0))));
+
+                optimizationGoals[r] = numericVariable;
+            }
+
+            Optimize optimizer = z3Context.MkOptimize();
+            optimizer.Assert(constraints.ToArray());
+            optimizer.MkMinimize(z3Context.MkAdd(optimizationGoals));
+            int bestSize = 0;
+            int currentSize = 0;
+            while (optimizer.Check() == Status.SATISFIABLE && currentSize >= bestSize)
+            {
+                Model model = optimizer.Model;
+                List<BinaryOption> solution = RetrieveConfiguration(variables, model, termToOption);
+                currentSize = solution.Count;
+                if (currentSize >= bestSize)
+                {
+                    optimalConfigurations.Add(solution);
+                }
+                if (bestSize == 0)
+                    bestSize = solution.Count;
+                currentSize = solution.Count;
+                optimizer.Assert(z3Context.MkNot(Z3Solver.ConvertConfiguration(z3Context, solution, optionToTerm, vm)));
+            }
+
+            return optimalConfigurations;
         }
+
 
         /// <summary>
         /// This method searches for a corresponding methods in the dynamically loaded assemblies and calls it if found. It prefers due to performance reasons the Microsoft Solver Foundation implementation.
