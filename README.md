@@ -637,6 +637,7 @@ To set which python interpreter is used, use the ```define-python-path``` comman
 ```learn-python <learner>```
 
 To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
+For more information on the algorithms see:[Scikit-Learn](http://scikit-learn.org/stable/documentation.html)
 
 #### Performing parameter optimization for scikit-learn
 
