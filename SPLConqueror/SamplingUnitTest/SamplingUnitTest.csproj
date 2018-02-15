@@ -56,6 +56,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SampleUtil.cs" />
     <Compile Include="SamplingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CleanSamplingTest.cs" />
@@ -77,67 +78,67 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="sampleReference\AllbinarySampling.csv">
+    <None Include="msSolver\AllbinarySampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\BinrandomSampling.csv">
+    <None Include="msSolver\BinrandomSampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\BoxbehnkenSampling.csv">
+    <None Include="msSolver\BoxbehnkenSampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\DistributionAwareCompleteConfigurations.csv">
+    <None Include="msSolver\DistributionAwareCompleteConfigurations.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\DistributionPreserving.csv">
+    <None Include="msSolver\DistributionPreserving.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\FeaturewiseSampling.csv">
+    <None Include="msSolver\FeaturewiseSampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\HyperSampling40.csv">
+    <None Include="msSolver\HyperSampling40.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\HyperSampling50.csv">
+    <None Include="msSolver\HyperSampling50.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\KexchangeSampling31.csv">
+    <None Include="msSolver\KexchangeSampling31.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\KexchangeSampling72.csv">
+    <None Include="msSolver\KexchangeSampling72.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\NegFWSampling.csv">
+    <None Include="msSolver\NegFWSampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\OnefactorSampling3.csv">
+    <None Include="msSolver\OnefactorSampling3.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\OnefactorSampling5.csv">
+    <None Include="msSolver\OnefactorSampling5.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\PairwiseSampling.csv">
+    <None Include="msSolver\PairwiseSampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\PlackettSampling39.csv">
+    <None Include="msSolver\PlackettSampling39.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\PlackettSampling5125.csv">
+    <None Include="msSolver\PlackettSampling5125.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\RandomSampling010.csv">
+    <None Include="msSolver\RandomSampling010.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\RandomSampling112.csv">
+    <None Include="msSolver\RandomSampling112.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\TwiseSampling2.csv">
+    <None Include="msSolver\TwiseSampling2.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="sampleReference\TwiseSampling3.csv">
+    <None Include="msSolver\TwiseSampling3.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-	<None Include="sampleReference\DistributionAwareSolverSampling.csv">
+    <None Include="msSolver\DistributionAwareSolverSampling.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
