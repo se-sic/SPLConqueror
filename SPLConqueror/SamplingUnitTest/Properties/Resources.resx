@@ -121,20 +121,41 @@
   <data name="AllbinarySampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\AllbinarySampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="AllbinarySampling1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\AllbinarySampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="BinrandomSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\BinrandomSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="BinrandomSampling1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\BinrandomSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="BoxbehnkenSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\BoxbehnkenSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="BoxbehnkenSampling1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\BoxbehnkenSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="DistributionAwareCompleteConfigurations" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\DistributionAwareCompleteConfigurations.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="DistributionAwareCompleteConfigurations1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\DistributionAwareCompleteConfigurations.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="DistributionAwareSolverSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\DistributionAwareSolverSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="DistributionPreserving" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\DistributionPreserving.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="DistributionPreserving1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\DistributionPreserving.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="FeaturewiseSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\FeaturewiseSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="FeaturewiseSampling1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\FeaturewiseSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="HyperSampling40" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\HyperSampling40.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -142,14 +163,23 @@
   <data name="HyperSampling50" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\HyperSampling50.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="HyperSampling501" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\HyperSampling50.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="KexchangeSampling31" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\KexchangeSampling31.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="KexchangeSampling72" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\KexchangeSampling72.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="KexchangeSampling721" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\KexchangeSampling72.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="NegFWSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\NegFWSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="NegFWSampling1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\NegFWSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="OnefactorSampling3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\OnefactorSampling3.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -157,11 +187,20 @@
   <data name="OnefactorSampling5" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\OnefactorSampling5.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="OnefactorSampling51" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\OnefactorSampling5.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="PairwiseSampling" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\PairwiseSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="PairwiseSampling1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\PairwiseSampling.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="PlackettSampling39" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\PlackettSampling39.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="PlackettSampling391" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\PlackettSampling39.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="PlackettSampling5125" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\PlackettSampling5125.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -172,10 +211,16 @@
   <data name="RandomSampling112" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\RandomSampling112.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="RandomSampling1121" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\RandomSampling112.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="TwiseSampling2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\TwiseSampling2.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="TwiseSampling3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\msSolver\TwiseSampling3.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="TwiseSampling31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\z3\TwiseSampling3.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>
