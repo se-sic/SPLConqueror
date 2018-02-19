@@ -11,6 +11,8 @@ namespace SamplingUnitTest
 {
     public class SampleUtil
     {
+        public static int EXPECTED_CENTRALCOMP_ALLBINARY = 756;
+        public static int EXPECTED_PAIRWISE = 280;
 
         private static string modelPath = Path.GetFullPath(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..."))
             + Path.DirectorySeparatorChar + "ExampleFiles"
@@ -195,6 +197,10 @@ namespace SamplingUnitTest
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("seed", seed.ToString());
             List<Configuration> distAwareBinAndNum = buildSampleSetHybrid(strategy, parameters);
+            GlobalState.optionOrder.AddRange(SampleUtil.model.BinaryOptions);
+            GlobalState.optionOrder.AddRange(SampleUtil.model.NumericOptions);
+            ConfigurationPrinter printr = new ConfigurationPrinter("E:\\out.csv", GlobalState.optionOrder);
+            printr.print(distAwareBinAndNum);
             List<Configuration> expectedSample = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             return containsAllMeasurements(distAwareBinAndNum, expectedSample) && expected == distAwareBinAndNum.Count;
         }

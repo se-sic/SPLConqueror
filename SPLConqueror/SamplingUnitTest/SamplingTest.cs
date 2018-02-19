@@ -11,10 +11,7 @@ namespace SamplingUnitTest
     [TestFixture]
     public class SamplingTest
     {
-
-        private const int EXPECTED_CENTRALCOMP_ALLBINARY = 756;
         private const int EXPECTED_NEG_FEATURE_WISE = 70;
-        private const int EXPECTED_PAIRWISE = 280;
         private const int EXPECTED_OPTIONWISE = 70;
         private const int EXPECTED_BOXBEHNKEN = 200;
         private const int EXPECTED_HYPERSAMPLING_50 = 160;
@@ -43,7 +40,7 @@ namespace SamplingUnitTest
         [Test, Order(2)]
         public void TestWholePop()
         {
-            Assert.True(SampleUtil.TestBinaryNoParam(EXPECTED_CENTRALCOMP_ALLBINARY, "msSolver"
+            Assert.True(SampleUtil.TestBinaryNoParam(SampleUtil.EXPECTED_CENTRALCOMP_ALLBINARY, "msSolver"
                 , SamplingStrategies.ALLBINARY, "AllbinarySampling.csv"));
         }
 
@@ -57,7 +54,7 @@ namespace SamplingUnitTest
         [Test, Order(4)]
         public void TestPairWise()
         {
-            Assert.True(SampleUtil.TestBinaryNoParam(EXPECTED_PAIRWISE, "msSolver"
+            Assert.True(SampleUtil.TestBinaryNoParam(SampleUtil.EXPECTED_PAIRWISE, "msSolver"
                 , SamplingStrategies.PAIRWISE, "PairwiseSampling.csv"));
         }
 
