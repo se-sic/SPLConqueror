@@ -45,7 +45,7 @@ Submodules can be cloned on the command line by:
 git submodule update --init --recursive
 ```
 
-2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ und die MonoDevelop-Version 5.10.0+)
+2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ -- description available on https://www.mono-project.com/download/stable/ -- und die MonoDevelop-Version 5.10.0+)
 ```
 sudo apt install mono-complete monodevelop
 ```
