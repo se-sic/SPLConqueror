@@ -52,7 +52,7 @@
             this.selectedOptionComboBox.FormattingEnabled = true;
             this.helpProvider1.SetHelpString(this.selectedOptionComboBox, "List of all binary features that have at least two children and therefore qualify" +
         " as a parent of an alternative group..");
-            this.selectedOptionComboBox.Location = new System.Drawing.Point(118, 6);
+            this.selectedOptionComboBox.Location = new System.Drawing.Point(128, 6);
             this.selectedOptionComboBox.Name = "selectedOptionComboBox";
             this.helpProvider1.SetShowHelp(this.selectedOptionComboBox, true);
             this.selectedOptionComboBox.Size = new System.Drawing.Size(121, 24);
