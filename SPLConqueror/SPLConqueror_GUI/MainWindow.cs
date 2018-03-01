@@ -546,8 +546,15 @@ namespace SPLConqueror_GUI
             // Initializing the default settings of the numeric options
             numericSettings.Clear();
 
-            foreach (NumericOption option in currentModel.NumericOptions)
-                numericSettings.Add(option, (float)option.getCenterValue());
+            try
+            {
+                foreach (NumericOption option in currentModel.NumericOptions)
+                    numericSettings.Add(option, (float)option.getCenterValue());
+            } catch
+            {
+                MessageBox.Show("No model selected. Connot deduce value domain of configuration options.", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
 
             // Evaluation configuration
             calculationResultLabel.Text = BUTTON_PRESS_REQUEST;
