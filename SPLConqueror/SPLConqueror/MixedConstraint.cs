@@ -112,14 +112,22 @@ namespace SPLConqueror_Core
                 {
                     return true;
                 }
-                else if (!hasAllConfigs && hasAtLeastOneConfig)
-                {
-                    return false;
-                }
                 else
                 {
                     return !base.configIsValid(conf);
                 }
+            }
+            else if (requirement.Equals(REQUIRE_NONE))
+            {
+                foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                {
+                    if (!conf.BinaryOptions.ContainsKey(binOpt))
+                    {
+                        conf.BinaryOptions.Add(binOpt, BinaryOption.BinaryValue.Deselected);
+                    }
+                }
+
+                return !base.configIsValid(conf);
             }
             else
             {
@@ -140,10 +148,6 @@ namespace SPLConqueror_Core
                 bool hasAtLeastOneConfig = preCheckResult.Item2;
 
                 if (!hasAtLeastOneConfig)
-                {
-                    return true;
-                }
-                else if (!hasAllConfigs && hasAtLeastOneConfig)
                 {
                     return false;
                 }

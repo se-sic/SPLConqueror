@@ -31,6 +31,7 @@ namespace VariabilitModel_GUI
             foreach (ConfigurationOption option in GlobalState.varModel.getOptions())
             {
                 boolOptionComboBox.Items.Add(option);
+                mixedComboBox.Items.Add(option);
 
                 if (option is NumericOption)
                     nbOptionComboBox.Items.Add(option);
@@ -48,6 +49,9 @@ namespace VariabilitModel_GUI
 
             foreach (NonBooleanConstraint nbConstraint in GlobalState.varModel.NonBooleanConstraints)
                 nbConstraintListBox.Items.Add(nbConstraint.ToString());
+
+            foreach (MixedConstraint mixedConstr in GlobalState.varModel.MixedConstraints)
+                mixedListBox.Items.Add(mixedConstr.ToString());
 
             updateBoolConstraintBox();
             updateNbConstraintBox();
@@ -711,6 +715,181 @@ namespace VariabilitModel_GUI
                 && nbConstraintList[nbConstraintList.Count - 1] != "-";
             nbRemoveButton.Enabled = nbConstraintTextBox.Text.Length > 0;
             nbDeleteConstraintButton.Enabled = nbConstraintListBox.Items.Count > 0;
+        }
+
+        private void zeroBtnMixed_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "0";
+        }
+
+        private void mixed1Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "1";
+        }
+
+        private void mixed2Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "2";
+        }
+
+        private void mixed3Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "3";
+        }
+
+        private void mixed4Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "4";
+        }
+
+        private void mixed5Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "5";
+        }
+
+        private void mixed6Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "6";
+        }
+
+        private void mixed7Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "7";
+        }
+
+        private void mixed8Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "8";
+        }
+
+        private void mixed9Btn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + "9";
+        }
+
+        private void mixedPntBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + ".";
+        }
+
+        private void mixedPlusBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + " + ";
+        }
+
+        private void mixedMinBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + " - ";
+        }
+
+        private void mixedMulBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + " * ";
+        }
+
+        private void mixedGtBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + " >= ";
+        }
+
+        private void mixedLessBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + " > ";
+        }
+
+        private void mixedEqBtn_Click(object sender, EventArgs e)
+        {
+            mixedConstrTextBox.Text = mixedConstrTextBox.Text + " = ";
+        }
+
+        private void mixedAddOptionBtn_Click(object sender, EventArgs e)
+        {
+            if (mixedComboBox.SelectedItem != null)
+            {
+                mixedConstrTextBox.Text = mixedConstrTextBox.Text + " " + mixedComboBox.SelectedItem.ToString();
+            } else
+            {
+                MessageBox.Show("No configuration option selected");
+            }
+        }
+
+        private void button1_MouseHover(object sender, EventArgs e)
+        {
+            System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
+            ToolTip1.SetToolTip(this.button1, "Partial configurations can also evaluate to true.");
+            ToolTip1.InitialDelay = 0;
+        }
+
+        private void button2_MouseHover(object sender, EventArgs e)
+        {
+            System.Windows.Forms.ToolTip ToolTip2 = new System.Windows.Forms.ToolTip();
+            ToolTip2.SetToolTip(this.button2, "Partial configurations automatically result in false.");
+            ToolTip2.InitialDelay = 0;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            String[] leftAndRight = mixedConstrTextBox.Text.Split(new char[] { ':' });
+
+            if (leftAndRight.Length == 1)
+            {
+                mixedConstrTextBox.Text = "None:" + leftAndRight[0];
+            } else
+            {
+                mixedConstrTextBox.Text = "None:" + leftAndRight[1];
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            String[] leftAndRight = mixedConstrTextBox.Text.Split(new char[] { ':' });
+
+            if (leftAndRight.Length == 1)
+            {
+                mixedConstrTextBox.Text = "All:" + leftAndRight[0];
+            }
+            else
+            {
+                mixedConstrTextBox.Text = "All:" + leftAndRight[1];
+            }
+        }
+
+        private void addMixed_Click(object sender, EventArgs e)
+        {
+            String[] leftAndRight = mixedConstrTextBox.Text.Split(new char[] { ':' });
+            if (leftAndRight.Length == 1)
+            {
+                MessageBox.Show("Warning: Either \"None\" or \"All\" prefix needs to be selected. Automatically assuming the \"None\" prefix.");
+                leftAndRight = new String[] { "None", mixedConstrTextBox.Text };
+            }
+            GlobalState.varModel.MixedConstraints.Add(
+                new MixedConstraint(leftAndRight[0], GlobalState.varModel, leftAndRight[0]));
+            mixedListBox.Items.Add(mixedConstrTextBox.Text);
+            mixedConstrTextBox.Text = "None:";
+        }
+
+        private void removeMixed_Click(object sender, EventArgs e)
+        {
+            if (mixedListBox.Items.Count == 0)
+            {
+                MessageBox.Show("No item to remove.");
+            } else
+            {
+                mixedListBox.Items.RemoveAt(mixedListBox.Items.Count - 1);
+                GlobalState.varModel.MixedConstraints.RemoveAt(GlobalState.varModel.MixedConstraints.Count - 1);
+            }
+        }
+
+        private void mixedDelete_Click(object sender, EventArgs e)
+        {
+            int selIndex = mixedListBox.SelectedIndex;
+            if (selIndex == -1)
+            {
+                MessageBox.Show("No constraint selected.");
+                return;
+            }
+            mixedListBox.Items.RemoveAt(selIndex);
+            GlobalState.varModel.MixedConstraints.RemoveAt(selIndex);
         }
     }
 }

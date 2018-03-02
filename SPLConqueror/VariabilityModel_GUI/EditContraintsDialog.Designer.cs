@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TextBox mixedConstrTextBox;
             this.nbAddOptionButton = new System.Windows.Forms.Button();
             this.nbDeleteConstraintButton = new System.Windows.Forms.Button();
             this.nbConstraintListBox = new System.Windows.Forms.ListBox();
@@ -73,12 +72,32 @@
             this.nonBinaryPage = new System.Windows.Forms.TabPage();
             this.mixedPage = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.addMixed = new System.Windows.Forms.Button();
-            this.removeMixed = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.mixedAddOptionBtn = new System.Windows.Forms.Button();
+            this.mixedGtBtn = new System.Windows.Forms.Button();
+            this.mixedLessBtn = new System.Windows.Forms.Button();
+            this.mixedEqBtn = new System.Windows.Forms.Button();
+            this.mixedPntBtn = new System.Windows.Forms.Button();
+            this.mixedPlusBtn = new System.Windows.Forms.Button();
+            this.mixedMinBtn = new System.Windows.Forms.Button();
+            this.mixedMulBtn = new System.Windows.Forms.Button();
+            this.mixed9Btn = new System.Windows.Forms.Button();
+            this.mixed8Btn = new System.Windows.Forms.Button();
+            this.mixed7Btn = new System.Windows.Forms.Button();
+            this.mixed6Btn = new System.Windows.Forms.Button();
+            this.mixed5Btn = new System.Windows.Forms.Button();
+            this.mixed4Btn = new System.Windows.Forms.Button();
+            this.mixed3Btn = new System.Windows.Forms.Button();
+            this.mixed2Btn = new System.Windows.Forms.Button();
+            this.mixed1Btn = new System.Windows.Forms.Button();
+            this.zeroBtnMixed = new System.Windows.Forms.Button();
             this.mixedDelete = new System.Windows.Forms.Button();
+            this.removeMixed = new System.Windows.Forms.Button();
+            this.addMixed = new System.Windows.Forms.Button();
+            this.mixedListBox = new System.Windows.Forms.ListBox();
+            this.mixedComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             mixedConstrTextBox = new System.Windows.Forms.TextBox();
             this.nbConstraintsGroupBox.SuspendLayout();
             this.boolConstraintsGroupBox.SuspendLayout();
@@ -88,6 +107,14 @@
             this.mixedPage.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // mixedConstrTextBox
+            // 
+            mixedConstrTextBox.Location = new System.Drawing.Point(22, 189);
+            mixedConstrTextBox.Name = "mixedConstrTextBox";
+            mixedConstrTextBox.Size = new System.Drawing.Size(361, 27);
+            mixedConstrTextBox.TabIndex = 24;
+            mixedConstrTextBox.Text = "None:";
             // 
             // nbAddOptionButton
             // 
@@ -631,12 +658,32 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.mixedAddOptionBtn);
             this.groupBox1.Controls.Add(mixedConstrTextBox);
+            this.groupBox1.Controls.Add(this.mixedGtBtn);
+            this.groupBox1.Controls.Add(this.mixedLessBtn);
+            this.groupBox1.Controls.Add(this.mixedEqBtn);
+            this.groupBox1.Controls.Add(this.mixedPntBtn);
+            this.groupBox1.Controls.Add(this.mixedPlusBtn);
+            this.groupBox1.Controls.Add(this.mixedMinBtn);
+            this.groupBox1.Controls.Add(this.mixedMulBtn);
+            this.groupBox1.Controls.Add(this.mixed9Btn);
+            this.groupBox1.Controls.Add(this.mixed8Btn);
+            this.groupBox1.Controls.Add(this.mixed7Btn);
+            this.groupBox1.Controls.Add(this.mixed6Btn);
+            this.groupBox1.Controls.Add(this.mixed5Btn);
+            this.groupBox1.Controls.Add(this.mixed4Btn);
+            this.groupBox1.Controls.Add(this.mixed3Btn);
+            this.groupBox1.Controls.Add(this.mixed2Btn);
+            this.groupBox1.Controls.Add(this.mixed1Btn);
+            this.groupBox1.Controls.Add(this.zeroBtnMixed);
             this.groupBox1.Controls.Add(this.mixedDelete);
             this.groupBox1.Controls.Add(this.removeMixed);
             this.groupBox1.Controls.Add(this.addMixed);
-            this.groupBox1.Controls.Add(this.listBox1);
-            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Controls.Add(this.mixedListBox);
+            this.groupBox1.Controls.Add(this.mixedComboBox);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold);
             this.groupBox1.Location = new System.Drawing.Point(0, 3);
@@ -646,50 +693,207 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Mixed Constraints";
             // 
-            // label1
+            // button2
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Calibri", 9.75F);
-            this.label1.Location = new System.Drawing.Point(6, 29);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 21);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Option:";
+            this.button2.Location = new System.Drawing.Point(5, 47);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(63, 28);
+            this.button2.TabIndex = 27;
+            this.button2.Text = "All:";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.MouseHover += new System.EventHandler(this.button2_MouseHover);
             // 
-            // comboBox1
+            // button1
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(74, 26);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 27);
-            this.comboBox1.TabIndex = 1;
+            this.button1.Location = new System.Drawing.Point(5, 78);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(63, 28);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "None:";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.MouseHover += new System.EventHandler(this.button1_MouseHover);
             // 
-            // listBox1
+            // mixedAddOptionBtn
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 19;
-            this.listBox1.Location = new System.Drawing.Point(22, 258);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(361, 99);
-            this.listBox1.TabIndex = 2;
+            this.mixedAddOptionBtn.Location = new System.Drawing.Point(74, 53);
+            this.mixedAddOptionBtn.Name = "mixedAddOptionBtn";
+            this.mixedAddOptionBtn.Size = new System.Drawing.Size(58, 28);
+            this.mixedAddOptionBtn.TabIndex = 25;
+            this.mixedAddOptionBtn.Text = "Add";
+            this.mixedAddOptionBtn.UseVisualStyleBackColor = true;
+            this.mixedAddOptionBtn.Click += new System.EventHandler(this.mixedAddOptionBtn_Click);
             // 
-            // addMixed
+            // mixedGtBtn
             // 
-            this.addMixed.Location = new System.Drawing.Point(22, 222);
-            this.addMixed.Name = "addMixed";
-            this.addMixed.Size = new System.Drawing.Size(75, 30);
-            this.addMixed.TabIndex = 3;
-            this.addMixed.Text = "Add";
-            this.addMixed.UseVisualStyleBackColor = true;
+            this.mixedGtBtn.Location = new System.Drawing.Point(128, 112);
+            this.mixedGtBtn.Name = "mixedGtBtn";
+            this.mixedGtBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedGtBtn.TabIndex = 23;
+            this.mixedGtBtn.Text = ">=";
+            this.mixedGtBtn.UseVisualStyleBackColor = true;
+            this.mixedGtBtn.Click += new System.EventHandler(this.mixedGtBtn_Click);
             // 
-            // removeMixed
+            // mixedLessBtn
             // 
-            this.removeMixed.Location = new System.Drawing.Point(277, 222);
-            this.removeMixed.Name = "removeMixed";
-            this.removeMixed.Size = new System.Drawing.Size(80, 29);
-            this.removeMixed.TabIndex = 4;
-            this.removeMixed.Text = "Remove";
-            this.removeMixed.UseVisualStyleBackColor = true;
+            this.mixedLessBtn.Location = new System.Drawing.Point(75, 112);
+            this.mixedLessBtn.Name = "mixedLessBtn";
+            this.mixedLessBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedLessBtn.TabIndex = 22;
+            this.mixedLessBtn.Text = ">";
+            this.mixedLessBtn.UseVisualStyleBackColor = true;
+            this.mixedLessBtn.Click += new System.EventHandler(this.mixedLessBtn_Click);
+            // 
+            // mixedEqBtn
+            // 
+            this.mixedEqBtn.Location = new System.Drawing.Point(22, 112);
+            this.mixedEqBtn.Name = "mixedEqBtn";
+            this.mixedEqBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedEqBtn.TabIndex = 21;
+            this.mixedEqBtn.Text = "=";
+            this.mixedEqBtn.UseVisualStyleBackColor = true;
+            this.mixedEqBtn.Click += new System.EventHandler(this.mixedEqBtn_Click);
+            // 
+            // mixedPntBtn
+            // 
+            this.mixedPntBtn.Location = new System.Drawing.Point(238, 145);
+            this.mixedPntBtn.Name = "mixedPntBtn";
+            this.mixedPntBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedPntBtn.TabIndex = 20;
+            this.mixedPntBtn.Text = ".";
+            this.mixedPntBtn.UseVisualStyleBackColor = true;
+            this.mixedPntBtn.Click += new System.EventHandler(this.mixedPntBtn_Click);
+            // 
+            // mixedPlusBtn
+            // 
+            this.mixedPlusBtn.Location = new System.Drawing.Point(128, 145);
+            this.mixedPlusBtn.Name = "mixedPlusBtn";
+            this.mixedPlusBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedPlusBtn.TabIndex = 19;
+            this.mixedPlusBtn.Text = "+";
+            this.mixedPlusBtn.UseVisualStyleBackColor = true;
+            this.mixedPlusBtn.Click += new System.EventHandler(this.mixedPlusBtn_Click);
+            // 
+            // mixedMinBtn
+            // 
+            this.mixedMinBtn.Location = new System.Drawing.Point(75, 145);
+            this.mixedMinBtn.Name = "mixedMinBtn";
+            this.mixedMinBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedMinBtn.TabIndex = 18;
+            this.mixedMinBtn.Text = "-";
+            this.mixedMinBtn.UseVisualStyleBackColor = true;
+            this.mixedMinBtn.Click += new System.EventHandler(this.mixedMinBtn_Click);
+            // 
+            // mixedMulBtn
+            // 
+            this.mixedMulBtn.Location = new System.Drawing.Point(22, 145);
+            this.mixedMulBtn.Name = "mixedMulBtn";
+            this.mixedMulBtn.Size = new System.Drawing.Size(47, 28);
+            this.mixedMulBtn.TabIndex = 17;
+            this.mixedMulBtn.Text = "*";
+            this.mixedMulBtn.UseVisualStyleBackColor = true;
+            this.mixedMulBtn.Click += new System.EventHandler(this.mixedMulBtn_Click);
+            // 
+            // mixed9Btn
+            // 
+            this.mixed9Btn.Location = new System.Drawing.Point(346, 44);
+            this.mixed9Btn.Name = "mixed9Btn";
+            this.mixed9Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed9Btn.TabIndex = 16;
+            this.mixed9Btn.Text = "9";
+            this.mixed9Btn.UseVisualStyleBackColor = true;
+            this.mixed9Btn.Click += new System.EventHandler(this.mixed9Btn_Click);
+            // 
+            // mixed8Btn
+            // 
+            this.mixed8Btn.Location = new System.Drawing.Point(293, 44);
+            this.mixed8Btn.Name = "mixed8Btn";
+            this.mixed8Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed8Btn.TabIndex = 15;
+            this.mixed8Btn.Text = "8";
+            this.mixed8Btn.UseVisualStyleBackColor = true;
+            this.mixed8Btn.Click += new System.EventHandler(this.mixed8Btn_Click);
+            // 
+            // mixed7Btn
+            // 
+            this.mixed7Btn.Location = new System.Drawing.Point(238, 44);
+            this.mixed7Btn.Name = "mixed7Btn";
+            this.mixed7Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed7Btn.TabIndex = 14;
+            this.mixed7Btn.Text = "7";
+            this.mixed7Btn.UseVisualStyleBackColor = true;
+            this.mixed7Btn.Click += new System.EventHandler(this.mixed7Btn_Click);
+            // 
+            // mixed6Btn
+            // 
+            this.mixed6Btn.Location = new System.Drawing.Point(346, 78);
+            this.mixed6Btn.Name = "mixed6Btn";
+            this.mixed6Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed6Btn.TabIndex = 13;
+            this.mixed6Btn.Text = "6";
+            this.mixed6Btn.UseVisualStyleBackColor = true;
+            this.mixed6Btn.Click += new System.EventHandler(this.mixed6Btn_Click);
+            // 
+            // mixed5Btn
+            // 
+            this.mixed5Btn.Location = new System.Drawing.Point(293, 78);
+            this.mixed5Btn.Name = "mixed5Btn";
+            this.mixed5Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed5Btn.TabIndex = 12;
+            this.mixed5Btn.Text = "5";
+            this.mixed5Btn.UseVisualStyleBackColor = true;
+            this.mixed5Btn.Click += new System.EventHandler(this.mixed5Btn_Click);
+            // 
+            // mixed4Btn
+            // 
+            this.mixed4Btn.Location = new System.Drawing.Point(238, 78);
+            this.mixed4Btn.Name = "mixed4Btn";
+            this.mixed4Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed4Btn.TabIndex = 11;
+            this.mixed4Btn.Text = "4";
+            this.mixed4Btn.UseVisualStyleBackColor = true;
+            this.mixed4Btn.Click += new System.EventHandler(this.mixed4Btn_Click);
+            // 
+            // mixed3Btn
+            // 
+            this.mixed3Btn.Location = new System.Drawing.Point(346, 112);
+            this.mixed3Btn.Name = "mixed3Btn";
+            this.mixed3Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed3Btn.TabIndex = 10;
+            this.mixed3Btn.Text = "3";
+            this.mixed3Btn.UseVisualStyleBackColor = true;
+            this.mixed3Btn.Click += new System.EventHandler(this.mixed3Btn_Click);
+            // 
+            // mixed2Btn
+            // 
+            this.mixed2Btn.Location = new System.Drawing.Point(293, 112);
+            this.mixed2Btn.Name = "mixed2Btn";
+            this.mixed2Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed2Btn.TabIndex = 9;
+            this.mixed2Btn.Text = "2";
+            this.mixed2Btn.UseVisualStyleBackColor = true;
+            this.mixed2Btn.Click += new System.EventHandler(this.mixed2Btn_Click);
+            // 
+            // mixed1Btn
+            // 
+            this.mixed1Btn.Location = new System.Drawing.Point(238, 112);
+            this.mixed1Btn.Name = "mixed1Btn";
+            this.mixed1Btn.Size = new System.Drawing.Size(47, 28);
+            this.mixed1Btn.TabIndex = 8;
+            this.mixed1Btn.Text = "1";
+            this.mixed1Btn.UseVisualStyleBackColor = true;
+            this.mixed1Btn.Click += new System.EventHandler(this.mixed1Btn_Click);
+            // 
+            // zeroBtnMixed
+            // 
+            this.zeroBtnMixed.Location = new System.Drawing.Point(293, 145);
+            this.zeroBtnMixed.Name = "zeroBtnMixed";
+            this.zeroBtnMixed.Size = new System.Drawing.Size(47, 28);
+            this.zeroBtnMixed.TabIndex = 7;
+            this.zeroBtnMixed.Text = "0";
+            this.zeroBtnMixed.UseVisualStyleBackColor = true;
+            this.zeroBtnMixed.Click += new System.EventHandler(this.zeroBtnMixed_Click);
             // 
             // mixedDelete
             // 
@@ -699,13 +903,54 @@
             this.mixedDelete.TabIndex = 5;
             this.mixedDelete.Text = "Delete";
             this.mixedDelete.UseVisualStyleBackColor = true;
+            this.mixedDelete.Click += new System.EventHandler(this.mixedDelete_Click);
             // 
-            // mixedConstrTextBox
+            // removeMixed
             // 
-            mixedConstrTextBox.Location = new System.Drawing.Point(22, 189);
-            mixedConstrTextBox.Name = "mixedConstrTextBox";
-            mixedConstrTextBox.Size = new System.Drawing.Size(361, 27);
-            mixedConstrTextBox.TabIndex = 6;
+            this.removeMixed.Location = new System.Drawing.Point(277, 222);
+            this.removeMixed.Name = "removeMixed";
+            this.removeMixed.Size = new System.Drawing.Size(80, 29);
+            this.removeMixed.TabIndex = 4;
+            this.removeMixed.Text = "Remove";
+            this.removeMixed.UseVisualStyleBackColor = true;
+            this.removeMixed.Click += new System.EventHandler(this.removeMixed_Click);
+            // 
+            // addMixed
+            // 
+            this.addMixed.Location = new System.Drawing.Point(22, 222);
+            this.addMixed.Name = "addMixed";
+            this.addMixed.Size = new System.Drawing.Size(75, 30);
+            this.addMixed.TabIndex = 3;
+            this.addMixed.Text = "Add";
+            this.addMixed.UseVisualStyleBackColor = true;
+            this.addMixed.Click += new System.EventHandler(this.addMixed_Click);
+            // 
+            // mixedListBox
+            // 
+            this.mixedListBox.FormattingEnabled = true;
+            this.mixedListBox.ItemHeight = 19;
+            this.mixedListBox.Location = new System.Drawing.Point(22, 258);
+            this.mixedListBox.Name = "mixedListBox";
+            this.mixedListBox.Size = new System.Drawing.Size(361, 99);
+            this.mixedListBox.TabIndex = 2;
+            // 
+            // mixedComboBox
+            // 
+            this.mixedComboBox.FormattingEnabled = true;
+            this.mixedComboBox.Location = new System.Drawing.Point(74, 20);
+            this.mixedComboBox.Name = "mixedComboBox";
+            this.mixedComboBox.Size = new System.Drawing.Size(121, 27);
+            this.mixedComboBox.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.label1.Location = new System.Drawing.Point(7, 23);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(62, 21);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Option:";
             // 
             // EditContraintsDialog
             // 
@@ -778,8 +1023,29 @@
         private System.Windows.Forms.Button mixedDelete;
         private System.Windows.Forms.Button removeMixed;
         private System.Windows.Forms.Button addMixed;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ListBox mixedListBox;
+        private System.Windows.Forms.ComboBox mixedComboBox;
         private System.Windows.Forms.Label label1;
+        System.Windows.Forms.TextBox mixedConstrTextBox;
+        private System.Windows.Forms.Button zeroBtnMixed;
+        private System.Windows.Forms.Button mixed3Btn;
+        private System.Windows.Forms.Button mixed2Btn;
+        private System.Windows.Forms.Button mixed1Btn;
+        private System.Windows.Forms.Button mixed9Btn;
+        private System.Windows.Forms.Button mixed8Btn;
+        private System.Windows.Forms.Button mixed7Btn;
+        private System.Windows.Forms.Button mixed6Btn;
+        private System.Windows.Forms.Button mixed5Btn;
+        private System.Windows.Forms.Button mixed4Btn;
+        private System.Windows.Forms.Button mixedGtBtn;
+        private System.Windows.Forms.Button mixedLessBtn;
+        private System.Windows.Forms.Button mixedEqBtn;
+        private System.Windows.Forms.Button mixedPntBtn;
+        private System.Windows.Forms.Button mixedPlusBtn;
+        private System.Windows.Forms.Button mixedMinBtn;
+        private System.Windows.Forms.Button mixedMulBtn;
+        private System.Windows.Forms.Button mixedAddOptionBtn;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
