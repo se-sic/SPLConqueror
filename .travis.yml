@@ -11,6 +11,8 @@ before_script:
   - 7z e z3-4.6.0-x64-ubuntu-16.04.zip
   - mkdir -p TRAVIS_BUILD_DIR/SPLConqueror/packages/z3x64win.4.5.0.1/lib/
   - mv Microsoft.Z3.dll TRAVIS_BUILD_DIR/SPLConqueror/packages/z3x64win.4.5.0.1/lib/Microsoft.Z3.dll
+  - ls TRAVIS_BUILD_DIR/SPLConqueror/packages/z3x64win.4.5.0.1/lib/
+  - export LD_LIBRARY_PATH = TRAVIS_BUILD_DIR/SPLConqueror/packages/z3x64win.4.5.0.1/lib/
 script:
   - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
