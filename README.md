@@ -222,6 +222,16 @@ An example for a variability model is given below:
   </numericOptions>
 </vm>
 ```
+
+Interactions can also be defined between numeric and binary configuration options in the variability model. As an example:
+```
+<mixedConstraints>
+<constraint req="all" exprKind="neg">LocalMemory * bs_32x32 * pixelPerThread = 3</constraint>
+</mixedConstraints>
+```
+
+The *req* attribute determines how the expression is evaluated in case not all configurations options are present or partial configurations are evaluated. *req="all"* results in the constraints always being true if at least one configuration options of the expression is not present in the configuration, otherwise the constraint will be evaluated as is. 
+*req="none"* results in missing configuration options automatically being treated as deselected and the expression being then evaluated as is. *exprKind="neg"* negates the result of the evaluation, while *exprKind="pos"* simply uses the result of the evaluation.
 </details>
 
 <details>
@@ -537,6 +547,7 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
 | Binary | random | Get certain number of random valid configurations. Seed sets the seed of the random number generator. The number of configurations that will be produced is set with numConfigs(Can either be an integer, or asOW/asTWX with X being an integer). | ```binary random seed:<int> numConfigs:<int/asOW/asTWX>``` | binary random seed:10 numConfigs:asTW2 |
 | Binary | distance-based | Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance to the configurations that were previously selected. | ```binary distance-based optionWeight:<int> numConfigs:<int/asOW/asTWX>``` | binary distance-based optionWeight:1 numConfigs:10 |
+| Binary | twise | Generates a configuration for each valid combination of a set consisting of t configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary twise t:<int>``` | binary twise t:3 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```numeric random sampleSize:<size> seed:<seed>``` | numeric random sampleSize:50 seed:2 |
