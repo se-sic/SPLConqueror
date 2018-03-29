@@ -299,7 +299,7 @@ namespace SPLConqueror_Core
             }
 
 
-            ////TODO improve performance with Dictionary as described in Wunderlist TODO
+            ////HACK can lead to performance problems for numeric options with a large number of valid values
             double lowerValue = 0;
             double upperValue = 0;
 

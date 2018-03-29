@@ -194,24 +194,6 @@ namespace SPLConqueror_Core
                             c = Configuration.createFromHashString(configID, GlobalState.varModel);
                             hasSetConfig = true;
                             break;
-                        case "CompilerOptions":
-                            //todo
-                            break;
-                        case "ConfigFileOptions":
-                            //todo
-                            break;
-                        case "ParameterOptions":
-                            //todo
-                            break;
-                        case "ProgramName":
-                            //todo
-                            break;
-                        case "StartupBegin":
-                            //todo
-                            break;
-                        case "StartupEnd":
-                            //todo
-                            break;
                         default:
                             NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
                             double measuredValue = 0;
@@ -415,8 +397,6 @@ namespace SPLConqueror_Core
                         break;
                     case "Variable Features":
                         break;
-
-
                     case "BinaryOptions":
                         break;
                     case "NumericOptions":

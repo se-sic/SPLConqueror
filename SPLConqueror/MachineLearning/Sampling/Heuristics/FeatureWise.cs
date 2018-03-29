@@ -34,10 +34,6 @@ namespace MachineLearning.Sampling.Heuristics
                         if (!binOpt.hasAlternatives())
                         {
                             firstLevelMandatoryFeatures.Add(binOpt);
-                            //Todo: Recursive down search
-                            /*List<BinaryOption> tmpList = (List<BinaryOption>)vm.getMandatoryChildsRecursive(binOpt);
-                            if (tmpList != null && tmpList.Count > 0)
-                                firstLevelMandatoryFeatures.AddRange(tmpList);*/
                         }
                     }
                     else

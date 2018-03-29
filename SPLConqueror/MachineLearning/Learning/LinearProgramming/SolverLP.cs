@@ -110,8 +110,6 @@ namespace MachineLearning.Learning.LinearProgramming
                             config.Insert(0, root);
                 }
             }
-
-
             //Building the variable list
             foreach (var elem in infModel.Vm.BinaryOptions)
             {
@@ -119,57 +117,11 @@ namespace MachineLearning.Learning.LinearProgramming
                 featureValues.Add(elem.Name, 0);
             }
 
-            //First run
-
             featureValues = solve(variables, results, configurations, null);
 
-
-            //if (evaluateFeatureInteractionsOnly == false)
             return featureValues;
 
-            /*
-            //We might have some interactions here and cannot compute all values
-            //1. identify options that are only present in these equations
-            Dictionary<Element, int> featureCounter = new Dictionary<Element, int>();
-            for (int i = 0; i < indexOfErrorMeasurements.Count; i++)
-            {
-
-            }
-            
-            */
-            /*Todo: get compute interactins from deviations / errors of the LP results
-            if (errorEqs != null)
-            {
-                foreach (string eq in errorEqs)
-                {
-                    double value = Double.Parse(eq.Substring(eq.IndexOf("==") + 2));
-
-                    StringBuilder sb = new StringBuilder();
-                    List<Element> derivativeParents = new List<Element>();
-                    sb.Append("derivate_");
-                    string[] splittedEQ = eq.Split('+');
-                    foreach (string element in splittedEQ)
-                    {
-                        string name = element;
-                        if (name.Contains("=="))
-                            name = name.Substring(0, name.IndexOf("=="));
-                        if (name.Contains("yp") && name.Contains("-yn"))
-                            continue;
-                        // string featureName = name.Substring(0, name.IndexOf("_p-"));
-                        Element elem = infModel.getElementByNameUnsafe(name);
-                        if (elem == null)
-                            continue;
-                        sb.Append("_" + name);
-                        derivativeParents.Add(elem);
-                    }
-                    Element interaction = new Element(sb.ToString(), infModel.getID(), infModel);
-                    interaction.setType("derivative");
-                    interaction.addDerivativeParents(derivativeParents);
-                    infModel.addElement(interaction);
-                    this.featureValues.Add(interaction, value);
-                }
-            }
-            return featureValues;*/
+          
         }
 
 
