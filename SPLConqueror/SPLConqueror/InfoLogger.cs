@@ -33,7 +33,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Logs general information depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at file
+        /// Logs general information depending on what log mechanism was chosen (console, file, gui).
         /// </summary>
         /// <param name="msg">The message to be printed or logged</param>
         public override void logLine(String msg)
@@ -51,7 +51,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Logs general information depending on what log mechanism was chosen (console, file, gui). Todo: currently only logging at file
+        /// Logs general information depending on what log mechanism was chosen (console, file, gui).
         /// </summary>
         /// <param name="msg">The message to be printed or logged</param>
         public override void log(String msg)

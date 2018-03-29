@@ -143,10 +143,6 @@ namespace SPLConqueror_Core
             GlobalState.currentNFP = property;
         }
 
-        // TODO: switch from non-normalized configurations to normalized configurations
-
-
-
         /// <summary>
         /// This function gets a list of configurations and checks in the global state whether this configuration has a measured value and returns it if so.
         /// </summary>

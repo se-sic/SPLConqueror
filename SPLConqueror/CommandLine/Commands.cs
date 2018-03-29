@@ -558,14 +558,13 @@ namespace CommandLine
                     }
 
                 case COMMAND_ANALYZE_LEARNING:
-                    {//TODO: Analyzation is not supported in the case of bagging
+                    {
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
-                        //GlobalState.logInfo.logLine(pyResult);
+                       
                         if (this.mlSettings.bagging)
                         {
-                            // this.metaModel
-
+                       
                             for (int i = 0; i < this.exp.models.Count; i++)
                             {
                                 FeatureSubsetSelection learnedModel = exp.models[i];
@@ -680,25 +679,9 @@ namespace CommandLine
 
                 case COMMAND_PRINT_CONFIGURATIONS:
                     {
-                        /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
-                         List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
-
-                         List<Configuration> configurations = new List<Configuration>();
-
-                         foreach (Dictionary<NumericOption, double> numeric in numericSampling)
-                         {
-                             foreach (List<BinaryOption> binary in binarySampling)
-                             {
-                                 Configuration config = Configuration.getConfiguration(binary, numeric);
-                                 if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
-                                 {
-                                     configurations.Add(config);
-                                 }
-                             }
-                         }*/
 
                         string[] para = task.Split(new char[] { ' ' });
-                        // TODO very error prone..
+
                         if (para.Length >= 1 && (para[0].Trim()).Length > 0)
                         {
                             ConfigurationPrinter printer = null;
@@ -933,7 +916,6 @@ namespace CommandLine
                     {
                         string[] para = task.Split(new char[] { ' ' });
 
-                        // TODO something is wrong here....
                         Dictionary<String, String> parameters = new Dictionary<string, string>();
                         //parseParametersToLinearAndQuadraticBinarySampling(para);
 

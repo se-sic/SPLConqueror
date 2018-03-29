@@ -52,29 +52,6 @@ namespace MachineLearning.Learning.Regression
             get { if (learningHistory.Count == 0) return null; else return learningHistory[learningHistory.Count - 1]; }
         }
 
-        // TODO: unused method?
-        public void clean()
-        {
-            infModel = null;
-            learningHistory = new ObservableCollection<LearningRound>();
-            hierachyLevel = 1;
-            initialFeatures = new List<Feature>();
-            strictlyMandatoryFeatures = new List<Feature>();
-            MLsettings = null;
-            bruteForceCandidates = new List<Feature>();
-            learningSet = new List<Configuration>();
-            validationSet = new List<Configuration>();
-            Y_validation = ILMath.empty();
-            Y_learning = ILMath.empty();
-            DM_columns = new ConcurrentDictionary<Feature, ILArray<double>>();
-            badFeatures = new Dictionary<Feature, int>();
-        }
-
-        public FeatureSubsetSelection()
-        {
-
-        }
-
         /// <summary>
         /// Constructor of the learning class. It reads all configuration options and generates candidates for possible influences (i.e., features).
         /// </summary>
@@ -563,7 +540,7 @@ namespace MachineLearning.Learning.Regression
                 }
 
                 //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
-                if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0)
+                if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0 && basicFeature.canNotEvaluateToZero())
                 {
                     Feature newCandidate = new Feature("log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
