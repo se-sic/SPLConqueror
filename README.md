@@ -223,6 +223,30 @@ An example for a variability model is given below:
 </vm>
 ```
 
+Tags:
+| Name  | Parent | Descriptions |
+| :---: | :---------: | :-----------: |
+| vm | - | Variability model node |
+| binaryOptions | vm | Xml node containing all binary configuration option nodes |
+| numericOptions | vm | Xml node containing all binary configuration option nodes |
+| configurationOption | numericOptions/binaryOptions | Node that describes a configuration option. Contains the name, parent option, output string and prefix and postfix string for output. Nodes that describe binary options also contain information about implied or excluded configuration options. Nodes that describe numeric options contain information about min and max value as well as the step function for the value between min and max. |
+| name | configurationOption | Contains the name of the configuration option |
+| outputString | configurationOption |  String that will be printed when printing the configuration option |
+| prefix |  configurationOption | Prefix that will be attached to the output string |
+| postfix | configurationOption | Postfix that will be attached to the output string |
+| parent | configurationOption | Parent configuration option of this configuration options |
+| impliedOptions | configurationOption | Collection of configuration options wrapped in option nodes that have to be selected if this option is selected |
+| option | impliedOptions/excludedOptions | Node that wraps a configuration option |
+| excludedOptions | configurationOption | Collection of configuration options wrapped in option nodes that cant be selected if this option is selected |
+| optional | configurationOption | Node that contains information whether this option is optional or mandatory |
+| minValue | configurationOption | Minimum value a numeric option can assume |
+| maxValue | configurationOption | Maximum value a numeric option can assume |
+| stepFunction | configurationOption | Mathematical function that describes the values between min and max a numeric option can assume |
+| booleanConstraints | vm | Collection of logical expressions with binary options a configuration of this model has to fulfill |
+| numericConstraints | vm | Collection of mathematical expressions with numeric options a configuration of this model has to fulfill |
+| mixedConstraints | vm | Collection of mathematical expressions with configuration options a configuration of this model has to fulfill |
+| constraint | booleanConstraints/numericConstraints/mixedConstraints | Wrappper for a single constraint can either be a logical expression or mathematical expression(for mixed constraints attribute exists - see below) | 
+
 Interactions can also be defined between numeric and binary configuration options in the variability model. As an example:
 ```
 <mixedConstraints>
