@@ -29,7 +29,5 @@ namespace MachineLearning.Learning.LinearProgramming
         /// <returns>A map of binary options to their computed influences.</returns>
         Dictionary<BinaryOption, double> computeOptionInfluences(NFProperty nfp, InfluenceModel infModel, ResultDB db);
 
-        //TODO
-        //List<Element> solveForMultipleProperties(FeatureModel fm, bool optimized, List<RuntimeProperty> properties, List<NFPConstraint> constraints, RuntimeProperty goalProp, bool maximize);
     }
 }

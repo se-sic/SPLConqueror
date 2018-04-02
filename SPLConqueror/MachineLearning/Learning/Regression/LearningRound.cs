@@ -36,9 +36,9 @@ namespace MachineLearning.Learning.Regression
         public string terminationReason = null;
 
         /// <summary>
-        /// TODO: Prints the information learned in a round.
+        /// Prints the information learned in a round.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All relevant information of the current round as string.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

@@ -176,5 +176,22 @@ namespace SPLConqueror_Core
         {
             return base.ToString();
         }
+
+        /// <summary>
+        /// Tests, whether none of the valid value combinations of all participating configuration options can evaluate to zero.
+        /// </summary>
+        /// <returns>True, if none of the valid value combinations of all participating configuration options can evaluate to zero.</returns>
+        public bool canNotEvaluateToZero()
+        {
+            if (participatingBoolOptions.Count > 0)
+                return false;
+
+            foreach(NumericOption num in participatingNumOptions)
+            {
+                if (num.getAllValues().Contains(0.0))
+                    return false;
+            }
+            return true;
+        }
     }
 }
