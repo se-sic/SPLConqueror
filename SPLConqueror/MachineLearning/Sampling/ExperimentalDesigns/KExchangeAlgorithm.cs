@@ -108,7 +108,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                     setRowOfMatrixTo(matrix, tmp, fullFactorial, candidate);
                     usedCandidates.Add(tmp, candidate);
                 }
-            } while (true); // TODO > improve, not that deterministic
+            } while (true);
 
             // Calculate dispersion matrix
             ILArray<double> dispersion = calculateDispersion(matrix);
@@ -160,7 +160,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
                 for (int i = 0; i <= maxVal; i++)
                 {
-                    double value = opt.Min_value + (i / (double)maxVal) * delta; // TODO > round if parameters have to be integers
+                    double value = opt.Min_value + (i / (double)maxVal) * delta;
                     value = opt.nearestValidValue(value);
                     values.Add(Tuple.Create(opt, i), value);
                 }
