@@ -83,7 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLine.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="CommandPersistence.cs" />
     <Compile Include="Program.cs" />
