@@ -164,7 +164,7 @@ namespace MachineLearning.Learning.Regression
                 }
             } while (!abortLearning(current, previous));
             updateInfluenceModel();
-            this.finalError = evaluateError(this.validationSet, out this.finalError, false);
+            this.finalError = evaluateError(this.validationSet, false);
         }
 
         #region learning algorithm
@@ -201,7 +201,7 @@ namespace MachineLearning.Learning.Regression
                 }
             } while (!abortLearning(current, previous));
             updateInfluenceModel();
-            this.finalError = evaluateError(this.validationSet, out this.finalError, false);
+            this.finalError = evaluateError(this.validationSet, false);
         }
 
         /// <summary>
@@ -289,6 +289,7 @@ namespace MachineLearning.Learning.Regression
             Feature bestCandidate = null;
             
             List<Task> tasks = new List<Task>();
+
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
             {
@@ -311,7 +312,7 @@ namespace MachineLearning.Learning.Regression
                     Task task = Task.Factory.StartNew(() =>
                     {
                         Thread.CurrentThread.CurrentCulture = customCulture;
-                        ModelFit fi = evaluateCandidate(newModel, true);
+                        ModelFit fi = evaluateCandidate(newModel, MLsettings.considerEpsilonTube);
                         if (fi.complete)
                         {
                             errorOfFeature.GetOrAdd(threadCandidate, fi.error);
@@ -323,7 +324,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 else
                 {//Serial execution of the fitting model for the current candidate
-                    ModelFit fi = evaluateCandidate(newModel, true);
+                    ModelFit fi = evaluateCandidate(newModel, MLsettings.considerEpsilonTube);
                     if (fi.complete)
                     {
                         errorOfFeature.GetOrAdd(threadCandidate, fi.error);
@@ -391,9 +392,9 @@ namespace MachineLearning.Learning.Regression
             else
             {
                 bestModel = copyCombination(bestModel);
-                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel, out relativeErrorEval), previousRound.round + 1);
+                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel), previousRound.round + 1);
                 newRound.learningError_relative = minimalRoundError;
-                newRound.validationError_relative = relativeErrorEval;
+                newRound.validationError_relative = newRound.validationError;
                 newRound.elapsedTime = DateTime.Now - startTime;
                 newRound.bestCandidate = bestCandidate;
                 newRound.bestCandidateSize = bestCandidate.getNumberOfParticipatingOptions();
@@ -408,7 +409,7 @@ namespace MachineLearning.Learning.Regression
             ModelFit fit = new ModelFit();
             fit.complete = fitModel(model);
             double temp;
-            fit.error = computeModelError(model, out temp);
+            fit.error = computeModelError(model);
             fit.newModel = model;
             return fit;
         }
@@ -487,7 +488,7 @@ namespace MachineLearning.Learning.Regression
                 if (this.MLsettings.withHierarchy && this.hierachyLevel == 1)
                     continue;
 
-                foreach (var feature in currentModel)
+                foreach (Feature feature in currentModel)
                 {
                     if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
                         continue;
@@ -640,6 +641,7 @@ namespace MachineLearning.Learning.Regression
                         if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
                             continue;
                         if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+
                             continue;
 
 
@@ -657,7 +659,6 @@ namespace MachineLearning.Learning.Regression
                 f.Constant = 1;
             return listOfCandidates;
         }
-
         /// <summary>
         /// The method generates a list of candidates to be added to the current model. These candidates are later fitted using regression and rated for their accuracy in estimating the values of the validation set.
         /// The basicFeatures comes from the pool of initial features (e.g., all configuration options of the variability model or predefined combinations of options).
@@ -842,7 +843,7 @@ namespace MachineLearning.Learning.Regression
                     List<Feature> reducedFeatureSet = copyCombination(featureSet);
                     reducedFeatureSet.Remove(delitionCandidate);
                     double relativeValidationError = 0;
-                    computeModelError(reducedFeatureSet, out relativeValidationError);
+                    computeModelError(reducedFeatureSet);
                     if ((relativeValidationError <= previousRelativeValidationError)
                         && (relativeValidationError - previousReducedModelValidationError < this.MLsettings.minImprovementPerRound))
                     {
@@ -875,9 +876,9 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeValidationError(List<Feature> currentModel, out double relativeError)
+        private double computeValidationError(List<Feature> currentModel)
         {
-            return computeError(currentModel, this.validationSet, out relativeError, true);
+            return computeError(currentModel, this.validationSet, false);
         }
 
         /// <summary>
@@ -918,10 +919,9 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="configs">The configuration for which the error should be computed. It contains also the actually measured value.</param>
         /// <returns>The error depending on the configured loss function (e.g., relative, least squares, absolute).</returns>
-        public double computeError(List<Feature> currentModel, List<Configuration> configs, out double relativeError, bool considerEpsilonTube)
+        public double computeError(List<Feature> currentModel, List<Configuration> configs, bool considerEpsilonTube)
         {
             double error_sum = 0;
-            relativeError = 0;
             int skips = 0;
             foreach (Configuration c in configs)
             {
@@ -941,38 +941,35 @@ namespace MachineLearning.Learning.Regression
                     GlobalState.logError.logLine(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
+
                 //How to handle near-zero values???
                 //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
                 //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
+                //if (Math.Abs(realValue) < 0.001)
+                //{
+                //    skips++;
+                //    continue;
+                //}
 
-                if (realValue < 1)
-                {//((2(true-est) / true+est) - 1 ) * 100
-                    //continue;
-                    skips++;
-                    continue;
-                }
-                else
-                {
-                    double er = Math.Abs(100 - ((estimatedValue * 100) / realValue));
-                    relativeError += er;
-                }
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {
                     case ML_Settings.LossFunction.RELATIVE:
-                        if (realValue < 1)
-                        {
-                            error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
-                        }
-                        else
-                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                        //if (Math.Abs(realValue) < 0.001)
+                        //{
+                        //    error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
+                        //}
+                        //else
+
+                        error = Math.Abs((estimatedValue - realValue) / realValue ) * 100;
+
+                        //    error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
 
                         // Consider epsilon tube
                         if (considerEpsilonTube)
                         {
                             if (error <= (this.MLsettings.epsilon * 100))
                             {
-                                relativeError -= error;
                                 error = 0.0;
                             }
                         }
@@ -984,7 +981,6 @@ namespace MachineLearning.Learning.Regression
                         {
                             if (error <= this.MLsettings.epsilon)
                             {
-                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
                                 error = 0.0;
                             }
                         }
@@ -993,14 +989,7 @@ namespace MachineLearning.Learning.Regression
                     case ML_Settings.LossFunction.ABSOLUTE:
                         error = Math.Abs(realValue - estimatedValue);
 
-                        if (considerEpsilonTube)
-                        {
-                            if (error <= this.MLsettings.epsilon)
-                            {
-                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
-                                error = 0.0;
-                            }
-                        }
+
                         break;
                 }
                 error_sum += error;
@@ -1011,7 +1000,7 @@ namespace MachineLearning.Learning.Regression
                 GlobalState.logInfo.logLine("All features have an error < 1.");
                 return 0.0;
             }
-            relativeError = relativeError / (configs.Count - skips);
+
             return error_sum / (configs.Count - skips);
         }
 
@@ -1021,9 +1010,9 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeLearningError(List<Feature> currentModel, out double relativeError)
+        private double computeLearningError(List<Feature> currentModel)
         {
-            return computeError(currentModel, this.learningSet, out relativeError, true);
+            return computeError(currentModel, this.learningSet, MLsettings.considerEpsilonTube);
         }
 
         /// <summary>
@@ -1032,14 +1021,14 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model for which the error should be computed.</param>
         /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The prediction error of the model.</returns>
-        private double computeModelError(List<Feature> currentModel, out double relativeError)
+        private double computeModelError(List<Feature> currentModel)
         {
             if (!this.MLsettings.crossValidation)
-                return computeValidationError(currentModel, out relativeError);
+                return computeValidationError(currentModel);
             else
             {
                 //todo k-fold
-                return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
+                return (computeLearningError(currentModel) + computeValidationError(currentModel) / 2);
             }
 
         }
@@ -1050,14 +1039,13 @@ namespace MachineLearning.Learning.Regression
         /// <param name="list"></param>
         /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The error rate.</returns>
-        public double evaluateError(List<Configuration> list, out double relativeError, bool considerEpsilonTube)
+        public double evaluateError(List<Configuration> list, bool considerEpsilonTube)
         {
             if (this.CurrentRound == null)
             {
-                relativeError = Double.MaxValue;
                 return -1;
             }
-            return computeError(this.CurrentRound.FeatureSet, list, out relativeError, considerEpsilonTube);
+            return computeError(this.CurrentRound.FeatureSet, list, considerEpsilonTube);
         }
         #endregion
 

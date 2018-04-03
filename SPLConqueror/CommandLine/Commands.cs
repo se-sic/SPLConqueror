@@ -430,8 +430,7 @@ namespace CommandLine
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
 
                     try {
-                        GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations
-                            .Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+                        GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel);
                     } catch (ArgumentNullException)
                     {
                         throw new ArgumentException("There was a problem when reading your configuration file." +
@@ -579,11 +578,12 @@ namespace CommandLine
                                     double relativeError = 0;
                                     if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError, false);
+                                        // TODO consider useEpsilonTube from ML settings
+                                        relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                     }
                                     else
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
+                                        relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                     }
 
                                     GlobalState.logInfo.logLine(lr.ToString() + relativeError);
@@ -606,11 +606,11 @@ namespace CommandLine
                                 double relativeError = 0;
                                 if (GlobalState.evaluationSet.Configurations.Count > 0)
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError, false);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                 }
                                 else
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                 }
 
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);

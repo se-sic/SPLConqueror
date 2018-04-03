@@ -41,7 +41,7 @@ namespace SPLConqueror_Core
         /// <returns>True if both features consider the same configuration options with the same exponents.</returns>
         public bool Equals(Feature f)
         {
-            return base.ToString().Equals(f.getPureString());
+            return this.GetHashCode().Equals(f.GetHashCode());
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace SPLConqueror_Core
         /// <returns>0 if both feature are the same, 1 and -1 otherwise.</returns>
         public int Compare(Feature x, Feature y)
         {
-            return x.name.CompareTo(y.name);
+            return x.hashCode.CompareTo(y.hashCode);
         }
 
         /// <summary>

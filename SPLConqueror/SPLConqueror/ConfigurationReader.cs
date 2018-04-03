@@ -149,6 +149,7 @@ namespace SPLConqueror_Core
             int configsWithTooLargeDeviation = 0;
             foreach (XmlNode node in currentElemt.ChildNodes)
             {
+
                 bool readMultipleMeasurements = false;
                 if (node.Attributes.Count > 0 && node.Attributes[0].Value.ToLower() == "true")
                 {
@@ -162,7 +163,7 @@ namespace SPLConqueror_Core
                 Dictionary<NFProperty, double> measuredProperty = new Dictionary<NFProperty, double>();
                 Configuration c = null;
                 bool hasSetConfig = false;
-                foreach (XmlNode childNode in node.ChildNodes)
+                foreach (XmlNode childNode in node.ChildNodes) 
                 {
                     if (c == null && hasSetConfig)
                         continue;
@@ -251,6 +252,9 @@ namespace SPLConqueror_Core
                             }
                             else
                                 measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(decimalDelimiter, '.'));
+                            // TODO how to handle configurations with negative nfps?
+                            if (measuredValue < 0)
+                                goto nextConfig;
 
                             // Save the largest measured value.
                             double currentMaxMeasuredValue;
@@ -279,6 +283,8 @@ namespace SPLConqueror_Core
                     }
                 }
 
+
+
                 if (alternativeFormat && c != null)
                 {
                     if (configurations.Contains(c))
@@ -292,6 +298,8 @@ namespace SPLConqueror_Core
                     }
                     continue;
                 }
+
+                
 
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
                 // indicates if this configuration is valid in the current feature model
@@ -367,7 +375,10 @@ namespace SPLConqueror_Core
                     configurations.Add(config);
                     //}
                 }
+                nextConfig: { }
             }
+
+
             GlobalState.logInfo.logLine("Configs with too large deviation: " + configsWithTooLargeDeviation);
             return configurations.ToList();
         }
