@@ -40,6 +40,12 @@ namespace MachineLearning.Learning
         public int baggingNumbers = 3;
 
         /// <summary>
+        /// Lays a tube around the performance-influence function where all errors inside the tube are ignored.
+        /// </summary>
+        public bool considerEpsilonTube = false;
+
+
+        /// <summary>
         /// Specifies the percentage of data taken from the test set to be used in one learning run
         /// </summary>
         public int baggingTestDataFraction = 50;
