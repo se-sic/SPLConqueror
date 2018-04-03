@@ -7,12 +7,18 @@ using System.Text.RegularExpressions;
 namespace SPLConqueror_Core
 {
 
+    /// <summary>
+    /// The influence function class that represents a term (e.g., 1.3 * x ).
+    /// </summary>
     public class InfluenceFunction
     {
 
         double noise = 0.0;
         private VariabilityModel varModel = null;
 
+        /// <summary>
+        /// This field includes the most important information as a well-formed expression (e.g., 1.3 * x ).
+        /// </summary>
         protected string wellFormedExpression = "";
 
 
@@ -26,9 +32,19 @@ namespace SPLConqueror_Core
         /// </summary>
         public HashSet<NumericOption> participatingNumOptions = new HashSet<NumericOption>();
 
+        /// <summary>
+        /// The number of participating features.
+        /// </summary>
         protected int numberOfParticipatingFeatures = 0;
+
+        /// <summary>
+        /// The expression array.
+        /// </summary>
         protected string[] expressionArray = null;
 
+        /// <summary>
+        /// The number of numeric options.
+        /// </summary>
         protected NumericOption numOption = null;
 
 
@@ -69,6 +85,9 @@ namespace SPLConqueror_Core
             parseExpressionToPolishNotation(expression);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SPLConqueror_Core.InfluenceFunction"/> class.
+        /// </summary>
         protected InfluenceFunction()
         {
         }
@@ -707,7 +726,10 @@ namespace SPLConqueror_Core
             this.noise = noise;
         }
 
-
+        /// <summary>
+        /// Builds and returns the string representation of the influence function.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:SPLConqueror_Core.InfluenceFunction"/>.</returns>
         public override String ToString()
         {
             String returnString = wellFormedExpression;

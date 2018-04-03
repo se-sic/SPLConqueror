@@ -121,6 +121,11 @@ namespace SPLConqueror_Core
             return count;
         }
 
+        /// <summary>
+        /// Computes the nearest valid value of the numeric option and returns it.
+        /// </summary>
+        /// <returns>The nearest valid value.</returns>
+        /// <param name="parameter">The value to search the nearest neighbour for.</param>
         public int getStepFast(double parameter)
         {
             if (stepFunction == null)
