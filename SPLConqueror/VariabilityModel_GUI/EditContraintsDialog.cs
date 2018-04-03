@@ -37,6 +37,10 @@ namespace VariabilitModel_GUI
                     nbOptionComboBox.Items.Add(option);
             }
 
+            mixedEvaluationComboBox.Items.Add("positive");
+            mixedEvaluationComboBox.Items.Add("negative");
+            mixedEvaluationComboBox.SelectedIndex = 0;
+
             if (boolOptionComboBox.Items.Count > 0)
                 boolOptionComboBox.SelectedIndex = 0;
 
@@ -816,14 +820,14 @@ namespace VariabilitModel_GUI
         private void button1_MouseHover(object sender, EventArgs e)
         {
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
-            ToolTip1.SetToolTip(this.button1, "Partial configurations can also evaluate to true.");
+            ToolTip1.SetToolTip(this.button1, "In configurations where not all options of the constraint are present missing options will be assumed as deselected.");
             ToolTip1.InitialDelay = 0;
         }
 
         private void button2_MouseHover(object sender, EventArgs e)
         {
             System.Windows.Forms.ToolTip ToolTip2 = new System.Windows.Forms.ToolTip();
-            ToolTip2.SetToolTip(this.button2, "Partial configurations automatically result in false.");
+            ToolTip2.SetToolTip(this.button2, "Configurations where not all options of the constraint are present automatically result in true.");
             ToolTip2.InitialDelay = 0;
         }
 
@@ -862,9 +866,17 @@ namespace VariabilitModel_GUI
                 MessageBox.Show("Warning: Either \"None\" or \"All\" prefix needs to be selected. Automatically assuming the \"None\" prefix.");
                 leftAndRight = new String[] { "None", mixedConstrTextBox.Text };
             }
-            GlobalState.varModel.MixedConstraints.Add(
-                new MixedConstraint(leftAndRight[0], GlobalState.varModel, leftAndRight[0]));
-            mixedListBox.Items.Add(mixedConstrTextBox.Text);
+            MixedConstraint constr = null;
+            if ((string)mixedEvaluationComboBox.SelectedItem == "positive")
+                constr = new MixedConstraint(leftAndRight[1], GlobalState.varModel, leftAndRight[0]);
+            else
+                constr = new MixedConstraint(leftAndRight[1], GlobalState.varModel, leftAndRight[0], "neg");
+            GlobalState.varModel.MixedConstraints.Add(constr);
+
+            if ((string)mixedEvaluationComboBox.SelectedItem == "positive")
+                mixedListBox.Items.Add(mixedConstrTextBox.Text);
+            else
+                mixedListBox.Items.Add("!:" + mixedConstrTextBox.Text);
             mixedConstrTextBox.Text = "None:";
         }
 

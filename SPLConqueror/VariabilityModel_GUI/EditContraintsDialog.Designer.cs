@@ -72,6 +72,9 @@
             this.nonBinaryPage = new System.Windows.Forms.TabPage();
             this.mixedPage = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.mixedConstrTextBox = new System.Windows.Forms.TextBox();
+            this.mixedEvaluationComboBox = new System.Windows.Forms.ComboBox();
+            this.EvaluateLabel = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.mixedAddOptionBtn = new System.Windows.Forms.Button();
@@ -98,7 +101,6 @@
             this.mixedListBox = new System.Windows.Forms.ListBox();
             this.mixedComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            mixedConstrTextBox = new System.Windows.Forms.TextBox();
             this.nbConstraintsGroupBox.SuspendLayout();
             this.boolConstraintsGroupBox.SuspendLayout();
             this.editConstraintsControl.SuspendLayout();
@@ -107,14 +109,6 @@
             this.mixedPage.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // mixedConstrTextBox
-            // 
-            mixedConstrTextBox.Location = new System.Drawing.Point(22, 189);
-            mixedConstrTextBox.Name = "mixedConstrTextBox";
-            mixedConstrTextBox.Size = new System.Drawing.Size(361, 27);
-            mixedConstrTextBox.TabIndex = 24;
-            mixedConstrTextBox.Text = "None:";
             // 
             // nbAddOptionButton
             // 
@@ -658,10 +652,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.mixedConstrTextBox);
+            this.groupBox1.Controls.Add(this.mixedEvaluationComboBox);
+            this.groupBox1.Controls.Add(this.EvaluateLabel);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.mixedAddOptionBtn);
-            this.groupBox1.Controls.Add(mixedConstrTextBox);
             this.groupBox1.Controls.Add(this.mixedGtBtn);
             this.groupBox1.Controls.Add(this.mixedLessBtn);
             this.groupBox1.Controls.Add(this.mixedEqBtn);
@@ -692,6 +688,34 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Mixed Constraints";
+            // 
+            // mixedConstrTextBox
+            // 
+            this.mixedConstrTextBox.Location = new System.Drawing.Point(22, 227);
+            this.mixedConstrTextBox.Name = "mixedConstrTextBox";
+            this.mixedConstrTextBox.Size = new System.Drawing.Size(361, 27);
+            this.mixedConstrTextBox.TabIndex = 24;
+            this.mixedConstrTextBox.Text = "None:";
+            // 
+            // mixedEvaluationComboBox
+            // 
+            this.mixedEvaluationComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mixedEvaluationComboBox.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.mixedEvaluationComboBox.FormattingEnabled = true;
+            this.mixedEvaluationComboBox.Location = new System.Drawing.Point(103, 186);
+            this.mixedEvaluationComboBox.Name = "mixedEvaluationComboBox";
+            this.mixedEvaluationComboBox.Size = new System.Drawing.Size(114, 27);
+            this.mixedEvaluationComboBox.TabIndex = 29;
+            // 
+            // EvaluateLabel
+            // 
+            this.EvaluateLabel.AutoSize = true;
+            this.EvaluateLabel.Font = new System.Drawing.Font("Calibri", 9.75F);
+            this.EvaluateLabel.Location = new System.Drawing.Point(23, 189);
+            this.EvaluateLabel.Name = "EvaluateLabel";
+            this.EvaluateLabel.Size = new System.Drawing.Size(74, 21);
+            this.EvaluateLabel.TabIndex = 28;
+            this.EvaluateLabel.Text = "Evaluate:";
             // 
             // button2
             // 
@@ -907,7 +931,7 @@
             // 
             // removeMixed
             // 
-            this.removeMixed.Location = new System.Drawing.Point(277, 222);
+            this.removeMixed.Location = new System.Drawing.Point(276, 260);
             this.removeMixed.Name = "removeMixed";
             this.removeMixed.Size = new System.Drawing.Size(80, 29);
             this.removeMixed.TabIndex = 4;
@@ -917,7 +941,7 @@
             // 
             // addMixed
             // 
-            this.addMixed.Location = new System.Drawing.Point(22, 222);
+            this.addMixed.Location = new System.Drawing.Point(22, 260);
             this.addMixed.Name = "addMixed";
             this.addMixed.Size = new System.Drawing.Size(75, 30);
             this.addMixed.TabIndex = 3;
@@ -929,13 +953,14 @@
             // 
             this.mixedListBox.FormattingEnabled = true;
             this.mixedListBox.ItemHeight = 19;
-            this.mixedListBox.Location = new System.Drawing.Point(22, 258);
+            this.mixedListBox.Location = new System.Drawing.Point(22, 296);
             this.mixedListBox.Name = "mixedListBox";
-            this.mixedListBox.Size = new System.Drawing.Size(361, 99);
+            this.mixedListBox.Size = new System.Drawing.Size(361, 61);
             this.mixedListBox.TabIndex = 2;
             // 
             // mixedComboBox
             // 
+            this.mixedComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mixedComboBox.FormattingEnabled = true;
             this.mixedComboBox.Location = new System.Drawing.Point(74, 20);
             this.mixedComboBox.Name = "mixedComboBox";
@@ -1026,9 +1051,8 @@
         private System.Windows.Forms.ListBox mixedListBox;
         private System.Windows.Forms.ComboBox mixedComboBox;
         private System.Windows.Forms.Label label1;
-        System.Windows.Forms.TextBox mixedConstrTextBox;
-        private System.Windows.Forms.Button zeroBtnMixed;
-        private System.Windows.Forms.Button mixed3Btn;
+		private System.Windows.Forms.Button zeroBtnMixed;
+		private System.Windows.Forms.TextBox mixedConstrTextBox;        private System.Windows.Forms.Button mixed3Btn;
         private System.Windows.Forms.Button mixed2Btn;
         private System.Windows.Forms.Button mixed1Btn;
         private System.Windows.Forms.Button mixed9Btn;
@@ -1047,5 +1071,7 @@
         private System.Windows.Forms.Button mixedAddOptionBtn;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ComboBox mixedEvaluationComboBox;
+        private System.Windows.Forms.Label EvaluateLabel;
     }
 }

@@ -221,9 +221,20 @@ namespace SPLConqueror_Core
             {
                 XmlNode constrNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
                 XmlAttribute attr = doc.CreateAttribute("req");
-                attr.Value = constraint.ToString().Split(new char[] { ':' })[0];
+                XmlAttribute evaluation = doc.CreateAttribute("exprKind");
+                string constraintAsString = constraint.ToString();
+                if (constraintAsString.StartsWith("!:"))
+                {
+                    constraintAsString = constraintAsString.Replace("!:", "");
+                    evaluation.Value = "neg";
+                } else
+                {
+                    evaluation.Value = "pos";
+                }
+                attr.Value = constraintAsString.Split(new char[] { ':' })[0];
                 constrNode.Attributes.Append(attr);
-                constrNode.InnerText = constraint.ToString().Split(new char[] { ':' })[1];
+                constrNode.Attributes.Append(evaluation);
+                constrNode.InnerText = constraintAsString.Split(new char[] { ':' })[1];
                 mixedConstraints.AppendChild(constrNode);
             }
             xmlroot.AppendChild(mixedConstraints);

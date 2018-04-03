@@ -184,7 +184,10 @@ namespace SPLConqueror_Core
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return requirement + ": " + base.ToString();
+            if(negativeOrPositiveExpr == NEGATIVE)
+                return "!:" + requirement + ": " + base.ToString();
+            else
+                return requirement + ": " + base.ToString();
         }
     }
 }
