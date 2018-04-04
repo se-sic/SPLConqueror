@@ -87,71 +87,31 @@ namespace SPLConqueror_Core
         private static char decimalDelimiter = ',';
         private static char separator = ',';
 
-        private const string decimalDelimiterTag = "decimalDelimiter";
-        private const string separatorTag = "separator";
-        private const string abortDeviation = "deviation";
+        private const string decimal_delimeter_tag = "decimalDelimiter";
+        private const string separator_tag = "separator";
+        // TODO Abort deviation for different nfps
+        private const string abort_deviation_tag = "deviation";
 
         /// <summary>
         /// This method returns a list of all configurations stored in a given file. All options of the configurations have to be defined in the variability model. 
         /// </summary>
         /// <param name="dat">Object representing the configuration file.</param>
-        /// <param name="model">Variability model of the configurations.</param>
+        /// <param name="varModel">Variability model of the configurations.</param>
         /// <returns>Returns a list of configurations that were defined in the XML document. Can be an empty list.</returns>
-        public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel model)
+        public static List<Configuration> readConfigurations(XmlDocument dat, VariabilityModel varModel)
         {
             XmlElement currentElemt = dat.DocumentElement;
 
-            if (currentElemt.HasAttribute(abortDeviation))
-            {
-                GlobalState.measurementDeviation = getHighestDeviationValue(currentElemt.GetAttribute(abortDeviation)
-                    .Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
-            } else
-            {
-                GlobalState.measurementDeviation = Double.MinValue;
-            }
 
-            // Retrieve the decimal delimiter and the separator sign if included
-            if (currentElemt.HasAttribute(decimalDelimiterTag) && currentElemt.HasAttribute(separatorTag))
-            {
-                // I assume that the decimal delimiter as well as the separator are only one symbol
-                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
-                ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
+            parseHeaderOfDocument(currentElemt);
 
-                if (currentElemt.GetAttribute(decimalDelimiterTag).Length > 1 || currentElemt.GetAttribute(separatorTag).Length > 1)
-                {
-                    GlobalState.logError.log("The decimal delimiter and the separator must consist of only one symbol.");
-                }
-                if (ConfigurationReader.decimalDelimiter == ConfigurationReader.separator)
-                {
-                    GlobalState.logError.log("The decimal delimiter symbol and the separator symbol must be different.");
-                }
-            }
-            else if (currentElemt.HasAttribute(decimalDelimiterTag))
-            {
-                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimalDelimiterTag)[0];
-                if (currentElemt.GetAttribute(decimalDelimiterTag).Length > 1)
-                {
-                    GlobalState.logError.log("The decimal delimiter must consist of only one symbol.");
-                }
-            }
-            else if (currentElemt.HasAttribute(separatorTag))
-            {
-                ConfigurationReader.separator = currentElemt.GetAttribute(separatorTag)[0];
-                if (currentElemt.GetAttribute(separatorTag).Length > 1)
-                {
-                    GlobalState.logError.log("The separator symbol must be different.");
-                }
-            }
-
-            HashSet<Configuration> configurations = new HashSet<Configuration>();
-
-            int numberOfConfigs = currentElemt.ChildNodes.Count;
+            HashSet<Configuration> configurations = new HashSet<Configuration>();        
             int configsWithTooLargeDeviation = 0;
-            foreach (XmlNode node in currentElemt.ChildNodes)
+            foreach (XmlNode nodeOfOneConfiguration in currentElemt.ChildNodes)
             {
 
                 bool readMultipleMeasurements = false;
-                if (node.Attributes.Count > 0 && node.Attributes[0].Value.ToLower() == "true")
+                if (nodeOfOneConfiguration.Attributes.Count > 0 && nodeOfOneConfiguration.Attributes[0].Value.ToLower() == "true")
                 {
                     readMultipleMeasurements = true;
                 }
@@ -163,7 +123,7 @@ namespace SPLConqueror_Core
                 Dictionary<NFProperty, double> measuredProperty = new Dictionary<NFProperty, double>();
                 Configuration c = null;
                 bool hasSetConfig = false;
-                foreach (XmlNode childNode in node.ChildNodes) 
+                foreach (XmlNode childNode in nodeOfOneConfiguration.ChildNodes) 
                 {
                     if (c == null && hasSetConfig)
                         continue;
@@ -283,8 +243,6 @@ namespace SPLConqueror_Core
                     }
                 }
 
-
-
                 if (alternativeFormat && c != null)
                 {
                     if (configurations.Contains(c))
@@ -299,88 +257,167 @@ namespace SPLConqueror_Core
                     continue;
                 }
 
-                
-
-                Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
                 // indicates if this configuration is valid in the current feature model
-                bool invalid = false;
+                bool valid = true;
 
-                string[] binaryOptionNames = binaryString.Split(',');
-                foreach (string binaryOptionName in binaryOptionNames)
-                {
-                    string currOption = binaryOptionName.Trim();
-                    if (currOption.Length > 0)
-                    {
-                        BinaryOption bOpt = null;
+                // parse the binary options string
+                Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+                valid &= parseBinaryOptionString(binaryString, out binaryOptions, varModel);
 
-                        bOpt = model.getBinaryOption(currOption);
-
-                        if (bOpt == null)
-                        {
-                            GlobalState.logError.logLine("No Binary option found with name: " + currOption);
-                            GlobalState.logError.logLine("Invalid configuration:" + binaryString + numericString);
-                            invalid = true;
-                            break;
-                        }
-                        binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
-                    }
-                }
+                // parse the numeric options string
+                Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
+                valid &= parseNumericOptionString(numericString, out numericOptions, varModel);
 
                 // Add "root" binary option to the configuration
-                if (!binaryOptions.ContainsKey(model.Root))
-                    binaryOptions.Add(model.Root, BinaryOption.BinaryValue.Selected);
+                if (!binaryOptions.ContainsKey(varModel.Root))
+                    binaryOptions.Add(varModel.Root, BinaryOption.BinaryValue.Selected);
 
 
-                Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
-                if (!string.IsNullOrEmpty(numericString))
-                {
-                    string[] numOptionArray = numericString.Trim().Split(',');
-                    foreach (string numOption in numOptionArray)
-                    {
-
-                        if (invalid)
-                            break;
-
-                        string[] numOptionsKeyValue;
-                        if (numOption.Contains(";"))
-                            numOptionsKeyValue = numOption.Split(';');
-                        else
-                            numOptionsKeyValue = numOption.Split(' ');// added for rc-lookahead 40
-                        numOptionsKeyValue[0] = numOptionsKeyValue[0].Trim();
-                        if (numOptionsKeyValue[0].Length == 0)
-                            continue;
-                        NumericOption varFeat = model.getNumericOption(numOptionsKeyValue[0]);
-                        if (varFeat == null)
-                        {
-                            GlobalState.logError.logLine("No numeric option found with name: " + numOptionsKeyValue[0]);
-                            GlobalState.logError.logLine("Invalid configuration:" + binaryString + numericString);
-                            invalid = true;
-                        } else
-                        {
-                            double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
-                            numericOptions.Add(varFeat, varFeatValue);
-                        }
-                    }
-                }
-
-                if (!invalid)
+                if (valid)
                 {
                     Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
-
-                    //if(configurations.Contains(config))
-                    //{
-                    //    GlobalState.logError.log("Mutiple definition of one configuration in the configurations file:  " + config.ToString());
-                    //}else
-                    //{
                     configurations.Add(config);
-                    //}
+                }else
+                {
+                    GlobalState.logError.logLine("Invalid configuration:" + binaryString + numericString);
                 }
                 nextConfig: { }
             }
 
-
             GlobalState.logInfo.logLine("Configs with too large deviation: " + configsWithTooLargeDeviation);
             return configurations.ToList();
+        }
+
+        private static void parseHeaderOfDocument(XmlElement currentElemt)
+        {
+            if (currentElemt.HasAttribute(abort_deviation_tag))
+            {
+                GlobalState.measurementDeviation = getHighestDeviationValue(currentElemt.GetAttribute(abort_deviation_tag)
+                    .Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
+            }
+            else
+            {
+                GlobalState.measurementDeviation = Double.MinValue;
+            }
+
+            // Retrieve the decimal delimiter and the separator sign if included
+            if (currentElemt.HasAttribute(decimal_delimeter_tag) && currentElemt.HasAttribute(separator_tag))
+            {
+                // I assume that the decimal delimiter as well as the separator are only one symbol
+                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimal_delimeter_tag)[0];
+                ConfigurationReader.separator = currentElemt.GetAttribute(separator_tag)[0];
+
+                if (currentElemt.GetAttribute(decimal_delimeter_tag).Length > 1 || currentElemt.GetAttribute(separator_tag).Length > 1)
+                {
+                    GlobalState.logError.log("The decimal delimiter and the separator must consist of only one symbol.");
+                }
+                if (ConfigurationReader.decimalDelimiter == ConfigurationReader.separator)
+                {
+                    GlobalState.logError.log("The decimal delimiter symbol and the separator symbol must be different.");
+                }
+            }
+            else if (currentElemt.HasAttribute(decimal_delimeter_tag))
+            {
+                ConfigurationReader.decimalDelimiter = currentElemt.GetAttribute(decimal_delimeter_tag)[0];
+                if (currentElemt.GetAttribute(decimal_delimeter_tag).Length > 1)
+                {
+                    GlobalState.logError.log("The decimal delimiter must consist of only one symbol.");
+                }
+            }
+            else if (currentElemt.HasAttribute(separator_tag))
+            {
+                ConfigurationReader.separator = currentElemt.GetAttribute(separator_tag)[0];
+                if (currentElemt.GetAttribute(separator_tag).Length > 1)
+                {
+                    GlobalState.logError.log("The separator symbol must be different.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parses the binary options, represented as string, of a configuration.
+        /// </summary>
+        /// <param name="binaryString">The string representation of the selected binary configuration options.</param>
+        /// <param name="binaryOptions">The data strcutre containing the parsed binary options and their values.</param>
+        /// <param name="varModel">The variability model the configuration is defined for.</param>
+        /// <returns>True if the configuration is valid.</returns>
+        private static bool parseBinaryOptionString(string binaryString, out Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptions, VariabilityModel varModel)
+        {
+            bool valid = true;
+
+            Dictionary<BinaryOption, BinaryOption.BinaryValue> _binaryOptions = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
+
+            string[] binaryOptionNames = binaryString.Split(',');
+            foreach (string binaryOptionName in binaryOptionNames)
+            {
+                string currOption = binaryOptionName.Trim();
+                if (currOption.Length > 0)
+                {
+                    BinaryOption bOpt = null;
+
+                    bOpt = varModel.getBinaryOption(currOption);
+
+                    if (bOpt == null)
+                    {
+                        GlobalState.logError.logLine("No Binary option found with name: " + currOption);
+                        valid = false;
+                        break;
+                    }
+                    _binaryOptions.Add(bOpt, BinaryOption.BinaryValue.Selected);
+                }
+            }
+
+            binaryOptions = _binaryOptions;
+
+            return valid;
+        }
+
+        /// <summary>
+        /// Parses the numeric options, represented as string, of a configuration.
+        /// </summary>
+        /// <param name="numericString">The string representation of the numeric configuration options.</param>
+        /// <param name="numericOptions">The data strcutre containing the parsed numeric options and their values.</param>
+        /// <param name="varModel">The variability model the configuration is defined for.</param>
+        /// <returns>True if the configuration is valid</returns>
+        private static bool parseNumericOptionString(string numericString, out Dictionary<NumericOption, double> numericOptions, VariabilityModel varModel)
+        {
+            bool valid = true;
+
+            Dictionary<NumericOption, double> _numericOptions = new Dictionary<NumericOption, double>();
+
+            if (!string.IsNullOrEmpty(numericString))
+            {
+                string[] numOptionArray = numericString.Trim().Split(',');
+                foreach (string numOption in numOptionArray)
+                {
+                    if (!valid)
+                        break;
+
+                    string[] numOptionsKeyValue;
+                    if (numOption.Contains(";"))
+                        numOptionsKeyValue = numOption.Split(';');
+                    else
+                        numOptionsKeyValue = numOption.Split(' ');// added for rc-lookahead 40
+                    numOptionsKeyValue[0] = numOptionsKeyValue[0].Trim();
+                    if (numOptionsKeyValue[0].Length == 0)
+                        continue;
+                    NumericOption varFeat = varModel.getNumericOption(numOptionsKeyValue[0]);
+                    if (varFeat == null)
+                    {
+                        GlobalState.logError.logLine("No numeric option found with name: " + numOptionsKeyValue[0]);
+                        valid = false;
+                    }
+                    else
+                    {
+                        double varFeatValue = Convert.ToDouble(numOptionsKeyValue[1]);
+                        _numericOptions.Add(varFeat, varFeatValue);
+                    }
+                }
+            }
+
+            numericOptions = _numericOptions;
+
+            return valid;
         }
 
 
