@@ -282,60 +282,21 @@ namespace SPLConqueror_Core
             return Tuple.Create<Configuration, int>(conf ,distance);
         }
 
-        private static Configuration findSimilarConfigBinary(Configuration config, Configuration configInGS, int nbCount)
+        private static Configuration findSimilarConfigBinary (Configuration config, Configuration configInGS, int nbCount)
         {
             int nbCount2 = configInGS.BinaryOptions.Count;
-            if (configInGS.BinaryOptions.Keys.Contains(varModel.Root))
+            if (configInGS.BinaryOptions.Keys.Contains (varModel.Root))
                 nbCount2--;
             if (nbCount != nbCount2)
                 return null;
-            foreach (var binOpt in config.BinaryOptions.Keys)
-            {
+            foreach (var binOpt in config.BinaryOptions.Keys) {
                 if (binOpt == varModel.Root)
                     continue;
-                if (!configInGS.BinaryOptions.Keys.Contains(binOpt))
-                {
+                if (!configInGS.BinaryOptions.Keys.Contains (binOpt)) {
                     return null;
                 }
             }
             return configInGS;
-        }
-
-        public static List<Configuration> getAvailableBinary(List<List<BinaryOption>> list, List<Dictionary<NumericOption, double>> numericSelections)
-        {
-            HashSet<Configuration> result = new HashSet<Configuration>();
-            foreach (var binConf in list)
-            {
-                foreach (var availConf in allMeasurements.Configurations)
-                {
-                    if(availConf.nfpValues.Keys.Contains(currentNFP)  == false)
-                        continue;
-                    if (availConf.BinaryOptions.Count+1 == binConf.Count)
-                    {
-                        bool found = true;
-                        foreach (var opt in binConf)
-                        {
-                            if (opt == varModel.Root)
-                                continue;
-                            if (availConf.BinaryOptions.Keys.Contains(opt) == false)
-                            {
-                                found = false;
-                                break;
-                            }
-                        }
-                        if (found)
-                        {
-                            foreach(var numCOnf in numericSelections) {
-                                if(Configuration.equalNumericalSelection(numCOnf,availConf.NumericOptions))
-                                    result.Add(availConf);
-                            }
-                            
-                        }
-                    }
-                }
-            }
-
-            return result.ToList();
         }
     }
 }

@@ -36,6 +36,10 @@ namespace SPLConqueror_Core
 
         Dictionary<NumericOption, InfluenceFunction> numericOptionsInfluence = new Dictionary<NumericOption, InfluenceFunction>();
 
+        /// <summary>
+        /// Gets or sets the influence of the numeric option numeric options.
+        /// </summary>
+        /// <value>The influence of numeric options.</value>
         public Dictionary<NumericOption, InfluenceFunction> NumericOptionsInfluence
         {
             get { return numericOptionsInfluence; }
@@ -44,12 +48,21 @@ namespace SPLConqueror_Core
 
         private Dictionary<Interaction, InfluenceFunction> interactionInfluence = new Dictionary<Interaction, InfluenceFunction>();
 
+        /// <summary>
+        /// Gets or sets the influence of interactions.
+        /// </summary>
+        /// <value>The influence of interactions.</value>
         public Dictionary<Interaction, InfluenceFunction> InteractionInfluence
         {
             get { return interactionInfluence; }
             set { interactionInfluence = value; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SPLConqueror_Core.InfluenceModel"/> class.
+        /// </summary>
+        /// <param name="vm">The variability model.</param>
+        /// <param name="nfp">The non-functional property to investigate.</param>
         public InfluenceModel(VariabilityModel vm, NFProperty nfp)
         {
             this.vm = vm;
