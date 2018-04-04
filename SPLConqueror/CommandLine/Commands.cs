@@ -753,14 +753,19 @@ namespace CommandLine
                             out configurationsLearning, out configurationsValidation))
                             break;
 
-                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
-                        {
-                            handlePythonTask(false, configurationsLearning, taskAsParameter);
-                        }
+                        if (taskAsParameter.Length == 0)
+                            GlobalState.logInfo.logLine("No learning strategy defined! Aborting learning");
                         else
                         {
-                            GlobalState.logInfo.logLine("Invalid Learning strategy " + taskAsParameter[0] + "! Aborting learning");
+                            // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                            if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
+                            {
+                                handlePythonTask(false, configurationsLearning, taskAsParameter);
+                            }
+                            else
+                            {
+                                GlobalState.logInfo.logLine("Invalid Learning strategy: " + taskAsParameter[0] + "! Aborting learning");
+                            }
                         }
                         break;
                     }
