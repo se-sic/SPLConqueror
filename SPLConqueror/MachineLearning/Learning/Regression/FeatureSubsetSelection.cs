@@ -481,7 +481,9 @@ namespace MachineLearning.Learning.Regression
             var listOfCandidates = new List<Feature>();
             foreach (Feature basicFeature in basicFeatures)
             {
-                //add the feature to the list of candidates if it is not already in the model
+                VariabilityModel varModel = basicFeature.getVariabilityModel();
+
+                //add individual configuration options to the list of candidates if it is not already in the model
                 if (!currentModel.Contains(basicFeature))
                     listOfCandidates.Add(basicFeature);
 
@@ -490,18 +492,9 @@ namespace MachineLearning.Learning.Regression
 
                 foreach (Feature feature in currentModel)
                 {
-                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                    
+                    if (!checkWhetherCandidateIsValide(basicFeature, feature))
                         continue;
-                    //We do not want to generate interactions with the root option
-                    if ((feature.participatingNumOptions.Count == 0 && feature.participatingBoolOptions.Count == 1 && feature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
-                    || basicFeature.participatingNumOptions.Count == 0 && basicFeature.participatingBoolOptions.Count == 1 && basicFeature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
-                        continue;
-                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
-                        continue;
-
-                    if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                        continue;
-                    }
 
                     //Binary times the same binary makes no sense
                     if (basicFeature.participatingBoolOptions.Count > 0)
@@ -511,7 +504,7 @@ namespace MachineLearning.Learning.Regression
                                 goto nextRound;
                     }
 
-                    Feature newCandidate = new Feature(feature, basicFeature, basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature(feature, basicFeature, varModel);
                     if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
                 nextRound:
@@ -527,14 +520,10 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
-                        newCandidate = new Feature(feature, newCandidate, basicFeature.getVariabilityModel());
+
+                        newCandidate = new Feature(feature, newCandidate, varModel);
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
@@ -548,14 +537,10 @@ namespace MachineLearning.Learning.Regression
                         listOfCandidates.Add(newCandidate);
 
                     foreach (var feature in currentModel)
-                    {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                    {                        
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
+
                         newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -563,7 +548,7 @@ namespace MachineLearning.Learning.Regression
                         // Create accumulated log-functions
                         if (this.MLsettings.learn_accumulatedLogFunction && feature.participatingNumOptions.Count > 0 && !feature.getPureString().Contains("log10("))
                         {
-                            newCandidate = new Feature("log10(" + feature.getPureString() + ")", feature.getVariabilityModel());
+                            newCandidate = new Feature("log10(" + feature.getPureString() + ")", varModel);
                             if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             {
                                 listOfCandidates.Add(newCandidate);
@@ -576,7 +561,7 @@ namespace MachineLearning.Learning.Regression
                 {
                     Feature newCandidate = new Feature("1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
 
-                    if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
+                    if (basicFeature.canNotEvaluateToZero())
                     {
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -584,16 +569,12 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
-                            continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
 
-                        newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
-                        if (newCandidate.participatingBoolOptions.Count == 0 && newCandidate.participatingNumOptions.All(x => x.Min_value > 0))
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                            continue;
+
+                        newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), varModel);
+                        if (newCandidate.canNotEvaluateToZero())
                         {
                             if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                                 listOfCandidates.Add(newCandidate);
@@ -606,22 +587,12 @@ namespace MachineLearning.Learning.Regression
                     Feature newCandidate = null;
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                        
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
 
-                        if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
-                        {
-                            if (feature.participatingBoolOptions.Count == 0 && feature.participatingNumOptions.All(x => x.Min_value > 0))
-                            {
-                                newCandidate = new Feature(feature.getPureString() + " / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
-                            }
-
-                        }
+                        if (basicFeature.canNotEvaluateToZero() && feature.canNotEvaluateToZero())
+                            newCandidate = new Feature(feature.getPureString() + " / " + basicFeature.getPureString(), varModel);
 
                         if (newCandidate != null && !currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -632,22 +603,18 @@ namespace MachineLearning.Learning.Regression
                 if (this.MLsettings.learn_mirrowedFunction && basicFeature.participatingNumOptions.Count > 0)
                 {
 
-                    Feature newCandidate = new Feature("(" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature("(" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", varModel);
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
-                            continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-
+                        if (!checkWhetherCandidateIsValide(basicFeature,feature))
                             continue;
 
-
+                        
                         newCandidate = new Feature(feature.getPureString() + "* (" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
-
-
+                        
                         if (newCandidate != null && !currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
@@ -659,6 +626,32 @@ namespace MachineLearning.Learning.Regression
                 f.Constant = 1;
             return listOfCandidates;
         }
+
+
+        /// <summary>
+        /// Checks whether a new candidate is valid. 
+        /// </summary>
+        /// <param name="partOfTheModel">Part of the model that is learned in the previous round.</param>
+        /// <param name="newCandidate">The new candidate that have to be checked.</param>
+        /// <returns>Restuns false if the new candidate is not valid for the ml settings. Checks, for example, if the number of participating configuration options is larger than the defined featureSizeTreshold of the ML_Settings. </returns>
+        protected bool checkWhetherCandidateIsValide(Feature partOfTheModel, Feature newCandidate)
+        {
+            //We do not want to generate interactions with the root option
+            if ((newCandidate.participatingNumOptions.Count == 0 && newCandidate.participatingBoolOptions.Count == 1 && newCandidate.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
+            || partOfTheModel.participatingNumOptions.Count == 0 && partOfTheModel.participatingBoolOptions.Count == 1 && partOfTheModel.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
+                return false;
+
+            if (this.MLsettings.withHierarchy && newCandidate.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                return false;
+            if (this.MLsettings.limitFeatureSize && (newCandidate.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                return false;
+            if (this.strictlyMandatoryFeatures.Contains(newCandidate))
+                return false;
+
+            return true;
+        }
+
+
         /// <summary>
         /// The method generates a list of candidates to be added to the current model. These candidates are later fitted using regression and rated for their accuracy in estimating the values of the validation set.
         /// The basicFeatures comes from the pool of initial features (e.g., all configuration options of the variability model or predefined combinations of options).
