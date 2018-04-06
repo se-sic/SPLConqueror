@@ -578,11 +578,12 @@ namespace CommandLine
                                     double relativeError = 0;
                                     if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        // TODO consider useEpsilonTube from ML settings
+                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
                                         relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                     }
                                     else
                                     {
+                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
                                         relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                     }
 

@@ -440,7 +440,6 @@ namespace SPLConqueror_Core
             {
                 switch (childNode.Attributes[0].Value)
                 {
-                    // TODO we use this to support result files of the old structure
                     case "Configuration":
                         break;
                     case "Variable Features":
