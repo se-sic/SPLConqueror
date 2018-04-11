@@ -115,7 +115,7 @@ namespace MachineLearningTest
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
 
-            Assert.AreEqual(6, polynoms.Length);
+            Assert.AreEqual(5, polynoms.Length);
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
