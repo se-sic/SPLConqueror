@@ -861,7 +861,8 @@ namespace CommandLine
 
                         }
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
-                        GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
+                        GlobalState.logInfo.logLine("Optimal parameters " 
+                            + formatOptimalParameters(optimalParameters.ToString(), cleanedParameters));
                         Learning experiment = new MachineLearning.Learning.Regression
                             .Learning(configurationsLearning, configurationsValidation);
                         experiment.mlSettings = optimalParameters;
@@ -888,6 +889,21 @@ namespace CommandLine
                     return command;
             }
             return "";
+        }
+
+        private string formatOptimalParameters(string optimalParameters, string[] consideredParameters)
+        {
+            StringBuilder sb = new StringBuilder();
+            string[] parameters = optimalParameters.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string param in consideredParameters)
+            {
+                foreach(string opt in parameters)
+                {
+                    if (opt.StartsWith(param.Split(new char[] { '=' })[0]))
+                        sb.Append(opt + ";");
+                }
+            }
+            return sb.ToString();
         }
 
         #region execution of deprecated commands

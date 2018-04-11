@@ -135,7 +135,7 @@ namespace MachineLearningTest
                 + " lossFunction=[RELATIVE,LEASTSQUARES,ABSOLUTE]");
 
             Assert.IsTrue(consoleOutput.ToString()
-                .Split(new string[] { "Parameters:" }, StringSplitOptions.None)[1].Contains("lossFunction:RELATIVE"));
+                .Split(new string[] { "Optimal parameters " }, StringSplitOptions.None)[1].Contains("lossFunction:RELATIVE;"));
 
         }
 
