@@ -475,15 +475,15 @@ namespace SPLConqueror_Core
         {
             foreach (BinaryOption binOpt in group)
             {
-                List<ConfigurationOption> excluded = new List<ConfigurationOption>();
                 foreach (BinaryOption otherOption in group)
                 {
                     if (otherOption.Name != binOpt.Name)
                     {
+                        List<ConfigurationOption> excluded = new List<ConfigurationOption> ();
                         excluded.Add(otherOption);
-                    }
+                        binOpt.Excluded_Options.Add (excluded);
+                    }               
                 }
-                binOpt.Excluded_Options.Add(excluded);
             }
         }
 
