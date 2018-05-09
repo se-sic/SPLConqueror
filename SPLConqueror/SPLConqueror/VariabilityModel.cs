@@ -298,7 +298,7 @@ namespace SPLConqueror_Core
             string featureModel = featureTree.InnerText;
 
             string eol = "\n";
-            if (featureModel.ElementAt(featureModel.IndexOf('\n') - 1) == '\r')
+            if (featureModel.IndexOf('\n') > 0 && featureModel.ElementAt(featureModel.IndexOf('\n') - 1) == '\r')
             {
                 eol = "\r\n";
             }
