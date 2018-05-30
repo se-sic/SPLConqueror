@@ -31,7 +31,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const string OPTIONS_FOR_WEIGHTOPTIMIZATION = "number-weight-optimization";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
-        public static Distribution[] distributions = { new UniformDistribution() };
+	 public static Distribution[] distributions = { new UniformDistribution(), new BinomialDistribution() };
         #endregion
 
         protected DistanceMetric metric = null;
