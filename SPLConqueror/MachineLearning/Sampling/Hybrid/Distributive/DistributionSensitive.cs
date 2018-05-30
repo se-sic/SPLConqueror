@@ -29,6 +29,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const string SEED = "seed";
         public const string SELECTION_HEURISTIC = "selection";
         public const string OPTIONS_FOR_WEIGHTOPTIMIZATION = "number-weight-optimization";
+	 public const string USED_OPTIMIZATION = "optimization";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
 	 public static Distribution[] distributions = { new UniformDistribution(), new BinomialDistribution() };
@@ -54,7 +55,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {ONLY_BINARY, "false" },
                 {SEED, "0" },
                 {SELECTION_HEURISTIC, "RandomSelection" },
-                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "0" }
+                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "0" }, 
+	         {USED_OPTIMIZATION, Optimization.NONE.ToString().ToUpper ()}
             };
         }
 
@@ -92,7 +94,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <summary>
         /// This method checks the configuration and sets the according variables.
         /// </summary>
-        private void CheckConfiguration()
+	 protected virtual void CheckConfiguration()
         {
             // Check the used metric
             string metricToUse = this.strategyParameter[DISTANCE_METRIC];
@@ -194,6 +196,19 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 this.optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
             }
 
+			string optimization = this.strategyParameter [USED_OPTIMIZATION];
+            bool found = false;
+            foreach (Optimization opt in Enum.GetValues (typeof (Optimization))) {
+                if (opt.ToString ().ToUpper ().Equals (optimization.ToUpper ())) {
+                    found = true;
+                    this.strategyParameter [USED_OPTIMIZATION] = optimization.ToUpper ();
+                    break;
+                }
+            }
+            if (!found) {
+                throw new ArgumentException ("The optimization " + optimization + " is invalid.");
+            }
+
         }
 
         /// <summary>
@@ -219,8 +234,26 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             }
 
             this.selectedConfigurations  = selection
-                .SampleFromDistribution(wantedDistribution, allBuckets, count);
+				.SampleFromDistribution(wantedDistribution, allBuckets, count, GetOptimization());
         }
+
+        /// <summary>
+        /// Returns the optimization.
+		/// This implementation returns 'None' if no optimization matches.
+        /// </summary>
+        /// <returns>The optimization to use.</returns>
+		protected Optimization GetOptimization ()
+		{
+			string optimization = this.strategyParameter [USED_OPTIMIZATION];
+			foreach (Optimization opt in Enum.GetValues (typeof (Optimization))) {
+				if (opt.ToString ().ToUpper ().Equals (optimization.ToUpper ())) {
+					return opt;
+				}
+			}
+
+            // Defaults to 'None'
+			return Optimization.NONE;
+		}
 
         /// <summary>
         /// Returns whether there are any more samples or not.

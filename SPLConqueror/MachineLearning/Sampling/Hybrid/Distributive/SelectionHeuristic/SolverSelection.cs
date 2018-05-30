@@ -53,7 +53,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// <param name="wantedDistribution">The wanted distribution of the samples.</param>
         /// <param name="allBuckets">The buckets containing at least one configuration.</param>
         /// <param name="count">The number of configurations to select.</param>
-        public List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count) {
+	 /// <param name="optimization">The optimization to use</param>
+	 public List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count, Optimization optimization = Optimization.NONE) {
             Random rand = new Random(seed);
             List<Configuration> selectedConfigurations = new List<Configuration>();
             Dictionary<int, Configuration> selectedConfigurationsFromBucket = new Dictionary<int, Configuration>();
@@ -63,15 +64,23 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             }
 
             // Create and initialize the weight function
-            Dictionary<List<BinaryOption>, int> featureWeight;
+	     Dictionary<int, Dictionary<List<BinaryOption>, int>> featureWeight = new Dictionary<int, Dictionary<List<BinaryOption>, int>>();
 
-            if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0)
-            {
-                featureWeight = InitializeWeightDict(GlobalState.varModel);
-            } else
-            {
-                featureWeight = new Dictionary<List<BinaryOption>, int>();
-            }
+	     if (optimization == Optimization.GLOBAL_OPTIMIZATION) {
+	         if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0) {
+			featureWeight.Add(0, InitializeWeightDict (GlobalState.varModel));
+		 } else {
+			featureWeight.Add(0, new Dictionary<List<BinaryOption>, int> ());
+		 }
+	     } else if (optimization == Optimization.LOCAL_OPTIMIZATION) {
+	 	 for (int i = 0; i < allBuckets.Count; i++) {
+		 	if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0) {
+				featureWeight.Add(i, InitializeWeightDict (GlobalState.varModel));
+                    	} else {
+				featureWeight.Add(i, new Dictionary<List<BinaryOption>, int> ());
+                       }
+		 }
+	     }
 
             bool[] noSamples = new bool[allBuckets.Count];
 
@@ -101,9 +110,19 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                     ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setSeed(Convert.ToUInt32(this.seed));
                 }
 
-                // Now select the configuration by using the solver
-                List<BinaryOption> solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
-                    distanceOfBucket, featureWeight, selectedConfigurationsFromBucket[currentBucket]);
+				List<BinaryOption> solution = null;
+				// Now select the configuration by using the solver
+				if (optimization == Optimization.NONE) {
+					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
+						distanceOfBucket, null, selectedConfigurationsFromBucket [currentBucket]);
+				} else if (optimization == Optimization.GLOBAL_OPTIMIZATION) {
+					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
+                        distanceOfBucket, featureWeight[0], selectedConfigurationsFromBucket [currentBucket]);
+
+				} else if (optimization == Optimization.LOCAL_OPTIMIZATION) {
+					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
+                        distanceOfBucket, featureWeight[currentBucket], selectedConfigurationsFromBucket [currentBucket]);
+				}
 
                 // If a bucket was selected that now contains no more configurations, repeat the procedure
                 if (solution == null)
@@ -116,7 +135,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 selectedConfigurations.Add (currentSelectedConfiguration);
                 selectedConfigurationsFromBucket[currentBucket] = currentSelectedConfiguration;
-                UpdateWeights(GlobalState.varModel, featureWeight, currentSelectedConfiguration);
+				if (optimization == Optimization.GLOBAL_OPTIMIZATION) {
+					UpdateWeights (GlobalState.varModel, featureWeight[0], currentSelectedConfiguration);
+				} else if (optimization == Optimization.LOCAL_OPTIMIZATION) {
+					UpdateWeights (GlobalState.varModel, featureWeight[currentBucket], currentSelectedConfiguration);
+				}
             }
 
             if (selectedConfigurations.Count < count)
