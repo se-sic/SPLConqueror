@@ -655,7 +655,7 @@ namespace VariabilitModel_GUI
                 options.Remove(opt);
 
                 foreach (ConfigurationOption child in GlobalState.varModel.BinaryOptions)
-                    if (child.Parent.Equals(opt))
+                    if (child.Parent != null && child.Parent.Equals(opt))
                         optionsToRemove.Add(child);
 
                 optionsToRemove.Remove(opt);

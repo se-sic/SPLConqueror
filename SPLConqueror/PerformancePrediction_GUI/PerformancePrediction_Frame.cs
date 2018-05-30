@@ -81,6 +81,8 @@ namespace PerformancePrediction_GUI
             if (filePath == "")
                 return;
 
+            this.nfpSelection.Items.Clear();
+
             cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + filePath);
 
             foreach (var item in GlobalState.nfProperties.Keys)
@@ -238,8 +240,8 @@ namespace PerformancePrediction_GUI
             string[] row = new string[cmd.exp.info.mlSettings.numberOfRounds * 2];
             row[0] = lastRound.round.ToString();
             row[1] = lastRound.learningError.ToString();
-            double relativeError = 0.0;
-            cmd.exp.models[0].computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
+            // TODO useEpsilonTube from Ml Settings
+            double relativeError = cmd.exp.models[0].computeError(lastRound.FeatureSet, GlobalState.allMeasurements.Configurations, false);
             row[2] = relativeError.ToString();
 
 

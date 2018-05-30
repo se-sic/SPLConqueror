@@ -12,8 +12,6 @@ namespace SPLConqueror_Core
     {
         private const string REQUIRE_ALL = "all";
 
-        private const string REQUIRE_ONE = "one";
-
         private const string REQUIRE_NONE = "none";
 
         private const string NEGATIVE = "neg";
@@ -38,16 +36,12 @@ namespace SPLConqueror_Core
         /// <param name="requirement">String indicating if the constraints evaluates to
         ///                           to false if not all options are present.</param>
         /// <param name="exprKind">Value indicating if the the expression will be negated.</param>
-        public MixedConstraint(String unparsedExpr, VariabilityModel varMod, string requirement, string exprKind = "pos") 
+        public MixedConstraint(String unparsedExpr, VariabilityModel varMod, string requirement, string exprKind = "pos")
             : base(unparsedExpr, varMod)
         {
             if (requirement.Trim().ToLower().Equals(REQUIRE_ALL))
             {
                 this.requirement = REQUIRE_ALL;
-            }
-            else if (requirement.Trim().ToLower().Equals(REQUIRE_ONE))
-            {
-                this.requirement = REQUIRE_ONE;
             }
             else if (requirement.Trim().ToLower().Equals(REQUIRE_NONE))
             {
@@ -61,10 +55,12 @@ namespace SPLConqueror_Core
             if (exprKind.Trim().ToLower().Equals(NEGATIVE))
             {
                 this.negativeOrPositiveExpr = NEGATIVE;
-            } else if (exprKind.Trim().ToLower().Equals(POSITIVE))
+            }
+            else if (exprKind.Trim().ToLower().Equals(POSITIVE))
             {
                 this.negativeOrPositiveExpr = POSITIVE;
-            } else
+            }
+            else
             {
                 throw new ArgumentException(String.Format("The expression kind {0} is not valid. Expression can either be neg or pos.", exprKind));
             }
@@ -102,24 +98,17 @@ namespace SPLConqueror_Core
             {
                 return base.configIsValidNeg(conf);
             }
-            else if (requirement.Equals(REQUIRE_ONE))
+            else if (requirement.Equals(REQUIRE_NONE))
             {
-                Tuple<bool, bool> preCheckResult = preCheckConfigReqOne(conf);
-                bool hasAllConfigs = preCheckResult.Item1;
-                bool hasAtLeastOneConfig = preCheckResult.Item2;
+                foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                {
+                    if (!conf.BinaryOptions.ContainsKey(binOpt))
+                    {
+                        conf.BinaryOptions.Add(binOpt, BinaryOption.BinaryValue.Deselected);
+                    }
+                }
 
-                if (!hasAtLeastOneConfig)
-                {
-                    return true;
-                }
-                else if (!hasAllConfigs && hasAtLeastOneConfig)
-                {
-                    return false;
-                }
-                else
-                {
-                    return !base.configIsValid(conf);
-                }
+                return !base.configIsValid(conf);
             }
             else
             {
@@ -133,25 +122,7 @@ namespace SPLConqueror_Core
             {
                 return base.configIsValid(conf);
             }
-            else if (requirement.Equals(REQUIRE_ONE))
-            {
-                Tuple<bool, bool> preCheckResult = preCheckConfigReqOne(conf);
-                bool hasAllConfigs = preCheckResult.Item1;
-                bool hasAtLeastOneConfig = preCheckResult.Item2;
-
-                if (!hasAtLeastOneConfig)
-                {
-                    return true;
-                }
-                else if (!hasAllConfigs && hasAtLeastOneConfig)
-                {
-                    return false;
-                }
-                else
-                {
-                    return base.configIsValid(conf);
-                }
-            } else if (requirement.Equals(REQUIRE_NONE))
+            else if (requirement.Equals(REQUIRE_NONE))
             {
                 foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
                 {
@@ -213,7 +184,10 @@ namespace SPLConqueror_Core
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return requirement + ": " + base.ToString();
+            if(negativeOrPositiveExpr == NEGATIVE)
+                return "!:" + requirement + ": " + base.ToString();
+            else
+                return requirement + ": " + base.ToString();
         }
     }
 }

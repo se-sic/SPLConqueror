@@ -52,29 +52,6 @@ namespace MachineLearning.Learning.Regression
             get { if (learningHistory.Count == 0) return null; else return learningHistory[learningHistory.Count - 1]; }
         }
 
-        // TODO: unused method?
-        public void clean()
-        {
-            infModel = null;
-            learningHistory = new ObservableCollection<LearningRound>();
-            hierachyLevel = 1;
-            initialFeatures = new List<Feature>();
-            strictlyMandatoryFeatures = new List<Feature>();
-            MLsettings = null;
-            bruteForceCandidates = new List<Feature>();
-            learningSet = new List<Configuration>();
-            validationSet = new List<Configuration>();
-            Y_validation = ILMath.empty();
-            Y_learning = ILMath.empty();
-            DM_columns = new ConcurrentDictionary<Feature, ILArray<double>>();
-            badFeatures = new Dictionary<Feature, int>();
-        }
-
-        public FeatureSubsetSelection()
-        {
-
-        }
-
         /// <summary>
         /// Constructor of the learning class. It reads all configuration options and generates candidates for possible influences (i.e., features).
         /// </summary>
@@ -187,7 +164,7 @@ namespace MachineLearning.Learning.Regression
                 }
             } while (!abortLearning(current, previous));
             updateInfluenceModel();
-            this.finalError = evaluateError(this.validationSet, out this.finalError, false);
+            this.finalError = evaluateError(this.validationSet, false);
         }
 
         #region learning algorithm
@@ -227,7 +204,7 @@ namespace MachineLearning.Learning.Regression
                 }
             } while (!abortLearning(current, previous));
             updateInfluenceModel();
-            this.finalError = evaluateError(this.validationSet, out this.finalError, false);
+            this.finalError = evaluateError(this.validationSet, false);
         }
 
         /// <summary>
@@ -315,6 +292,7 @@ namespace MachineLearning.Learning.Regression
             Feature bestCandidate = null;
             
             List<Task> tasks = new List<Task>();
+
             //Learn for each candidate a new model and compute the error for each newly learned model
             foreach (Feature candidate in candidates)
             {
@@ -337,7 +315,7 @@ namespace MachineLearning.Learning.Regression
                     Task task = Task.Factory.StartNew(() =>
                     {
                         Thread.CurrentThread.CurrentCulture = customCulture;
-                        ModelFit fi = evaluateCandidate(newModel, true);
+                        ModelFit fi = evaluateCandidate(newModel, MLsettings.considerEpsilonTube);
                         if (fi.complete)
                         {
                             errorOfFeature.GetOrAdd(threadCandidate, fi.error);
@@ -349,7 +327,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 else
                 {//Serial execution of the fitting model for the current candidate
-                    ModelFit fi = evaluateCandidate(newModel, true);
+                    ModelFit fi = evaluateCandidate(newModel, MLsettings.considerEpsilonTube);
                     if (fi.complete)
                     {
                         errorOfFeature.GetOrAdd(threadCandidate, fi.error);
@@ -365,6 +343,9 @@ namespace MachineLearning.Learning.Regression
             {
                 return null;
             }
+            
+            if (candidates.Count == 0)
+                return null;
 
             // Evaluation of the candidates
             List<Feature> sortedFeatures = errorOfFeature.Keys.ToList();
@@ -423,9 +404,9 @@ namespace MachineLearning.Learning.Regression
             else
             {
                 bestModel = copyCombination(bestModel);
-                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel, out relativeErrorEval), previousRound.round + 1);
+                LearningRound newRound = new LearningRound(bestModel, minimalRoundError, computeValidationError(bestModel), previousRound.round + 1);
                 newRound.learningError_relative = minimalRoundError;
-                newRound.validationError_relative = relativeErrorEval;
+                newRound.validationError_relative = newRound.validationError;
                 newRound.elapsedTime = DateTime.Now - startTime;
                 newRound.bestCandidate = bestCandidate;
                 newRound.bestCandidateSize = bestCandidate.getNumberOfParticipatingOptions();
@@ -440,7 +421,7 @@ namespace MachineLearning.Learning.Regression
             ModelFit fit = new ModelFit();
             fit.complete = fitModel(model);
             double temp;
-            fit.error = computeModelError(model, out temp);
+            fit.error = computeModelError(model);
             fit.newModel = model;
             return fit;
         }
@@ -512,27 +493,20 @@ namespace MachineLearning.Learning.Regression
             var listOfCandidates = new List<Feature>();
             foreach (Feature basicFeature in basicFeatures)
             {
-                //add the feature to the list of candidates if it is not already in the model
+                VariabilityModel varModel = basicFeature.getVariabilityModel();
+
+                //add individual configuration options to the list of candidates if it is not already in the model
                 if (!currentModel.Contains(basicFeature))
                     listOfCandidates.Add(basicFeature);
 
                 if (this.MLsettings.withHierarchy && this.hierachyLevel == 1)
                     continue;
 
-                foreach (var feature in currentModel)
+                foreach (Feature feature in currentModel)
                 {
-                    if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                    
+                    if (!checkWhetherCandidateIsValide(basicFeature, feature))
                         continue;
-                    //We do not want to generate interactions with the root option
-                    if ((feature.participatingNumOptions.Count == 0 && feature.participatingBoolOptions.Count == 1 && feature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
-                    || basicFeature.participatingNumOptions.Count == 0 && basicFeature.participatingBoolOptions.Count == 1 && basicFeature.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
-                        continue;
-                    if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
-                        continue;
-
-                    if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                        continue;
-                    }
 
                     //Binary times the same binary makes no sense
                     if (basicFeature.participatingBoolOptions.Count > 0)
@@ -542,7 +516,7 @@ namespace MachineLearning.Learning.Regression
                                 goto nextRound;
                     }
 
-                    Feature newCandidate = new Feature(feature, basicFeature, basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature(feature, basicFeature, varModel);
                     if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
                 nextRound:
@@ -558,35 +532,27 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
-                        newCandidate = new Feature(feature, newCandidate, basicFeature.getVariabilityModel());
+
+                        newCandidate = new Feature(feature, newCandidate, varModel);
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
                 }
 
                 //if basic feature represents a numeric option and logarithmic function support is activated, then we add a feature representing a logarithmic functions of this feature 
-                if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0)
+                if (this.MLsettings.learn_logFunction && basicFeature.participatingNumOptions.Count > 0 && basicFeature.canNotEvaluateToZero())
                 {
                     Feature newCandidate = new Feature("log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
                     foreach (var feature in currentModel)
-                    {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                    {                        
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
+
                         newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -594,7 +560,7 @@ namespace MachineLearning.Learning.Regression
                         // Create accumulated log-functions
                         if (this.MLsettings.learn_accumulatedLogFunction && feature.participatingNumOptions.Count > 0 && !feature.getPureString().Contains("log10("))
                         {
-                            newCandidate = new Feature("log10(" + feature.getPureString() + ")", feature.getVariabilityModel());
+                            newCandidate = new Feature("log10(" + feature.getPureString() + ")", varModel);
                             if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             {
                                 listOfCandidates.Add(newCandidate);
@@ -607,7 +573,7 @@ namespace MachineLearning.Learning.Regression
                 {
                     Feature newCandidate = new Feature("1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
 
-                    if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
+                    if (basicFeature.canNotEvaluateToZero())
                     {
                         if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -615,16 +581,12 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
-                            continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
 
-                        newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
-                        if (newCandidate.participatingBoolOptions.Count == 0 && newCandidate.participatingNumOptions.All(x => x.Min_value > 0))
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                            continue;
+
+                        newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), varModel);
+                        if (newCandidate.canNotEvaluateToZero())
                         {
                             if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                                 listOfCandidates.Add(newCandidate);
@@ -637,22 +599,12 @@ namespace MachineLearning.Learning.Regression
                     Feature newCandidate = null;
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                        
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
-                            continue;
-                        if (this.strictlyMandatoryFeatures.Contains (feature)) {
-                            continue;
-                        }
 
-                        if (basicFeature.participatingBoolOptions.Count == 0 && basicFeature.participatingNumOptions.All(x => x.Min_value > 0))
-                        {
-                            if (feature.participatingBoolOptions.Count == 0 && feature.participatingNumOptions.All(x => x.Min_value > 0))
-                            {
-                                newCandidate = new Feature(feature.getPureString() + " / " + basicFeature.getPureString(), basicFeature.getVariabilityModel());
-                            }
-
-                        }
+                        if (basicFeature.canNotEvaluateToZero() && feature.canNotEvaluateToZero())
+                            newCandidate = new Feature(feature.getPureString() + " / " + basicFeature.getPureString(), varModel);
 
                         if (newCandidate != null && !currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
@@ -663,21 +615,18 @@ namespace MachineLearning.Learning.Regression
                 if (this.MLsettings.learn_mirrowedFunction && basicFeature.participatingNumOptions.Count > 0)
                 {
 
-                    Feature newCandidate = new Feature("(" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
+                    Feature newCandidate = new Feature("(" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", varModel);
                     if (!currentModel.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
 
                     foreach (var feature in currentModel)
                     {
-                        if (this.MLsettings.withHierarchy && feature.getNumberOfParticipatingOptions() >= this.hierachyLevel)
-                            continue;
-                        if (this.MLsettings.limitFeatureSize && (feature.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                        if (!checkWhetherCandidateIsValide(basicFeature,feature))
                             continue;
 
-
+                        
                         newCandidate = new Feature(feature.getPureString() + "* (" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
-
-
+                        
                         if (newCandidate != null && !currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
@@ -689,6 +638,31 @@ namespace MachineLearning.Learning.Regression
                 f.Constant = 1;
             return listOfCandidates;
         }
+
+
+        /// <summary>
+        /// Checks whether a new candidate is valid. 
+        /// </summary>
+        /// <param name="partOfTheModel">Part of the model that is learned in the previous round.</param>
+        /// <param name="newCandidate">The new candidate that have to be checked.</param>
+        /// <returns>Restuns false if the new candidate is not valid for the ml settings. Checks, for example, if the number of participating configuration options is larger than the defined featureSizeTreshold of the ML_Settings. </returns>
+        protected bool checkWhetherCandidateIsValide(Feature partOfTheModel, Feature newCandidate)
+        {
+            //We do not want to generate interactions with the root option
+            if ((newCandidate.participatingNumOptions.Count == 0 && newCandidate.participatingBoolOptions.Count == 1 && newCandidate.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
+            || partOfTheModel.participatingNumOptions.Count == 0 && partOfTheModel.participatingBoolOptions.Count == 1 && partOfTheModel.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
+                return false;
+
+            if (this.MLsettings.withHierarchy && newCandidate.getNumberOfParticipatingOptions() >= this.hierachyLevel)
+                return false;
+            if (this.MLsettings.limitFeatureSize && (newCandidate.getNumberOfParticipatingOptions() == this.MLsettings.featureSizeTreshold))
+                return false;
+            if (this.strictlyMandatoryFeatures.Contains(newCandidate))
+                return false;
+
+            return true;
+        }
+
 
         /// <summary>
         /// The method generates a list of candidates to be added to the current model. These candidates are later fitted using regression and rated for their accuracy in estimating the values of the validation set.
@@ -874,7 +848,7 @@ namespace MachineLearning.Learning.Regression
                     List<Feature> reducedFeatureSet = copyCombination(featureSet);
                     reducedFeatureSet.Remove(delitionCandidate);
                     double relativeValidationError = 0;
-                    computeModelError(reducedFeatureSet, out relativeValidationError);
+                    computeModelError(reducedFeatureSet);
                     if ((relativeValidationError <= previousRelativeValidationError)
                         && (relativeValidationError - previousReducedModelValidationError < this.MLsettings.minImprovementPerRound))
                     {
@@ -907,9 +881,9 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeValidationError(List<Feature> currentModel, out double relativeError)
+        private double computeValidationError(List<Feature> currentModel)
         {
-            return computeError(currentModel, this.validationSet, out relativeError, true);
+            return computeError(currentModel, this.validationSet, false);
         }
 
         /// <summary>
@@ -950,10 +924,9 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model containing all fitted features.</param>
         /// <param name="configs">The configuration for which the error should be computed. It contains also the actually measured value.</param>
         /// <returns>The error depending on the configured loss function (e.g., relative, least squares, absolute).</returns>
-        public double computeError(List<Feature> currentModel, List<Configuration> configs, out double relativeError, bool considerEpsilonTube)
+        public double computeError(List<Feature> currentModel, List<Configuration> configs, bool considerEpsilonTube)
         {
             double error_sum = 0;
-            relativeError = 0;
             int skips = 0;
             foreach (Configuration c in configs)
             {
@@ -973,38 +946,35 @@ namespace MachineLearning.Learning.Regression
                     GlobalState.logError.logLine(argEx.Message);
                     realValue = c.GetNFPValue();
                 }
+
                 //How to handle near-zero values???
                 //http://math.stackexchange.com/questions/677852/how-to-calculate-relative-error-when-true-value-is-zero
                 //http://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
+                //if (Math.Abs(realValue) < 0.001)
+                //{
+                //    skips++;
+                //    continue;
+                //}
 
-                if (realValue < 1)
-                {//((2(true-est) / true+est) - 1 ) * 100
-                    //continue;
-                    skips++;
-                    continue;
-                }
-                else
-                {
-                    double er = Math.Abs(100 - ((estimatedValue * 100) / realValue));
-                    relativeError += er;
-                }
                 double error = 0;
                 switch (this.MLsettings.lossFunction)
                 {
                     case ML_Settings.LossFunction.RELATIVE:
-                        if (realValue < 1)
-                        {
-                            error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
-                        }
-                        else
-                            error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                        //if (Math.Abs(realValue) < 0.001)
+                        //{
+                        //    error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
+                        //}
+                        //else
+
+                        error = Math.Abs((estimatedValue - realValue) / realValue ) * 100;
+
+                        //    error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
 
                         // Consider epsilon tube
                         if (considerEpsilonTube)
                         {
                             if (error <= (this.MLsettings.epsilon * 100))
                             {
-                                relativeError -= error;
                                 error = 0.0;
                             }
                         }
@@ -1016,7 +986,6 @@ namespace MachineLearning.Learning.Regression
                         {
                             if (error <= this.MLsettings.epsilon)
                             {
-                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
                                 error = 0.0;
                             }
                         }
@@ -1025,14 +994,7 @@ namespace MachineLearning.Learning.Regression
                     case ML_Settings.LossFunction.ABSOLUTE:
                         error = Math.Abs(realValue - estimatedValue);
 
-                        if (considerEpsilonTube)
-                        {
-                            if (error <= this.MLsettings.epsilon)
-                            {
-                                relativeError -= Math.Abs(100 - ((estimatedValue * 100) / realValue));
-                                error = 0.0;
-                            }
-                        }
+
                         break;
                 }
                 error_sum += error;
@@ -1043,7 +1005,7 @@ namespace MachineLearning.Learning.Regression
                 GlobalState.logInfo.logLine("All features have an error < 1.");
                 return 0.0;
             }
-            relativeError = relativeError / (configs.Count - skips);
+
             return error_sum / (configs.Count - skips);
         }
 
@@ -1053,9 +1015,9 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The features that have been fitted so far.</param>
         /// /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The mean error of the validation set. It depends on the parameters in ML settings which loss function is used.</returns>
-        private double computeLearningError(List<Feature> currentModel, out double relativeError)
+        private double computeLearningError(List<Feature> currentModel)
         {
-            return computeError(currentModel, this.learningSet, out relativeError, true);
+            return computeError(currentModel, this.learningSet, MLsettings.considerEpsilonTube);
         }
 
         /// <summary>
@@ -1064,14 +1026,14 @@ namespace MachineLearning.Learning.Regression
         /// <param name="currentModel">The model for which the error should be computed.</param>
         /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The prediction error of the model.</returns>
-        private double computeModelError(List<Feature> currentModel, out double relativeError)
+        private double computeModelError(List<Feature> currentModel)
         {
             if (!this.MLsettings.crossValidation)
-                return computeValidationError(currentModel, out relativeError);
+                return computeValidationError(currentModel);
             else
             {
                 //todo k-fold
-                return (computeLearningError(currentModel, out relativeError) + computeValidationError(currentModel, out relativeError) / 2);
+                return (computeLearningError(currentModel) + computeValidationError(currentModel) / 2);
             }
 
         }
@@ -1082,14 +1044,13 @@ namespace MachineLearning.Learning.Regression
         /// <param name="list"></param>
         /// <param name="relativeError">This is an out parameter, meaning that it gets assigned the relative error value to be used at the caller side.</param>
         /// <returns>The error rate.</returns>
-        public double evaluateError(List<Configuration> list, out double relativeError, bool considerEpsilonTube)
+        public double evaluateError(List<Configuration> list, bool considerEpsilonTube)
         {
             if (this.CurrentRound == null)
             {
-                relativeError = Double.MaxValue;
                 return -1;
             }
-            return computeError(this.CurrentRound.FeatureSet, list, out relativeError, considerEpsilonTube);
+            return computeError(this.CurrentRound.FeatureSet, list, considerEpsilonTube);
         }
         #endregion
 

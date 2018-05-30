@@ -37,8 +37,9 @@ namespace SPLConqueror_Core
         Dictionary<NumericOption, InfluenceFunction> numericOptionsInfluence = new Dictionary<NumericOption, InfluenceFunction>();
 
         /// <summary>
-        /// A dictionary that contains the influence functions for the <see cref="NumericOption"/>s.
+        /// Gets or sets the influence of the numeric option numeric options.
         /// </summary>
+        /// <value>The influence of numeric options.</value>
         public Dictionary<NumericOption, InfluenceFunction> NumericOptionsInfluence
         {
             get { return numericOptionsInfluence; }
@@ -48,8 +49,9 @@ namespace SPLConqueror_Core
         private Dictionary<Interaction, InfluenceFunction> interactionInfluence = new Dictionary<Interaction, InfluenceFunction>();
 
         /// <summary>
-        /// A dictionary that contains the influence functions for <see cref="Interaction"/>s of multiple features.
+        /// Gets or sets the influence of interactions.
         /// </summary>
+        /// <value>The influence of interactions.</value>
         public Dictionary<Interaction, InfluenceFunction> InteractionInfluence
         {
             get { return interactionInfluence; }

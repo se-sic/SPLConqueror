@@ -116,7 +116,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         private Seed chooseSeedDymamic()
         {
             int numOptions = options.Count;
-            // TODO Domain Knowlegde : currently we only consider linear interaction and the features also have only a linear influence
+
             int firstOrderInteractions = getFak(numOptions) / (getFak(2) * getFak(numOptions - 2));
 
             int numberToIdentifyAllForstOrder = numOptions * 2 + firstOrderInteractions;

@@ -225,6 +225,26 @@ namespace MachineLearning.Sampling
                 }
             }
 
+            // Filter configurations based on the NonBooleanConstratins
+            List<Configuration> filtered = new List<Configuration>();
+            foreach (Configuration conf in result)
+            {
+                bool isValid = true;
+                foreach (NonBooleanConstraint nbc in vm.NonBooleanConstraints)
+                {
+                    if (!nbc.configIsValid(conf))
+                    {
+                        isValid = false;
+                        continue;
+                    }
+                }
+
+                if (isValid)
+                    filtered.Add(conf);
+            }
+            result = filtered;
+
+
             // Hybrid designs
             if (hybridStrategies.Count != 0)
             {
