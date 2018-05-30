@@ -8,6 +8,7 @@ namespace MachineLearning.Solver
 {
     static class Z3Solver
     {
+	 public static List<BoolExpr> lastConstraints { get; private set; } = null;
 
         /// <summary>
         /// Generates a solver system (in z3: context) based on a variability model. The solver system can be used to check for satisfiability of configurations as well as optimization.
@@ -17,7 +18,7 @@ namespace MachineLearning.Solver
         /// <param name="termToOption">A map that gives for a given CSP term the corresponding configuration option of the variability model</param>
         /// <param name="vm">The variability model for which we generate a constraint system</param>
         /// <returns>The generated constraint system consisting of logical terms representing configuration options as well as their boolean constraints.</returns>
-        internal static Tuple<Context, BoolExpr> GetInitializedBooleanSolverSystem(out List<BoolExpr> variables, out Dictionary<BinaryOption, BoolExpr> optionToTerm, out Dictionary<BoolExpr, BinaryOption> termToOption, VariabilityModel vm)
+	 internal static Tuple<Context, BoolExpr> GetInitializedBooleanSolverSystem(out List<BoolExpr> variables, out Dictionary<BinaryOption, BoolExpr> optionToTerm, out Dictionary<BoolExpr, BinaryOption> termToOption, VariabilityModel vm, bool henard, int randomSeed = 0)
         {
             // Create a context and turn on model generation
             Context context = new Context(new Dictionary<string, string>() { { "model", "true" } });
@@ -27,14 +28,38 @@ namespace MachineLearning.Solver
             optionToTerm = new Dictionary<BinaryOption, BoolExpr>();
             termToOption = new Dictionary<BoolExpr, BinaryOption>();
 
-            // Read in the binary variables
-            foreach (BinaryOption binOpt in vm.BinaryOptions)
-            {
-                BoolExpr booleanVariable = GenerateBooleanVariable(context, binOpt.Name);
-                variables.Add(booleanVariable);
-                optionToTerm.Add(binOpt, booleanVariable);
-                termToOption.Add(booleanVariable, binOpt);
-            }
+			if (henard) {
+				// Select different (shuffled) literals for the features
+				Random random = new Random (randomSeed);
+				List<BinaryOption> randomizedOptions = (from item in vm.BinaryOptions
+														orderby random.Next ()
+														select item).ToList ();
+
+				char name = 'A';
+
+				// Read in the binary variables
+				foreach (BinaryOption binOpt in randomizedOptions) {
+					BoolExpr booleanVariable = GenerateBooleanVariable (context, name.ToString ());
+					variables.Add (booleanVariable);
+					optionToTerm.Add (binOpt, booleanVariable);
+					termToOption.Add (booleanVariable, binOpt);
+
+					if (name == 90) {
+						name = 'a';
+					} else {
+						name++;
+					}
+				}
+			} else {
+
+				// Read in the binary variables
+				foreach (BinaryOption binOpt in vm.BinaryOptions) {
+					BoolExpr booleanVariable = GenerateBooleanVariable (context, binOpt.Name);
+					variables.Add (booleanVariable);
+					optionToTerm.Add (binOpt, booleanVariable);
+					termToOption.Add (booleanVariable, binOpt);
+				}
+			}
 
             List<List<ConfigurationOption>> alreadyHandledAlternativeOptions = new List<List<ConfigurationOption>>();
 
@@ -169,9 +194,52 @@ namespace MachineLearning.Solver
                     andGroup.Add(context.MkOr(smtTerms));
             }
 
+			if (henard) {
+				lastConstraints = andGroup;
+			}
+
             BoolExpr generalConstraint = context.MkAnd(andGroup.ToArray());
 
             return new Tuple<Context,BoolExpr>(context, generalConstraint);
+        }
+
+		/// <summary>
+        /// Converts the constraints to the new context.
+        /// </summary>
+        /// <returns>The converted constraints.</returns>
+        /// <param name="oldInverseMapping">The old mapping of expressions to the features.</param>
+        /// <param name="newMapping">The new mapping that should be applied on the constraints.</param>
+        /// <param name="toConvert">Expressions to convert.</param>
+        /// <param name="z3Context">Z3 context.</param>
+        public static List<BoolExpr> ConvertConstraintsToNewContext (Dictionary<BoolExpr, BinaryOption> oldInverseMapping, Dictionary<BinaryOption, BoolExpr> newMapping, List<BoolExpr> toConvert, Context z3Context)
+        {
+            List<BoolExpr> newConfigurationList = new List<BoolExpr> ();
+            foreach (BoolExpr configuration in toConvert) {
+                List<BoolExpr> options = new List<BoolExpr> ();
+                for (int i = 0; i < configuration.Args [0].Args.Length; i++) {
+                    BoolExpr exprToReplace = (BoolExpr)configuration.Args [0].Args [i];
+                    if (exprToReplace.IsNot) {
+                        options.Add (z3Context.MkNot (newMapping [oldInverseMapping [(BoolExpr)configuration.Args [0].Args [i].Args [0]]]));
+                    } else {
+                        options.Add (newMapping [oldInverseMapping [(BoolExpr)configuration.Args [0].Args [i]]]);
+                    }
+                }
+                newConfigurationList.Add (z3Context.MkNot (z3Context.MkAnd (options)));
+            }
+            return newConfigurationList;
+        }
+
+		/// <summary>
+        /// Shuffle the specified constraints randomly.
+        /// </summary>
+        /// <returns>The shuffled constraints.</returns>
+        /// <param name="constraints">Constraints.</param>
+        /// <param name="random">Random.</param>
+        public static List<BoolExpr> Shuffle (List<BoolExpr> constraints, Random random)
+        {
+            return (from item in constraints
+                    orderby random.Next ()
+                    select item).ToList ();
         }
 
         /// <summary>
