@@ -143,6 +143,7 @@
     <Compile Include="Solver\z3\Z3Solver.cs" />
     <Compile Include="Solver\VariantGenerator\Z3VariantGenerator.cs" />
     <Compile Include="Solver\z3\WeightMinimizer.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\BinomialDistribution.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
