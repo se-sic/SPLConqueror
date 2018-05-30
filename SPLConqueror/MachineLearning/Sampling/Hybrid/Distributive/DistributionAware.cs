@@ -4,6 +4,18 @@ using System;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
+	/// <summary>
+    /// This enum indicates the optimization that should be executed.
+    /// Both optimizations try to cover all features uniformly.
+    /// Without the optimization, the possibility to miss certain features is higher.
+    /// </summary>
+    public enum Optimization
+    {
+        NONE,
+        GLOBAL_OPTIMIZATION,
+        LOCAL_OPTIMIZATION
+    }
+
     /// <summary>
     /// This class represents the distribution-aware sampling strategy.
     /// In this sampling strategy, the configurations are divided in buckets and the sampled configurations are selected 
@@ -11,6 +23,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
     /// </summary>
     public class DistributionAware : DistributionSensitive
     {
+
 
         /// <summary>
         /// Returns the corresponding distribution. 
