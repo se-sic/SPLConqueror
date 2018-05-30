@@ -18,6 +18,8 @@ namespace MachineLearning.Solver
         private uint z3RandomSeed = 1;
         private const string RANDOM_SEED = ":random-seed";
 
+	 public bool henard = false;
+
         /// <summary>
         /// Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance 
         /// to the configurations that were previously selected.
@@ -32,7 +34,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> variables;
             Dictionary<BoolExpr, BinaryOption> termToOption;
             Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
 
@@ -146,7 +148,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> variables;
             Dictionary<BoolExpr, BinaryOption> termToOption;
             Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
 
@@ -201,12 +203,17 @@ namespace MachineLearning.Solver
         /// <returns>A list of configurations, in which a configuration is a list of SELECTED binary options.</returns>
         public List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel vm, int n)
         {
+	     // Use the random seed to produce new random seeds
+            Random random = new Random (Convert.ToInt32 (z3RandomSeed));
+
             List<BoolExpr> variables;
             Dictionary<BoolExpr, BinaryOption> termToOption;
             Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+	     Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard, random.Next());
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
+	     List<BoolExpr> excludedConfigurations = new List<BoolExpr> ();
+            List<BoolExpr> constraints = Z3Solver.lastConstraints;  
 
             List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
 
@@ -215,7 +222,11 @@ namespace MachineLearning.Solver
             // TODO: The following line works for z3Solver version >= 4.6.0
             //solver.Set (RANDOM_SEED, z3RandomSeed);
             Params solverParameter = z3Context.MkParams ();
-            solverParameter.Add (RANDOM_SEED, z3RandomSeed);
+	     if (henard) {
+	 	 solverParameter.Add (RANDOM_SEED, NextUInt (random));
+	     } else {
+		 solverParameter.Add (RANDOM_SEED, z3RandomSeed);
+	     }
             s.Parameters = solverParameter;
 
             s.Assert(z3Constraints);
@@ -230,10 +241,57 @@ namespace MachineLearning.Solver
 
                 configurations.Add(config);
 
-                s.Add(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, config, optionToTerm, vm)));
+				if (henard) {
+					BoolExpr newConstraint = Z3Solver.NegateExpr (z3Context, Z3Solver.ConvertConfiguration (z3Context, config, optionToTerm, vm));
+
+                    excludedConfigurations.Add (newConstraint);
+
+                    Dictionary<BoolExpr, BinaryOption> oldTermToOption = termToOption;
+                    
+                    // Now, initialize a new one for the next configuration
+					z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem (out variables, out optionToTerm, out termToOption, vm, this.henard, random.Next ());
+                    z3Context = z3Tuple.Item1;
+                    z3Constraints = z3Tuple.Item2;
+
+                    s = z3Context.MkSolver ();
+
+                    //s.Set (RANDOM_SEED, NextUInt (random));
+                    solverParameter = z3Context.MkParams ();
+
+                    solverParameter.Add (RANDOM_SEED, NextUInt (random));
+                    s.Parameters = solverParameter;
+
+                    constraints = Z3Solver.lastConstraints;
+
+                    excludedConfigurations = Z3Solver.ConvertConstraintsToNewContext (oldTermToOption, optionToTerm, excludedConfigurations, z3Context);
+
+                    constraints.AddRange (excludedConfigurations);
+
+                    s.Assert (z3Context.MkAnd (Z3Solver.Shuffle (constraints, new Random (random.Next ()))));
+
+                    s.Push ();
+				} else {
+					s.Add (Z3Solver.NegateExpr (z3Context, Z3Solver.ConvertConfiguration (z3Context, config, optionToTerm, vm)));
+				}
             }
 
             return configurations;
+        }
+
+		private static uint NextUInt (Random random)
+        {
+            int randomNumber = random.Next ();
+            uint result = 0;
+            bool found = false;
+            while (!found) {
+                try {
+                    result = Convert.ToUInt32 (randomNumber);
+                    found = true;
+                } catch {
+                    // Do nothing in this case
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -280,7 +338,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> variables;
             Dictionary<BoolExpr, BinaryOption> termToOption;
             Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+	     Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
             List<BoolExpr> constraints = new List<BoolExpr>();
@@ -344,7 +402,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> variables;
             Dictionary<BoolExpr, BinaryOption> termToOption;
             Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+	     Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
 
@@ -424,7 +482,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> variables;
             Dictionary<BoolExpr, BinaryOption> termToOption;
             Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+	     Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
 
@@ -543,7 +601,7 @@ namespace MachineLearning.Solver
 
             } else
             {
-                z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+		 z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
                 z3Context = z3Tuple.Item1;
                 BoolExpr z3Constraints = z3Tuple.Item2;
                 solver = z3Context.MkSolver();

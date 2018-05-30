@@ -62,6 +62,14 @@ namespace MachineLearning.Sampling
                         int numberSamples = 2;
                         foreach (Dictionary<string, string> parameters in binaryParams.satParameters)
                         {
+			     if (parameters.ContainsKey ("henard")) {
+    				 try {
+				 	 bool b = Boolean.Parse (parameters ["henard"]);
+					 ((Z3VariantGenerator)vg).henard = b;
+    				 } catch (FormatException e) {
+    					 Console.Error.WriteLine (e);
+    				 }
+    			     }
                             if (parameters.ContainsKey("numConfigs"))
                             {
                                 try
