@@ -430,8 +430,7 @@ namespace CommandLine
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
 
                     try {
-                        GlobalState.allMeasurements.Configurations = (GlobalState.allMeasurements.Configurations
-                            .Union(ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel))).ToList();
+                        GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel);
                     } catch (ArgumentNullException)
                     {
                         throw new ArgumentException("There was a problem when reading your configuration file." +
@@ -570,14 +569,13 @@ namespace CommandLine
                     }
 
                 case COMMAND_ANALYZE_LEARNING:
-                    {//TODO: Analyzation is not supported in the case of bagging
+                    {
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
-                        //GlobalState.logInfo.logLine(pyResult);
+                       
                         if (this.mlSettings.bagging)
                         {
-                            // this.metaModel
-
+                       
                             for (int i = 0; i < this.exp.models.Count; i++)
                             {
                                 FeatureSubsetSelection learnedModel = exp.models[i];
@@ -592,11 +590,13 @@ namespace CommandLine
                                     double relativeError = 0;
                                     if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError, false);
+                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
+                                        relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                     }
                                     else
                                     {
-                                        double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
+                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
+                                        relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                     }
 
                                     GlobalState.logInfo.logLine(lr.ToString() + relativeError);
@@ -619,11 +619,11 @@ namespace CommandLine
                                 double relativeError = 0;
                                 if (GlobalState.evaluationSet.Configurations.Count > 0)
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, out relativeError, false);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                 }
                                 else
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, out relativeError, false);
+                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                 }
 
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
@@ -692,25 +692,9 @@ namespace CommandLine
 
                 case COMMAND_PRINT_CONFIGURATIONS:
                     {
-                        /* List<Dictionary<NumericOption, double>> numericSampling = exp.NumericSelection_Learning;
-                         List<List<BinaryOption>> binarySampling = exp.BinarySelections_Learning;
-
-                         List<Configuration> configurations = new List<Configuration>();
-
-                         foreach (Dictionary<NumericOption, double> numeric in numericSampling)
-                         {
-                             foreach (List<BinaryOption> binary in binarySampling)
-                             {
-                                 Configuration config = Configuration.getConfiguration(binary, numeric);
-                                 if (!configurations.Contains(config) && GlobalState.varModel.configurationIsValid(config))
-                                 {
-                                     configurations.Add(config);
-                                 }
-                             }
-                         }*/
 
                         string[] para = task.Split(new char[] { ' ' });
-                        // TODO very error prone..
+
                         if (para.Length >= 1 && (para[0].Trim()).Length > 0)
                         {
                             ConfigurationPrinter printer = null;
@@ -773,18 +757,28 @@ namespace CommandLine
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
                         List<Configuration> configurationsLearning;
                         List<Configuration> configurationsValidation;
-                        if (!configurationsPreparedForLearning(learnAndValidation, 
+                        if (allMeasurementsSelected)
+                        {
+                            configurationsLearning = GlobalState.allMeasurements.Configurations;
+                            configurationsValidation = configurationsLearning;
+                        }
+                        else if (!configurationsPreparedForLearning(learnAndValidation, 
                             out configurationsLearning, out configurationsValidation))
                             break;
 
-                        // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
-                        {
-                            handlePythonTask(false, configurationsLearning, taskAsParameter);
-                        }
+                        if (taskAsParameter.Length == 0)
+                            GlobalState.logInfo.logLine("No learning strategy defined! Aborting learning");
                         else
                         {
-                            GlobalState.logInfo.logLine("Invalid Learning strategy " + taskAsParameter[0] + "! Aborting learning");
+                            // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
+                            if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
+                            {
+                                handlePythonTask(false, configurationsLearning, taskAsParameter);
+                            }
+                            else
+                            {
+                                GlobalState.logInfo.logLine("Invalid Learning strategy: " + taskAsParameter[0] + "! Aborting learning");
+                            }
                         }
                         break;
                     }
@@ -796,7 +790,11 @@ namespace CommandLine
                         Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
                         List<Configuration> configurationsLearning;
                         List<Configuration> configurationsValidation;
-                        if (!configurationsPreparedForLearning(learnAndValidation,
+                        if (allMeasurementsSelected)
+                        {
+                            configurationsLearning = GlobalState.allMeasurements.Configurations;
+                            configurationsValidation = configurationsLearning;
+                        } else if (!configurationsPreparedForLearning(learnAndValidation,
                             out configurationsLearning, out configurationsValidation))
                             break;
 
@@ -875,7 +873,8 @@ namespace CommandLine
 
                         }
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
-                        GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
+                        GlobalState.logInfo.logLine("Optimal parameters " 
+                            + formatOptimalParameters(optimalParameters.ToString(), cleanedParameters));
                         Learning experiment = new MachineLearning.Learning.Regression
                             .Learning(configurationsLearning, configurationsValidation);
                         experiment.mlSettings = optimalParameters;
@@ -902,6 +901,21 @@ namespace CommandLine
                     return command;
             }
             return "";
+        }
+
+        private string formatOptimalParameters(string optimalParameters, string[] consideredParameters)
+        {
+            StringBuilder sb = new StringBuilder();
+            string[] parameters = optimalParameters.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string param in consideredParameters)
+            {
+                foreach(string opt in parameters)
+                {
+                    if (opt.StartsWith(param.Split(new char[] { '=' })[0]))
+                        sb.Append(opt + ";");
+                }
+            }
+            return sb.ToString();
         }
 
         #region execution of deprecated commands
@@ -936,7 +950,6 @@ namespace CommandLine
                     {
                         string[] para = task.Split(new char[] { ' ' });
 
-                        // TODO something is wrong here....
                         Dictionary<String, String> parameters = new Dictionary<string, string>();
                         //parseParametersToLinearAndQuadraticBinarySampling(para);
 

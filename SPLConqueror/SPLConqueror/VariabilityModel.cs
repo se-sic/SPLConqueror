@@ -221,9 +221,20 @@ namespace SPLConqueror_Core
             {
                 XmlNode constrNode = doc.CreateNode(XmlNodeType.Element, "constraint", "");
                 XmlAttribute attr = doc.CreateAttribute("req");
-                attr.Value = constraint.ToString().Split(new char[] { ':' })[0];
+                XmlAttribute evaluation = doc.CreateAttribute("exprKind");
+                string constraintAsString = constraint.ToString();
+                if (constraintAsString.StartsWith("!:"))
+                {
+                    constraintAsString = constraintAsString.Replace("!:", "");
+                    evaluation.Value = "neg";
+                } else
+                {
+                    evaluation.Value = "pos";
+                }
+                attr.Value = constraintAsString.Split(new char[] { ':' })[0];
                 constrNode.Attributes.Append(attr);
-                constrNode.InnerText = constraint.ToString().Split(new char[] { ':' })[1];
+                constrNode.Attributes.Append(evaluation);
+                constrNode.InnerText = constraintAsString.Split(new char[] { ':' })[1];
                 mixedConstraints.AppendChild(constrNode);
             }
             xmlroot.AppendChild(mixedConstraints);
@@ -287,7 +298,7 @@ namespace SPLConqueror_Core
             string featureModel = featureTree.InnerText;
 
             string eol = "\n";
-            if (featureModel.ElementAt(featureModel.IndexOf('\n') - 1) == '\r')
+            if (featureModel.IndexOf('\n') > 0 && featureModel.ElementAt(featureModel.IndexOf('\n') - 1) == '\r')
             {
                 eol = "\r\n";
             }
@@ -464,15 +475,15 @@ namespace SPLConqueror_Core
         {
             foreach (BinaryOption binOpt in group)
             {
-                List<ConfigurationOption> excluded = new List<ConfigurationOption>();
                 foreach (BinaryOption otherOption in group)
                 {
                     if (otherOption.Name != binOpt.Name)
                     {
+                        List<ConfigurationOption> excluded = new List<ConfigurationOption> ();
                         excluded.Add(otherOption);
-                    }
+                        binOpt.Excluded_Options.Add (excluded);
+                    }               
                 }
-                binOpt.Excluded_Options.Add(excluded);
             }
         }
 

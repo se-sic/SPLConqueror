@@ -45,7 +45,7 @@ Submodules can be cloned on the command line by:
 git submodule update --init --recursive
 ```
 
-2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ und die MonoDevelop-Version 5.10.0+)
+2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ -- description available on https://www.mono-project.com/download/stable/ -- und die MonoDevelop-Version 5.10.0+)
 ```
 sudo apt install mono-complete monodevelop
 ```
@@ -222,6 +222,43 @@ An example for a variability model is given below:
   </numericOptions>
 </vm>
 ```
+
+Tags:
+
+
+| Name  | Parent | Descriptions |
+| :---: | :---------: | :-----------: |
+| vm | xml root | Variability model node |
+| binaryOptions | vm | Xml node containing all binary configuration option nodes |
+| numericOptions | vm | Xml node containing all binary configuration option nodes |
+| configurationOption | numericOptions/binaryOptions | Node that describes a configuration option. Contains the name, parent option, output string and prefix and postfix string for output. Nodes that describe binary options also contain information about implied or excluded configuration options. Nodes that describe numeric options contain information about min and max value as well as the step function for the value between min and max. |
+| name | configurationOption | Contains the name of the configuration option |
+| outputString | configurationOption |  String that will be printed when printing the configuration option |
+| prefix |  configurationOption | Prefix that will be attached to the output string |
+| postfix | configurationOption | Postfix that will be attached to the output string |
+| parent | configurationOption | Parent configuration option of this configuration options |
+| impliedOptions | configurationOption | Collection of configuration options wrapped in option nodes that have to be selected if this option is selected |
+| option | impliedOptions/excludedOptions | Node that wraps a configuration option |
+| excludedOptions | configurationOption | Collection of configuration options wrapped in option nodes that cant be selected if this option is selected |
+| optional | configurationOption | Node that contains information whether this option is optional or mandatory |
+| minValue | configurationOption | Minimum value a numeric option can assume |
+| maxValue | configurationOption | Maximum value a numeric option can assume |
+| stepFunction | configurationOption | Mathematical function that describes the values between min and max a numeric option can assume |
+| booleanConstraints | vm | Collection of logical expressions with binary options a configuration of this model has to fulfill |
+| numericConstraints | vm | Collection of mathematical expressions with numeric options a configuration of this model has to fulfill |
+| mixedConstraints | vm | Collection of mathematical expressions with configuration options a configuration of this model has to fulfill |
+| constraint | booleanConstraints/numericConstraints/mixedConstraints | Wrappper for a single constraint can either be a logical expression or mathematical expression(for mixed constraints attribute exists, see below) | 
+
+
+Interactions can also be defined between numeric and binary configuration options in the variability model. As an example:
+```
+<mixedConstraints>
+<constraint req="all" exprKind="neg">LocalMemory * bs_32x32 * pixelPerThread = 3</constraint>
+</mixedConstraints>
+```
+
+The *req* attribute determines how the expression is evaluated in case not all configurations options are present or partial configurations are evaluated. *req="all"* results in the constraints always being true if at least one configuration options of the expression is not present in the configuration, otherwise the constraint will be evaluated as is. 
+*req="none"* results in missing configuration options automatically being treated as deselected and the expression being then evaluated as is. *exprKind="neg"* negates the result of the evaluation, while *exprKind="pos"* simply uses the result of the evaluation.
 </details>
 
 <details>
@@ -553,6 +590,7 @@ SPLConqueror also supports learning on a subset of the data. Therefore, one has 
 | Binary | negfw | Get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question. | ```binary negfw``` | binary negfw |
 | Binary | random | Get certain number of random valid configurations. Seed sets the seed of the random number generator. The number of configurations that will be produced is set with numConfigs(Can either be an integer, or asOW/asTWX with X being an integer). If the whole population should not be computed but read in from a file, the fromFile-option should be used. | ```binary random seed:<int> numConfigs:<int/asOW/asTWX> fromFile:<csvFile>``` | binary random seed:10 numConfigs:asTW2 |
 | Binary | distance-based | Creates a sample of configurations, by iteratively adding a configuration that has the maximal manhattan distance to the configurations that were previously selected. | ```binary distance-based optionWeight:<int> numConfigs:<int/asOW/asTWX>``` | binary distance-based optionWeight:1 numConfigs:10 |
+| Binary | twise | Generates a configuration for each valid combination of a set consisting of t configuration options. Exceptions: parent-child-relationships, implication-relationships. | ```binary twise t:<int>``` | binary twise t:3 |
 | Numeric | plackettburman | A description of the Plackett-Burman design is provided [here](http://www.jstor.org/discover/10.2307/2332195). | ```numeric plackettburman measurements:<measurements> level:<level>``` | numeric plackettburman measurements:125 level:5 |
 | Numeric | centralcomposite | The central composite inscribe design. This design is defined for numeric options that have at least five different values. | ```numeric centralcomposite``` | numeric centralcomposite |
 | Numeric | random | This design selects a specified number of value combinations for a set of numeric options. The value combinations are created using a random selection of values of the numeric options. | ```numeric random sampleSize:<size> seed:<seed>``` | numeric random sampleSize:50 seed:2 |
@@ -653,6 +691,13 @@ To set which python interpreter is used, use the ```define-python-path``` comman
 ```learn-python <learner>```
 
 To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
+For more information on the algorithms see:[Scikit-Learn](http://scikit-learn.org/stable/documentation.html)
+
+#### Performing parameter optimization for scikit-learn
+
+```learn-python-opt <learner>```
+
+To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The optimal parameters will be written to the log.
 
 #### Printing configurations
 

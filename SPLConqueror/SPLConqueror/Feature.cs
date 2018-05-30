@@ -41,7 +41,7 @@ namespace SPLConqueror_Core
         /// <returns>True if both features consider the same configuration options with the same exponents.</returns>
         public bool Equals(Feature f)
         {
-            return base.ToString().Equals(f.getPureString());
+            return this.GetHashCode().Equals(f.GetHashCode());
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace SPLConqueror_Core
         /// <returns>0 if both feature are the same, 1 and -1 otherwise.</returns>
         public int Compare(Feature x, Feature y)
         {
-            return x.name.CompareTo(y.name);
+            return x.hashCode.CompareTo(y.hashCode);
         }
 
         /// <summary>
@@ -175,6 +175,23 @@ namespace SPLConqueror_Core
         public String getPureString()
         {
             return base.ToString();
+        }
+
+        /// <summary>
+        /// Tests, whether none of the valid value combinations of all participating configuration options can evaluate to zero.
+        /// </summary>
+        /// <returns>True, if none of the valid value combinations of all participating configuration options can evaluate to zero.</returns>
+        public bool canNotEvaluateToZero()
+        {
+            if (participatingBoolOptions.Count > 0)
+                return false;
+
+            foreach(NumericOption num in participatingNumOptions)
+            {
+                if (num.getAllValues().Contains(0.0))
+                    return false;
+            }
+            return true;
         }
     }
 }

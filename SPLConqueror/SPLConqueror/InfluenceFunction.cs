@@ -6,8 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace SPLConqueror_Core
 {
+
     /// <summary>
-    /// This class represents an influence function containing the affected configuration options.
+    /// The influence function class that represents a term (e.g., 1.3 * x ).
     /// </summary>
     public class InfluenceFunction
     {
@@ -16,7 +17,7 @@ namespace SPLConqueror_Core
         private VariabilityModel varModel = null;
 
         /// <summary>
-        /// Includes the well-formed expression of the <see cref="InfluenceFunction"/>.
+        /// This field includes the most important information as a well-formed expression (e.g., 1.3 * x ).
         /// </summary>
         protected string wellFormedExpression = "";
 
@@ -361,14 +362,10 @@ namespace SPLConqueror_Core
 
                 if (!InfluenceFunction.isOperatorEval(curr))
                 {
-
-
                     stack.Push(getValueOfToken(config, curr, varModel));
                 }
                 else
                 {
-
-
                     if (curr.Equals("+"))
                     {
                         double rightHandSide = stack.Pop();
@@ -406,12 +403,12 @@ namespace SPLConqueror_Core
                         else
                             stack.Push(leftHandSide / rightHandSide);
                     }
-                    // TODO log(0) == ????
                     if (curr.Equals("]"))
                     {
                         double leftHandSide = stack.Pop();
                         if (leftHandSide == 0.0)
                         {
+                            GlobalState.logError.log("part of the performance-influence model leads to a NegativeInfinity (compute log(0)) ");
                             stack.Push(0.0);
                         }
                         else
@@ -743,53 +740,6 @@ namespace SPLConqueror_Core
 
             return returnString;
         }
-
-
-        //public static InfluenceFunction createTreeFromFile(string file)
-        //{
-        //    // parse file
-        //    string text = System.IO.File.ReadAllText(file);
-        //    string[] fileContent = text.Split('\n');
-        //    List<string> filteredFileContent = new List<string>();
-        //    for (int k = 0; k < fileContent.Length; k++)
-        //    {
-        //        if (fileContent[k].Trim().StartsWith("%") || fileContent[k].Trim().Length == 0)
-        //            continue;
-        //        filteredFileContent.Add(fileContent[k]);
-        //    }
-        //    fileContent = filteredFileContent.ToArray();
-        //    string expression = fileContent[0].Trim();
-
-         
-        //    // create feature Model 
-        //    VariabilityModel fm = new VariabilityModel("TEMP");
-        //    // add numerical features to feature model 
-        //    int i = 1;
-        //    while (!fileContent[i].StartsWith("Noise:") && (i < fileContent.Length))
-        //    {
-                
-        //        fm.addVariableFeature(fileContent[i]);
-        //        i++;
-        //    }
-        //    Element baseF = new Element("base", fm.createID(), fm);
-        //    baseF.setOptional(false);
-        //    //  fm.addElement(baseF);
-        //    fm.addElement(baseF);
-
-        //    ExpressionTree tree = new ExpressionTree(expression, fm);
-        //    // add Noise
-        //    double noise = 0;
-        //    if (i < fileContent.Length)
-        //    {
-        //        noise = Convert.ToDouble(fileContent[i].Substring("Noise:".Length).Trim());
-        //        noise = noise * 0.01;
-        //    }
-        //    tree.addNoise(noise);
-
-         
-        //    return tree;
-        //}
-
 
         private static int findOffsetToClosingBracket(String subStringAfterOpeningBracket)
         {

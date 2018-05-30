@@ -92,7 +92,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return true;
         }
 
-        // Find all possible combinations - TODO > improve?
+        // Find all possible combinations
         private List<Tuple<int, int>> combinate(List<int> items)
         {
             List<Tuple<int, int>> combinations = new List<Tuple<int, int>>();

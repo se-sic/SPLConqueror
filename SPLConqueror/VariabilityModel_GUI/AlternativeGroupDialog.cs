@@ -51,7 +51,7 @@ namespace VariabilitModel_GUI
 
             // If all children do exclude each other, the current option has to be an alternative option
             List<ConfigurationOption> innerOpts = GlobalState.varModel.getOptions().Select(option => option.Parent)
-                .Where(o => o != null && o is BinaryOption).ToList();
+                .Where(o => o != null && o is BinaryOption).Distinct().ToList();
 
             // Only inner nodes are potential alternative groups
             foreach (ConfigurationOption innerOpt in innerOpts)
