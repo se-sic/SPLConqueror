@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
     /// <summary>
     /// This interface provides methods to calculate samples from a given distribution.
     /// </summary>
-    public interface Distribution
+    public interface IDistribution
     {
         /// <summary>
         /// This method returns a distribution according to the given buckets.

@@ -3,7 +3,7 @@ using System;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
-    public class BinomialDistribution : Distribution
+    public class BinomialDistribution : IDistribution
     {
         // This could be another parameter for specifying the distribution
         const double PROBABILITY = 0.50;
@@ -19,22 +19,17 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
 
             int numberOfBuckets = allBuckets.Count - 1;
 
-            double sum = 0;
 
             for (int k = 0; k <= numberOfBuckets; k++) {
                 double firstPart = (Factorial (numberOfBuckets) / (Factorial (k) * Factorial (numberOfBuckets - k)));
                 double secondPart = Math.Pow (PROBABILITY, k) * Math.Pow ((1 - PROBABILITY), (numberOfBuckets - k));
                 double probability = firstPart * secondPart;
 
-                sum += probability;
                 result [allBuckets [k]] = probability;
             }
 
             // Adjust it to be 1.0 in the sum
-            List<double> keys = new List<double>(result.Keys);
-            foreach (double key in keys) {
-                result [key] /= sum;
-            }
+            result = DistributionUtils.AdjustToOne(result);
                 
             return result;
         }
