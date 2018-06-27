@@ -36,7 +36,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         {
             // If a normal distribution is wanted, the parameters can be computed
             // from the whole population if available
-            if (this.distribution.GetName().Equals("NORMAL") && !this.strategyParameter[USE_WHOLE_POPULATION].Equals(String.Empty))
+            if (this.distribution.GetName().Equals("NORMAL") && !this.strategyParameter[USE_WHOLE_POPULATION].Equals("false"))
             {
                 Dictionary<double, int> distr = DistributionUtils.CountConfigurations(wholeDistribution);
 

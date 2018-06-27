@@ -59,7 +59,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {SELECTION_HEURISTIC, "RandomSelection" },
                 {OPTIONS_FOR_WEIGHTOPTIMIZATION, "0" }, 
 	            {USED_OPTIMIZATION, Optimization.NONE.ToString().ToUpper ()},
-                {USE_WHOLE_POPULATION, ""}
+                {USE_WHOLE_POPULATION, "false"}
             };
         }
 
@@ -83,7 +83,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             List<double> allBuckets = ComputeBuckets();
 
             Dictionary<double, List<Configuration>> wholeDistribution = null;
-            if (this.selection is RandomSelection) {
+            if (this.selection is RandomSelection || 
+                (this.distribution is NormalDistribution && this.strategyParameter.ContainsKey(DistributionAware.USE_WHOLE_POPULATION))) {
                 // Compute the whole population needed for randomly sampling from the buckets
                 wholeDistribution = ComputeDistribution (allBuckets);
             }
