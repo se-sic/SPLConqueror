@@ -23,7 +23,7 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProjectGuid>{AEBDC4EA-60AD-4A95-8407-059B07150782}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -89,6 +89,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Numerics" />
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.4.5.1\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Learning\LearningInfo.cs" />
@@ -119,7 +122,7 @@
     <Compile Include="Sampling\Hybrid\Distributive\DistanceMetric\DistanceMetric.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistanceMetric\ManhattanDistance.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionSensitive.cs" />
-    <Compile Include="Sampling\Hybrid\Distributive\Distribution\Distribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\IDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\UniformDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionAware.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionPreserving.cs" />
@@ -144,6 +147,10 @@
     <Compile Include="Solver\VariantGenerator\Z3VariantGenerator.cs" />
     <Compile Include="Solver\z3\WeightMinimizer.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\BinomialDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\NormalDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\ComplementaryNormalDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\GeometricDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\DistributionUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
