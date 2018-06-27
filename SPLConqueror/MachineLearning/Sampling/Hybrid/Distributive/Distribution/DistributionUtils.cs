@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SPLConqueror_Core;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
@@ -27,6 +27,22 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             }
 
             return newDistribution;
+        }
+
+        /// <summary>
+        /// Returns the distribution of the given list of configurations.
+        /// </summary>
+        /// <returns>The distribution of the given list.</returns>
+        /// <param name="configurations">List of all configurations.</param>
+        /// <param name="distanceMetric">The distance metric to use.</param>
+        public static Dictionary<double, int> CountConfigurations(Dictionary<double, List<Configuration>> configurations) {
+            Dictionary<double, int> result = new Dictionary<double, int>();
+
+            foreach (double key in configurations.Keys) {
+                result[key] = configurations[key].Count;
+            }
+
+            return result;
         }
     }
 }

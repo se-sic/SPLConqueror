@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MachineLearning.Sampling.Hybrid.Distributive.Distribution
+namespace MachineLearning.Sampling.Hybrid.Distributive
 {
     /// <summary>
     /// This class represents the geometric distribution.

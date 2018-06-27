@@ -1,6 +1,7 @@
 ﻿using SPLConqueror_Core;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
@@ -33,7 +34,32 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <returns>the user-specified distribution (e.g., uniform)</returns>
         public override Dictionary<double, double> CreateDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets)
         {
-            return this.distribution.CreateDistribution(allBuckets);
+            // If a normal distribution is wanted, the parameters can be computed
+            // from the whole population if available
+            if (this.distribution.GetName().Equals("NORMAL") && !this.strategyParameter[USE_WHOLE_POPULATION].Equals(String.Empty))
+            {
+                Dictionary<double, int> distr = DistributionUtils.CountConfigurations(wholeDistribution);
+
+                double sum = 0;
+                int count = 0;
+                foreach (double key in distr.Keys)
+                {
+                    sum += key * distr[key];
+                    count += distr[key];
+                }
+
+                // Compute the mean value of the whole distribution
+                double mean = sum / count;
+
+                // Compute the deviation
+                double deviation = Math.Sqrt(distr.Sum(x => x.Value * Math.Pow(x.Key - mean, 2)) / count);
+
+                return ((NormalDistribution)this.distribution).CreateDistribution(allBuckets, mean, deviation);
+            }
+            else
+            {
+                return this.distribution.CreateDistribution(allBuckets);
+            }
         }
 
         /// <summary>

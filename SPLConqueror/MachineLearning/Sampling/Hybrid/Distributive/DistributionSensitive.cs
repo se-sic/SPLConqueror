@@ -29,10 +29,12 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const string SEED = "seed";
         public const string SELECTION_HEURISTIC = "selection";
         public const string OPTIONS_FOR_WEIGHTOPTIMIZATION = "number-weight-optimization";
-	 public const string USED_OPTIMIZATION = "optimization";
+	    public const string USED_OPTIMIZATION = "optimization";
+        public const string USE_WHOLE_POPULATION = "use-whole-population";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
-	 public static IDistribution[] distributions = { new UniformDistribution(), new BinomialDistribution() };
+        public static IDistribution[] distributions = { new UniformDistribution(), new BinomialDistribution(), 
+            new NormalDistribution(), new ComplementaryNormalDistribution(), new GeometricDistribution()};
         #endregion
 
         protected DistanceMetric metric = null;
@@ -56,7 +58,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {SEED, "0" },
                 {SELECTION_HEURISTIC, "RandomSelection" },
                 {OPTIONS_FOR_WEIGHTOPTIMIZATION, "0" }, 
-	         {USED_OPTIMIZATION, Optimization.NONE.ToString().ToUpper ()}
+	            {USED_OPTIMIZATION, Optimization.NONE.ToString().ToUpper ()},
+                {USE_WHOLE_POPULATION, ""}
             };
         }
 
