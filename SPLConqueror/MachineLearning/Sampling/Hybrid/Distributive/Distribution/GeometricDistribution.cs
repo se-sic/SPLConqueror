@@ -24,7 +24,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 previousResultCache = currentResult;
             }
 
-            return result;
+            return DistributionUtils.AdjustToOne(result);
         }
 
         /// <summary>

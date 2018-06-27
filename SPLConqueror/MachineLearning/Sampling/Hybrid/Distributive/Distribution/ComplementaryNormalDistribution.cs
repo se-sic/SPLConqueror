@@ -15,7 +15,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <param name="allBuckets">All buckets.</param>
         /// <param name="mean">The mean for the normal distribution.</param>
         /// <param name="deviation">The standard deviation for the normal distribution.</param>
-        public Dictionary<double, double> CreateDistribution(List<double> allBuckets, double mean, double deviation)
+        public new Dictionary<double, double> CreateDistribution(List<double> allBuckets, double mean, double deviation)
         {
             Dictionary<double, double> result = base.CreateDistribution(allBuckets, mean, deviation);
 
@@ -32,7 +32,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <summary>
         /// See <see cref="Distribution.GetName"/>.
         /// </summary>
-        public string GetName()
+        public new string GetName()
         {
             return "COMPLEMENTARYNORMAL";
         }
