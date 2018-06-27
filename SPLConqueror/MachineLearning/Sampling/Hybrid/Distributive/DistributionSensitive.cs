@@ -32,11 +32,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
 	 public const string USED_OPTIMIZATION = "optimization";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
-	 public static Distribution[] distributions = { new UniformDistribution(), new BinomialDistribution() };
+	 public static IDistribution[] distributions = { new UniformDistribution(), new BinomialDistribution() };
         #endregion
 
         protected DistanceMetric metric = null;
-        protected Distribution distribution = null;
+        protected IDistribution distribution = null;
         protected ISelectionHeuristic selection = null;
         #endregion
 
@@ -114,7 +114,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
 
             // Check the used distribution
             string distributionToUse = this.strategyParameter[DISTRIBUTION];
-            foreach (Distribution d in DistributionSensitive.distributions)
+            foreach (IDistribution d in DistributionSensitive.distributions)
             {
                 if (d.GetName().ToUpper().Equals(distributionToUse.ToUpper()))
                 {
