@@ -590,12 +590,12 @@ namespace CommandLine
                                     double relativeError = 0;
                                     if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
+                                        // last parameter -- here, we remove the epsilon-tube around the performance-influence model to be able to compute the real error of the predictions
                                         relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                     }
                                     else
                                     {
-                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
+                                        // last parameter -- here, we remove the epsilon-tube around the performance-influence model to be able to compute the real error of the predictions
                                         relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                     }
 
@@ -619,11 +619,11 @@ namespace CommandLine
                                 double relativeError = 0;
                                 if (GlobalState.evaluationSet.Configurations.Count > 0)
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
+								    relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                 }
                                 else
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
+								    relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                 }
 
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
