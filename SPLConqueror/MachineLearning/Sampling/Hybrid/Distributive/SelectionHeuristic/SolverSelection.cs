@@ -66,13 +66,13 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             // Create and initialize the weight function
 	     Dictionary<int, Dictionary<List<BinaryOption>, int>> featureWeight = new Dictionary<int, Dictionary<List<BinaryOption>, int>>();
 
-	     if (optimization == Optimization.GLOBAL_OPTIMIZATION) {
+	     if (optimization == Optimization.GLOBAL) {
 	         if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0) {
 			featureWeight.Add(0, InitializeWeightDict (GlobalState.varModel));
 		 } else {
 			featureWeight.Add(0, new Dictionary<List<BinaryOption>, int> ());
 		 }
-	     } else if (optimization == Optimization.LOCAL_OPTIMIZATION) {
+	     } else if (optimization == Optimization.LOCAL) {
 	 	 for (int i = 0; i < allBuckets.Count; i++) {
 		 	if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0) {
 				featureWeight.Add(i, InitializeWeightDict (GlobalState.varModel));
@@ -115,11 +115,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 				if (optimization == Optimization.NONE) {
 					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
 						distanceOfBucket, null, selectedConfigurationsFromBucket [currentBucket]);
-				} else if (optimization == Optimization.GLOBAL_OPTIMIZATION) {
+				} else if (optimization == Optimization.GLOBAL) {
 					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
                         distanceOfBucket, featureWeight[0], selectedConfigurationsFromBucket [currentBucket]);
 
-				} else if (optimization == Optimization.LOCAL_OPTIMIZATION) {
+				} else if (optimization == Optimization.LOCAL) {
 					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
                         distanceOfBucket, featureWeight[currentBucket], selectedConfigurationsFromBucket [currentBucket]);
 				}
@@ -135,9 +135,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 selectedConfigurations.Add (currentSelectedConfiguration);
                 selectedConfigurationsFromBucket[currentBucket] = currentSelectedConfiguration;
-				if (optimization == Optimization.GLOBAL_OPTIMIZATION) {
+				if (optimization == Optimization.GLOBAL) {
 					UpdateWeights (GlobalState.varModel, featureWeight[0], currentSelectedConfiguration);
-				} else if (optimization == Optimization.LOCAL_OPTIMIZATION) {
+				} else if (optimization == Optimization.LOCAL) {
 					UpdateWeights (GlobalState.varModel, featureWeight[currentBucket], currentSelectedConfiguration);
 				}
             }

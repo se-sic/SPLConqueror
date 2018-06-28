@@ -570,8 +570,13 @@ namespace MachineLearning.Solver
                 _z3Cache = new Dictionary<int, Z3Cache>();
             }
 
-            List<KeyValuePair<List<BinaryOption>,int>> featureRanking = featureWeight.ToList();
-            featureRanking.Sort((first, second) => first.Value.CompareTo(second.Value));
+			List<KeyValuePair<List<BinaryOption>, int>> featureRanking;
+			if (featureWeight != null) {
+				featureRanking = featureWeight.ToList ();
+				featureRanking.Sort ((first, second) => first.Value.CompareTo (second.Value));
+			} else {
+				featureRanking = new List<KeyValuePair<List<BinaryOption>, int>> ();
+			}
 
             List<BoolExpr> variables = null;
             Dictionary<BoolExpr, BinaryOption> termToOption = null;

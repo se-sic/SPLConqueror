@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
@@ -15,13 +16,16 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <param name="allBuckets">All buckets.</param>
         /// <param name="mean">The mean for the normal distribution.</param>
         /// <param name="deviation">The standard deviation for the normal distribution.</param>
-        public new Dictionary<double, double> CreateDistribution(List<double> allBuckets, double mean, double deviation)
+		public override Dictionary<double, double> CreateDistribution(List<double> allBuckets, double mean, double deviation)
         {
             Dictionary<double, double> result = base.CreateDistribution(allBuckets, mean, deviation);
 
-            // Now, use the complement
-            foreach (double key in result.Keys) {
-                result[key] = 1 - result[key];
+			// Now, use the complement
+			List<double> keyList = new List<double> (result.Keys);
+			double maxValue = result.Values.Max ();
+			double minValue = result.Values.Min ();
+            foreach (double key in keyList) {
+				result[key] = maxValue - (result[key] - minValue);
             }
 
             result = DistributionUtils.AdjustToOne(result);
@@ -32,9 +36,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <summary>
         /// See <see cref="Distribution.GetName"/>.
         /// </summary>
-        public new string GetName()
+        public override string GetName()
         {
-            return "COMPLEMENTARYNORMAL";
+            return "COMPLEMENTARY-NORMAL";
         }
         
     }

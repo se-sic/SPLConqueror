@@ -19,7 +19,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
 
             double previousResultCache = 0;
             for (int i = 0; i < allBuckets.Count; i++) {
-                double currentResult = 1 - Math.Pow(1 - PROBABILITY, i);
+                double currentResult = 1 - Math.Pow(1 - PROBABILITY, i + 1);
                 result[allBuckets[i]] = currentResult - previousResultCache;
                 previousResultCache = currentResult;
             }
