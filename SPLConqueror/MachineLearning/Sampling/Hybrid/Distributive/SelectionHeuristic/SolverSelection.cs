@@ -101,8 +101,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 // Repeat if there are currently no solutions in the bucket.
                 // This is intended to reduce the work of the solver.
+                // Should not happen anymore!
                 if (noSamples [currentBucket] || !allBuckets.Contains(distanceOfBucket)) {
-                    continue;
+		     throw new InvalidProgramException ("A bucket was selected that already contains no more samples! This shouldn't happen.");
                 }
 
                 if (ConfigurationBuilder.vg is Solver.Z3VariantGenerator)
@@ -128,6 +129,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 if (solution == null)
                 {
                     noSamples [currentBucket] = true;
+                    
+                    // As a consequence, the probability to pick this bucket is set to 0 and the whole
+	 	     // distribution is readjusted so that the sum of all probabilities is equal to 1 (i.e., 100%).
+		     wantedDistribution [wantedDistribution.ElementAt (currentBucket).Key] = 0d;               
+		     wantedDistribution = DistributionUtils.AdjustToOne (wantedDistribution);
                     continue;
                 }
 
