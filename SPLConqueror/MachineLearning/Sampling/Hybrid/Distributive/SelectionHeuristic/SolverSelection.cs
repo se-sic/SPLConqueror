@@ -92,8 +92,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
                 while (randomDouble > currentProbability + wantedDistribution.ElementAt(currentBucket).Value)
                 {
-                    currentBucket++;
                     currentProbability += wantedDistribution.ElementAt(currentBucket).Value;
+		     currentBucket++;
                 }
 
                 // Note: This method works only for binary features and therefore, only integer buckets
