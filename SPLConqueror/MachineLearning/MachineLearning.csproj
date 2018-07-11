@@ -149,7 +149,6 @@
     <Compile Include="Solver\z3\WeightMinimizer.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\BinomialDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\NormalDistribution.cs" />
-    <Compile Include="Sampling\Hybrid\Distributive\Distribution\ComplementaryNormalDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\GeometricDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\DistributionUtils.cs" />
   </ItemGroup>
