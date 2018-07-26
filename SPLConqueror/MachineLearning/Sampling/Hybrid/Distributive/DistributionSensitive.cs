@@ -34,7 +34,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
         public static IDistribution[] distributions = { new UniformDistribution(), new BinomialDistribution(), 
-            new NormalDistribution(), new ComplementaryNormalDistribution(), new GeometricDistribution()};
+            new NormalDistribution(), new GeometricDistribution()};
         #endregion
 
         protected DistanceMetric metric = null;
