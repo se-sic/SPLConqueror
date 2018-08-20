@@ -46,7 +46,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="doc">The XML document to which the node will be added</param>
         /// <returns>The XML node containing the options information</returns>
-        internal XmlNode saveXML(System.Xml.XmlDocument doc)
+        internal override XmlNode saveXML(System.Xml.XmlDocument doc)
         {
             XmlNode node = base.saveXML(doc);
 

@@ -421,7 +421,7 @@
             this.changeStepSizeButton.Name = "changeStepSizeButton";
             this.changeStepSizeButton.Size = new System.Drawing.Size(100, 23);
             this.changeStepSizeButton.TabIndex = 5;
-            this.changeStepSizeButton.Text = "New step size";
+            this.changeStepSizeButton.Text = "Adjust";
             this.changeStepSizeButton.UseVisualStyleBackColor = true;
             this.changeStepSizeButton.Click += new System.EventHandler(this.changeStepSizeButton_Click);
             // 
@@ -432,7 +432,7 @@
             this.changeRangeButton.Name = "changeRangeButton";
             this.changeRangeButton.Size = new System.Drawing.Size(100, 23);
             this.changeRangeButton.TabIndex = 4;
-            this.changeRangeButton.Text = "New range";
+            this.changeRangeButton.Text = "Adjust";
             this.changeRangeButton.UseVisualStyleBackColor = true;
             this.changeRangeButton.Click += new System.EventHandler(this.changeRangeButton_Click);
             // 
@@ -464,7 +464,7 @@
             this.currentStepSizeLabel.Name = "currentStepSizeLabel";
             this.currentStepSizeLabel.Size = new System.Drawing.Size(101, 15);
             this.currentStepSizeLabel.TabIndex = 1;
-            this.currentStepSizeLabel.Text = "Current step size:";
+            this.currentStepSizeLabel.Text = "Current step size/values:";
             // 
             // currentRangeOfValuesLabel
             // 
