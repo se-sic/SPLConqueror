@@ -170,8 +170,14 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Accord.3.4.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.4.0\build\Accord.targets'))" />
   </Target>
-  <PropertyGroup>
-    <PreBuildEvent>xcopy "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <PreBuildEvent>copy "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+    <PreBuildEvent>cp "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'OSX' ">
+    <PreBuildEvent>cp "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
