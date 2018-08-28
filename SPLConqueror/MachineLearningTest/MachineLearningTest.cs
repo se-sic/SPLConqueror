@@ -111,14 +111,13 @@ namespace MachineLearningTest
 
             string averageModel = consoleOutput.ToString()
                 .Split(new string[] { "average model:" }, StringSplitOptions.RemoveEmptyEntries)[2];
-            string[] polynoms = averageModel
+			string[] polynoms = averageModel.Replace("\n", "").Trim()
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
-            Assert.AreEqual(5, polynoms.Length);
+            Assert.AreEqual(3, polynoms.Length);
             Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
             Assert.AreEqual("-12.3111111111108 * CS32MB", polynoms[1].Trim());
-            Assert.AreEqual("507.511111111111 * PS32K", polynoms[2].Trim());
-            Assert.AreEqual("7.80000000000003 * HAVE_STATISTICS", polynoms[3].Trim());
+			Assert.AreEqual("510.111111111112 * PS32K", polynoms[2].Trim());
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
