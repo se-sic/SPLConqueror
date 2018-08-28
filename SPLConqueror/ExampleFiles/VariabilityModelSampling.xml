@@ -185,10 +185,11 @@
   <numericOptions>
     <configurationOption>
       <name>numOpt1</name>
+      <outputString>
+      </outputString>
       <prefix>num1-</prefix>
       <postfix>--</postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <minValue>0</minValue>
@@ -197,12 +198,13 @@
     </configurationOption>
     <configurationOption>
       <name>numOpt2</name>
+      <outputString>
+      </outputString>
       <prefix>
       </prefix>
       <postfix>
       </postfix>
       <parent>root</parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
       <minValue>1</minValue>
@@ -211,4 +213,6 @@
     </configurationOption>
   </numericOptions>
   <booleanConstraints />
+  <nonBooleanConstraints />
+  <mixedConstraints />
 </vm>

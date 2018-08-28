@@ -180,7 +180,7 @@
     <None Include="z3\PlackettSampling39.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="z3\RandomSampling112.csv">
+    <None Include="z3\RandomSampling18.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="z3\TwiseSampling3.csv">

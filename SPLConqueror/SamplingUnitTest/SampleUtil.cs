@@ -18,7 +18,7 @@ namespace SamplingUnitTest
             + Path.DirectorySeparatorChar + "ExampleFiles"
             + Path.DirectorySeparatorChar + "VariabilityModelSampling.xml";
 
-        private static VariabilityModel model = new VariabilityModel("test");
+        private static VariabilityModel model = null;
 
         public static bool containsAllMeasurements(List<Configuration> result, List<Configuration> expected)
         {
@@ -43,6 +43,7 @@ namespace SamplingUnitTest
                   + "Files/VariabilityModelSampling.xml";
             }
 
+			model = new VariabilityModel("test");
             bool wasSuccessful = model.loadXML(modelPath);
             GlobalState.varModel = model;
             return wasSuccessful;
@@ -132,7 +133,7 @@ namespace SamplingUnitTest
 
         public static bool TestPlackettBurman(string solver, int expected, int level, int measurements)
         {
-            string loc = resolvePath("msSolver", "PlackettSampling" + level.ToString() + measurements.ToString() + ".csv");
+            string loc = resolvePath(solver, "PlackettSampling" + level.ToString() + measurements.ToString() + ".csv");
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("level", level.ToString());
             parameters.Add("measurements", measurements.ToString());

@@ -700,7 +700,7 @@ namespace CommandLine
                             ConfigurationPrinter printer = null;
 
                             ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
-                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample, this.hybridToSample);
+							List<Configuration> configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample, this.hybridToSample);
 
                             // Clear the content of the file
                             File.WriteAllText(para[0], string.Empty);
