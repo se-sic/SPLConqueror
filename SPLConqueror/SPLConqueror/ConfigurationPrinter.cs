@@ -61,8 +61,8 @@ namespace SPLConqueror_Core
             this.postfix = postfix;
 
             if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > order.Count)
-                this.order = enrichWithAllOptions (order);
-            else 
+                this.order = enrichWithAllOptions(order);
+            else
                 this.order = order;
 
         }
@@ -92,8 +92,9 @@ namespace SPLConqueror_Core
                 //File.Create(file);
             }
 
-            if (file.EndsWith (CSV_FILE_EXTENSION) && order != null) {
-                return print_csv (configurations);
+            if (file.EndsWith(CSV_FILE_EXTENSION) && order != null)
+            {
+                return print_csv(configurations);
             }
 
             if (order == null)
@@ -104,15 +105,18 @@ namespace SPLConqueror_Core
 
         }
 
-        private bool print_csv(List<Configuration> configurations) {
-            StringBuilder csvContent = new StringBuilder ();
+        private bool print_csv(List<Configuration> configurations)
+        {
+            StringBuilder csvContent = new StringBuilder();
 
-            for (int i = 0; i< this.order.Count; i++) {
+            for (int i = 0; i < this.order.Count; i++)
+            {
                 ConfigurationOption c = this.order[i];
-                if (i != 0) {
-                    csvContent.Append (CSV_ELEMENT_DELIMITER);
+                if (i != 0)
+                {
+                    csvContent.Append(CSV_ELEMENT_DELIMITER);
                 }
-                csvContent.Append (c.Name);
+                csvContent.Append(c.Name);
             }
 
             if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
@@ -121,13 +125,14 @@ namespace SPLConqueror_Core
                 csvContent.Append(GlobalState.currentNFP.Name);
             }
 
-            csvContent.Append (CSV_ROW_DELIMITER);
+            csvContent.Append(CSV_ROW_DELIMITER);
 
-            foreach (Configuration c in configurations) {
-                csvContent.Append (c.toCsv (this.order));
+            foreach (Configuration c in configurations)
+            {
+                csvContent.Append(c.toCsv(this.order));
             }
 
-            File.WriteAllText (file, csvContent.ToString());
+            File.WriteAllText(file, csvContent.ToString());
 
             return true;
         }
@@ -145,7 +150,7 @@ namespace SPLConqueror_Core
 
             }
             File.AppendAllText(file, sb.ToString());
-                        
+
             return true;
 
         }
@@ -158,7 +163,7 @@ namespace SPLConqueror_Core
                 File.AppendAllText(file, prefix + " ");
                 File.AppendAllText(file, "\"" + c.ToString(order) + "\"");
                 File.AppendAllText(file, c.OutputString(order) + " ");
-                File.AppendAllText(file, postfix + " " + System.Environment.NewLine);                
+                File.AppendAllText(file, postfix + " " + System.Environment.NewLine);
             }
             return true;
         }
@@ -174,7 +179,7 @@ namespace SPLConqueror_Core
 
             foreach (NumericOption nOpt in GlobalState.varModel.NumericOptions)
             {
-                if(optionOrder.Contains(nOpt))
+                if (optionOrder.Contains(nOpt))
                     continue;
                 optionOrder.Add(nOpt);
             }

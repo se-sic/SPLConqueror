@@ -59,10 +59,10 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SPLConqueror_Core.InfluenceModel"/> class.
+        /// The constructor of the <see cref="InfluenceModel"/>, which sets the given <see cref="VariabilityModel"/> and the <see cref="NFProperty"/> it should be created for.
         /// </summary>
-        /// <param name="vm">The variability model.</param>
-        /// <param name="nfp">The non-functional property to investigate.</param>
+        /// <param name="vm">The variability model of the subject system.</param>
+        /// <param name="nfp">The non-functional property in investigation.</param>
         public InfluenceModel(VariabilityModel vm, NFProperty nfp)
         {
             this.vm = vm;

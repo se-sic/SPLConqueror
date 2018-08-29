@@ -34,7 +34,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         public override bool computeDesign()
         {
 
-            
+
             Dictionary<NumericOption, List<double>> allValuesOfNumericOptions = new Dictionary<NumericOption, List<double>>();
             foreach (NumericOption vf in this.options)
             {

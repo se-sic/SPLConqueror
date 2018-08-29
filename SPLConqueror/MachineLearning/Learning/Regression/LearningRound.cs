@@ -20,8 +20,10 @@ namespace MachineLearning.Learning.Regression
         }
         public int round = 0;
         public TimeSpan elapsedTime = new TimeSpan(0);
-        public double modelComplexity {
-            get {
+        public double modelComplexity
+        {
+            get
+            {
                 double complexity = 0;
                 foreach (var feature in featureSet)
                 {
@@ -53,7 +55,7 @@ namespace MachineLearning.Learning.Regression
             sb.Append(";");
 
             sb.Append(learningError + ";");
-            sb.Append(learningError_relative+";");
+            sb.Append(learningError_relative + ";");
             sb.Append(validationError + ";");
             sb.Append(validationError_relative + ";");
             sb.Append(elapsedTime.TotalSeconds + ";");
@@ -80,7 +82,7 @@ namespace MachineLearning.Learning.Regression
             learningRound.round = int.Parse(data[0].Trim());
             List<Feature> featureSetFromString = new List<Feature>();
             string[] featureExpressions = data[1].Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach(string featureExpression in featureExpressions)
+            foreach (string featureExpression in featureExpressions)
             {
                 Feature toAdd = new Feature(featureExpression.Split(new char[] { '*' }, 2)[1], vm);
                 toAdd.Constant = double.Parse(featureExpression.Split(new char[] { '*' }, 2)[0].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
@@ -99,7 +101,7 @@ namespace MachineLearning.Learning.Regression
             {
                 learningRound.bestCandidateScore = double.Parse(data[10].Trim(), System.Globalization.CultureInfo.GetCultureInfo("en-us"));
             }
-            catch(OverflowException overF)
+            catch (OverflowException overF)
             {
                 GlobalState.logError.logLine("Error in analysing of the learning round.");
                 GlobalState.logError.logLine(overF.Source + " -> " + overF.Message);
@@ -116,7 +118,7 @@ namespace MachineLearning.Learning.Regression
             this.round = round;
         }
 
-        internal LearningRound() {}
+        internal LearningRound() { }
 
     }
 }

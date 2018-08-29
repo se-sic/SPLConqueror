@@ -19,7 +19,7 @@ namespace SPLConqueror_Core
         /// </summary>
         public IDictionary<NFProperty, double> maxMeasuredValue = new Dictionary<NFProperty, double>();
         private static int splitFactor = 2;
-        
+
         /// <summary>
         /// A list containing the blacklisted features.
         /// </summary>
@@ -32,7 +32,9 @@ namespace SPLConqueror_Core
         public List<Configuration> Configurations
         {
             get { return configurations; }
-            set { configurations = value;
+            set
+            {
+                configurations = value;
                 configsMapping.Clear();
                 updateMapping();
             }
@@ -61,7 +63,7 @@ namespace SPLConqueror_Core
         {
             string currVector = calculateConfigBinVector(config);
             IDictionary<string, List<Configuration>> numMapping = null;
-            
+
             if (!configsMapping.TryGetValue(currVector, out numMapping))
             {
                 numMapping = new Dictionary<string, List<Configuration>>();
@@ -110,7 +112,7 @@ namespace SPLConqueror_Core
                 return new List<Configuration>();
         }
 
-        private string calculateConfigBinVector (Configuration config)
+        private string calculateConfigBinVector(Configuration config)
         {
             string vector = "";
 
@@ -139,13 +141,13 @@ namespace SPLConqueror_Core
             if (splitFactor > 0)
             {
                 foreach (NumericOption opt in GlobalState.varModel.NumericOptions)
-                {             
-                    
+                {
+
                     if (this.blacklisted.Contains(opt.Name.ToLower()))
                     {
                         continue;
                     }
-                           
+
                     List<double> elems = opt.getAllValues();
                     int amountOfElemsInParts = elems.Count >= amountOfParts ? (int)Math.Round((double)elems.Count / amountOfParts, 0) : 1;
                     List<double> currentElems = null;

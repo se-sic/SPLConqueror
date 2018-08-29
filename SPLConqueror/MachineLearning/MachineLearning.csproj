@@ -23,7 +23,7 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProjectGuid>{AEBDC4EA-60AD-4A95-8407-059B07150782}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -74,6 +74,10 @@
       <HintPath>..\packages\Microsoft.Solver.Foundation.3.1.0\lib\Microsoft.Solver.Foundation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Z3, Version=4.5.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=AMD64">
+      <HintPath>..\packages\z3x64win.4.5.0.1\lib\Microsoft.Z3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -85,6 +89,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Numerics" />
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.4.5.1\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Learning\LearningInfo.cs" />
@@ -115,7 +123,7 @@
     <Compile Include="Sampling\Hybrid\Distributive\DistanceMetric\DistanceMetric.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistanceMetric\ManhattanDistance.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionSensitive.cs" />
-    <Compile Include="Sampling\Hybrid\Distributive\Distribution\Distribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\IDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\UniformDistribution.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionAware.cs" />
     <Compile Include="Sampling\Hybrid\Distributive\DistributionPreserving.cs" />
@@ -124,13 +132,25 @@
     <Compile Include="Sampling\Hybrid\Hybrid.cs" />
     <Compile Include="Sampling\SamplingStrategies.cs" />
     <Compile Include="Solver\CheckConfigSAT.cs" />
+    <Compile Include="Solver\ConstraintSystemCache.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />
-    <Compile Include="Solver\IVariantGenerator.cs" />
+    <Compile Include="Solver\VariantGenerator\IVariantGenerator.cs" />
     <Compile Include="Learning\LinearProgramming\SolverLP.cs" />
     <Compile Include="Solver\CSPsolver.cs" />
-    <Compile Include="Solver\VariantGenerator.cs" />
+    <Compile Include="Solver\VariantGenerator\VariantGenerator.cs" />
     <Compile Include="Sampling\ExperimentalDesigns\FactorialDesign.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\SelectionHeuristic\SolverSelection.cs" />
+    <Compile Include="Solver\ISolver.cs" />
+    <Compile Include="Solver\VariantGenerator\VariantGeneratorFactory.cs" />
+    <Compile Include="Solver\z3\Z3Cache.cs" />
+    <Compile Include="Solver\z3\Z3Solver.cs" />
+    <Compile Include="Solver\VariantGenerator\Z3VariantGenerator.cs" />
+    <Compile Include="Solver\z3\WeightMinimizer.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\BinomialDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\NormalDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\GeometricDistribution.cs" />
+    <Compile Include="Sampling\Hybrid\Distributive\Distribution\DistributionUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
@@ -150,6 +170,15 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Accord.3.4.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.4.0\build\Accord.targets'))" />
   </Target>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <PreBuildEvent>copy "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+    <PreBuildEvent>cp "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'OSX' ">
+    <PreBuildEvent>cp "$(SolutionDir)packages\z3x64win.4.5.0.1\libz3.dll" "$(SolutionDir)packages\z3x64win.4.5.0.1\lib\"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

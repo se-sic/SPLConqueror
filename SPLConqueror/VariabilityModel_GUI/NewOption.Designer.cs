@@ -375,7 +375,7 @@
         }
 
         #endregion
-        
+
         private System.Windows.Forms.TextBox outputStringTextBox;
         private System.Windows.Forms.CheckBox optionalCheckBox;
         private System.Windows.Forms.ComboBox parentComboBox;

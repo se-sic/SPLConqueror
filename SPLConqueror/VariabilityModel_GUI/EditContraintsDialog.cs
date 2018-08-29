@@ -218,7 +218,7 @@ namespace VariabilitModel_GUI
                 boolAndButton.Enabled = true;
                 boolOrButton.Enabled = true;
                 boolImplButton.Enabled = offset == 0;
-                
+
                 boolAddOptionButton.Enabled = false;
             }
             else
@@ -552,7 +552,8 @@ namespace VariabilitModel_GUI
 
             if (Double.TryParse(nbConstraintList[nbConstraintList.Count - 1], out d))
             {
-                if (nbConstraintList[nbConstraintList.Count - 1].Length > 1) {
+                if (nbConstraintList[nbConstraintList.Count - 1].Length > 1)
+                {
                     string lastString = nbConstraintList[nbConstraintList.Count - 1];
 
                     nbConstraintList[nbConstraintList.Count - 1] = lastString.Substring(0, lastString.Length - 1);
@@ -712,7 +713,7 @@ namespace VariabilitModel_GUI
                     setSeparatorButtons(!nbConstraintList.Any(x => isSeparator(x)));
                 }
             }
-            
+
             nbAddConstraintButton.Enabled = nbConstraintList.Any(isSeparator)
                 && (nbConstraintList.Count - offset) % 2 == 1
                 && !nbConstraintList[nbConstraintList.Count - 1].EndsWith(".")
@@ -811,7 +812,8 @@ namespace VariabilitModel_GUI
             if (mixedComboBox.SelectedItem != null)
             {
                 mixedConstrTextBox.Text = mixedConstrTextBox.Text + " " + mixedComboBox.SelectedItem.ToString();
-            } else
+            }
+            else
             {
                 MessageBox.Show("No configuration option selected");
             }
@@ -838,7 +840,8 @@ namespace VariabilitModel_GUI
             if (leftAndRight.Length == 1)
             {
                 mixedConstrTextBox.Text = "None:" + leftAndRight[0];
-            } else
+            }
+            else
             {
                 mixedConstrTextBox.Text = "None:" + leftAndRight[1];
             }
@@ -885,7 +888,8 @@ namespace VariabilitModel_GUI
             if (mixedListBox.Items.Count == 0)
             {
                 MessageBox.Show("No item to remove.");
-            } else
+            }
+            else
             {
                 mixedListBox.Items.RemoveAt(mixedListBox.Items.Count - 1);
                 GlobalState.varModel.MixedConstraints.RemoveAt(GlobalState.varModel.MixedConstraints.Count - 1);

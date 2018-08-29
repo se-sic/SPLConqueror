@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;using System.Globalization;
+using System.Text;
+using System.Globalization;
 using SPLConqueror_Core;
 using static MachineLearning.Learning.ML_Settings;
 

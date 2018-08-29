@@ -55,7 +55,8 @@ namespace SPLConqueror_Core
                         ostrm.Flush();
                         writer = new StreamWriter(ostrm);
                         writer.AutoFlush = true;
-                    } else
+                    }
+                    else
                     {
                         ostrm = new FileStream(outputLocation.Trim(), FileMode.Append, FileAccess.Write);
                         writer = new StreamWriter(ostrm);
@@ -116,7 +117,8 @@ namespace SPLConqueror_Core
             if (outputLocation == null)
             {
                 return "null";
-            } else
+            }
+            else
             {
                 return outputLocation;
             }

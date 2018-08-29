@@ -24,7 +24,8 @@ namespace PythonTest
             {
                 model = pathCI + "BerkeleyDBFeatureModel.xml";
                 measurements = pathCI + "BerkeleyDBMeasurements.xml";
-            } else
+            }
+            else
             {
                 model = pathVS + "BerkeleyDBFeatureModel.xml";
                 measurements = pathVS + "BerkeleyDBMeasurements.xml";
@@ -35,7 +36,7 @@ namespace PythonTest
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + model);
             cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurements);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
-            cmd.performOneCommand(Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true"); 
+            cmd.performOneCommand(Commands.COMMAND_SELECT_ALL_MEASUREMENTS + " true");
             return cmd;
         }
 
@@ -43,7 +44,7 @@ namespace PythonTest
         {
             int numberPredictions = -1;
             StreamReader sr = new StreamReader(Path.GetTempPath() + "PreVal_SVR_BerkeleyDbC__.csv");
-            while(sr.ReadLine() != "" && !sr.EndOfStream)
+            while (sr.ReadLine() != "" && !sr.EndOfStream)
             {
                 numberPredictions += 1;
             }

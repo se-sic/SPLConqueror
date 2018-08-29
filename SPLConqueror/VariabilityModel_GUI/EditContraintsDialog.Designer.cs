@@ -1051,8 +1051,8 @@
         private System.Windows.Forms.ListBox mixedListBox;
         private System.Windows.Forms.ComboBox mixedComboBox;
         private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button zeroBtnMixed;
-		private System.Windows.Forms.TextBox mixedConstrTextBox;        private System.Windows.Forms.Button mixed3Btn;
+        private System.Windows.Forms.Button zeroBtnMixed;
+        private System.Windows.Forms.TextBox mixedConstrTextBox; private System.Windows.Forms.Button mixed3Btn;
         private System.Windows.Forms.Button mixed2Btn;
         private System.Windows.Forms.Button mixed1Btn;
         private System.Windows.Forms.Button mixed9Btn;

@@ -40,18 +40,20 @@ namespace MicrosoftSolverFoundation
                 if (o is BinaryOption)
                 {
                     temp = S.CreateVariable(binDomain, o);
-                } else
+                }
+                else
                 {
                     NumericOption numOpt = (NumericOption)o;
                     temp = S.CreateVariable(S.CreateIntegerInterval((int)numOpt.Min_value, (int)numOpt.Max_value), o);
                 }
-                
+
                 optionToTerm.Add(o, temp);
                 termToOption.Add(temp, o);
                 if (o is NumericOption)
                 {
                     variables.Add(temp, false);
-                } else
+                }
+                else
                 {
                     variables.Add(temp, true);
                 }
@@ -226,7 +228,7 @@ namespace MicrosoftSolverFoundation
             }*/
 
             ConstraintSystem S = ConstraintSystem.CreateSolver();
-            
+
             optionToTerm = new Dictionary<BinaryOption, CspTerm>();
             termToOption = new Dictionary<CspTerm, BinaryOption>();
             variables = new List<CspTerm>();
@@ -272,7 +274,7 @@ namespace MicrosoftSolverFoundation
                             foreach (var alternative in alternativeGroup)
                                 if (current == alternative)
                                     goto handledAlternative;
-                        
+
                         //It is not allowed that an alternative group has no parent element
                         CspTerm parent = null;
                         if (current.Parent == null)
@@ -291,13 +293,15 @@ namespace MicrosoftSolverFoundation
                         }
                         S.AddConstraints(S.Implies(parent, S.ExactlyMofN(1, terms)));
                         alreadyHandledAlternativeOptions.Add(alternativeOptions);
-                        handledAlternative: { }
+                    handledAlternative: { }
                     }
-                
+
                     //Excluded option(s) as cross-tree constraint(s)
                     List<List<ConfigurationOption>> nonAlternative = current.getNonAlternativeExlcudedOptions();
-                    if(nonAlternative.Count > 0) {
-                        foreach(var excludedOption in nonAlternative){
+                    if (nonAlternative.Count > 0)
+                    {
+                        foreach (var excludedOption in nonAlternative)
+                        {
                             CspTerm[] orTerm = new CspTerm[excludedOption.Count];
                             int i = 0;
                             foreach (var opt in excludedOption)
@@ -369,6 +373,11 @@ namespace MicrosoftSolverFoundation
             vm_global = vm;
             termToOption_global = termToOption;
             variables_global = variables;
+
+            // The following two lines are needed because it resets the initial variable allocation
+            S.Solve();
+            S.ResetSolver();
+
             return S;
         }
     }

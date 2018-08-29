@@ -27,7 +27,7 @@ namespace SamplingUnitTest
             cmd.performOneCommand(Commands.COMMAND_EXPERIMENTALDESIGN + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN
                 + " " + Commands.COMMAND_VALIDATION);
             cmd.performOneCommand(Commands.COMMAND_CLEAR_SAMPLING);
-            assertNoSamplingStrategies(cmd); 
+            assertNoSamplingStrategies(cmd);
         }
 
         private void assertNoSamplingStrategies(Commands cmd)

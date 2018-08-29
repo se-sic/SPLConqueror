@@ -31,7 +31,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             this.precision = precision;
         }
 
-        public HyperSampling(String s) : base (s)
+        public HyperSampling(String s) : base(s)
         {
             if (this.designParameter.ContainsKey("precision"))
                 this.precision = Int32.Parse(this.designParameter["precision"]);
@@ -97,7 +97,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         protected long runningIndex = 0;
         protected List<long> takenConfigs = new List<long>();
-        
+
         protected void Recurse<TList>(double[] selected, int index, IEnumerable<TList> remaining) where TList : IEnumerable<double>
         {
             if (this.selectedConfigurations.Count > 1000)
@@ -105,7 +105,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 GlobalState.logInfo.logLine("Found more than 1000 numeric configurations. Use only 1000.");
                 return;
             }
-                
+
             IEnumerable<double> nextList = remaining.FirstOrDefault();
             if (nextList == null)
             {
@@ -142,7 +142,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             double number = vf.getNumberOfSteps() * percentage;
             if (number < this.minNumberOfSamplingsPerNumericOption)
                 return this.minNumberOfSamplingsPerNumericOption;
-            
+
             return Convert.ToInt32(number);
         }
 

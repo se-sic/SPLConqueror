@@ -8,11 +8,13 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
     public class RandomSelection : ISelectionHeuristic
     {
         private int seed = 0;
+        private Dictionary<double, List<Configuration>> wholeDistribution;
 
         /// <summary>
         /// Create RandomSelection object.
         /// </summary>
-        public RandomSelection() {
+        public RandomSelection()
+        {
         }
 
         /// <summary>
@@ -25,15 +27,30 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         }
 
         /// <summary>
+        /// Sets the whole distribution, which is needed for this kind of selection.
+        /// </summary>
+        /// <param name="wholeDistribution">The distribution of the whole population.</param>
+        public void setDistribution(Dictionary<double, List<Configuration>> wholeDistribution)
+        {
+            this.wholeDistribution = wholeDistribution;
+        }
+
+        /// <summary>
         /// Selects configurations of the given distribution by using the specified distribution (e.g., uniform) using a random selection mechanism.
         /// </summary>
-        /// <param name="wholeDistribution">the distribution of all configurations</param>
+        /// <param name="wantedDistribution">the wanted distribution for the samples</param>
         /// <param name="allBuckets">all buckets of the distribution</param>
         /// <param name="count">the number of configurations to sample</param>
+        /// <param name="optimization">The optimization to use. Currently, this option is ignored in this class.</param>
         /// <returns>The configurations that were selected.</returns>
-        public List<Configuration> SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, 
-            Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count)
+        public List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count, Optimization optimization)
         {
+            if (wholeDistribution == null)
+            {
+                GlobalState.logError.logLine("The distribution of the random selection is unset! Sampling can not be performed.");
+                return null;
+            }
+
             Random rand = new Random(seed);
             List<Configuration> selectedConfigurations = new List<Configuration>();
 
@@ -70,7 +87,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             }
             return selectedConfigurations;
         }
-        
+
         private bool HasSamples(Dictionary<double, List<Configuration>> wholeDistribution)
         {
             foreach (double d in wholeDistribution.Keys)

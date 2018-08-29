@@ -75,7 +75,7 @@ namespace SPLConqueror_Core
         /// <summary>
         /// All properties of the current case study. 
         /// </summary>
-        public static Dictionary<string, NFProperty> nfProperties = new Dictionary<string,NFProperty>();
+        public static Dictionary<string, NFProperty> nfProperties = new Dictionary<string, NFProperty>();
 
         private static Dictionary<Configuration, Configuration> substitutedConfigs = new Dictionary<Configuration, Configuration>();
 
@@ -84,7 +84,7 @@ namespace SPLConqueror_Core
         /// </summary>
         public static List<ConfigurationOption> optionOrder = new List<ConfigurationOption>();
 
-        private GlobalState(){ }
+        private GlobalState() { }
 
         /// <summary>
         /// Clears the global state. This mehtod should be used after performing all experiments of one case study. 
@@ -107,9 +107,10 @@ namespace SPLConqueror_Core
         /// <returns>A non functional property with the specified name.</returns>
         public static NFProperty getOrCreateProperty(string name)
         {
-            if(nfProperties.Keys.Contains(name))
+            if (nfProperties.Keys.Contains(name))
                 return nfProperties[name];
-            else{
+            else
+            {
                 NFProperty newProp = new NFProperty(name);
                 nfProperties.Add(name, newProp);
                 return newProp;
@@ -161,13 +162,13 @@ namespace SPLConqueror_Core
                     continue;
                 }
                 var customCulture = Thread.CurrentThread.CurrentCulture;
-                Task<Tuple<Configuration, Configuration>> task = Task.Factory.StartNew( (Object con) =>
-                {
-                    Configuration conf = (Configuration)con;
+                Task<Tuple<Configuration, Configuration>> task = Task.Factory.StartNew((Object con) =>
+               {
+                   Configuration conf = (Configuration)con;
 
-                    Thread.CurrentThread.CurrentCulture = customCulture;
-                    return getSimilarConfig(conf);
-                }, c ) ;
+                   Thread.CurrentThread.CurrentCulture = customCulture;
+                   return getSimilarConfig(conf);
+               }, c);
 
                 //var taskA = Task<Tuple<Configuration, Configuration>>.Factory.StartNew(() => getSimilarConfig(config)); // TDOD
                 taskList.Add(task);
@@ -187,7 +188,7 @@ namespace SPLConqueror_Core
 
                 taskList.Remove(task);
 
-               
+
 
                 if (result.Item2 != null && !substitutedConfigs.ContainsKey(result.Item1))
                 {
@@ -237,7 +238,8 @@ namespace SPLConqueror_Core
         }
 
         private static Configuration findSimilarConfigNumeric(Configuration config, List<Configuration> similarOnes)
-        {            int minDistance = Int32.MaxValue;
+        {
+            int minDistance = Int32.MaxValue;
             Configuration best = null;
             foreach (var conf in similarOnes)
             {
@@ -250,7 +252,7 @@ namespace SPLConqueror_Core
                         continue;
                     }
                     if (config.NumericOptions[numOpt] == conf.NumericOptions[numOpt])
-                        continue;            
+                        continue;
                     double valDist = Math.Abs(config.NumericOptions[numOpt] - conf.NumericOptions[numOpt]);
                     distance += numOpt.getStepFast(valDist + numOpt.Min_value);
                     if (distance > minDistance)
@@ -279,24 +281,70 @@ namespace SPLConqueror_Core
                     break;
             }
 
-            return Tuple.Create<Configuration, int>(conf ,distance);
+            return Tuple.Create<Configuration, int>(conf, distance);
         }
 
-        private static Configuration findSimilarConfigBinary (Configuration config, Configuration configInGS, int nbCount)
+        private static Configuration findSimilarConfigBinary(Configuration config, Configuration configInGS, int nbCount)
         {
             int nbCount2 = configInGS.BinaryOptions.Count;
-            if (configInGS.BinaryOptions.Keys.Contains (varModel.Root))
+            if (configInGS.BinaryOptions.Keys.Contains(varModel.Root))
                 nbCount2--;
             if (nbCount != nbCount2)
                 return null;
-            foreach (var binOpt in config.BinaryOptions.Keys) {
+            foreach (var binOpt in config.BinaryOptions.Keys)
+            {
                 if (binOpt == varModel.Root)
                     continue;
-                if (!configInGS.BinaryOptions.Keys.Contains (binOpt)) {
+                if (!configInGS.BinaryOptions.Keys.Contains(binOpt))
+                {
                     return null;
                 }
             }
             return configInGS;
+        }
+
+        /// <summary>
+        /// Returns a list of <see cref="Configuration"/>s containing the given binary features and the numeric features with exactly the same values.
+        /// </summary>
+        /// <param name="list">A list of one or more binary option lists, that have to be included.</param>
+        /// <param name="numericSelections">A list of the numeric values of the numeric options.</param>
+        /// <returns>A list of <see cref="Configuration"/> that matches to at one of the binary and numeric option selections.</returns>
+        public static List<Configuration> getAvailableBinary(List<List<BinaryOption>> list, List<Dictionary<NumericOption, double>> numericSelections)
+        {
+            HashSet<Configuration> result = new HashSet<Configuration>();
+            foreach (var binConf in list)
+            {
+                foreach (var availConf in allMeasurements.Configurations)
+                {
+                    if (availConf.nfpValues.Keys.Contains(currentNFP) == false)
+                        continue;
+                    if (availConf.BinaryOptions.Count + 1 == binConf.Count)
+                    {
+                        bool found = true;
+                        foreach (var opt in binConf)
+                        {
+                            if (opt == varModel.Root)
+                                continue;
+                            if (availConf.BinaryOptions.Keys.Contains(opt) == false)
+                            {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found)
+                        {
+                            foreach (var numCOnf in numericSelections)
+                            {
+                                if (Configuration.equalNumericalSelection(numCOnf, availConf.NumericOptions))
+                                    result.Add(availConf);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            return result.ToList();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         public enum Seed { seed9_3, seed27_3, seed81_3, seed25_5, seed125_5, seed49_7 };
 
-        public PlackettBurmanDesign(int measurements = 9, int level = 3) 
+        public PlackettBurmanDesign(int measurements = 9, int level = 3)
         {
             this.measurements = measurements;
             this.level = level;
@@ -222,7 +222,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                 {
                     values.Add(Tuple.Create(vf, i), valuesOfAFeature[i]);
                 }
-                
+
             }
             //-----------------------------
 

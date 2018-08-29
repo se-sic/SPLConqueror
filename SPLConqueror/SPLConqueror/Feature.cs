@@ -10,7 +10,7 @@ namespace SPLConqueror_Core
     /// A feature is part of a performance-influence model. Features consist of a set of partitcipating configuration options and a constant
     /// describing the influence of the participating options on the non-functial property that is considered.
     /// </summary>
-    public class Feature : InfluenceFunction , IEquatable<Feature>, IComparer<Feature>
+    public class Feature : InfluenceFunction, IEquatable<Feature>, IComparer<Feature>
     {
         private double constant = 1.0;
         private String name = "";
@@ -51,7 +51,7 @@ namespace SPLConqueror_Core
         /// <returns>True if both features represents the same configuration option combination, false otherwise.</returns>
         public override bool Equals(object obj)
         {
-            Feature other = (Feature) obj;
+            Feature other = (Feature)obj;
 
             string[] thisFuntion = this.wellFormedExpression.Split('*');
             string[] otherFunction = other.wellFormedExpression.Split('*');
@@ -116,7 +116,8 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="expression">The string represenation of the feature.</param>
         /// <param name="vm">The variability model the expression is defined for.</param>
-        public Feature(String expression, VariabilityModel vm) : base(expression, vm) {
+        public Feature(String expression, VariabilityModel vm) : base(expression, vm)
+        {
             hashCode = initHashCode();
         }
 
@@ -136,7 +137,7 @@ namespace SPLConqueror_Core
             Array.Sort<string>(thisFunction);
             var sb = new StringBuilder();
             string separator = "";
-            foreach(string element in thisFunction)
+            foreach (string element in thisFunction)
             {
                 sb.Append(separator).Append(element);
                 separator = "#";
@@ -166,7 +167,7 @@ namespace SPLConqueror_Core
             return this.name.GetHashCode();
         }
 
-        
+
         /// <summary>
         /// The string reprensentaion of the feature consisting of the participating configuration options and the coefficient describing the influence
         /// of the feature.
@@ -186,7 +187,7 @@ namespace SPLConqueror_Core
             if (participatingBoolOptions.Count > 0)
                 return false;
 
-            foreach(NumericOption num in participatingNumOptions)
+            foreach (NumericOption num in participatingNumOptions)
             {
                 if (num.getAllValues().Contains(0.0))
                     return false;

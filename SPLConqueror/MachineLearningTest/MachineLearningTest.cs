@@ -111,11 +111,13 @@ namespace MachineLearningTest
 
             string averageModel = consoleOutput.ToString()
                 .Split(new string[] { "average model:" }, StringSplitOptions.RemoveEmptyEntries)[2];
-            string[] polynoms = averageModel
+            string[] polynoms = averageModel.Replace("\n", "").Trim()
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
-
-            Assert.AreEqual(5, polynoms.Length);
+            Assert.AreEqual(3, polynoms.Length);
+            Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
+            Assert.AreEqual("-12.3111111111108 * CS32MB", polynoms[1].Trim());
+            Assert.AreEqual("510.111111111112 * PS32K", polynoms[2].Trim());
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
@@ -142,10 +144,13 @@ namespace MachineLearningTest
         [Test, Order(4)]
         public void testCleanGlobal()
         {
-            Assert.DoesNotThrow(() => { Commands cmd = new Commands();
-            performSimpleUseCase(cmd);
-            cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
-            performSimpleUseCase(cmd); });
+            Assert.DoesNotThrow(() =>
+            {
+                Commands cmd = new Commands();
+                performSimpleUseCase(cmd);
+                cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
+                performSimpleUseCase(cmd);
+            });
         }
 
         private void performSimpleUseCase(Commands cmd)
@@ -173,8 +178,8 @@ namespace MachineLearningTest
             isExpected &= variables.Count == 2;
             isExpected &= variables[0].Equals("PAGESIZE");
             isExpected &= variables[1].Equals("CS16MB");
-            isExpected &= Math.Round(coefficients[0], 2) == 1657.71;
-            isExpected &= Math.Round(coefficients[1], 2) == -36.11;
+            isExpected &= Math.Round(coefficients[0], 2) == 1955.51;
+            isExpected &= Math.Round(coefficients[1], 2) == 125.69;
             return isExpected;
         }
 

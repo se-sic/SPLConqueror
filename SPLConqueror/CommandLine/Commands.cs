@@ -93,6 +93,7 @@ namespace CommandLine
         public const string COMMAND_VARIABILITYMODEL = "vm";
         public const string COMMAND_SET_NFP = "nfp";
         public const string COMMAND_SET_MLSETTING = "mlsettings";
+        public const string COMMAND_SET_SOLVER = "solver";
 
         #region splconqueror learn with sampling
         public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
@@ -142,7 +143,7 @@ namespace CommandLine
 
         public List<SamplingStrategies> BinaryToSampleValidation
         {
-            get { return binaryToSampleValidation;  }
+            get { return binaryToSampleValidation; }
         }
 
         List<HybridStrategy> hybridToSample = new List<HybridStrategy>();
@@ -234,16 +235,19 @@ namespace CommandLine
                     if (task == null)
                     {
                         GlobalState.logInfo.logLine("The command needs either true or false as argument");
-                    } else if (task.Trim().ToLower().Equals("true"))
-                        {
+                    }
+                    else if (task.Trim().ToLower().Equals("true"))
+                    {
                         this.allMeasurementsSelected = true;
-                    } else if (task.Trim().ToLower().Equals("false"))
-                            {
+                    }
+                    else if (task.Trim().ToLower().Equals("false"))
+                    {
                         this.allMeasurementsSelected = false;
-                    } else
-                        {
+                    }
+                    else
+                    {
                         GlobalState.logInfo.logLine("Invalid argument. Only true or false are allowed");
-                        }
+                    }
                     break;
 
                 case RESUME_FROM_DUMP:
@@ -418,20 +422,21 @@ namespace CommandLine
                     break;
                 case COMMAND_CLEAR_GLOBAL:
                     cleanGlobal();
-                    
                     break;
                 case COMMAND_CLEAR_SAMPLING:
                     cleanSampling();
                     break;
                 case COMMAND_CLEAR_LEARNING:
-                    cleanLearning();               
+                    cleanLearning();
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
 
-                    try {
+                    try
+                    {
                         GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel);
-                    } catch (ArgumentNullException)
+                    }
+                    catch (ArgumentNullException)
                     {
                         throw new ArgumentException("There was a problem when reading your configuration file." +
                             " Please check the error log for further inforamtion about the cause of the error." +
@@ -444,7 +449,7 @@ namespace CommandLine
                     invalid = invalid.Union(GlobalState.allMeasurements.Configurations
                         .Where(conf => !constraintSystem.checkConfigurationSAT(conf.BinaryOptions.ToList()
                         .Where(kv => kv.Value == BinaryOption.BinaryValue.Selected).ToList()
-                        .Select(kv => kv.Key).ToList(),GlobalState.varModel, false))).ToList();
+                        .Select(kv => kv.Key).ToList(), GlobalState.varModel, false))).ToList();
                     invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
 
                     GlobalState.measurementSource = task.TrimEnd();
@@ -509,7 +514,20 @@ namespace CommandLine
                     writer.Close();
                     ostrm.Close();
                     break;
-
+                case COMMAND_SET_SOLVER:
+                    // Select the solver
+                    string solverToSet = task.Trim();
+                    IVariantGenerator selectedVariantGenerator = VariantGeneratorFactory.GetVariantGenerator(solverToSet);
+                    if (selectedVariantGenerator == null)
+                    {
+                        throw new ArgumentException("The solver '" + solverToSet + "' was not found. Please specify one of the following: "
+                            + VariantGeneratorFactory.GetSolver());
+                    }
+                    else
+                    {
+                        ConfigurationBuilder.vg = selectedVariantGenerator;
+                    }
+                    break;
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC:
                     {
                         printPredictedConfigurations(task, this.exp);
@@ -560,10 +578,10 @@ namespace CommandLine
                     {
                         GlobalState.logInfo.logLine("Round, Model, LearningError, LearningErrorRel, ValidationError, ValidationErrorRel, ElapsedSeconds, ModelComplexity, BestCandidate, BestCandidateSize, BestCandidateScore, TestError");
                         GlobalState.logInfo.logLine("Models:");
-                       
+
                         if (this.mlSettings.bagging)
                         {
-                       
+
                             for (int i = 0; i < this.exp.models.Count; i++)
                             {
                                 FeatureSubsetSelection learnedModel = exp.models[i];
@@ -578,12 +596,12 @@ namespace CommandLine
                                     double relativeError = 0;
                                     if (GlobalState.evaluationSet.Configurations.Count > 0)
                                     {
-                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
+                                        // last parameter -- here, we remove the epsilon-tube around the performance-influence model to be able to compute the real error of the predictions
                                         relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                     }
                                     else
                                     {
-                                        // last parameter -- here, we remove the epsion-tube around the performance-influence model to be able to compute the real error of the predictions
+                                        // last parameter -- here, we remove the epsilon-tube around the performance-influence model to be able to compute the real error of the predictions
                                         relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                     }
 
@@ -598,7 +616,7 @@ namespace CommandLine
                                 GlobalState.logError.logLine("Error... learning was not performed!");
                                 break;
                             }
-                            
+
                             FeatureSubsetSelection learnedModel = exp.models[0];
 
                             GlobalState.logInfo.logLine("Termination reason: " + learnedModel.LearningHistory.Last().terminationReason);
@@ -607,11 +625,11 @@ namespace CommandLine
                                 double relativeError = 0;
                                 if (GlobalState.evaluationSet.Configurations.Count > 0)
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
+                                    relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.evaluationSet.Configurations, false);
                                 }
                                 else
                                 {
-                                    double relativeErro2r = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
+                                    relativeError = learnedModel.computeError(lr.FeatureSet, GlobalState.allMeasurements.Configurations, false);
                                 }
 
                                 GlobalState.logInfo.logLine(lr.ToString() + relativeError);
@@ -688,7 +706,7 @@ namespace CommandLine
                             ConfigurationPrinter printer = null;
 
                             ConfigurationBuilder.setBlacklisted(this.mlSettings.blacklisted);
-                            var configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample, this.hybridToSample);
+                            List<Configuration> configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, this.binaryToSample, this.numericToSample, this.hybridToSample);
 
                             // Clear the content of the file
                             File.WriteAllText(para[0], string.Empty);
@@ -725,15 +743,21 @@ namespace CommandLine
                 case DEFINE_PYTHON_PATH:
                     {
                         // Append a slash if it is not included
-                        if (!taskAsParameter [0].EndsWith ("/") && !taskAsParameter [0].EndsWith ("\\")) {
-                            PythonWrapper.PYTHON_PATH = taskAsParameter [0] + "/";
-                        } else {
-                            PythonWrapper.PYTHON_PATH = taskAsParameter [0];
+                        if (!taskAsParameter[0].EndsWith("/") && !taskAsParameter[0].EndsWith("\\"))
+                        {
+                            PythonWrapper.PYTHON_PATH = taskAsParameter[0] + "/";
                         }
-                            // Here, a differentiation of the operating system is required
-                        if (Environment.OSVersion.Platform == PlatformID.Win32Windows) {
+                        else
+                        {
+                            PythonWrapper.PYTHON_PATH = taskAsParameter[0];
+                        }
+                        // Here, a differentiation of the operating system is required
+                        if (Environment.OSVersion.Platform == PlatformID.Win32Windows)
+                        {
                             PythonWrapper.PYTHON_PATH += "python.exe";
-                        } else {
+                        }
+                        else
+                        {
                             PythonWrapper.PYTHON_PATH += "python";
                         }
                         break;
@@ -750,7 +774,7 @@ namespace CommandLine
                             configurationsLearning = GlobalState.allMeasurements.Configurations;
                             configurationsValidation = configurationsLearning;
                         }
-                        else if (!configurationsPreparedForLearning(learnAndValidation, 
+                        else if (!configurationsPreparedForLearning(learnAndValidation,
                             out configurationsLearning, out configurationsValidation))
                             break;
 
@@ -782,8 +806,9 @@ namespace CommandLine
                         {
                             configurationsLearning = GlobalState.allMeasurements.Configurations;
                             configurationsValidation = configurationsLearning;
-                        } else if (!configurationsPreparedForLearning(learnAndValidation,
-                            out configurationsLearning, out configurationsValidation))
+                        }
+                        else if (!configurationsPreparedForLearning(learnAndValidation,
+                          out configurationsLearning, out configurationsValidation))
                             break;
 
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
@@ -801,10 +826,11 @@ namespace CommandLine
                 case COMMAND_START_LEARNING_SPL_CONQUEROR:
                     if (allMeasurementsSelected)
                     {
-                            learnWithAllMeasurements();
-                    } else
+                        learnWithAllMeasurements();
+                    }
+                    else
                     {
-                            learnWithSampling();
+                        learnWithSampling();
                     }
                     break;
 
@@ -820,8 +846,8 @@ namespace CommandLine
 
                         List<ML_Settings> parameterSettings = new List<ML_Settings>();
 
-                        string[] cleanedParameters = taskAsParameter.Where(x => !x.ToLowerInvariant().Contains("seed") 
-                            && !x.ToLowerInvariant().Contains("samples") 
+                        string[] cleanedParameters = taskAsParameter.Where(x => !x.ToLowerInvariant().Contains("seed")
+                            && !x.ToLowerInvariant().Contains("samples")
                             && !x.ToLowerInvariant().Contains("randomized")).ToArray();
 
                         parameterSettings = ML_SettingsGenerator.generateSettings(cleanedParameters);
@@ -861,7 +887,7 @@ namespace CommandLine
 
                         }
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
-                        GlobalState.logInfo.logLine("Optimal parameters " 
+                        GlobalState.logInfo.logLine("Optimal parameters "
                             + formatOptimalParameters(optimalParameters.ToString(), cleanedParameters));
                         Learning experiment = new MachineLearning.Learning.Regression
                             .Learning(configurationsLearning, configurationsValidation);
@@ -870,7 +896,7 @@ namespace CommandLine
                         StringBuilder taskAsString = new StringBuilder();
                         taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
 
-                        string samplingIdentifier = "PreVal_SPLCon_"+GlobalState.varModel.Name+"_"+createSmallerSamplingIdentifier()+".csv";
+                        string samplingIdentifier = "PreVal_SPLCon_" + GlobalState.varModel.Name + "_" + createSmallerSamplingIdentifier() + ".csv";
 
                         printPredictedConfigurations(samplingIdentifier, experiment);
 
@@ -897,7 +923,7 @@ namespace CommandLine
             string[] parameters = optimalParameters.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string param in consideredParameters)
             {
-                foreach(string opt in parameters)
+                foreach (string opt in parameters)
                 {
                     if (opt.StartsWith(param.Split(new char[] { '=' })[0]))
                         sb.Append(opt + ";");
@@ -907,8 +933,8 @@ namespace CommandLine
         }
 
         #region execution of deprecated commands
-        [System.Obsolete("Warning: You are using deprecated commands. These commands might" + 
-            " be removed in the future. Please update your scripts or use the converter.",false)]
+        [System.Obsolete("Warning: You are using deprecated commands. These commands might" +
+            " be removed in the future. Please update your scripts or use the converter.", false)]
         public string performOneCommand_Depr(string line)
         {
             string command;
@@ -923,7 +949,7 @@ namespace CommandLine
                 task = components[1];
             string[] taskAsParameter = task.Split(new Char[] { ' ' });
             command = components[0];
-            switch(command.ToLower())
+            switch (command.ToLower())
             {
                 case COMMAND_LOAD_MLSETTINGS:
                     this.mlSettings = ML_Settings.readSettingsFromFile(task);
@@ -982,8 +1008,8 @@ namespace CommandLine
                     }
 
                 case COMMAND_PREDICT_ALL_CONFIGURATIONS:
-                        printPredictedConfigurations(task, this.exp);
-                        break;
+                    printPredictedConfigurations(task, this.exp);
+                    break;
 
                 case COMMAND_SAMPLE_ALLBINARY:
                     addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLB",
@@ -991,7 +1017,7 @@ namespace CommandLine
                     break;
 
                 case COMMAND_START_ALLMEASUREMENTS:
-                        learnWithAllMeasurements();
+                    learnWithAllMeasurements();
                     break;
 
                 case COMMAND_START_LEARNING:
@@ -1105,7 +1131,8 @@ namespace CommandLine
                     if (arg.Contains(":"))
                     {
                         return arg.Split(new char[] { ':' }, 2)[1];
-                    } else
+                    }
+                    else
                     {
                         GlobalState.logError.logLine("Arguement " + name + " has no value.");
                     }
@@ -1247,15 +1274,15 @@ namespace CommandLine
                 printer.print(GlobalState.allMeasurements.Configurations);
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
-                PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() + 
+                PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() +
                     Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                 GlobalState.logInfo.logLine("Starting Prediction");
-                
+
                 if (isParamTuning)
                 {
-                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile, 
+                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
                         PythonWrapper.START_PARAM_TUNING, GlobalState.varModel);
-                    string path = targetPath.Substring(0, (targetPath.Length 
+                    string path = targetPath.Substring(0, (targetPath.Length
                         - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
                     pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
                     GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
@@ -1267,11 +1294,12 @@ namespace CommandLine
                         StringSplitOptions.RemoveEmptyEntries).ToList();
                     optimalParameters.Insert(0, taskAsParameter[0]);
                     handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());
-                } else
+                }
+                else
                 {
-                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile, 
+                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
                         PythonWrapper.START_LEARN, GlobalState.varModel);
-                    PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter, 
+                    PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
                         GlobalState.varModel.Name + "_" + samplingIdentifier);
                     pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
                     GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
@@ -1405,7 +1433,7 @@ namespace CommandLine
                     parameter.Add(nameAndValue[0], "");
             }
 
-            
+
             return "";
 
         }
@@ -1465,10 +1493,12 @@ namespace CommandLine
             switch (designName.ToLower())
             {
                 case COMMAND_HYBRID_DISTRIBUTION_AWARE:
+                    parameter.Remove(designName);
                     hybridDesign = new DistributionAware();
                     hybridDesign.SetSamplingDomain(optionsToConsider);
                     break;
                 case COMMAND_HYBRID_DISTRIBUTION_PRESERVING:
+                    parameter.Remove(designName);
                     hybridDesign = new DistributionPreserving();
                     hybridDesign.SetSamplingDomain(optionsToConsider);
                     break;
@@ -1481,7 +1511,7 @@ namespace CommandLine
             return "";
         }
 
-        private void getParametersAndSamplingDomain(string taskLine, out Dictionary<string, string> parameters, 
+        private void getParametersAndSamplingDomain(string taskLine, out Dictionary<string, string> parameters,
             out List<ConfigurationOption> samplingDomain)
         {
             parameters = new Dictionary<string, string>();
@@ -1638,7 +1668,7 @@ namespace CommandLine
             }
         }
 
-        private void addBinSamplingParams(SamplingStrategies strategy, string name, 
+        private void addBinSamplingParams(SamplingStrategies strategy, string name,
             Dictionary<string, string> parameter, bool isValidation)
         {
             addBinSamplingNoParams(strategy, name, isValidation);
@@ -1666,7 +1696,8 @@ namespace CommandLine
             if (isValidation)
             {
                 this.exp.info.binarySamplings_Validation += parameterIdentifier;
-            } else
+            }
+            else
             {
                 this.exp.info.binarySamplings_Learning += parameterIdentifier;
             }
@@ -1684,7 +1715,7 @@ namespace CommandLine
         {
             // splits the task in design and parameters of the design
             string[] designAndParams = task.Split(new Char[] { ' ' }, 2);
-            string designName = designAndParams[0];;
+            string designName = designAndParams[0]; ;
 
 
 
@@ -1703,17 +1734,17 @@ namespace CommandLine
             switch (designName.ToLower())
             {
                 case COMMAND_EXPDESIGN_BOXBEHNKEN:
-                    expDesign = new BoxBehnkenDesign ();
+                    expDesign = new BoxBehnkenDesign();
                     break;
                 case COMMAND_EXPDESIGN_CENTRALCOMPOSITE:
-                    expDesign = new CentralCompositeInscribedDesign ();
+                    expDesign = new CentralCompositeInscribedDesign();
                     break;
                 case COMMAND_EXPDESIGN_FULLFACTORIAL:
-                    expDesign = new FullFactorialDesign ();
+                    expDesign = new FullFactorialDesign();
                     break;
 
                 case COMMAND_EXPDESIGN_FACTORIAL:
-                    expDesign = new FactorialDesign ();
+                    expDesign = new FactorialDesign();
                     break;
 
                 case COMMAND_EXPDESIGN_HYPERSAMPLING:
@@ -1754,7 +1785,7 @@ namespace CommandLine
                 expDesign.setSamplingDomain(optionsToConsider);
             }
 
-            if ((expDesign is KExchangeAlgorithm || expDesign is RandomSampling) 
+            if ((expDesign is KExchangeAlgorithm || expDesign is RandomSampling)
                 && parameter.ContainsKey("sampleSize") && GlobalState.varModel != null)
             {
                 int maximumNumberNumVariants = computeNumberOfPossibleNumericVariants(GlobalState.varModel);
@@ -1763,17 +1794,17 @@ namespace CommandLine
                 if (Double.Parse(numberOfSamples) > maximumNumberNumVariants)
                 {
                     GlobalState.logInfo.logLine("The number of stated numeric variants exceeds the maximum number "
-                        + "of possible variants. Only " + maximumNumberNumVariants 
+                        + "of possible variants. Only " + maximumNumberNumVariants
                         + " variants are possible. Switching to fullfactorial design.");
                     expDesign = new FullFactorialDesign();
                 }
             }
 
-            expDesign.setSamplingParameters (parameter);
+            expDesign.setSamplingParameters(parameter);
             if (parameter.ContainsKey("validation"))
             {
                 this.numericToSampleValidation.Add(expDesign);
-                this.exp.info.numericSamplings_Validation = expDesign.getName ();
+                this.exp.info.numericSamplings_Validation = expDesign.getName();
             }
             else
             {

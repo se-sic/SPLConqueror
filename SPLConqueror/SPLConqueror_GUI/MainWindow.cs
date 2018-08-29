@@ -76,7 +76,6 @@ namespace SPLConqueror_GUI
         private Dictionary<ConfigurationOption, double> factorizationPriorities =
             new Dictionary<ConfigurationOption, double>();
         private MachineLearning.Solver.ICheckConfigSAT sat = new MachineLearning.Solver.CheckConfigSAT();
-        private MachineLearning.Solver.VariantGenerator varGen = new MachineLearning.Solver.VariantGenerator();
 
         // Everything for the measurements
         private bool measurementsLoaded = false;
@@ -460,7 +459,7 @@ namespace SPLConqueror_GUI
         {
             occuranceOfOptions.Clear();
 
-            foreach (List<BinaryOption> variant in varGen.generateAllVariantsFast(currentModel))
+            foreach (List<BinaryOption> variant in ConfigurationBuilder.vg.GenerateAllVariantsFast(currentModel))
             {
                 foreach (BinaryOption opt in variant)
                 {
@@ -550,7 +549,8 @@ namespace SPLConqueror_GUI
             {
                 foreach (NumericOption option in currentModel.NumericOptions)
                     numericSettings.Add(option, (float)option.getCenterValue());
-            } catch
+            }
+            catch
             {
                 MessageBox.Show("No model selected. Connot deduce value domain of configuration options.", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1876,7 +1876,7 @@ namespace SPLConqueror_GUI
 
             populatePlot(constantChartRepl, constantValues, constantLabels);
 
-            int amountOfVariants = varGen.generateAllVariantsFast(currentModel).Count;
+            int amountOfVariants = ConfigurationBuilder.vg.GenerateAllVariantsFast(currentModel).Count;
 
             // Update max and max occurance chart
             foreach (KeyValuePair<string, double> entry in constantMaxInfluences)
@@ -3829,7 +3829,8 @@ namespace SPLConqueror_GUI
             if (this.initializationCheckBox.Checked)
             {
                 saveSetting("INITIALIZE_R", "true");
-            } else
+            }
+            else
             {
                 saveSetting("INITIALIZE_R", "false");
             }
@@ -3845,7 +3846,8 @@ namespace SPLConqueror_GUI
             {
                 System.IO.FileInfo fi = new System.IO.FileInfo(dialog.FileName);
                 return fi.FullName;
-            } else
+            }
+            else
             {
                 return null;
             }
@@ -3878,15 +3880,15 @@ namespace SPLConqueror_GUI
                 {
                     proc.FileName = AppDomain.CurrentDomain.BaseDirectory + "Visualizer.bat";
                     proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " " +
-                         "\"" + pathToRLib.Text  + "\" " + "\"\"\"" + pathToRExe.Text + "\"\"\"";
+                         "\"" + pathToRLib.Text + "\" " + "\"\"\"" + pathToRExe.Text + "\"\"\"";
                     if (initializationCheckBox.Checked)
                     {
                         proc.Arguments += " true";
                     }
                 }
                 else
-                { 
-                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory +  "Visualizer.sh";
+                {
+                    proc.FileName = AppDomain.CurrentDomain.BaseDirectory + "Visualizer.sh";
                     proc.Arguments = AppDomain.CurrentDomain.BaseDirectory + "temp" + " "
                         + "\"" + pathToRLib.Text + "\"";
                     if (initializationCheckBox.Checked)
@@ -3916,12 +3918,13 @@ namespace SPLConqueror_GUI
 
         private void setupData()
         {
-            if (GlobalState.varModel == null || featureLimitComboBox.SelectedText == null 
+            if (GlobalState.varModel == null || featureLimitComboBox.SelectedText == null
                 || featureLimitComboBox.SelectedText == "")
             {
                 copyDataFile(data1);
                 copyDataFile(data2);
-            } else
+            }
+            else
             {
 
                 StreamReader sr = new StreamReader(data1);
@@ -3938,7 +3941,8 @@ namespace SPLConqueror_GUI
                 {
                     copyDataFile(data1);
                     copyDataFile(data2);
-                } else
+                }
+                else
                 {
                     setupDataFeatureLimit(headerOne, coefficientsOne, headerTwo, coefficientsTwo);
                 }
@@ -3959,11 +3963,11 @@ namespace SPLConqueror_GUI
 
             for (int i = 1; i < headerTwo.Length; i++)
             {
-                featureCoefficients[headerTwo[i]] = featureCoefficients[headerTwo[i]] 
+                featureCoefficients[headerTwo[i]] = featureCoefficients[headerTwo[i]]
                     + Double.Parse(coefficientsTwo[i]);
 
                 InfluenceFunction func = new InfluenceFunction(headerTwo[i], GlobalState.varModel);
-                Dictionary<BinaryOption, BinaryOption.BinaryValue> binSelec = 
+                Dictionary<BinaryOption, BinaryOption.BinaryValue> binSelec =
                     new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
                 Dictionary<NumericOption, double> numericSelection = new Dictionary<NumericOption, double>();
 
@@ -3977,7 +3981,7 @@ namespace SPLConqueror_GUI
                     numericSelection.Add(numOpt, numOpt.Min_value);
                 }
 
-                double minValue = featureCoefficients[headerTwo[i]] 
+                double minValue = featureCoefficients[headerTwo[i]]
                     * func.eval(new Configuration(binSelec, numericSelection));
 
                 foreach (BinaryOption binOpt in binSelec.Keys)
@@ -3990,7 +3994,7 @@ namespace SPLConqueror_GUI
                     numericSelection[numOpt] = numOpt.Max_value;
                 }
 
-                double maxValue = featureCoefficients[headerTwo[i]]  
+                double maxValue = featureCoefficients[headerTwo[i]]
                     * func.eval(new Configuration(binSelec, numericSelection));
 
                 featureRanking[headerTwo[i]] = maxValue - minValue;
@@ -3999,11 +4003,12 @@ namespace SPLConqueror_GUI
             if (featureLimitComboBox.SelectedText.ToLower() == "influence")
             {
                 featureRanking.OrderByDescending(kv => kv.Value);
-            } else if (featureLimitComboBox.SelectedText.ToLower() == "frequency")
+            }
+            else if (featureLimitComboBox.SelectedText.ToLower() == "frequency")
             {
                 Dictionary<string, int> frequency = new Dictionary<string, int>();
 
-                foreach(string feature in featureRanking.Keys)
+                foreach (string feature in featureRanking.Keys)
                 {
                     frequency.Add(feature, 0);
                 }
@@ -4061,16 +4066,18 @@ namespace SPLConqueror_GUI
             data1 = data1TextBox.Text;
             data2 = data2TextBox.Text;
 
-            if (data1 == "" ||  data1 == null || data2 == "" || data2 == null)
+            if (data1 == "" || data1 == null || data2 == "" || data2 == null)
             {
                 MessageBox.Show("Not all required csv files are set.");
                 return false;
-            } else if (pathToRLib.Text == null || pathToRLib.Text == "")
+            }
+            else if (pathToRLib.Text == null || pathToRLib.Text == "")
             {
                 MessageBox.Show("Path to the R library folder is not specified.");
                 return false;
-            } else if (System.Environment.OSVersion.ToString().Contains("Windows") &&
-                pathToRExe.Text == null || pathToRExe.Text == "")
+            }
+            else if (System.Environment.OSVersion.ToString().Contains("Windows") &&
+              pathToRExe.Text == null || pathToRExe.Text == "")
             {
                 MessageBox.Show("R execution needs to specified.");
                 return false;
@@ -4080,10 +4087,10 @@ namespace SPLConqueror_GUI
 
         private void clearTempFolder()
         {
-            System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory 
+            System.IO.DirectoryInfo di = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory
                 + "temp" + Path.DirectorySeparatorChar);
 
-            System.Threading.Thread clear = 
+            System.Threading.Thread clear =
                 new System.Threading.Thread(new System.Threading.ThreadStart(clearTempPDFs));
             clear.Start();
 
@@ -4107,7 +4114,8 @@ namespace SPLConqueror_GUI
                 {
                     file.Delete();
                 }
-            } catch (IOException)
+            }
+            catch (IOException)
             {
 
             }
@@ -4116,8 +4124,8 @@ namespace SPLConqueror_GUI
         private void copyDataFile(string name)
         {
             File.Copy(name, AppDomain.CurrentDomain.BaseDirectory
-                + "temp" + Path.DirectorySeparatorChar 
-                + name.Split(new char[] { Path.DirectorySeparatorChar }, 
+                + "temp" + Path.DirectorySeparatorChar
+                + name.Split(new char[] { Path.DirectorySeparatorChar },
                 StringSplitOptions.RemoveEmptyEntries).Last());
 
         }
@@ -4135,7 +4143,7 @@ namespace SPLConqueror_GUI
                 {
                     if (file.Extension == ".pdf" && !file.Name.Contains("_"))
                     {
-                        File.Copy(file.FullName, dialog.SelectedPath 
+                        File.Copy(file.FullName, dialog.SelectedPath
                             + Path.DirectorySeparatorChar + file.Name);
                     }
                 }
@@ -4152,7 +4160,8 @@ namespace SPLConqueror_GUI
             {
                 File.Copy(url, tempFile);
                 this.pdfBrowser.Navigate(tempFile);
-            } else
+            }
+            else
             {
                 MessageBox.Show("A error occured during rendering the plot. Please check the log.");
             }
