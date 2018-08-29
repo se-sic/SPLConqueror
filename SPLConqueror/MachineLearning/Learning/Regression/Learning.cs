@@ -129,7 +129,7 @@ namespace MachineLearning.Learning.Regression
             {
                 ObservableCollection<LearningRound> learningRounds = new ObservableCollection<LearningRound>();
                 GlobalState.logInfo.logLine("Learning progress:");
-                foreach(LearningRound lr in recoveredLr)
+                foreach (LearningRound lr in recoveredLr)
                 {
                     GlobalState.logInfo.logLine(lr.ToString());
                     learningRounds.Add(lr);
@@ -225,7 +225,7 @@ namespace MachineLearning.Learning.Regression
                     this.Consume();
                 }
                 );
-             }
+            }
         }
 
         public void Dispose() { _taskQ.CompleteAdding(); }
@@ -293,9 +293,9 @@ namespace MachineLearning.Learning.Regression
             this.models.Clear();
 
             if (this.testSet != null)
-                    this.testSet = new List<Configuration>();
+                this.testSet = new List<Configuration>();
             if (this.validationSet != null)
-                    this.validationSet = new List<Configuration>();
+                this.validationSet = new List<Configuration>();
 
             this.info.binarySamplings_Learning = "";
             this.info.binarySamplings_Validation = "";

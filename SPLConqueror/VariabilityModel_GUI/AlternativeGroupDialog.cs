@@ -35,8 +35,9 @@ namespace VariabilitModel_GUI
                     selectedOptionComboBox.SelectedIndex = 0;
 
                 selectedOptionAddButton.Enabled = !currAltGroups.Contains(
-                    (ConfigurationOption) selectedOptionComboBox.SelectedItem);
-            } else
+                    (ConfigurationOption)selectedOptionComboBox.SelectedItem);
+            }
+            else
                 selectedOptionAddButton.Enabled = false;
         }
 
@@ -84,7 +85,8 @@ namespace VariabilitModel_GUI
                 {
                     currAltGroups.Add(innerOpt);
                     currAltGroupsListBox.Items.Add(innerOpt);
-                } else
+                }
+                else
                 {
                     remainingOptions.Add(innerOpt);
                 }
@@ -92,7 +94,8 @@ namespace VariabilitModel_GUI
 
             // Add the remaining options to the combo-box
             selectedOptionComboBox.Items.AddRange(remainingOptions.ToArray());
-            if (selectedOptionComboBox.Items.Count > 0) {
+            if (selectedOptionComboBox.Items.Count > 0)
+            {
                 selectedOptionComboBox.SelectedIndex = 0;
             }
         }
@@ -140,7 +143,7 @@ namespace VariabilitModel_GUI
                         }
 
                     }
-                }                
+                }
             }
 
             currAltGroups.Add(selectedOption);
@@ -196,9 +199,9 @@ namespace VariabilitModel_GUI
             ConfigurationOption altCandidate = null;
             string[] array = constraint.Split(new string[] { "=>" }, StringSplitOptions.None);
             string[] combinations;
-            
+
             // Get the candidate option for the alternative group
-            switch(array.Length)
+            switch (array.Length)
             {
                 case 1:
                     combinations = constraint.Split('|');
@@ -248,13 +251,13 @@ namespace VariabilitModel_GUI
                 for (int i = 0; i < combinations.Length && !combinationFound; i++)
                 {
                     bool stillOk = true;
-                    
+
                     for (int j = 0; j < children.Count && stillOk; j++)
                     {
                         ConfigurationOption o2 = children[j];
                         string[] split = combinations[i].Split(' ');
                         bool optionFound = false;
-                        
+
                         for (int k = 0; k < split.Length && !optionFound; k++)
                         {
                             if (o1 != o2)

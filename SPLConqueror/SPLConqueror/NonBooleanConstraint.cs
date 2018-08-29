@@ -47,7 +47,7 @@ namespace SPLConqueror_Core
 
             String[] parts = unparsedExpression.Split(comparator.ToCharArray());
             leftHandSide = new InfluenceFunction(parts[0], varModel);
-            rightHandSide = new InfluenceFunction(parts[parts.Length-1], varModel);
+            rightHandSide = new InfluenceFunction(parts[parts.Length - 1], varModel);
 
 
         }
@@ -109,7 +109,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="config">A parial configuration consisting of the numeric-configurations options and their selected values.</param>
         /// <returns>True if the partial configuration holds for the non-functional property.</returns>
-        public bool configIsValid(Dictionary<NumericOption,double> config)
+        public bool configIsValid(Dictionary<NumericOption, double> config)
         {
             if (!configHasOptionsOfConstraint(config))
                 return true;
@@ -169,16 +169,17 @@ namespace SPLConqueror_Core
             if (!configHasOptionsOfConstraint(config))
             {
                 return true;
-            } else
+            }
+            else
             {
                 return !configIsValid(config);
             }
-          
+
         }
 
         private bool configHasOptionsOfConstraint(Configuration config)
         {
-            foreach(BinaryOption bo in leftHandSide.participatingBoolOptions.Union(rightHandSide.participatingBoolOptions))
+            foreach (BinaryOption bo in leftHandSide.participatingBoolOptions.Union(rightHandSide.participatingBoolOptions))
             {
                 if (!config.BinaryOptions.ContainsKey(bo))
                     return false;
@@ -193,7 +194,7 @@ namespace SPLConqueror_Core
             return true;
         }
 
-        private bool configHasOptionsOfConstraint(Dictionary<NumericOption,double> config)
+        private bool configHasOptionsOfConstraint(Dictionary<NumericOption, double> config)
         {
             foreach (NumericOption no in leftHandSide.participatingNumOptions.Union(rightHandSide.participatingNumOptions))
             {
@@ -211,7 +212,7 @@ namespace SPLConqueror_Core
         /// <returns>The string representation of the constraint.</returns>
         public override string ToString()
         {
-            return leftHandSide + " " + comparator + " " + rightHandSide; 
+            return leftHandSide + " " + comparator + " " + rightHandSide;
         }
     }
 }

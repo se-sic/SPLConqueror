@@ -66,8 +66,8 @@ namespace MachineLearning.Sampling.Heuristics
                     }
                 }
             }
-            if(parameters.ContainsKey("seed"))
-                int.TryParse(parameters["seed"],out seed);
+            if (parameters.ContainsKey("seed"))
+                int.TryParse(parameters["seed"], out seed);
 
             // build set of all valid binary partial configurations
 
@@ -80,7 +80,8 @@ namespace MachineLearning.Sampling.Heuristics
                 {
                     allConfigs.Add(config.BinaryOptions.Keys.ToList());
                 }
-            } else
+            }
+            else
             {
                 allConfigs = ConfigurationBuilder.vg.GenerateAllVariantsFast(varModel);
             }
@@ -98,9 +99,9 @@ namespace MachineLearning.Sampling.Heuristics
             Random r = new Random(seed);
             for (int i = 0; i < numConfigs; i++)
             {
-                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count )];
+                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count)];
 
-                if(configurations.Contains(selectedConfig))
+                if (configurations.Contains(selectedConfig))
                 {
                     i -= 1;
                 }
@@ -112,6 +113,6 @@ namespace MachineLearning.Sampling.Heuristics
             }
             return configurations;
         }
-        
+
     }
 }

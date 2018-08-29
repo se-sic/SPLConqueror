@@ -17,9 +17,9 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="location">The file where the errors should be written to. This argument is <code>null</code> if the errors should be printed to the console.</param>
         /// <param name="append"><code>true</code> iff the output should be appended to the given file;<code>false</code> otherwise.</param>
-        public ErrorLogger(String location, bool append=false) :base(location, append)
+        public ErrorLogger(String location, bool append = false) : base(location, append)
         {
-            if(writer!=null)
+            if (writer != null)
                 Console.SetError(writer);
         }
 
@@ -35,8 +35,9 @@ namespace SPLConqueror_Core
                     msg += System.Environment.NewLine;
                 if (writer != null)
                 {
-                        writer.Write(msg);
-                } else
+                    writer.Write(msg);
+                }
+                else
                 {
                     Console.Write(msg);
                 }

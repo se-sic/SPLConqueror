@@ -31,7 +31,7 @@ namespace MachineLearning.Solver
             Dictionary<CspTerm, bool> variables;
             Dictionary<ConfigurationOption, CspTerm> optionToTerm;
             Dictionary<CspTerm, ConfigurationOption> termToOption;
-            ConstraintSystem S = CSPsolver.GetGeneralConstraintSystem(out variables,out optionToTerm,out termToOption, vm);
+            ConstraintSystem S = CSPsolver.GetGeneralConstraintSystem(out variables, out optionToTerm, out termToOption, vm);
 
             ConstraintSolverSolution soln = S.Solve();
 
@@ -52,10 +52,12 @@ namespace MachineLearning.Solver
                     if (variables[ct])
                     {
                         BinaryOption.BinaryValue isSelected = soln.GetIntegerValue(ct) == 1 ? BinaryOption.BinaryValue.Selected : BinaryOption.BinaryValue.Deselected;
-                        if (isSelected == BinaryOption.BinaryValue.Selected) {
+                        if (isSelected == BinaryOption.BinaryValue.Selected)
+                        {
                             binOpts.Add((BinaryOption)termToOption[ct], isSelected);
                         }
-                    } else
+                    }
+                    else
                     {
                         numOpts.Add((NumericOption)termToOption[ct], soln.GetIntegerValue(ct));
                     }
@@ -85,7 +87,7 @@ namespace MachineLearning.Solver
         public static bool FulfillsMixedConstraints(Configuration c, VariabilityModel vm)
         {
             List<MixedConstraint> mixedConstraints = vm.MixedConstraints;
-            foreach(MixedConstraint constraint in mixedConstraints)
+            foreach (MixedConstraint constraint in mixedConstraints)
             {
                 if (!constraint.requirementsFulfilled(c))
                 {
@@ -207,7 +209,8 @@ namespace MachineLearning.Solver
         /// <param name="numberSelectedFeatures">The number of features that should be selected.</param>
         /// <param name="featureWeight">The weight of the features to minimize.</param>
         /// <param name="sampledConfigurations">The sampled configurations until now.</param>
-        public List<BinaryOption> GenerateConfigurationFromBucket(VariabilityModel vm, int numberSelectedFeatures, Dictionary<List<BinaryOption>, int> featureWeight, Configuration lastSampledConfiguration) {
+        public List<BinaryOption> GenerateConfigurationFromBucket(VariabilityModel vm, int numberSelectedFeatures, Dictionary<List<BinaryOption>, int> featureWeight, Configuration lastSampledConfiguration)
+        {
             if (this._constraintSystemCache == null)
             {
                 this._constraintSystemCache = new Dictionary<int, ConstraintSystemCache>();
@@ -259,14 +262,17 @@ namespace MachineLearning.Solver
 
             List<BinaryOption> tempConfig = new List<BinaryOption>();
 
-            if (soln.HasFoundSolution) {
-                tempConfig.Clear ();
-                foreach (CspTerm cT in variables) {
-                    if (soln.GetIntegerValue (cT) == 1)
-                        tempConfig.Add (termToElem [cT]);
+            if (soln.HasFoundSolution)
+            {
+                tempConfig.Clear();
+                foreach (CspTerm cT in variables)
+                {
+                    if (soln.GetIntegerValue(cT) == 1)
+                        tempConfig.Add(termToElem[cT]);
                 }
 
-            }  else
+            }
+            else
             {
                 return null;
             }
@@ -293,7 +299,8 @@ namespace MachineLearning.Solver
                 if (configurationToExclude.BinaryOptions.ContainsKey(binOpt) && configurationToExclude.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Selected)
                 {
                     positiveTerms.Add(elemToTerm[binOpt]);
-                } else
+                }
+                else
                 {
                     negativeTerms.Add(elemToTerm[binOpt]);
                 }
@@ -303,7 +310,7 @@ namespace MachineLearning.Solver
             {
                 positiveTerms.Add(s.Not(s.And(negativeTerms.ToArray())));
             }
-            
+
             s.AddConstraints(s.Not(s.And(positiveTerms.ToArray())));
         }
 
@@ -437,7 +444,8 @@ namespace MachineLearning.Solver
                         if (binOpt.Optional)
                         {
                             sum.Add(weight * elemToTerm[binOpt]);
-                        } else
+                        }
+                        else
                         {
                             sum.Add(elemToTerm[binOpt]);
                         }
@@ -447,7 +455,8 @@ namespace MachineLearning.Solver
                         if (binOpt.Optional)
                         {
                             sum.Add(weight * (cs.Abs(elemToTerm[binOpt] - cs.Constant(1))));
-                        } else
+                        }
+                        else
                         {
                             sum.Add(cs.Abs(elemToTerm[binOpt] - cs.Constant(1)));
                         }

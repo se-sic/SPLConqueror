@@ -24,10 +24,10 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="location">The file to write the logs.</param>
         /// <param name="append"><code>true</code> iff the output should be appended to the given file;<code>false</code> otherwise.</param>
-        public InfoLogger(String location, bool append=false)
+        public InfoLogger(String location, bool append = false)
             : base(location, append)
         {
-            if(writer!=null)
+            if (writer != null)
                 Console.SetOut(writer);
 
         }

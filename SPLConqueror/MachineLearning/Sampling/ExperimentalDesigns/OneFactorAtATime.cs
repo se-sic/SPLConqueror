@@ -27,7 +27,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         public OneFactorAtATime(int distinctValuePerOption = 3) : base()
         {
             this.distinctValuesPerOption = distinctValuePerOption;
-        } 
+        }
 
         public OneFactorAtATime(String s)
             : base(s)
@@ -76,25 +76,25 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
             Dictionary<NumericOption, List<double>> values = new Dictionary<NumericOption, List<double>>();
 
-            this.selectedConfigurations.Add (centerPoints);
+            this.selectedConfigurations.Add(centerPoints);
 
             foreach (NumericOption vf in this.options)
             {
                 //Getting values for learning the variable feature
                 List<double> valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption - 1, vf.getNumberOfSteps()), true);
-                if(valuesOneOption.Contains(vf.getCenterValue()))
+                if (valuesOneOption.Contains(vf.getCenterValue()))
                 {
                     valuesOneOption = ExperimentalDesign.sampleOption(vf, (int)Math.Min(distinctValuesPerOption, vf.getNumberOfSteps()), true);
                     valuesOneOption.Remove(vf.getCenterValue());
                 }
-                    
+
                 foreach (double currValue in valuesOneOption)
                 {
                     Dictionary<NumericOption, double> oneSample = new Dictionary<NumericOption, double>();
                     oneSample.Add(vf, currValue);
                     foreach (NumericOption other in this.options)
                     {
-                        if(other.Equals(vf))
+                        if (other.Equals(vf))
                             continue;
                         oneSample.Add(other, centerPoints[other]);
                     }

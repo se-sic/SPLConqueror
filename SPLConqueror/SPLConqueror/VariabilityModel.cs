@@ -107,7 +107,7 @@ namespace SPLConqueror_Core
             get { return mixedConstraints; }
             set { mixedConstraints = value; }
         }
-     
+
         /// <summary>
         /// Retuns a list containing all numeric configuration options that are considered in the learning process.
         /// </summary>
@@ -124,7 +124,8 @@ namespace SPLConqueror_Core
                     {
                         result.Add(opt);
                     }
-                } else
+                }
+                else
                 {
                     result.Add(opt);
                 }
@@ -137,7 +138,7 @@ namespace SPLConqueror_Core
         /// Creastes a new variability model with a given name that consists only of a binary root option.
         /// </summary>
         /// <param name="name">The name of the variability model.</param>        
-        
+
         public VariabilityModel(String name)
         {
             this.name = name;
@@ -227,7 +228,8 @@ namespace SPLConqueror_Core
                 {
                     constraintAsString = constraintAsString.Replace("!:", "");
                     evaluation.Value = "neg";
-                } else
+                }
+                else
                 {
                     evaluation.Value = "pos";
                 }
@@ -265,7 +267,8 @@ namespace SPLConqueror_Core
             if (model.loadSXFM(path))
             {
                 return model;
-            } else
+            }
+            else
             {
                 return null;
             }
@@ -286,7 +289,8 @@ namespace SPLConqueror_Core
             try
             {
                 doc.Load(path);
-            } catch (XmlException)
+            }
+            catch (XmlException)
             {
                 return false;
             }
@@ -311,7 +315,7 @@ namespace SPLConqueror_Core
             string[] booleanConstraints = constraints.InnerText.Split(new string[] { eol }, StringSplitOptions.RemoveEmptyEntries);
             parseConstraintsSXFM(booleanConstraints);
             this.binaryConstraints.Remove("");
-            
+
             return true;
         }
 
@@ -325,13 +329,14 @@ namespace SPLConqueror_Core
             {
                 int currentDepth = getDepth(feature);
                 string[] information = splitWhiteSpaces(feature);
-           
+
                 if (feature.Contains(":r"))
                 {
                     this.root.Name = "root";
                     this.root.OutputString = information[1];
                     previousOption = this.root;
-                } else if (feature.Contains(":m"))
+                }
+                else if (feature.Contains(":m"))
                 {
                     BinaryOption mandatory = new BinaryOption(this, information[2]);
                     mandatory.Optional = false;
@@ -341,7 +346,8 @@ namespace SPLConqueror_Core
                     setParent(mandatory, previousOption, currentDepth, previousDepth);
 
                     previousOption = mandatory;
-                } else if (feature.Contains(":o"))
+                }
+                else if (feature.Contains(":o"))
                 {
                     BinaryOption optional = new BinaryOption(this, information[2]);
                     optional.Optional = true;
@@ -351,7 +357,8 @@ namespace SPLConqueror_Core
                     setParent(optional, previousOption, currentDepth, previousDepth);
 
                     previousOption = optional;
-                } else if (feature.Contains(":g"))
+                }
+                else if (feature.Contains(":g"))
                 {
                     if (optionsInGroup != null && optionsInGroup.Count > 0)
                         resolveGroup(optionsInGroup, cardinality);
@@ -367,7 +374,8 @@ namespace SPLConqueror_Core
                     setParent(groupParent, previousOption, currentDepth, previousDepth);
 
                     previousOption = groupParent;
-                } else if (feature.Contains(":"))
+                }
+                else if (feature.Contains(":"))
                 {
                     if (optionsInGroup == null)
                         optionsInGroup = new List<BinaryOption>();
@@ -393,8 +401,9 @@ namespace SPLConqueror_Core
         {
             if (cardinality == "[1,1]")
             {
-                createExclusiveGroup(group);    
-            } else if (cardinality == "[1,*]" | cardinality == ("[1," + group.Count + "]"))
+                createExclusiveGroup(group);
+            }
+            else if (cardinality == "[1,*]" | cardinality == ("[1," + group.Count + "]"))
             {
                 group.ForEach(opt => opt.Optional = true);
                 StringBuilder sb = new StringBuilder();
@@ -404,18 +413,21 @@ namespace SPLConqueror_Core
                 // remove trailing "| "
                 sb.Length--;
                 sb.Length--;
-                
+
                 this.BinaryConstraints.Add(sb.ToString());
-            } else if (cardinality == "[0,1]")
+            }
+            else if (cardinality == "[0,1]")
             {
                 group.ForEach(option => option.Optional = true);
                 createExclusiveGroup(group);
-            } else if (cardinality.StartsWith("[0,"))
+            }
+            else if (cardinality.StartsWith("[0,"))
             {
                 group.ForEach(option => option.Optional = true);
                 this.MixedConstraints.Add(new MixedConstraint(resolveUpperBounds(group, cardinality),
                     this, "none"));
-            } else
+            }
+            else
             {
                 group.ForEach(option => option.Optional = true);
                 this.MixedConstraints.Add(new MixedConstraint(resolveLowerBounds(group, cardinality),
@@ -454,7 +466,8 @@ namespace SPLConqueror_Core
             if (boundaryChar == '*')
             {
                 boundary = group.Count;
-            } else
+            }
+            else
             {
                 boundary = (int)char.GetNumericValue(boundaryChar);
                 if (boundary > group.Count)
@@ -467,7 +480,7 @@ namespace SPLConqueror_Core
 
             expression.Append(" < ");
             expression.Append(boundary + 1);
-            
+
             return expression.ToString().Trim();
         }
 
@@ -479,10 +492,10 @@ namespace SPLConqueror_Core
                 {
                     if (otherOption.Name != binOpt.Name)
                     {
-                        List<ConfigurationOption> excluded = new List<ConfigurationOption> ();
+                        List<ConfigurationOption> excluded = new List<ConfigurationOption>();
                         excluded.Add(otherOption);
-                        binOpt.Excluded_Options.Add (excluded);
-                    }               
+                        binOpt.Excluded_Options.Add(excluded);
+                    }
                 }
             }
         }
@@ -493,7 +506,8 @@ namespace SPLConqueror_Core
             {
                 current.ParentName = previous.Name;
                 current.Parent = previous;
-            } else
+            }
+            else
             {
                 BinaryOption tempParent = previous;
                 while (prevDepth > currentDepth - 1)
@@ -510,7 +524,7 @@ namespace SPLConqueror_Core
         {
             return line.Trim().Split(new string[] { " ", "(", ")" }, StringSplitOptions.RemoveEmptyEntries);
         }
- 
+
         private void parseConstraintsSXFM(string[] booleanConstraints)
         {
             foreach (string constraint in booleanConstraints)
@@ -525,7 +539,7 @@ namespace SPLConqueror_Core
                     this.binaryConstraints.Add(cleanedConstraint.Trim());
                 }
             }
-        } 
+        }
 
         private int getDepth(string feature)
         {
@@ -574,7 +588,7 @@ namespace SPLConqueror_Core
             if (defaultValueNode != null)
             {
                 GlobalState.logInfo.logLine("Warning: Default value nodes in models are no longer used" +
-                    " and should be removed. You can also use the converter provided by the Variability" + 
+                    " and should be removed. You can also use the converter provided by the Variability" +
                     " Model GUI in export>convert legacy model to update your model.");
             }
 
@@ -682,7 +696,7 @@ namespace SPLConqueror_Core
                             implRepl.Add(reduced.getOption(impliedOption.Name));
                     }
                     impliedOptionsRepl.Add(implRepl);
-  
+
                 }
 
                 reduced.getBinaryOption(opt.Name).Implied_Options = impliedOptionsRepl;
@@ -720,7 +734,7 @@ namespace SPLConqueror_Core
         {
             foreach (XmlElement nonBoolConstr in xmlNode.ChildNodes)
             {
-                this.nonBooleanConstraints.Add(new NonBooleanConstraint(nonBoolConstr.InnerText,this));
+                this.nonBooleanConstraints.Add(new NonBooleanConstraint(nonBoolConstr.InnerText, this));
             }
         }
 
@@ -730,7 +744,7 @@ namespace SPLConqueror_Core
             {
                 if (mixedConstraint.Attributes.Count == 1)
                 {
-                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText.Replace("&lt;", "<").Replace("&gt;",">"), this, mixedConstraint.Attributes[0].Value));
+                    this.mixedConstraints.Add(new MixedConstraint(mixedConstraint.InnerText.Replace("&lt;", "<").Replace("&gt;", ">"), this, mixedConstraint.Attributes[0].Value));
                 }
                 else
                 {
@@ -790,7 +804,7 @@ namespace SPLConqueror_Core
             //Every option must have a parent
             if (option.Parent == null)
                 option.Parent = this.root;
-   
+
             if (option is BinaryOption)
                 this.binaryOptions.Add((BinaryOption)option);
             else
@@ -953,7 +967,7 @@ namespace SPLConqueror_Core
 
         internal bool hasOption(string name)
         {
-            return (this.getBinaryOption(name) != null) || (this.getNumericOption(name) != null); 
+            return (this.getBinaryOption(name) != null) || (this.getNumericOption(name) != null);
         }
     }
 }

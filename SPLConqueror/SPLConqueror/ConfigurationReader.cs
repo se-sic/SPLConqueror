@@ -63,12 +63,14 @@ namespace SPLConqueror_Core
                 try
                 {
                     dat.Load(file);
-                } catch(FileNotFoundException)
+                }
+                catch (FileNotFoundException)
                 {
                     GlobalState.logError.logLine("Configuration file \"" + file + "\" coud not be found."
                         + " Could not read configurations.");
                     return null;
-                } catch (XmlException xmlExc)
+                }
+                catch (XmlException xmlExc)
                 {
                     GlobalState.logError.logLine("Configuration file \"" + file + "\" has invalid xml format."
                         + " Could not read configurations. Additional information:" + xmlExc.Message);
@@ -105,7 +107,7 @@ namespace SPLConqueror_Core
 
             parseHeaderOfDocument(currentElemt);
 
-            HashSet<Configuration> configurations = new HashSet<Configuration>();        
+            HashSet<Configuration> configurations = new HashSet<Configuration>();
             int configsWithTooLargeDeviation = 0;
             foreach (XmlNode nodeOfOneConfiguration in currentElemt.ChildNodes)
             {
@@ -123,7 +125,7 @@ namespace SPLConqueror_Core
                 Dictionary<NFProperty, double> measuredProperty = new Dictionary<NFProperty, double>();
                 Configuration c = null;
                 bool hasSetConfig = false;
-                foreach (XmlNode childNode in nodeOfOneConfiguration.ChildNodes) 
+                foreach (XmlNode childNode in nodeOfOneConfiguration.ChildNodes)
                 {
                     if (c == null && hasSetConfig)
                         continue;
@@ -277,11 +279,12 @@ namespace SPLConqueror_Core
                 {
                     Configuration config = new Configuration(binaryOptions, numericOptions, measuredProperty);
                     configurations.Add(config);
-                }else
+                }
+                else
                 {
                     GlobalState.logError.logLine("Invalid configuration:" + binaryString + numericString);
                 }
-                nextConfig: { }
+            nextConfig: { }
             }
 
             GlobalState.logInfo.logLine("Configs with too large deviation: " + configsWithTooLargeDeviation);
@@ -468,13 +471,13 @@ namespace SPLConqueror_Core
             List<Configuration> configurations = new List<Configuration>();
 
             StreamReader sr = new StreamReader(file);
-            
+
             String[] optionOrder = new String[model.getOptions().Count];
             String[] nfpOrder = null;
 
             bool isHeader = true;
 
-            while(!sr.EndOfStream)
+            while (!sr.EndOfStream)
             {
                 String[] tokens = sr.ReadLine().Split(';');
 
@@ -560,12 +563,14 @@ namespace SPLConqueror_Core
             try
             {
                 sr = new StreamReader(file);
-            } catch (ArgumentException)
+            }
+            catch (ArgumentException)
             {
                 GlobalState.logError.logLine("Loading a configuration file with empty filename \"\" is not possible." +
                     " The \"all\" command requires an argument.");
                 return null;
-            } catch (FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
                 GlobalState.logError.logLine("Configuration file \"" + file + "\" does not exist." +
                     " Could not read the configuration file.");
@@ -619,7 +624,7 @@ namespace SPLConqueror_Core
         private static double getHighestDeviationValue(string[] deviationsAsString)
         {
             double highestValue = Double.MinValue;
-            foreach(string deviationValue in deviationsAsString)
+            foreach (string deviationValue in deviationsAsString)
             {
                 double currentValue;
                 if (Double.TryParse(deviationValue, out currentValue))

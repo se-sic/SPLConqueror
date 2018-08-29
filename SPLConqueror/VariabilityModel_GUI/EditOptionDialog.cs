@@ -21,9 +21,9 @@ namespace VariabilitModel_GUI
         {
             parent = parentForm;
             InitializeComponent();
-            
+
             initializeComponents();
-        
+
             if (selectedOption != null)
                 selectOptionComboBox.SelectedIndex = selectOptionComboBox.Items.IndexOf(selectedOption);
         }
@@ -89,11 +89,14 @@ namespace VariabilitModel_GUI
                 numericSettingsGroupBox.Enabled = true;
                 rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", "
                     + ((NumericOption)currentOption).Max_value + " )";
-		 if (((NumericOption)currentOption).StepFunction != null) {
-			 stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString ();
-		 } else {
-			 stepSizeLabel.Text = "( " + ((NumericOption)currentOption).Values + " )";
-		 }
+                if (((NumericOption)currentOption).StepFunction != null)
+                {
+                    stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString();
+                }
+                else
+                {
+                    stepSizeLabel.Text = "( " + ((NumericOption)currentOption).Values + " )";
+                }
             }
 
             optionTypeBinaryRadioButton.CheckedChanged += optionTypeBinaryRadioButton_CheckedChanged;
@@ -154,7 +157,8 @@ namespace VariabilitModel_GUI
         {
             Tuple<DialogResult, string> result = RenameDialog();
 
-            if (result.Item1 == DialogResult.OK) {
+            if (result.Item1 == DialogResult.OK)
+            {
                 List<string> editedBooleanConstraints = new List<string>();
                 List<NonBooleanConstraint> editedNonBooleanConstraints = new List<NonBooleanConstraint>();
 
@@ -202,7 +206,7 @@ namespace VariabilitModel_GUI
 
                 foreach (ConfigurationOption opt in GlobalState.varModel.getOptions())
                     selectOptionComboBox.Items.Add(opt);
-                
+
                 selectOptionComboBox.SelectedIndex = selectOptionComboBox.Items.IndexOf(currentOption);
             }
         }
@@ -237,13 +241,13 @@ namespace VariabilitModel_GUI
                 optionTypeNumericRadioButton.Checked = false;
 
                 ConfigurationOption newOption = new BinaryOption(GlobalState.varModel, currentOption.Name);
-                
+
                 foreach (ConfigurationOption opt in GlobalState.varModel.BinaryOptions)
                 {
                     if (opt.Parent != null && opt.Parent.Equals(currentOption))
                         opt.Parent = newOption;
                 }
-                
+
                 newOption.Parent = currentOption.Parent;
                 newOption.Prefix = currentOption.Prefix;
                 newOption.Postfix = currentOption.Postfix;
@@ -338,15 +342,18 @@ namespace VariabilitModel_GUI
 
             if (result.Item1 == DialogResult.OK)
             {
-		 // Distinguish between influence function and numeric values
-		 if (result.Item2.Contains (";")) {
-			 ((NumericOption)currentOption).SetValues (result.Item2);
-			 rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", " + ((NumericOption)currentOption).Max_value + " )";
-			 stepSizeLabel.Text = "( " + ((NumericOption)currentOption).Values.ToString () + " )";
-		 } else {
-			 ((NumericOption)currentOption).StepFunction = new InfluenceFunction (result.Item2);
-			 stepSizeLabel.Text = "( " + ((NumericOption)currentOption).StepFunction + " )";
-		 }
+                // Distinguish between influence function and numeric values
+                if (result.Item2.Contains(";"))
+                {
+                    ((NumericOption)currentOption).SetValues(result.Item2);
+                    rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", " + ((NumericOption)currentOption).Max_value + " )";
+                    stepSizeLabel.Text = "( " + ((NumericOption)currentOption).Values.ToString() + " )";
+                }
+                else
+                {
+                    ((NumericOption)currentOption).StepFunction = new InfluenceFunction(result.Item2);
+                    stepSizeLabel.Text = "( " + ((NumericOption)currentOption).StepFunction + " )";
+                }
             }
         }
 
@@ -514,7 +521,7 @@ namespace VariabilitModel_GUI
             TextBox featureNameTextBox = new TextBox();
             Button okButton = new Button();
             Button cancelButton = new Button();
-            
+
             // 
             // pleaseEnterLabel
             // 
@@ -646,7 +653,7 @@ namespace VariabilitModel_GUI
             nextParentComboBox.SelectedIndex = nextParentComboBox.Items.IndexOf(currentOption.Parent);
 
             DialogResult result = form.ShowDialog();
-            return  new Tuple<DialogResult, ConfigurationOption>(result, (ConfigurationOption)nextParentComboBox.SelectedItem);
+            return new Tuple<DialogResult, ConfigurationOption>(result, (ConfigurationOption)nextParentComboBox.SelectedItem);
         }
 
         private List<ConfigurationOption> getNonChildrenOptions()
@@ -779,7 +786,7 @@ namespace VariabilitModel_GUI
                     stillOk &= Char.IsNumber(c) || c.Equals('-') || c.Equals('.');
 
                 stillOk &= maxTextBox.Text.Replace("-", "").Replace(".", "").Length > 0;
-                
+
 
                 // Check if range is valid
                 double min;
@@ -903,14 +910,17 @@ namespace VariabilitModel_GUI
                 bool everythingCorrect = false;
                 try
                 {
-		 if (stepSizeTextBox.Text.Contains (";")) {
-			 new NumericValues (stepSizeTextBox.Text);
-		 } else {
-			 new InfluenceFunction (stepSizeTextBox.Text);
-		 }
+                    if (stepSizeTextBox.Text.Contains(";"))
+                    {
+                        new NumericValues(stepSizeTextBox.Text);
+                    }
+                    else
+                    {
+                        new InfluenceFunction(stepSizeTextBox.Text);
+                    }
                     everythingCorrect = true;
                 }
-                catch{}
+                catch { }
 
                 okButton.Enabled = everythingCorrect;
                 errorLabel.Visible = !everythingCorrect;

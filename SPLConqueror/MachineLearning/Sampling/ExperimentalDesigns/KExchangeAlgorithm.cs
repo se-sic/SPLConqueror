@@ -32,8 +32,9 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             return "KEX";
         }
 
-        public KExchangeAlgorithm(List<NumericOption> options) 
-            : base(options){
+        public KExchangeAlgorithm(List<NumericOption> options)
+            : base(options)
+        {
         }
 
         public KExchangeAlgorithm(int sampleSize = 100, int k = 5)
@@ -42,7 +43,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             this.k = k;
         }
 
-        public override bool computeDesign() {
+        public override bool computeDesign()
+        {
             return compute(this.sampleSize, this.k);
         }
 
@@ -62,7 +64,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             if (options.Count == 0)
                 return false;
-          
+
             // set number of possible levels for each VariableFeature
             numberOfLevels = new Dictionary<NumericOption, int>();
             foreach (NumericOption numOption in options)
@@ -112,7 +114,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
             // Calculate dispersion matrix
             ILArray<double> dispersion = calculateDispersion(matrix);
-      
+
             // start of k-Exchange algorithm
             bool couplesWithPositiveDelta = true;
 
@@ -194,9 +196,9 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             for (int i = 0; i < fullFactorial.GetLength(0); i++)
             {
                 double[] row = fullFactorial.GetRow<double>(i);
-                Dictionary<NumericOption,double> config = new Dictionary<NumericOption,double>();
-                
-                foreach(KeyValuePair<NumericOption, int> option in optionToIndex)
+                Dictionary<NumericOption, double> config = new Dictionary<NumericOption, double>();
+
+                foreach (KeyValuePair<NumericOption, int> option in optionToIndex)
                 {
                     config.Add(option.Key, optionToValues[option.Key][(int)row[(int)option.Value]]);
                 }
@@ -215,7 +217,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             {
                 for (int j = 0; j < filteredConfigurations[0].Length; j++)
                 {
-                    filteredAsArray[i, j] = filteredConfigurations[i][j]; 
+                    filteredAsArray[i, j] = filteredConfigurations[i][j];
                 }
             }
 

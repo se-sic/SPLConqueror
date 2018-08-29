@@ -19,12 +19,13 @@ namespace SPLConqueror_Core
         public String Name
         {
             get { return name; }
-            set {
+            set
+            {
                 if (!value.All(Char.IsLetter))
                     this.name = removeInvalidCharsFromName(value);
                 else
                     this.name = value;
-                }
+            }
         }
 
         private String outputString = "";
@@ -74,7 +75,7 @@ namespace SPLConqueror_Core
 
         private List<List<ConfigurationOption>> excluded_Options = new List<List<ConfigurationOption>>();
         private List<List<String>> excluded_Options_names = new List<List<string>>();
- 
+
         /// <summary>
         /// List, in which the current option excludes the selection of one and/or a combination of other options
         /// </summary>
@@ -96,7 +97,7 @@ namespace SPLConqueror_Core
         public String ParentName
         {
             get { return parentName; }
-            set { parentName = value;  }
+            set { parentName = value; }
         }
 
         /// <summary>
@@ -137,10 +138,10 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="doc">The XML document to which the node will be added</param>
         /// <returns>XmlNode containing information about the option</returns>
-	 internal virtual XmlNode saveXML(XmlDocument doc)
+        internal virtual XmlNode saveXML(XmlDocument doc)
         {
             XmlNode node = doc.CreateNode(XmlNodeType.Element, "configurationOption", "");
-            
+
             //Name
             XmlNode nameNode = doc.CreateNode(XmlNodeType.Element, "name", "");
             nameNode.InnerText = this.name;
@@ -215,7 +216,7 @@ namespace SPLConqueror_Core
 
                         if (Name.Equals("File"))
                         {
-                            
+
                         }
                         break;
                     case "outputString":
@@ -361,9 +362,9 @@ namespace SPLConqueror_Core
         /// <returns><code>true</code> if the given constraint is included in the given list of constraints;<code>false</code> otherwise.</returns>
         public static bool hasConstraint(List<List<ConfigurationOption>> list, List<ConfigurationOption> newContstraint)
         {
-            foreach(List<ConfigurationOption> existingConstraint in list)
+            foreach (List<ConfigurationOption> existingConstraint in list)
             {
-                if (! (existingConstraint.Count == newContstraint.Count))
+                if (!(existingConstraint.Count == newContstraint.Count))
                     continue;
 
                 if ((newContstraint.Union(existingConstraint)).ToList().Count == existingConstraint.Count)

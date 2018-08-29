@@ -45,7 +45,7 @@ namespace MachineLearning.Sampling.Heuristics
                     }
                     else
                     {
-                        if (!Configuration.containsBinaryConfiguration(configurations,configToMeasure))
+                        if (!Configuration.containsBinaryConfiguration(configurations, configToMeasure))
                             configurations.Add(configToMeasure);
                         break;
                     }
@@ -94,7 +94,7 @@ namespace MachineLearning.Sampling.Heuristics
                             abort = true;
                             continue;
                         }
-                        else if(!Configuration.containsBinaryConfiguration(configurations,configToMeasure))
+                        else if (!Configuration.containsBinaryConfiguration(configurations, configToMeasure))
                             configurations.Add(configToMeasure);
 
                     }

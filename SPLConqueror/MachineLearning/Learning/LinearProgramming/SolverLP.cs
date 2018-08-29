@@ -121,7 +121,7 @@ namespace MachineLearning.Learning.LinearProgramming
 
             return featureValues;
 
-          
+
         }
 
 

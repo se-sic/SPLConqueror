@@ -74,6 +74,6 @@ namespace MachineLearning.Solver
         {
             return this._termToOption;
         }
-    
-}
+
+    }
 }

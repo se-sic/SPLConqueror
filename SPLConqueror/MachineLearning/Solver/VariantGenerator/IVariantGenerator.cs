@@ -43,7 +43,7 @@ namespace MachineLearning.Solver
         /// <param name="vm">The <see cref="VariabilityModel"/> to obtain solutions for.</param>
         /// <param name="n">The number of solutions to obtain.</param>
         /// <returns>A list of configurations, in which a configuration is a list of SELECTED binary options.</returns>
-        List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel vm, int n);        
+        List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel vm, int n);
 
         /// <summary>
         /// Based on a given (partial) configuration and a variability, we aim at finding the smallest (or largest if minimize == false) valid configuration that has all options.

@@ -8,7 +8,7 @@ namespace SPLConqueror_Core
     /// <summary>
     /// Representation of the non-functional property that is considered in the experiements.
     /// </summary>
-    public class NFProperty : IEquatable<NFProperty> 
+    public class NFProperty : IEquatable<NFProperty>
     {
         private String name;
 
@@ -64,6 +64,6 @@ namespace SPLConqueror_Core
         /// <summary>
         /// Returns the default NFP-property, whose name is 'default'.
         /// </summary>
-        public static NFProperty DefaultProperty { get {return defaultProp;} }
+        public static NFProperty DefaultProperty { get { return defaultProp; } }
     }
 }

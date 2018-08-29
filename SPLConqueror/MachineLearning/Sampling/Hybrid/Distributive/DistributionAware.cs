@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MachineLearning.Sampling.Hybrid.Distributive
 {
-	/// <summary>
+    /// <summary>
     /// This enum indicates the optimization that should be executed.
     /// Both optimizations try to cover all features uniformly.
     /// Without the optimization, the possibility to miss certain features is higher.
@@ -36,7 +36,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         {
             // If a normal distribution is wanted, the parameters can be computed
             // from the whole population if available
-			if (this.distribution is NormalDistribution && !this.strategyParameter[USE_WHOLE_POPULATION].Equals("false"))
+            if (this.distribution is NormalDistribution && !this.strategyParameter[USE_WHOLE_POPULATION].Equals("false"))
             {
                 Dictionary<double, int> distr = DistributionUtils.CountConfigurations(wholeDistribution);
 

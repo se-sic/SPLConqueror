@@ -27,13 +27,13 @@ namespace CommandLine
             this.start();
 
 
-            
+
         }
 
 
         public void start()
         {
-            
+
             Commands co = new Commands();
 
             while (!reader.EndOfStream)
@@ -45,6 +45,6 @@ namespace CommandLine
 
         }
 
-        
+
     }
 }

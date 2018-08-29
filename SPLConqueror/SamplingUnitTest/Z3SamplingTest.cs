@@ -9,13 +9,13 @@ namespace SamplingUnitTest
     [TestFixture]
     class Z3SamplingTest
     {
-		private int EXPECTED_PAIRWISE = 308;
+        private int EXPECTED_PAIRWISE = 308;
 
         [OneTimeSetUp]
         public void setupEnvironment()
         {
-			Commands cmd = new Commands();
-			cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
+            Commands cmd = new Commands();
+            cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
             SampleUtil.loadVM();
             ConfigurationBuilder.vg = VariantGeneratorFactory.GetVariantGenerator("z3");
         }
@@ -51,7 +51,7 @@ namespace SamplingUnitTest
         [Test, Order(5)]
         public void TestBoxBehnken()
         {
-			Assert.True(SampleUtil.TestBoxBehnken("z3", 220));
+            Assert.True(SampleUtil.TestBoxBehnken("z3", 220));
         }
 
         [Test, Order(6)]
@@ -103,7 +103,7 @@ namespace SamplingUnitTest
         //    Assert.True(SampleUtil.TestHybridStrategy("z3", 40, 0
         //        , new DistributionPreserving(), "DistributionPreserving"));
         //}
-        
+
         [Test, Order(15)]
         public void TestDistributionAwareSolverSelection()
         {
@@ -111,10 +111,10 @@ namespace SamplingUnitTest
              0, "SolverSelection", "True"));
         }
 
-		[Test, Order(16)]
+        [Test, Order(16)]
         public void TestTWise()
         {
-			setupEnvironment();
+            setupEnvironment();
             Assert.True(SampleUtil.TestTWise("z3", 602, 3));
         }
     }
