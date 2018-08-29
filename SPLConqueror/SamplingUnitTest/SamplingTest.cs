@@ -162,9 +162,9 @@ namespace SamplingUnitTest
 
             // Due to how the space is modeled valid options can only contain root or in sampling 
             // domain specified options
-            foreach(Configuration conf in confs)
+            foreach (Configuration conf in confs)
             {
-                foreach(BinaryOption binOpt in conf.BinaryOptions.Keys)
+                foreach (BinaryOption binOpt in conf.BinaryOptions.Keys)
                 {
                     if (binOpt.Name != "root")
                     {

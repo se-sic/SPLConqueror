@@ -11,7 +11,7 @@ namespace MachineLearning.Solver
     /// </summary>
     class WeightMinimizer
     {
-        private WeightMinimizer() {}
+        private WeightMinimizer() { }
 
         /// <summary>
         /// Try to find a configuration with low weight.
@@ -27,12 +27,12 @@ namespace MachineLearning.Solver
             KeyValuePair<List<BinaryOption>, int>[] ranking = sortedRanking.ToArray();
             Microsoft.Z3.Solver solver = cache.GetSolver();
             Context z3Context = cache.GetContext();
-            
+
             for (int i = 0; i < ranking.Length; i++)
             {
-                List<BinaryOption> candidates = ranking [i].Key;
-                solver.Push ();
-                solver.Assert (forceFeatures(candidates, z3Context, cache.GetOptionToTermMapping()));
+                List<BinaryOption> candidates = ranking[i].Key;
+                solver.Push();
+                solver.Assert(forceFeatures(candidates, z3Context, cache.GetOptionToTermMapping()));
 
                 if (solver.Check() == Status.SATISFIABLE)
                 {

@@ -20,17 +20,18 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             int numberOfBuckets = allBuckets.Count - 1;
 
 
-            for (int k = 0; k <= numberOfBuckets; k++) {
-                double firstPart = (Factorial (numberOfBuckets) / (Factorial (k) * Factorial (numberOfBuckets - k)));
-                double secondPart = Math.Pow (PROBABILITY, k) * Math.Pow ((1 - PROBABILITY), (numberOfBuckets - k));
+            for (int k = 0; k <= numberOfBuckets; k++)
+            {
+                double firstPart = (Factorial(numberOfBuckets) / (Factorial(k) * Factorial(numberOfBuckets - k)));
+                double secondPart = Math.Pow(PROBABILITY, k) * Math.Pow((1 - PROBABILITY), (numberOfBuckets - k));
                 double probability = firstPart * secondPart;
 
-                result [allBuckets [k]] = probability;
+                result[allBuckets[k]] = probability;
             }
 
             // Adjust it to be 1.0 in the sum
             result = DistributionUtils.AdjustToOne(result);
-                
+
             return result;
         }
 

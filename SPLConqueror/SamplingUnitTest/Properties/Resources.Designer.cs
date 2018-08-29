@@ -8,10 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SamplingUnitTest.Properties {
+namespace SamplingUnitTest.Properties
+{
     using System;
-    
-    
+
+
     /// <summary>
     ///   Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
     /// </summary>
@@ -22,44 +23,52 @@ namespace SamplingUnitTest.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
-        
+    internal class Resources
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Resources()
+        {
         }
-        
+
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        internal static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SamplingUnitTest.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
+        internal static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -74,12 +83,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;1;0;0;0;0;2;1
         ///1;1;0;0;1;0;0;1;1;0;1;0;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string AllbinarySampling {
-            get {
+        internal static string AllbinarySampling
+        {
+            get
+            {
                 return ResourceManager.GetString("AllbinarySampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;1;0;0;1;1;0;0;0;0;0;2;4
@@ -95,12 +106,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;1;0;0;1;1;0;0;0;0;0;2;8
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string AllbinarySampling1 {
-            get {
+        internal static string AllbinarySampling1
+        {
+            get
+            {
                 return ResourceManager.GetString("AllbinarySampling1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;0;1;0;1;0;0;1;0;0;0;2;4
@@ -112,12 +125,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;1;0;1;0;1;0;1;0;0;1;0;0;0;2;2
         /// ähnelt.
         /// </summary>
-        internal static string BinrandomSampling {
-            get {
+        internal static string BinrandomSampling
+        {
+            get
+            {
                 return ResourceManager.GetString("BinrandomSampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -129,12 +144,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;1;0;1;0;0;1;1;0;0;1;0;0;0;2;2
         /// ähnelt.
         /// </summary>
-        internal static string BinrandomSampling1 {
-            get {
+        internal static string BinrandomSampling1
+        {
+            get
+            {
                 return ResourceManager.GetString("BinrandomSampling1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;1
@@ -149,12 +166,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string BoxbehnkenSampling {
-            get {
+        internal static string BoxbehnkenSampling
+        {
+            get
+            {
                 return ResourceManager.GetString("BoxbehnkenSampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;0;1
@@ -170,12 +189,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;1
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string BoxbehnkenSampling1 {
-            get {
+        internal static string BoxbehnkenSampling1
+        {
+            get
+            {
                 return ResourceManager.GetString("BoxbehnkenSampling1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;1;0;0;1;0;1;0;1;1;0;2;2
@@ -190,12 +211,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;1;0;0;1;1;0;0;0;1;1;2;1
         ///1;1;1;0;1;0;0;1;1;0;1;0;1;1; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string DistributionAwareCompleteConfigurations {
-            get {
+        internal static string DistributionAwareCompleteConfigurations
+        {
+            get
+            {
                 return ResourceManager.GetString("DistributionAwareCompleteConfigurations", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;0;1;0;1;0;1;0;0;1;1;;
@@ -211,12 +234,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;1;0;1;0;1;0;1;0;1;0;1;1;1;;
         ///1;1;1;0;1;1;0;0;1;1;0;0;1;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string DistributionAwareCompleteConfigurations1 {
-            get {
+        internal static string DistributionAwareCompleteConfigurations1
+        {
+            get
+            {
                 return ResourceManager.GetString("DistributionAwareCompleteConfigurations1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;1;0;0;1;0;1;0;1;1;1;2;4
@@ -232,12 +257,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;1;0;1;1;0;0;1;1;0;0;1;1;1;2;4
         ///1;1;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string DistributionAwareSolverSampling {
-            get {
+        internal static string DistributionAwareSolverSampling
+        {
+            get
+            {
                 return ResourceManager.GetString("DistributionAwareSolverSampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;1;0;0;1;0;0;1;1;0;0;2;4
@@ -252,12 +279,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;0;1;0;1;0;1;0;0;0;0;2;8
         ///1;1;1;0;1;0;1;0;1;0;1;0;1;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string DistributionPreserving {
-            get {
+        internal static string DistributionPreserving
+        {
+            get
+            {
                 return ResourceManager.GetString("DistributionPreserving", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;1;1;0;0;1;1;0;1;0;0;1;0;;
@@ -273,12 +302,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;1;0;0;1;1;;
         ///1;1;0;1;1;0;1;0;1;0;0;1;0;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string DistributionPreserving1 {
-            get {
+        internal static string DistributionPreserving1
+        {
+            get
+            {
                 return ResourceManager.GetString("DistributionPreserving1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -293,12 +324,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;0;0;1;1;0;0;1;0;0;0;2;1
         ///1;1;0;1;1;0;0;1;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string FeaturewiseSampling {
-            get {
+        internal static string FeaturewiseSampling
+        {
+            get
+            {
                 return ResourceManager.GetString("FeaturewiseSampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;1;0;0;1;0;0;1;0;0;0;2;4
@@ -314,12 +347,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string FeaturewiseSampling1 {
-            get {
+        internal static string FeaturewiseSampling1
+        {
+            get
+            {
                 return ResourceManager.GetString("FeaturewiseSampling1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;1
@@ -334,12 +369,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;8
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string HyperSampling40 {
-            get {
+        internal static string HyperSampling40
+        {
+            get
+            {
                 return ResourceManager.GetString("HyperSampling40", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;1
@@ -354,12 +391,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;8
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string HyperSampling50 {
-            get {
+        internal static string HyperSampling50
+        {
+            get
+            {
                 return ResourceManager.GetString("HyperSampling50", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;0;1
@@ -375,12 +414,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;1
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string HyperSampling501 {
-            get {
+        internal static string HyperSampling501
+        {
+            get
+            {
                 return ResourceManager.GetString("HyperSampling501", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;1
@@ -395,12 +436,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;2;1
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string KexchangeSampling31 {
-            get {
+        internal static string KexchangeSampling31
+        {
+            get
+            {
                 return ResourceManager.GetString("KexchangeSampling31", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;1
@@ -415,12 +458,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;8
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string KexchangeSampling72 {
-            get {
+        internal static string KexchangeSampling72
+        {
+            get
+            {
                 return ResourceManager.GetString("KexchangeSampling72", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;2;1
@@ -436,12 +481,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string KexchangeSampling721 {
-            get {
+        internal static string KexchangeSampling721
+        {
+            get
+            {
                 return ResourceManager.GetString("KexchangeSampling721", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;0;0;1;1;0;0;1;1;1;1;2;4
@@ -456,12 +503,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;1;1;1;0;0;1;0;0;1;0;1;1;2;1
         ///1;1;0;1;1;1;0;0;1;0;0;1;0;1; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string NegFWSampling {
-            get {
+        internal static string NegFWSampling
+        {
+            get
+            {
                 return ResourceManager.GetString("NegFWSampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;1;0;1;0;1;0;1;0;1;0;1;1;1;2;4
@@ -477,12 +526,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;1;0;1;0;1;0;1;0;0;1;1;1;1;2;8
         ///1;1;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string NegFWSampling1 {
-            get {
+        internal static string NegFWSampling1
+        {
+            get
+            {
                 return ResourceManager.GetString("NegFWSampling1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -497,12 +548,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;0;4
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string OnefactorSampling3 {
-            get {
+        internal static string OnefactorSampling3
+        {
+            get
+            {
                 return ResourceManager.GetString("OnefactorSampling3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -517,12 +570,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string OnefactorSampling5 {
-            get {
+        internal static string OnefactorSampling5
+        {
+            get
+            {
                 return ResourceManager.GetString("OnefactorSampling5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;2;4
@@ -538,12 +593,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;1;0;1;0;0;1;0;0;0;2;1
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string OnefactorSampling51 {
-            get {
+        internal static string OnefactorSampling51
+        {
+            get
+            {
                 return ResourceManager.GetString("OnefactorSampling51", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -558,12 +615,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string PairwiseSampling {
-            get {
+        internal static string PairwiseSampling
+        {
+            get
+            {
                 return ResourceManager.GetString("PairwiseSampling", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;2;4
@@ -579,12 +638,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;8
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string PairwiseSampling1 {
-            get {
+        internal static string PairwiseSampling1
+        {
+            get
+            {
                 return ResourceManager.GetString("PairwiseSampling1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;4
@@ -599,12 +660,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;8
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string PlackettSampling39 {
-            get {
+        internal static string PlackettSampling39
+        {
+            get
+            {
                 return ResourceManager.GetString("PlackettSampling39", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;0;4
@@ -620,12 +683,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string PlackettSampling391 {
-            get {
+        internal static string PlackettSampling391
+        {
+            get
+            {
                 return ResourceManager.GetString("PlackettSampling391", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;4
@@ -640,12 +705,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;4
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string PlackettSampling5125 {
-            get {
+        internal static string PlackettSampling5125
+        {
+            get
+            {
                 return ResourceManager.GetString("PlackettSampling5125", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;2
@@ -660,12 +727,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;2
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string RandomSampling010 {
-            get {
+        internal static string RandomSampling010
+        {
+            get
+            {
                 return ResourceManager.GetString("RandomSampling010", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;0;2
@@ -680,12 +749,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;1
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string RandomSampling112 {
-            get {
+        internal static string RandomSampling112
+        {
+            get
+            {
                 return ResourceManager.GetString("RandomSampling112", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;0;1
@@ -701,12 +772,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;0;2
         ///1;1;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string RandomSampling1121 {
-            get {
+        internal static string RandomSampling1121
+        {
+            get
+            {
                 return ResourceManager.GetString("RandomSampling1121", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -721,12 +794,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0;0;2;1
         ///1;1;0;0;1;1;0;0;1;0;0;1;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string TwiseSampling2 {
-            get {
+        internal static string TwiseSampling2
+        {
+            get
+            {
                 return ResourceManager.GetString("TwiseSampling2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;0;1;1;0;0;1;0;0;0;2;4
@@ -741,12 +816,14 @@ namespace SamplingUnitTest.Properties {
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0;0;2;1
         ///1;1;0;0;1;0;0;1;1;1;0;0;0;0; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string TwiseSampling3 {
-            get {
+        internal static string TwiseSampling3
+        {
+            get
+            {
                 return ResourceManager.GetString("TwiseSampling3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die root;binOpt1;binOpt2;binOpt3;group;member1;member2;member3;group2;member21;member22;member23;binOpt4;binOpt6;binOpt5;numOpt1;numOpt2
         ///1;1;0;0;1;0;1;0;1;0;1;0;0;0;0;;
@@ -762,8 +839,10 @@ namespace SamplingUnitTest.Properties {
         ///1;1;1;0;1;0;0;1;1;0;0;1;0;0;0;;
         ///1;1;1;0;1;0;0;1;1;1;0;0;0;0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string TwiseSampling31 {
-            get {
+        internal static string TwiseSampling31
+        {
+            get
+            {
                 return ResourceManager.GetString("TwiseSampling31", resourceCulture);
             }
         }

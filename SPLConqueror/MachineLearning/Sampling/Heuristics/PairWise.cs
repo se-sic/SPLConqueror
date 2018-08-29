@@ -9,7 +9,7 @@ namespace MachineLearning.Sampling.Heuristics
     public class PairWise
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
-        
+
 
         /// <summary>
         /// Generates a configuration for each pair of configuration options. Exceptions: parent-child-relationships, impliciation-relationships
@@ -31,7 +31,7 @@ namespace MachineLearning.Sampling.Heuristics
                     //Check parent-child relationship
                     if (pair.isAncestor(current) || current.isAncestor(pair) || pair == current)
                         continue;
-                    
+
                     //Check if one option implies the presence of the other option
                     bool impliedOption = false;
                     foreach (var implied in pair.Implied_Options)
@@ -64,7 +64,7 @@ namespace MachineLearning.Sampling.Heuristics
                         tempConfig.Add(pair);
                         tempConfig = ConfigurationBuilder.vg.MinimizeConfig(tempConfig, vm, true, null);
 
-                        if (tempConfig.Count > 0 && !Configuration.containsBinaryConfiguration(configurations,tempConfig))
+                        if (tempConfig.Count > 0 && !Configuration.containsBinaryConfiguration(configurations, tempConfig))
                             configurations.Add(tempConfig);
                     }
                 }

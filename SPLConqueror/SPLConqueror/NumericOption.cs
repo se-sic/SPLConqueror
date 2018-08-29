@@ -33,13 +33,13 @@ namespace SPLConqueror_Core
             get { return max_value; }
             set { max_value = value; }
         }
-        
- 	 private NumericValues values = null;
-        
+
+        private NumericValues values = null;
+
         /// <summary>
         /// All valid values of the value domain of the numeric option.
         /// </summary>
-	 public NumericValues Values
+        public NumericValues Values
         {
             get { return values; }
         }
@@ -52,12 +52,14 @@ namespace SPLConqueror_Core
         public InfluenceFunction StepFunction
         {
             get { return stepFunction; }
-	     set {
-		  stepFunction = value;
-		  if (value != null) {
-		 	 values = null;
-		  }
-		}
+            set
+            {
+                stepFunction = value;
+                if (value != null)
+                {
+                    values = null;
+                }
+            }
         }
 
         /// <summary>
@@ -87,11 +89,11 @@ namespace SPLConqueror_Core
             else
             {
                 double nextGreaterValue = -1;
-		 for (int i = 0; i < values.Count(); i++)
+                for (int i = 0; i < values.Count(); i++)
                 {
-		     if(values.Values[i] > value && (Math.Abs(value-values.Values[i]) < Math.Abs(nextGreaterValue - values.Values[i])))
+                    if (values.Values[i] > value && (Math.Abs(value - values.Values[i]) < Math.Abs(nextGreaterValue - values.Values[i])))
                     {
-			 nextGreaterValue = values.Values[i];
+                        nextGreaterValue = values.Values[i];
                     }
                 }
                 return nextGreaterValue;
@@ -102,27 +104,30 @@ namespace SPLConqueror_Core
         /// Sets the numerical values.
         /// </summary>
         /// <param name="values">The values to set.</param>
-	 public void SetValues (double [] values)
-	 {
-		 this.min_value = values.Min ();
-		 this.max_value = values.Max ();
-		 if (this.values == null) {
-			 this.values = new NumericValues (values);
-		 } else {
-			 this.values.Values = values;
-		 }
-        // Either use values or step function
-	 this.StepFunction = null;
-	 }
+        public void SetValues(double[] values)
+        {
+            this.min_value = values.Min();
+            this.max_value = values.Max();
+            if (this.values == null)
+            {
+                this.values = new NumericValues(values);
+            }
+            else
+            {
+                this.values.Values = values;
+            }
+            // Either use values or step function
+            this.StepFunction = null;
+        }
 
         /// <summary>
         /// Sets the numerical values.
         /// </summary>
-	 /// <param name="values">The values to set.</param>
-	 public void SetValues (String values)
-	 {
-		 SetValues (values.Replace ("(", "").Replace (")", "").Split (';').Select (Double.Parse).ToArray ());
-	 }
+        /// <param name="values">The values to set.</param>
+        public void SetValues(String values)
+        {
+            SetValues(values.Replace("(", "").Replace(")", "").Split(';').Select(Double.Parse).ToArray());
+        }
 
         /// <summary>
         /// Gives the step number for a given parameter starting by 0 representing the minValue: For example, minVal = 5; maxVal = 20; stepSize = 5; getStep(15) returns 2; 
@@ -134,9 +139,9 @@ namespace SPLConqueror_Core
         {
             if (stepFunction == null)
             {
-		 for (int i = 0; i < values.Count(); i++)
+                for (int i = 0; i < values.Count(); i++)
                 {
-		     if (values.Values[i].Equals(parameter))
+                    if (values.Values[i].Equals(parameter))
                         return i;
                 }
             }
@@ -165,7 +170,7 @@ namespace SPLConqueror_Core
 
             double stepDistance = Math.Abs(this.min_value - this.getNextValue(this.min_value));
             double steps = (parameter - this.min_value) / stepDistance;
-            return (int)Math.Round(steps,0);
+            return (int)Math.Round(steps, 0);
         }
 
         /// <summary>
@@ -180,12 +185,12 @@ namespace SPLConqueror_Core
             if (stepFunction == null)
             {
                 // if there are less values defined than the number of steps 
-		 if (step > values.Values.Count())
+                if (step > values.Values.Count())
                     return value;
 
-		 return values.Values[step];
+                return values.Values[step];
             }
-            
+
             for (int i = 0; i < step; i++)
             {
                 value = this.getNextValue(value);
@@ -204,7 +209,7 @@ namespace SPLConqueror_Core
         {
             if (stepFunction == null)
             {
-	 	 return values.Count();
+                return values.Count();
             }
 
             if (numberOfSteps == -1)
@@ -250,12 +255,12 @@ namespace SPLConqueror_Core
             }
 
             if (values != null)
-            {   
+            {
                 //Values
                 XmlNode valuesNode = doc.CreateNode(XmlNodeType.Element, "values", "");
-		 valuesNode.InnerText = values.ToString();
+                valuesNode.InnerText = values.ToString();
                 node.AppendChild(valuesNode);
-            }            
+            }
             return node;
         }
 
@@ -300,7 +305,7 @@ namespace SPLConqueror_Core
                         {
                             values_As_Double[i] = Convert.ToDouble(valueArray[i]);
                         }
-			 SetValues(values_As_Double);
+                        SetValues(values_As_Double);
                         break;
 
                 }
@@ -317,11 +322,11 @@ namespace SPLConqueror_Core
 
             if (stepFunction == null)
             {
-		 double nearestValue = values.Values[0];
-		 for (int i = 1; i < values.Count(); i++)
+                double nearestValue = values.Values[0];
+                for (int i = 1; i < values.Count(); i++)
                 {
-		     if (Math.Abs(values.Values[i] - inputValue) < Math.Abs(nearestValue - inputValue))
-			 nearestValue = values.Values[i];
+                    if (Math.Abs(values.Values[i] - inputValue) < Math.Abs(nearestValue - inputValue))
+                        nearestValue = values.Values[i];
                 }
                 return nearestValue;
             }
@@ -335,10 +340,10 @@ namespace SPLConqueror_Core
 
             while (curr < inputValue)
             {
-                curr = Math.Round(getNextValue(curr),3);
+                curr = Math.Round(getNextValue(curr), 3);
             }
             lowerValue = curr;
-            upperValue = Math.Round(getNextValue(curr),3);
+            upperValue = Math.Round(getNextValue(curr), 3);
 
             if (Math.Abs(lowerValue - curr) < Math.Abs(upperValue - curr))
             {
@@ -354,8 +359,8 @@ namespace SPLConqueror_Core
         public double getCenterValue()
         {
             if (stepFunction == null)
-		 return values.Values[(int)values.Values.Count() / 2];
-            return Math.Round(getAllValues()[(int)getAllValues().Count / 2],3);
+                return values.Values[(int)values.Values.Count() / 2];
+            return Math.Round(getAllValues()[(int)getAllValues().Count / 2], 3);
         }
 
 
@@ -368,7 +373,7 @@ namespace SPLConqueror_Core
         public List<double> getAllValues()
         {
             if (stepFunction == null)
-		 return values.Values.ToList();
+                return values.Values.ToList();
 
 
             if (allValues == null)
@@ -386,7 +391,7 @@ namespace SPLConqueror_Core
             }
             return allValues;
         }
-        
+
         /// <summary>
         /// Provides a random value of the value domain of the numeric configuration option.
         /// </summary>
@@ -396,7 +401,7 @@ namespace SPLConqueror_Core
         {
             Random r = new Random(seed);
             if (stepFunction == null)
-		 return values.Values[r.Next(values.Count())];     
+                return values.Values[r.Next(values.Count())];
             return getValueForStep(r.Next((int)this.numberOfSteps));
         }
     }

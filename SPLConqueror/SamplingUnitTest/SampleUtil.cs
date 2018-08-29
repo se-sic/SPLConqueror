@@ -43,7 +43,7 @@ namespace SamplingUnitTest
                   + "Files/VariabilityModelSampling.xml";
             }
 
-			model = new VariabilityModel("test");
+            model = new VariabilityModel("test");
             bool wasSuccessful = model.loadXML(modelPath);
             GlobalState.varModel = model;
             return wasSuccessful;
@@ -63,13 +63,13 @@ namespace SamplingUnitTest
             numericStrat.Add(new CentralCompositeInscribedDesign());
             List<HybridStrategy> hybridStrat = new List<HybridStrategy>();
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
-            
+
             return result;
         }
 
         public static bool TestBinaryNoParam(int expected, string solver, SamplingStrategies strategy, string reference)
         {
-            string loc = resolvePath(solver,reference);
+            string loc = resolvePath(solver, reference);
             List<Configuration> result = testBinary(strategy);
             List<Configuration> expectedSample = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             return containsAllMeasurements(result, expectedSample) && result.Count == expected;
@@ -88,7 +88,7 @@ namespace SamplingUnitTest
 
         public static bool TestBoxBehnken(string solver, int expected)
         {
-            string loc = resolvePath(solver,"BoxbehnkenSampling.csv");
+            string loc = resolvePath(solver, "BoxbehnkenSampling.csv");
             List<Configuration> result = testNumeric(new BoxBehnkenDesign());
             List<Configuration> expectedSample = ConfigurationReader.readConfigurations_Header_CSV(loc, GlobalState.varModel);
             return containsAllMeasurements(result, expectedSample) && result.Count == expected;

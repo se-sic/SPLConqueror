@@ -18,13 +18,13 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         private int seed = 0;
 
         // number of features considered for weight optimization
-        private Tuple<int, int> featureRange = new Tuple<int, int>(1,1);
+        private Tuple<int, int> featureRange = new Tuple<int, int>(1, 1);
 
         /// <summary>
         /// Initializes a new instance of the
         /// <see cref="MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic.SolverSelection"/> class.
         /// </summary>
-        public SolverSelection ()
+        public SolverSelection()
         {
         }
 
@@ -53,8 +53,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// <param name="wantedDistribution">The wanted distribution of the samples.</param>
         /// <param name="allBuckets">The buckets containing at least one configuration.</param>
         /// <param name="count">The number of configurations to select.</param>
-	 /// <param name="optimization">The optimization to use</param>
-	 public List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count, Optimization optimization = Optimization.NONE) {
+        /// <param name="optimization">The optimization to use</param>
+        public List<Configuration> SampleFromDistribution(Dictionary<double, double> wantedDistribution, List<double> allBuckets, int count, Optimization optimization = Optimization.NONE)
+        {
             Random rand = new Random(seed);
             List<Configuration> selectedConfigurations = new List<Configuration>();
             Dictionary<int, Configuration> selectedConfigurationsFromBucket = new Dictionary<int, Configuration>();
@@ -64,28 +65,39 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             }
 
             // Create and initialize the weight function
-	     Dictionary<int, Dictionary<List<BinaryOption>, int>> featureWeight = new Dictionary<int, Dictionary<List<BinaryOption>, int>>();
+            Dictionary<int, Dictionary<List<BinaryOption>, int>> featureWeight = new Dictionary<int, Dictionary<List<BinaryOption>, int>>();
 
-	     if (optimization == Optimization.GLOBAL) {
-	         if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0) {
-			featureWeight.Add(0, InitializeWeightDict (GlobalState.varModel));
-		 } else {
-			featureWeight.Add(0, new Dictionary<List<BinaryOption>, int> ());
-		 }
-	     } else if (optimization == Optimization.LOCAL) {
-	 	 for (int i = 0; i < allBuckets.Count; i++) {
-		 	if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0) {
-				featureWeight.Add(i, InitializeWeightDict (GlobalState.varModel));
-                    	} else {
-				featureWeight.Add(i, new Dictionary<List<BinaryOption>, int> ());
-                       }
-		 }
-	     }
+            if (optimization == Optimization.GLOBAL)
+            {
+                if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0)
+                {
+                    featureWeight.Add(0, InitializeWeightDict(GlobalState.varModel));
+                }
+                else
+                {
+                    featureWeight.Add(0, new Dictionary<List<BinaryOption>, int>());
+                }
+            }
+            else if (optimization == Optimization.LOCAL)
+            {
+                for (int i = 0; i < allBuckets.Count; i++)
+                {
+                    if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0)
+                    {
+                        featureWeight.Add(i, InitializeWeightDict(GlobalState.varModel));
+                    }
+                    else
+                    {
+                        featureWeight.Add(i, new Dictionary<List<BinaryOption>, int>());
+                    }
+                }
+            }
 
             bool[] noSamples = new bool[allBuckets.Count];
 
 
-            while (selectedConfigurations.Count < count && HasSamples(noSamples)) {
+            while (selectedConfigurations.Count < count && HasSamples(noSamples))
+            {
                 double randomDouble = rand.NextDouble();
                 double currentProbability = 0;
                 int currentBucket = 0;
@@ -93,7 +105,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 while (randomDouble > currentProbability + wantedDistribution.ElementAt(currentBucket).Value)
                 {
                     currentProbability += wantedDistribution.ElementAt(currentBucket).Value;
-		     currentBucket++;
+                    currentBucket++;
                 }
 
                 // Note: This method works only for binary features and therefore, only integer buckets
@@ -102,8 +114,9 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 // Repeat if there are currently no solutions in the bucket.
                 // This is intended to reduce the work of the solver.
                 // Should not happen anymore!
-                if (noSamples [currentBucket] || !allBuckets.Contains(distanceOfBucket)) {
-		     throw new InvalidProgramException ("A bucket was selected that already contains no more samples! This shouldn't happen.");
+                if (noSamples[currentBucket] || !allBuckets.Contains(distanceOfBucket))
+                {
+                    throw new InvalidProgramException("A bucket was selected that already contains no more samples! This shouldn't happen.");
                 }
 
                 if (ConfigurationBuilder.vg is Solver.Z3VariantGenerator)
@@ -111,41 +124,49 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                     ((Solver.Z3VariantGenerator)ConfigurationBuilder.vg).setSeed(Convert.ToUInt32(this.seed));
                 }
 
-				List<BinaryOption> solution = null;
-				// Now select the configuration by using the solver
-				if (optimization == Optimization.NONE) {
-					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
-						distanceOfBucket, null, selectedConfigurationsFromBucket [currentBucket]);
-				} else if (optimization == Optimization.GLOBAL) {
-					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
-                        distanceOfBucket, featureWeight[0], selectedConfigurationsFromBucket [currentBucket]);
+                List<BinaryOption> solution = null;
+                // Now select the configuration by using the solver
+                if (optimization == Optimization.NONE)
+                {
+                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
+                        distanceOfBucket, null, selectedConfigurationsFromBucket[currentBucket]);
+                }
+                else if (optimization == Optimization.GLOBAL)
+                {
+                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
+                        distanceOfBucket, featureWeight[0], selectedConfigurationsFromBucket[currentBucket]);
 
-				} else if (optimization == Optimization.LOCAL) {
-					solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket (GlobalState.varModel,
-                        distanceOfBucket, featureWeight[currentBucket], selectedConfigurationsFromBucket [currentBucket]);
-				}
+                }
+                else if (optimization == Optimization.LOCAL)
+                {
+                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
+                        distanceOfBucket, featureWeight[currentBucket], selectedConfigurationsFromBucket[currentBucket]);
+                }
 
                 // If a bucket was selected that now contains no more configurations, repeat the procedure
                 if (solution == null)
                 {
-                    noSamples [currentBucket] = true;
-                    
+                    noSamples[currentBucket] = true;
+
                     // As a consequence, the probability to pick this bucket is set to 0 and the whole
-	 	     // distribution is readjusted so that the sum of all probabilities is equal to 1 (i.e., 100%).
-		     wantedDistribution [wantedDistribution.ElementAt (currentBucket).Key] = 0d;               
-		     wantedDistribution = DistributionUtils.AdjustToOne (wantedDistribution);
+                    // distribution is readjusted so that the sum of all probabilities is equal to 1 (i.e., 100%).
+                    wantedDistribution[wantedDistribution.ElementAt(currentBucket).Key] = 0d;
+                    wantedDistribution = DistributionUtils.AdjustToOne(wantedDistribution);
                     continue;
                 }
 
-                Configuration currentSelectedConfiguration = new Configuration (solution);
+                Configuration currentSelectedConfiguration = new Configuration(solution);
 
-                selectedConfigurations.Add (currentSelectedConfiguration);
+                selectedConfigurations.Add(currentSelectedConfiguration);
                 selectedConfigurationsFromBucket[currentBucket] = currentSelectedConfiguration;
-				if (optimization == Optimization.GLOBAL) {
-					UpdateWeights (GlobalState.varModel, featureWeight[0], currentSelectedConfiguration);
-				} else if (optimization == Optimization.LOCAL) {
-					UpdateWeights (GlobalState.varModel, featureWeight[currentBucket], currentSelectedConfiguration);
-				}
+                if (optimization == Optimization.GLOBAL)
+                {
+                    UpdateWeights(GlobalState.varModel, featureWeight[0], currentSelectedConfiguration);
+                }
+                else if (optimization == Optimization.LOCAL)
+                {
+                    UpdateWeights(GlobalState.varModel, featureWeight[currentBucket], currentSelectedConfiguration);
+                }
             }
 
             if (selectedConfigurations.Count < count)
@@ -172,7 +193,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
 
             foreach (List<BinaryOption> combination in allCombinations)
             {
-                weights.Add (combination, 0);
+                weights.Add(combination, 0);
             }
 
             return weights;
@@ -185,32 +206,41 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// <returns>All combinations of features according to the feature range.</returns>
         /// <param name="vm">The variability model.</param>
         /// <param name="listToExpand">The current list of binary options.</param>
-        private List<List<BinaryOption>> BuildAllCombinations (VariabilityModel vm, List<BinaryOption> listToExpand) {
-            List<List<BinaryOption>> result = new List<List<BinaryOption>> ();
-            if (listToExpand.Count == featureRange.Item2) {
+        private List<List<BinaryOption>> BuildAllCombinations(VariabilityModel vm, List<BinaryOption> listToExpand)
+        {
+            List<List<BinaryOption>> result = new List<List<BinaryOption>>();
+            if (listToExpand.Count == featureRange.Item2)
+            {
                 return result;
             }
 
-            foreach (BinaryOption binOpt in vm.BinaryOptions) {
+            foreach (BinaryOption binOpt in vm.BinaryOptions)
+            {
                 List<BinaryOption> localCopy = new List<BinaryOption>(listToExpand);
 
                 // Skip mandatory features since they are included in every configuration
-                if (!binOpt.Optional && binOpt.Excluded_Options.Count == 0) {
+                if (!binOpt.Optional && binOpt.Excluded_Options.Count == 0)
+                {
                     continue;
                 }
 
-                if (!listToExpand.Contains (binOpt)) {
-                    localCopy.Add (binOpt);
-                    if (TestExcludedOptions(localCopy)) {
-                        if (localCopy.Count >= featureRange.Item1) {
-                            result.Add (localCopy);
+                if (!listToExpand.Contains(binOpt))
+                {
+                    localCopy.Add(binOpt);
+                    if (TestExcludedOptions(localCopy))
+                    {
+                        if (localCopy.Count >= featureRange.Item1)
+                        {
+                            result.Add(localCopy);
                         }
 
                         // Add the elements if they are not already included in another order
                         List<List<BinaryOption>> allCombinations = BuildAllCombinations(vm, localCopy);
-                        foreach (List<BinaryOption> combination in allCombinations) {
-                            if (!IsIncluded(result, combination)) {
-                                result.Add (combination);
+                        foreach (List<BinaryOption> combination in allCombinations)
+                        {
+                            if (!IsIncluded(result, combination))
+                            {
+                                result.Add(combination);
                             }
                         }
                     }
@@ -220,21 +250,27 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             return result;
         }
 
-        private static bool IsIncluded(List<List<BinaryOption>> allCombinations, List<BinaryOption> combinationToFind) {
-            foreach (List<BinaryOption> combination in allCombinations) {
-                List<BinaryOption> allRelevantOptions = new List<BinaryOption> ();
-                allRelevantOptions.AddRange (combination);
-                allRelevantOptions.AddRange (combinationToFind);
+        private static bool IsIncluded(List<List<BinaryOption>> allCombinations, List<BinaryOption> combinationToFind)
+        {
+            foreach (List<BinaryOption> combination in allCombinations)
+            {
+                List<BinaryOption> allRelevantOptions = new List<BinaryOption>();
+                allRelevantOptions.AddRange(combination);
+                allRelevantOptions.AddRange(combinationToFind);
 
-                if (combination.Count == combinationToFind.Count) {
+                if (combination.Count == combinationToFind.Count)
+                {
                     bool found = true;
-                    foreach (BinaryOption binOpt in allRelevantOptions) {
-                        if (!combination.Contains (binOpt) || !combinationToFind.Contains (binOpt)) {
+                    foreach (BinaryOption binOpt in allRelevantOptions)
+                    {
+                        if (!combination.Contains(binOpt) || !combinationToFind.Contains(binOpt))
+                        {
                             found = false;
                             break;
                         }
                     }
-                    if (found) {
+                    if (found)
+                    {
                         return true;
                     }
                 }
@@ -247,7 +283,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             if (binOpts.Count == 1)
             {
                 return true;
-            } else
+            }
+            else
             {
                 List<BinaryOption> excluded = new List<BinaryOption>();
                 binOpts.ForEach(opt => opt.Excluded_Options.
@@ -270,19 +307,24 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// <param name="vm">The variability model.</param>
         /// <param name="weights">The dictionary containing the number of features in all configurations.</param>
         /// <param name="addedConfiguration">The newly added configuration.</param>
-        private void UpdateWeights(VariabilityModel vm, Dictionary<List<BinaryOption>, int> weights, Configuration addedConfiguration) {
+        private void UpdateWeights(VariabilityModel vm, Dictionary<List<BinaryOption>, int> weights, Configuration addedConfiguration)
+        {
             List<BinaryOption> features = vm.BinaryOptions;
 
-            for (int i = 0; i < weights.Keys.Count; i++) {
+            for (int i = 0; i < weights.Keys.Count; i++)
+            {
                 List<BinaryOption> combination = weights.Keys.ElementAt(i);
                 bool isIncluded = true;
-                foreach (BinaryOption binOpt in combination) {
-                    if (!addedConfiguration.BinaryOptions.ContainsKey (binOpt) || addedConfiguration.BinaryOptions [binOpt] == BinaryOption.BinaryValue.Deselected) {
+                foreach (BinaryOption binOpt in combination)
+                {
+                    if (!addedConfiguration.BinaryOptions.ContainsKey(binOpt) || addedConfiguration.BinaryOptions[binOpt] == BinaryOption.BinaryValue.Deselected)
+                    {
                         isIncluded = false;
                     }
                 }
-                if (isIncluded) {
-                    weights [combination]++;
+                if (isIncluded)
+                {
+                    weights[combination]++;
                 }
             }
         }
@@ -292,15 +334,18 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         /// </summary>
         /// <returns><c>true</c> if there is at least one sample; otherwise, <c>false</c>.</returns>
         /// <param name="noSamples">The array containing the information if a bucket has no more samples.</param>
-        private bool HasSamples(bool[] noSamples) {
-            foreach (bool b in noSamples) {
-                if (!b) {
+        private bool HasSamples(bool[] noSamples)
+        {
+            foreach (bool b in noSamples)
+            {
+                if (!b)
+                {
                     return true;
                 }
             }
             return false;
         }
-            
+
     }
 }
 

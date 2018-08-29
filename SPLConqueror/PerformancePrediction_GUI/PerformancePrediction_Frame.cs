@@ -381,7 +381,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:" 
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_RANDOM + " sampleSize:"
                     + num_random_n_Text.Text.Trim() + " seed:" + num_rand_seed_Text.Text.Trim());
                 numSelected = true;
             }
@@ -394,7 +394,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:" 
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_ONEFACTORATATIME + " distinctValuesPerOption:"
                     + num_oneFactorAtATime_num_Text.Text.Trim());
                 numSelected = true;
 
@@ -407,7 +407,7 @@ namespace PerformancePrediction_GUI
                     return false;
 
                 }
-                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:" 
+                performNumericSampling(cmd, Commands.COMMAND_EXPDESIGN_PLACKETTBURMAN + " measurements:"
                     + num_Plackett_n_Box.Text.Trim() + " level:" + num_Plackett_Level_Box.Text.Trim());
                 numSelected = true;
             }

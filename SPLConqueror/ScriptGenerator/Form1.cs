@@ -971,13 +971,13 @@ namespace ScriptGenerator
                     samplingNamesNumeric = (List<string>)cNumeric.Content;
                 }
             }
-            if ((samplingNamesBinary == null || samplingNamesBinary.Count == 0) 
+            if ((samplingNamesBinary == null || samplingNamesBinary.Count == 0)
                 && (samplingNamesNumeric == null || samplingNamesNumeric.Count == 0))
             {
                 return false;
             }
 
-            if (samplingNamesBinary.Contains(Commands.COMMAND_SAMPLE_ALLBINARY) 
+            if (samplingNamesBinary.Contains(Commands.COMMAND_SAMPLE_ALLBINARY)
                 && samplingNamesNumeric.Contains(Commands.COMMAND_EXPDESIGN_FULLFACTORIAL))
             {
                 return true;

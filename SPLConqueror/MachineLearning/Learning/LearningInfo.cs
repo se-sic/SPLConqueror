@@ -25,19 +25,19 @@ namespace MachineLearning
         public string numericSamplings_Learning = "";
 
         public string numericSamplings_Validation = "";
-        
-        
+
+
 
         /// <summary>
         /// Returns a textual representation of this object consisting of the names of numerical and binary sampling methods performed for this experimental state and a representation of the mlsettings. 
         /// </summary>
         /// <returns>The textual reprentation.</returns>
-        public override string ToString()    
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("Learning: " + binarySamplings_Learning + "  " + numericSamplings_Learning + " using " + learningApproach);
             sb.Append(mlSettings.ToString());
- 	        return sb.ToString();
+            return sb.ToString();
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace MachineLearning
             binarySamplings_Validation = "";
             numericSamplings_Learning = "";
             numericSamplings_Validation = "";
-           
-            
+
+
         }
 
         /// <summary>

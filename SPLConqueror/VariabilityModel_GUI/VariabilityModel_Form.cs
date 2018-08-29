@@ -579,7 +579,7 @@ namespace VariabilitModel_GUI
                 allParticipatingNumericOptions.ForEach(x => allPossibleValues.Add(x.getAllValues()));
 
                 var cartesianProduct = allPossibleValues.First().Select(x => x.ToString());
-                foreach(List<double> possibleValue in allPossibleValues.Skip(1))
+                foreach (List<double> possibleValue in allPossibleValues.Skip(1))
                 {
                     cartesianProduct = from product in cartesianProduct
                                        from newValue in possibleValue
@@ -725,7 +725,7 @@ namespace VariabilitModel_GUI
                         {
                             int thisOptionIndex = getIndex(nameToIndex, toCheck.Name);
                             int impliedOptionIndex = getIndex(nameToIndex, toCheck.Name);
-                            parsedImplicationExpressions.Add("-" + thisOptionIndex + " " 
+                            parsedImplicationExpressions.Add("-" + thisOptionIndex + " "
                                 + impliedOptionIndex + " 0" + System.Environment.NewLine);
                         }
                     }
@@ -750,7 +750,8 @@ namespace VariabilitModel_GUI
                         booleanConstraintInDimacs.Append("-");
                         booleanConstraintInDimacs.Append(getIndex(nameToIndex, participatingOption.Replace("!", "").Trim()));
                         booleanConstraintInDimacs.Append(" ");
-                    } else
+                    }
+                    else
                     {
                         booleanConstraintInDimacs.Append(getIndex(nameToIndex, participatingOption.Trim()));
                         booleanConstraintInDimacs.Append(" ");
@@ -795,10 +796,10 @@ namespace VariabilitModel_GUI
                     // -1 -2 0
                     // -1 -3 0
                     // -2 -3 0
-                    for(int i = 0; i < alternativeOptions.Count - 1; i++)
+                    for (int i = 0; i < alternativeOptions.Count - 1; i++)
                     {
                         ConfigurationOption firstAlternative = alternativeOptions.ElementAt(i);
-                        foreach(ConfigurationOption otherAlternative in alternativeOptions.Skip(i + 1))
+                        foreach (ConfigurationOption otherAlternative in alternativeOptions.Skip(i + 1))
                         {
                             StringBuilder mutualExclusive = new StringBuilder("-");
                             mutualExclusive.Append(getIndex(nameToIndex, firstAlternative.Name));
@@ -856,7 +857,7 @@ namespace VariabilitModel_GUI
             {
                 string binaryFeatures = "";
                 XmlNode binaryNode = null;
-                foreach(XmlNode data in rowNode)
+                foreach (XmlNode data in rowNode)
                 {
                     if (data.Attributes[0].Value.Equals("Configuration") || data.Attributes[0].Value.Equals("BinaryOptions"))
                     {
@@ -866,7 +867,8 @@ namespace VariabilitModel_GUI
                             binaryFeatures = binaryFeatures.Substring(0, binaryFeatures.Length - 1);
                         }
                         binaryNode = data;
-                    } else if (data.Attributes[0].Value.Equals("Variable Features") || data.Attributes[0].Value.Equals("NumericOptions"))
+                    }
+                    else if (data.Attributes[0].Value.Equals("Variable Features") || data.Attributes[0].Value.Equals("NumericOptions"))
                     {
                         StringBuilder artificialParents = new StringBuilder();
                         data.InnerText.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList()
@@ -924,18 +926,21 @@ namespace VariabilitModel_GUI
                     {
                         List<XmlNode> toDelete = new List<XmlNode>();
                         string name = null;
-                        foreach(XmlNode optionData in optionNode)
+                        foreach (XmlNode optionData in optionNode)
                         {
-                            if (optionData.Name.Equals("defaultValue")) {
+                            if (optionData.Name.Equals("defaultValue"))
+                            {
                                 toDelete.Add(optionData);
-                            } else if (optionData.Name.Equals("children"))
+                            }
+                            else if (optionData.Name.Equals("children"))
                             {
                                 toDelete.Add(optionData);
                                 foreach (XmlNode child in optionData.ChildNodes)
                                 {
                                     childToParent.Add(child.InnerText, name);
                                 }
-                            } else if (optionData.Name.Equals("name"))
+                            }
+                            else if (optionData.Name.Equals("name"))
                             {
                                 name = optionData.InnerText;
                             }
@@ -965,9 +970,10 @@ namespace VariabilitModel_GUI
                             }
                         }
                     }
-                } else if (configurationNode.Name.Equals("numericOptions"))
+                }
+                else if (configurationNode.Name.Equals("numericOptions"))
                 {
-                    
+
                     foreach (XmlNode option in configurationNode.ChildNodes)
                     {
                         List<XmlNode> toDelete = new List<XmlNode>();

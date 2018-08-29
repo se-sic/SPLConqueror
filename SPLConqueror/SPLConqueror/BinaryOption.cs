@@ -14,7 +14,8 @@ namespace SPLConqueror_Core
         /// <summary>
         /// A binary option can either be selected or selected in a specific configuration of a programm.
         /// </summary>
-        public enum BinaryValue {
+        public enum BinaryValue
+        {
             /// <summary>
             /// The binary option is selected
             /// </summary>
