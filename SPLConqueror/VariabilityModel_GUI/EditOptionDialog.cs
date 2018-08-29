@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using SPLConqueror_Core;
 
@@ -15,7 +12,7 @@ namespace VariabilitModel_GUI
         private const string DESCRIPTION_CHANGE_NAME = "Please enter a new feature name:";
         private const string DESCRIPTION_SET_PARENT = "Choose the new parent of this feature:";
         private const string DESCRIPTION_CHANGE_RANGE = "Please enter a new range of values for this feature:";
-        private const string DESCRIPTION_CHANGE_STEP_SIZE = "Please enter a new step function:";
+        private const string DESCRIPTION_CHANGE_STEP_SIZE = "Please enter a new step function/values:";
 
         VariabilityModel_Form parent = null;
         ConfigurationOption currentOption = null;
@@ -92,7 +89,11 @@ namespace VariabilitModel_GUI
                 numericSettingsGroupBox.Enabled = true;
                 rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", "
                     + ((NumericOption)currentOption).Max_value + " )";
-                stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString();
+		 if (((NumericOption)currentOption).StepFunction != null) {
+			 stepSizeLabel.Text = ((NumericOption)currentOption).StepFunction.ToString ();
+		 } else {
+			 stepSizeLabel.Text = "( " + ((NumericOption)currentOption).Values + " )";
+		 }
             }
 
             optionTypeBinaryRadioButton.CheckedChanged += optionTypeBinaryRadioButton_CheckedChanged;
@@ -337,8 +338,15 @@ namespace VariabilitModel_GUI
 
             if (result.Item1 == DialogResult.OK)
             {
-                stepSizeLabel.Text = result.Item2;
-                ((NumericOption)currentOption).StepFunction = new InfluenceFunction(result.Item2);
+		 // Distinguish between influence function and numeric values
+		 if (result.Item2.Contains (";")) {
+			 ((NumericOption)currentOption).SetValues (result.Item2);
+			 rangeLabel.Text = "( " + ((NumericOption)currentOption).Min_value + ", " + ((NumericOption)currentOption).Max_value + " )";
+			 stepSizeLabel.Text = "( " + ((NumericOption)currentOption).Values.ToString () + " )";
+		 } else {
+			 ((NumericOption)currentOption).StepFunction = new InfluenceFunction (result.Item2);
+			 stepSizeLabel.Text = "( " + ((NumericOption)currentOption).StepFunction + " )";
+		 }
             }
         }
 
@@ -893,10 +901,13 @@ namespace VariabilitModel_GUI
             stepSizeTextBox.TextChanged += (s, e) =>
             {
                 bool everythingCorrect = false;
-
                 try
                 {
-                    new InfluenceFunction(stepSizeTextBox.Text);
+		 if (stepSizeTextBox.Text.Contains (";")) {
+			 new NumericValues (stepSizeTextBox.Text);
+		 } else {
+			 new InfluenceFunction (stepSizeTextBox.Text);
+		 }
                     everythingCorrect = true;
                 }
                 catch{}
