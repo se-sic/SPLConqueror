@@ -22,12 +22,12 @@ namespace VariabilitModel_GUI
         public NewFeatureDialog(string parentFeature)
         {
             InitializeComponent();
-            
+
             this.Text = TITLE;
 
             optionalCheckBox.Enabled = false;
             addOptionButton.Enabled = false;
-            
+
             List<ConfigurationOption> options = GlobalState.varModel.getOptions();
 
             for (int i = 0; i < options.Count; i++)
@@ -301,7 +301,7 @@ namespace VariabilitModel_GUI
 
                 if (stepSizeCheckBox.Checked)
                     ((NumericOption)newOption).StepFunction = new InfluenceFunction(
-                        stepSizeTextBox.Text == "" ? "n + 1": stepSizeTextBox.Text, (NumericOption)newOption);
+                        stepSizeTextBox.Text == "" ? "n + 1" : stepSizeTextBox.Text, (NumericOption)newOption);
                 else
                     ((NumericOption)newOption).StepFunction = new InfluenceFunction("n + 1", (NumericOption)newOption);
 

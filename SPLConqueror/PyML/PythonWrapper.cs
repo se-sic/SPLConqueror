@@ -169,7 +169,7 @@ namespace ProcessWrapper
         /// <param name="task">Task that should be performed by the learner. Can either be parameter tuning
         /// or learning.</param>
         /// <param name="model">Model that contains all the configuration options.</param>
-        public void setupApplication(string configsLearn,string nfpLearn, string configsPredict, string nfpPredict,
+        public void setupApplication(string configsLearn, string nfpLearn, string configsPredict, string nfpPredict,
             string task, VariabilityModel model)
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))

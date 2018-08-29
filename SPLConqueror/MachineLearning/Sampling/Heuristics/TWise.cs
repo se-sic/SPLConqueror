@@ -1,4 +1,5 @@
-﻿using SPLConqueror_Core;
+﻿using MachineLearning.Solver;
+using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace MachineLearning.Sampling.Heuristics
     /// </summary>
     class TWise
     {
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
 
         public const string PARAMETER_T_NAME = "t";
 
@@ -40,7 +40,7 @@ namespace MachineLearning.Sampling.Heuristics
             List<List<BinaryOption>> resultCleaned = new List<List<BinaryOption>>();
             List<String> configs = new List<string>();
 
-			foreach (List<BinaryOption> options in result)
+            foreach (List<BinaryOption> options in result)
             {
                 options.Sort(delegate (BinaryOption o1, BinaryOption o2) { return o1.Name.CompareTo(o2.Name); });
 
@@ -48,7 +48,8 @@ namespace MachineLearning.Sampling.Heuristics
 
                 foreach (BinaryOption binOpt in options)
                 {
-                    currConfig = currConfig + " " + binOpt.Name;                }
+                    currConfig = currConfig + " " + binOpt.Name;
+                }
 
                 if (!configs.Contains(currConfig))
                 {
@@ -66,7 +67,7 @@ namespace MachineLearning.Sampling.Heuristics
         {
             if (candidates.Count == t)
             {
-                candidates = generator.minimizeConfig(candidates, vm, true, null);
+                candidates = ConfigurationBuilder.vg.MinimizeConfig(candidates, vm, true, null);
                 if (candidates.Count != 0)
                 {
                     result.Add(candidates);

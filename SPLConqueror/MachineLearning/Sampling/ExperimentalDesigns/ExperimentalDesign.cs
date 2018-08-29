@@ -14,7 +14,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
     {
 
         protected Dictionary<string, string> designParameter = new Dictionary<string, string>();
-        
+
         protected List<NumericOption> options = null;
 
         /// <summary>
@@ -22,8 +22,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         public int minNumberOfSamplingsPerNumericOption = 2;
 
-        protected List<Dictionary<NumericOption, double>> selectedConfigurations = new List<Dictionary<NumericOption,double>>();
-        
+        protected List<Dictionary<NumericOption, double>> selectedConfigurations = new List<Dictionary<NumericOption, double>>();
+
         /// <summary>
         /// Configurations selected from the experimental design.
         /// </summary>
@@ -139,7 +139,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// </summary>
         /// <param name="parameterNameToValue">Dictionary with the parameter names and the values that will be set.</param>
         public abstract void setSamplingParameters(Dictionary<String, String> parameterNameToValue);
-       
+
         /// <summary>
         /// Computes the design using the default parameters. 
         /// </summary>

@@ -28,13 +28,17 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public const string ONLY_BINARY = "onlyBinary";
         public const string SEED = "seed";
         public const string SELECTION_HEURISTIC = "selection";
+        public const string OPTIONS_FOR_WEIGHTOPTIMIZATION = "number-weight-optimization";
+        public const string USED_OPTIMIZATION = "optimization";
+        public const string USE_WHOLE_POPULATION = "use-whole-population";
         public const int ROUND_FACTOR = 4;
         public static DistanceMetric[] metrics = { new ManhattanDistance() };
-        public static Distribution[] distributions = { new UniformDistribution() };
+        public static IDistribution[] distributions = { new UniformDistribution(), new BinomialDistribution(),
+            new NormalDistribution(), new GeometricDistribution()};
         #endregion
 
         protected DistanceMetric metric = null;
-        protected Distribution distribution = null;
+        protected IDistribution distribution = null;
         protected ISelectionHeuristic selection = null;
         #endregion
 
@@ -52,7 +56,10 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 {ONLY_NUMERIC, "false" },
                 {ONLY_BINARY, "false" },
                 {SEED, "0" },
-                {SELECTION_HEURISTIC, "RandomSelection" }
+                {SELECTION_HEURISTIC, "RandomSelection" },
+                {OPTIONS_FOR_WEIGHTOPTIMIZATION, "0" },
+                {USED_OPTIMIZATION, Optimization.NONE.ToString().ToUpper ()},
+                {USE_WHOLE_POPULATION, "false"}
             };
         }
 
@@ -75,8 +82,13 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             // Now, compute all buckets according to the given features
             List<double> allBuckets = ComputeBuckets();
 
-            // Compute the whole population needed for sampling from the buckets
-            Dictionary<double, List<Configuration>> wholeDistribution = ComputeDistribution(allBuckets);
+            Dictionary<double, List<Configuration>> wholeDistribution = null;
+            if (this.selection is RandomSelection ||
+                (this.distribution is NormalDistribution && this.strategyParameter.ContainsKey(DistributionAware.USE_WHOLE_POPULATION)))
+            {
+                // Compute the whole population needed for randomly sampling from the buckets
+                wholeDistribution = ComputeDistribution(allBuckets);
+            }
 
             // Then, sample from all buckets according to the given distribution
             SampleFromDistribution(wholeDistribution, allBuckets, numberConfigs);
@@ -87,7 +99,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         /// <summary>
         /// This method checks the configuration and sets the according variables.
         /// </summary>
-        private void CheckConfiguration()
+        protected virtual void CheckConfiguration()
         {
             // Check the used metric
             string metricToUse = this.strategyParameter[DISTANCE_METRIC];
@@ -107,7 +119,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
 
             // Check the used distribution
             string distributionToUse = this.strategyParameter[DISTRIBUTION];
-            foreach (Distribution d in DistributionSensitive.distributions)
+            foreach (IDistribution d in DistributionSensitive.distributions)
             {
                 if (d.GetName().ToUpper().Equals(distributionToUse.ToUpper()))
                 {
@@ -122,7 +134,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             }
 
             string selectionMechanism = this.strategyParameter[SELECTION_HEURISTIC];
-            Type selectionType = Type.GetType("MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic." 
+            Type selectionType = Type.GetType("MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic."
                 + selectionMechanism);
             if (typeof(ISelectionHeuristic).IsAssignableFrom(selectionType))
             {
@@ -134,7 +146,36 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                     Int32.TryParse(this.strategyParameter[SEED], out seed);
                     ((RandomSelection)selection).setSeed(seed);
                 }
-            } else
+                else if (this.selection is SolverSelection)
+                {
+                    int seed = 0;
+                    Int32.TryParse(this.strategyParameter[SEED], out seed);
+                    ((SolverSelection)selection).setSeed(seed);
+                    Tuple<int, int> numberFeatureRange = new Tuple<int, int>(1, 1);
+                    if (this.strategyParameter[OPTIONS_FOR_WEIGHTOPTIMIZATION].Contains("-"))
+                    {
+                        string[] range = this.strategyParameter[OPTIONS_FOR_WEIGHTOPTIMIZATION].Split('-');
+                        if (range.Length > 2)
+                        {
+                            throw new ArgumentException("The argument " + OPTIONS_FOR_WEIGHTOPTIMIZATION +
+                                " has to consist of at most two numbers separated by a minus sign ('-').");
+                        }
+                        int first = 1;
+                        int second = 1;
+                        Int32.TryParse(range[0], out first);
+                        Int32.TryParse(range[1], out second);
+                        numberFeatureRange = new Tuple<int, int>(first, second);
+                    }
+                    else
+                    {
+                        int numberFeatures = 1;
+                        Int32.TryParse(this.strategyParameter[OPTIONS_FOR_WEIGHTOPTIMIZATION], out numberFeatures);
+                        numberFeatureRange = new Tuple<int, int>(numberFeatures, numberFeatures);
+                    }
+                  ((SolverSelection)selection).setNumberFeatures(numberFeatureRange);
+                }
+            }
+            else
             {
                 throw new ArgumentException("The selection mechanism " + selectionMechanism + "is not supported");
             }
@@ -168,6 +209,22 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 this.optionsToConsider.AddRange(GlobalState.varModel.NumericOptions);
             }
 
+            string optimization = this.strategyParameter[USED_OPTIMIZATION];
+            bool found = false;
+            foreach (Optimization opt in Enum.GetValues(typeof(Optimization)))
+            {
+                if (opt.ToString().ToUpper().Equals(optimization.ToUpper()))
+                {
+                    found = true;
+                    this.strategyParameter[USED_OPTIMIZATION] = optimization.ToUpper();
+                    break;
+                }
+            }
+            if (!found)
+            {
+                throw new ArgumentException("The optimization " + optimization + " is invalid.");
+            }
+
         }
 
         /// <summary>
@@ -187,8 +244,34 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
         public void SampleFromDistribution(Dictionary<double, List<Configuration>> wholeDistribution, List<double> allBuckets, int count)
         {
             Dictionary<double, double> wantedDistribution = CreateDistribution(wholeDistribution, allBuckets);
-            this.selectedConfigurations  = selection
-                .SampleFromDistribution(wholeDistribution, wantedDistribution, allBuckets, count);
+
+            if (this.selection is RandomSelection)
+            {
+                ((RandomSelection)selection).setDistribution(wholeDistribution);
+            }
+
+            this.selectedConfigurations = selection
+                .SampleFromDistribution(wantedDistribution, allBuckets, count, GetOptimization());
+        }
+
+        /// <summary>
+        /// Returns the optimization.
+		/// This implementation returns 'None' if no optimization matches.
+        /// </summary>
+        /// <returns>The optimization to use.</returns>
+		protected Optimization GetOptimization()
+        {
+            string optimization = this.strategyParameter[USED_OPTIMIZATION];
+            foreach (Optimization opt in Enum.GetValues(typeof(Optimization)))
+            {
+                if (opt.ToString().ToUpper().Equals(optimization.ToUpper()))
+                {
+                    return opt;
+                }
+            }
+
+            // Defaults to 'None'
+            return Optimization.NONE;
         }
 
         /// <summary>
@@ -224,7 +307,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                 result[d] = new List<Configuration>();
             }
 
-            List<Configuration> allConfigurations = VariantGenerator.GenerateAllVariants(GlobalState.varModel, this.optionsToConsider);
+            List<Configuration> allConfigurations = ConfigurationBuilder.vg.GenerateAllVariants(GlobalState.varModel, this.optionsToConsider);
 
             foreach (Configuration c in allConfigurations)
             {

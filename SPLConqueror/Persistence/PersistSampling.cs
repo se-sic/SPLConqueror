@@ -11,7 +11,7 @@ namespace Persistence
     public class PersistSampling
     {
         private PersistSampling() { }
-        
+
         /// <summary>
         /// Parse sampling strategies to string.
         /// </summary>

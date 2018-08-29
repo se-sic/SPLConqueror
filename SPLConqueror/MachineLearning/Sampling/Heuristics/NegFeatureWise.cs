@@ -9,7 +9,6 @@ namespace MachineLearning.Sampling.Heuristics
     public class NegFeatureWise
     {
         private List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
-        private Solver.VariantGenerator generator = new Solver.VariantGenerator();
 
         //get one variant per feature multiplied with alternative combinations; the variant tries to maximize the number of selected features, but without the feature in question
         /// <summary>
@@ -38,7 +37,7 @@ namespace MachineLearning.Sampling.Heuristics
                         continue;
                     List<BinaryOption> removedElements = null;
                     //Get a configuration without the feature based on the maximum configuration: config
-                    List<BinaryOption> configToMeasure = generator.generateConfigWithoutOption(binOpt, config, out removedElements, vm);
+                    List<BinaryOption> configToMeasure = ConfigurationBuilder.vg.GenerateConfigWithoutOption(binOpt, config, out removedElements, vm);
 
                     if (configToMeasure == null)
                     {//This didn't work, let us try to use another maximum configuration
@@ -46,7 +45,7 @@ namespace MachineLearning.Sampling.Heuristics
                     }
                     else
                     {
-                        if (!Configuration.containsBinaryConfiguration(configurations,configToMeasure))
+                        if (!Configuration.containsBinaryConfiguration(configurations, configToMeasure))
                             configurations.Add(configToMeasure);
                         break;
                     }
@@ -88,14 +87,14 @@ namespace MachineLearning.Sampling.Heuristics
                         currentElementUnderConsdiration = e;
                         //Constructing new Configuration without the current element
                         List<BinaryOption> configToMeasure = new List<BinaryOption>();
-                        configToMeasure = generator.generateConfigWithoutOption(e, currentConfig, out removedElements, vm);
+                        configToMeasure = ConfigurationBuilder.vg.GenerateConfigWithoutOption(e, currentConfig, out removedElements, vm);
 
                         if (configToMeasure == null)
                         {
                             abort = true;
                             continue;
                         }
-                        else if(!Configuration.containsBinaryConfiguration(configurations,configToMeasure))
+                        else if (!Configuration.containsBinaryConfiguration(configurations, configToMeasure))
                             configurations.Add(configToMeasure);
 
                     }
@@ -116,7 +115,7 @@ namespace MachineLearning.Sampling.Heuristics
         {
             Dictionary<BinaryOption, List<BinaryOption>> alternatives = new Dictionary<BinaryOption, List<BinaryOption>>();
             List<List<BinaryOption>> maxConfigurations = new List<List<BinaryOption>>();
-            maxConfigurations.AddRange(generator.maximizeConfig(null, vm, false, null));
+            maxConfigurations.AddRange(ConfigurationBuilder.vg.MaximizeConfig(null, vm, false, null));
             bool existAlternative = false;
 
             if (allAlternativeCombinations)
@@ -171,7 +170,7 @@ namespace MachineLearning.Sampling.Heuristics
                 if (!existAlternative)
                 {
                     List<BinaryOption> config = new List<BinaryOption>();
-                    maxConfigurations.AddRange(generator.maximizeConfig(config, vm, false, null));
+                    maxConfigurations.AddRange(ConfigurationBuilder.vg.MaximizeConfig(config, vm, false, null));
                 }
             }
 
@@ -193,11 +192,11 @@ namespace MachineLearning.Sampling.Heuristics
                     temp.Add(elem);
                     if (!allAlternativeCombinations)
                     {
-                        maxConfigurations.Add((generator.maximizeConfig(temp, vm, false, null)[0]));
+                        maxConfigurations.Add((ConfigurationBuilder.vg.MaximizeConfig(temp, vm, false, null)[0]));
                     }
                     else
                     {
-                        maxConfigurations.AddRange((generator.maximizeConfig(temp, vm, false, null)));
+                        maxConfigurations.AddRange((ConfigurationBuilder.vg.MaximizeConfig(temp, vm, false, null)));
                     }
                 }
             }
@@ -238,7 +237,7 @@ namespace MachineLearning.Sampling.Heuristics
                     config.Add(toConfigure);
                     config.Add(k);
                     List<List<BinaryOption>> temp = new List<List<BinaryOption>>();
-                    temp = generator.maximizeConfig(config, vm, false, null);
+                    temp = ConfigurationBuilder.vg.MaximizeConfig(config, vm, false, null);
                     if (temp == null || temp.Count == 0)
                         continue;
                     config = temp[0];

@@ -59,7 +59,8 @@ namespace MachineLearning.Sampling.Hybrid
                 if (this.strategyParameter.ContainsKey(option))
                 {
                     this.strategyParameter[option] = parameterNameToValue[option];
-                } else
+                }
+                else
                 {
                     // Instead of throwing an argument exception, an error could be printed.
                     throw new ArgumentException("The parameter " + option + " is not supported in the strategy " + this.GetType() + ".");

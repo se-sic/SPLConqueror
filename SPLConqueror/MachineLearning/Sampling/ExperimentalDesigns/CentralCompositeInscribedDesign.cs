@@ -27,7 +27,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         /// Creates a new Central Composite sampling design.
         /// </summary>
         public CentralCompositeInscribedDesign() { }
-        
+
 
         public override string getName()
         {

@@ -61,7 +61,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         {
             return compute();
         }
-        
+
         private bool compute()
         {
             Random rand = new Random(seed);

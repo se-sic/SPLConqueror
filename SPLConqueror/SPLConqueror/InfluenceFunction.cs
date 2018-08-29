@@ -33,17 +33,18 @@ namespace SPLConqueror_Core
         public HashSet<NumericOption> participatingNumOptions = new HashSet<NumericOption>();
 
         /// <summary>
-        /// The number of participating features.
+        /// The number of configuration options (features) that are participating in this influence function.
         /// </summary>
         protected int numberOfParticipatingFeatures = 0;
 
         /// <summary>
-        /// The expression array.
+        /// Contains the whole expression in the array.
+        /// Every element of this array contains an operand or an operator.
         /// </summary>
         protected string[] expressionArray = null;
 
         /// <summary>
-        /// The number of numeric options.
+        /// The <see cref="NumericOption"/>, the <see cref="InfluenceFunction"/> is related to.
         /// </summary>
         protected NumericOption numOption = null;
 
@@ -56,7 +57,7 @@ namespace SPLConqueror_Core
         /// <param name="varModel">The variability model of the configuration options.</param>
         public InfluenceFunction(string expression, VariabilityModel varModel)
         {
-            this.varModel = varModel; 
+            this.varModel = varModel;
             parseExpressionToPolishNotation(expression);
         }
 
@@ -65,7 +66,8 @@ namespace SPLConqueror_Core
         /// numeric configuration options. 
         /// </summary>
         /// <param name="expression">A function consisting of numbers, operators and configuration-option names.</param>
-        public InfluenceFunction(String expression){
+        public InfluenceFunction(String expression)
+        {
 
             this.varModel = extractFeatureModelFromExpression(createWellFormedExpression(expression));
             parseExpressionToPolishNotation(expression);
@@ -86,7 +88,7 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SPLConqueror_Core.InfluenceFunction"/> class.
+        /// An empty constructor for the <see cref="InfluenceFunction"/>.
         /// </summary>
         protected InfluenceFunction()
         {
@@ -96,10 +98,10 @@ namespace SPLConqueror_Core
         {
             VariabilityModel varModel = new VariabilityModel("TEMP");
 
-            string[] parts = expression.Split(new char[] { '+','-', '*', '[', ']' });
+            string[] parts = expression.Split(new char[] { '+', '-', '*', '[', ']' });
 
             double value = 0.0;
-            for (int i = 0; i < parts.Length;i++)
+            for (int i = 0; i < parts.Length; i++)
             {
                 string part = parts[i].Trim();
                 if (part.Length > 0)
@@ -147,7 +149,7 @@ namespace SPLConqueror_Core
             expression = expression.Replace("[", " [ ");
             expression = expression.Replace("]", " ] ");
 
-            while(expression.Contains("  "))
+            while (expression.Contains("  "))
             {
                 expression = expression.Replace("  ", " ");
             }
@@ -173,7 +175,7 @@ namespace SPLConqueror_Core
                 expression = InfluenceFunction.replaceLogAndClosingBracket(expression, "log10(", '[', ']');
             }
 
-            return expression; 
+            return expression;
         }
 
 
@@ -252,7 +254,7 @@ namespace SPLConqueror_Core
                     bool found = false;
                     foreach (BinaryOption binOpt in config.BinaryOptions.Keys)
                     {
-                        if ((binOpt.Name == bOpt.Name) )
+                        if ((binOpt.Name == bOpt.Name))
                             found = true;
                     }
                     if (!found)
@@ -270,7 +272,7 @@ namespace SPLConqueror_Core
             return true;
         }
 
-        
+
 
         private void parseExpressionToPolishNotation(String expression)
         {
@@ -278,7 +280,7 @@ namespace SPLConqueror_Core
             Stack<string> stack = new Stack<string>();
 
             expression = createWellFormedExpression(expression).Trim();
-           
+
 
 
             this.wellFormedExpression = expression;
@@ -288,7 +290,7 @@ namespace SPLConqueror_Core
             {
                 string token = expr[i];
 
-                
+
                 if (InfluenceFunction.isOperator(token))
                 {
                     if (stack.Count > 0)
@@ -309,7 +311,7 @@ namespace SPLConqueror_Core
                     stack.Push(token);
                 else if (token.Equals("<"))
                     stack.Push(token);
-                
+
                 else if (token.Equals(")"))
                 {
                     while (!stack.Peek().Equals("("))
@@ -332,9 +334,9 @@ namespace SPLConqueror_Core
                 }
                 // token is number or a feature which has a value
                 // features existing in the function but not in the feature model, have to be accepted too
-               if(tokenIsAFeatureOrNumber(token, this.varModel))
-                   queue.Enqueue(token);
-               
+                if (tokenIsAFeatureOrNumber(token, this.varModel))
+                    queue.Enqueue(token);
+
             }
 
             // stack abbauen
@@ -438,7 +440,7 @@ namespace SPLConqueror_Core
 
                 if (!InfluenceFunction.isOperatorEval(curr))
                 {
-                    
+
 
                     stack.Push(getValueOfToken(config, curr, varModel));
                 }
@@ -541,7 +543,7 @@ namespace SPLConqueror_Core
 
         }
 
-        private double getValueOfToken(Dictionary<NumericOption,double> config, string token, VariabilityModel varModel)
+        private double getValueOfToken(Dictionary<NumericOption, double> config, string token, VariabilityModel varModel)
         {
             token = token.Trim();
 
@@ -553,7 +555,7 @@ namespace SPLConqueror_Core
             }
 
             if (varModel == null)
-            {       
+            {
                 if (token.Equals(this.numOption.Name))
                     return config[this.numOption];
             }
@@ -620,7 +622,7 @@ namespace SPLConqueror_Core
             {
                 NumericOption numOption = varModel.getNumericOption(token);
                 if (numOption != null)
-                { 
+                {
                     if (!participatingNumOptions.Contains(numOption))
                         this.participatingNumOptions.Add(numOption);
                     numberOfParticipatingFeatures++;
@@ -638,7 +640,7 @@ namespace SPLConqueror_Core
             }
             else
             {
-                if(token.Equals(this.numOption.Name))
+                if (token.Equals(this.numOption.Name))
                     return true;
             }
             return false;
@@ -647,16 +649,16 @@ namespace SPLConqueror_Core
         private static bool isOperator(string token)
         {
             token = token.Trim();
-            
+
             // schöner machen 
 
-            if(token.Equals("+"))
+            if (token.Equals("+"))
                 return true;
 
             if (token.Equals("-"))
                 return true;
 
-            if(token.Equals("*"))
+            if (token.Equals("*"))
                 return true;
 
             if (token.Equals("/"))
@@ -727,9 +729,9 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
-        /// Builds and returns the string representation of the influence function.
+        /// Returns the textual representation of the <see cref="InfluenceFunction"/>.
         /// </summary>
-        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:SPLConqueror_Core.InfluenceFunction"/>.</returns>
+        /// <returns>The textual representation of the <see cref="InfluenceFunction"/>.</returns>
         public override String ToString()
         {
             String returnString = wellFormedExpression;
@@ -769,10 +771,10 @@ namespace SPLConqueror_Core
         /// <returns></returns>
         public bool containsOption(ConfigurationOption option)
         {
-            if(this.participatingBoolOptions.Contains(option))
+            if (this.participatingBoolOptions.Contains(option))
                 return true;
 
-            if(this.participatingNumOptions.Contains(option))
+            if (this.participatingNumOptions.Contains(option))
                 return true;
             return false;
         }
@@ -819,12 +821,12 @@ namespace SPLConqueror_Core
             {
                 if (this.participatingBoolOptions.Contains(binOpt))
                     return true;
-                BinaryOption parent = (BinaryOption) binOpt.Parent;
+                BinaryOption parent = (BinaryOption)binOpt.Parent;
                 while (parent != null && parent != varModel.Root)
                 {
                     if (this.participatingBoolOptions.Contains(parent))
                         return true;
-                    parent = (BinaryOption) parent.Parent;
+                    parent = (BinaryOption)parent.Parent;
                 }
             }
 

@@ -16,7 +16,7 @@ namespace Test
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
             VarModelAndOptions vmoTest = new VarModelAndOptions();
-            vmoTest.saveVarModel( vmoTest.createVarModel());
+            vmoTest.saveVarModel(vmoTest.createVarModel());
 
         }
     }

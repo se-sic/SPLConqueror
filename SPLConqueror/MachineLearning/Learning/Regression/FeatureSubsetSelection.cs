@@ -71,7 +71,7 @@ namespace MachineLearning.Learning.Regression
                 }
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
             }
-            if(this.strictlyMandatoryFeatures.Count == 0)
+            if (this.strictlyMandatoryFeatures.Count == 0)
                 this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
@@ -103,7 +103,7 @@ namespace MachineLearning.Learning.Regression
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
             }
             if (this.strictlyMandatoryFeatures.Count == 0)
-            this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
+                this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
                 initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
         }
@@ -189,7 +189,10 @@ namespace MachineLearning.Learning.Regression
                 previous = current;
                 current = performForwardStep(previous);
                 if (current == null)
+                {
+                    updateInfluenceModel();
                     return;
+                }
                 learningHistory.Add(current);
                 GlobalState.logInfo.logLine(current.ToString());
 
@@ -287,7 +290,7 @@ namespace MachineLearning.Learning.Regression
             ConcurrentDictionary<Feature, double> errorOfFeature = new ConcurrentDictionary<Feature, double>();
             ConcurrentDictionary<Feature, List<Feature>> errorOfFeatureWithModel = new ConcurrentDictionary<Feature, List<Feature>>();
             Feature bestCandidate = null;
-            
+
             List<Task> tasks = new List<Task>();
 
             //Learn for each candidate a new model and compute the error for each newly learned model
@@ -303,7 +306,7 @@ namespace MachineLearning.Learning.Regression
                 {
                     continue;
                 }
-                    
+
                 List<Feature> newModel = copyCombination(previousRound.FeatureSet);
                 newModel.Add(threadCandidate);
                 if (this.MLsettings.parallelization)
@@ -335,6 +338,12 @@ namespace MachineLearning.Learning.Regression
             if (this.MLsettings.parallelization)
                 Task.WaitAll(tasks.ToArray());
 
+            // if no influences were found, null is returned
+            if (errorOfFeature.Count == 0)
+            {
+                return null;
+            }
+
             if (candidates.Count == 0)
                 return null;
 
@@ -343,7 +352,7 @@ namespace MachineLearning.Learning.Regression
             sortedFeatures.Sort(sortedFeatures.First());
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
-				foreach (Feature candidate in sortedFeatures)
+                foreach (Feature candidate in sortedFeatures)
                 {
                     var candidateError = errorOfFeature[candidate];
                     var candidateScore = previousRound.validationError_relative - candidateError;
@@ -359,27 +368,29 @@ namespace MachineLearning.Learning.Regression
                             minimalRoundError = errorOfFeature[candidate];
                             bestCandidate = candidate;
                             bestModel = errorOfFeatureWithModel[candidate];
-                        } else
+                        }
+                        else
                         {
-                            candidate.Constant = 1;                        
+                            candidate.Constant = 1;
                         }
                     }
                 }
-            } else if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.INFLUENCE)
+            }
+            else if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.INFLUENCE)
             {
                 throw new NotImplementedException();
-//                foreach (Feature candidate in errorOfFeature.Keys)
-//                {
-//                    double candidateRate = bfCandidateRate[candidate];
-//                    double candidateWeightedAbsoluteInfluence = Math.Abs(candidate.Constant) * candidateRate;
-//                    if (candidateWeightedAbsoluteInfluence > maximalWeightedAbsoluteRoundInfluence)
-//                    {
-//                        maximalWeightedAbsoluteRoundInfluence = candidateWeightedAbsoluteInfluence;
-//                        bestCandidate = candidate;
-//                        bestModel = errorOfFeatureWithModel[candidate];
-//                    } else
-//                        candidate.Constant = 1;
-//                }
+                //                foreach (Feature candidate in errorOfFeature.Keys)
+                //                {
+                //                    double candidateRate = bfCandidateRate[candidate];
+                //                    double candidateWeightedAbsoluteInfluence = Math.Abs(candidate.Constant) * candidateRate;
+                //                    if (candidateWeightedAbsoluteInfluence > maximalWeightedAbsoluteRoundInfluence)
+                //                    {
+                //                        maximalWeightedAbsoluteRoundInfluence = candidateWeightedAbsoluteInfluence;
+                //                        bestCandidate = candidate;
+                //                        bestModel = errorOfFeatureWithModel[candidate];
+                //                    } else
+                //                        candidate.Constant = 1;
+                //                }
             }
 
             //error computations and logging stuff
@@ -495,7 +506,7 @@ namespace MachineLearning.Learning.Regression
 
                 foreach (Feature feature in currentModel)
                 {
-                    
+
                     if (!checkWhetherCandidateIsValide(basicFeature, feature))
                         continue;
 
@@ -510,7 +521,7 @@ namespace MachineLearning.Learning.Regression
                     Feature newCandidate = new Feature(feature, basicFeature, varModel);
                     if (!currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                         listOfCandidates.Add(newCandidate);
-                nextRound:
+                    nextRound:
                     { }
                 }
 
@@ -540,7 +551,7 @@ namespace MachineLearning.Learning.Regression
                         listOfCandidates.Add(newCandidate);
 
                     foreach (var feature in currentModel)
-                    {                        
+                    {
                         if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
 
@@ -590,7 +601,7 @@ namespace MachineLearning.Learning.Regression
                     Feature newCandidate = null;
                     foreach (var feature in currentModel)
                     {
-                        
+
                         if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
 
@@ -612,12 +623,12 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (!checkWhetherCandidateIsValide(basicFeature,feature))
+                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
                             continue;
 
-                        
+
                         newCandidate = new Feature(feature.getPureString() + "* (" + basicFeature.participatingNumOptions.First().Max_value + " - " + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
-                        
+
                         if (newCandidate != null && !currentModel.Contains(newCandidate) && !listOfCandidates.Contains(newCandidate))
                             listOfCandidates.Add(newCandidate);
                     }
@@ -951,15 +962,16 @@ namespace MachineLearning.Learning.Regression
                 switch (this.MLsettings.lossFunction)
                 {
                     case ML_Settings.LossFunction.RELATIVE:
-			// Check for division by 0
-			if (realValue == 0) {
-				GlobalState.logError.logLine ("The machine-learning parameter 'lossFunction' does not work with NFP values of 0. " +
-				                              "To fix it, use lossFunction:ABSOLUTE as machine-learning parameter.");
-				return 0.0;
-			}
-                        
-                        error = Math.Abs((estimatedValue - realValue) / realValue ) * 100;
-                        
+                        // Check for division by 0
+                        if (realValue == 0)
+                        {
+                            GlobalState.logError.logLine("The machine-learning parameter 'lossFunction' does not work with NFP values of 0. " +
+                                                          "To fix it, use lossFunction:ABSOLUTE as machine-learning parameter.");
+                            return 0.0;
+                        }
+
+                        error = Math.Abs((estimatedValue - realValue) / realValue) * 100;
+
 
                         // Consider epsilon tube
                         if (considerEpsilonTube)
@@ -1080,7 +1092,7 @@ namespace MachineLearning.Learning.Regression
                 current.terminationReason = "abortError";
                 return true;
             }
-            
+
             //if (minimalRequiredImprovement(current) + current.validationError_relative > oldRoundRelativeError)
             if (MLsettings.minImprovementPerRound > current.bestCandidateScore)
             {
@@ -1088,7 +1100,8 @@ namespace MachineLearning.Learning.Regression
                 {
                     hierachyLevel++;
                     return false;
-                } else
+                }
+                else
                 {
                     current.terminationReason = "minImprovementPerRound";
                     return true;

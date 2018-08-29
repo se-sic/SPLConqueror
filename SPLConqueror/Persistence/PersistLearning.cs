@@ -26,10 +26,10 @@ namespace Persistence
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<learning>\n");
-            foreach(FeatureSubsetSelection sel in exp.models)
+            foreach (FeatureSubsetSelection sel in exp.models)
             {
                 sb.Append("<subset>");
-                foreach(LearningRound round in sel.LearningHistory)
+                foreach (LearningRound round in sel.LearningHistory)
                 {
                     sb.Append("<LearningRound>\n");
                     sb.Append(round.ToString());

@@ -49,7 +49,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
             // Now, compute the probabilities
             foreach (double d in wholeDistribution.Keys)
             {
-                result[d] = ((double) wholeDistribution[d].Count) / sum;
+                result[d] = ((double)wholeDistribution[d].Count) / sum;
             }
 
             return result;

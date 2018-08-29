@@ -17,7 +17,7 @@ namespace MachineLearning.Learning
         /// </summary>
         public double epsilon = 0;
 
-        public enum LossFunction {RELATIVE, LEASTSQUARES, ABSOLUTE}
+        public enum LossFunction { RELATIVE, LEASTSQUARES, ABSOLUTE }
 
         /// <summary>
         /// The loss function on which bases features are added to the influence model.
@@ -152,7 +152,7 @@ namespace MachineLearning.Learning
         /// </summary>
         public TimeSpan learnTimeLimit = new TimeSpan(0);
 
-        public enum ScoreMeasure {RELERROR, INFLUENCE};
+        public enum ScoreMeasure { RELERROR, INFLUENCE };
         /// <summary>
         /// Defines which mesure is used to select the best candidate and to compute the score of a candidate. See ScoreMeasure enum for the available measures.
         /// </summary>
@@ -251,8 +251,8 @@ namespace MachineLearning.Learning
                 name = name.Replace("-", "_");
             }
 
-            System.Reflection.FieldInfo fi =  this.GetType().GetField(name);
- 
+            System.Reflection.FieldInfo fi = this.GetType().GetField(name);
+
             if (fi == null)
                 return false;
 
@@ -275,7 +275,8 @@ namespace MachineLearning.Learning
                 {
                     fi.SetValue(this, Convert.ToBoolean(value));
                     return true;
-                }else
+                }
+                else
                     return false;
 
             }
@@ -312,7 +313,7 @@ namespace MachineLearning.Learning
             }
             if (fi.FieldType.FullName.Equals("MachineLearning.Learning.ML_Settings+LossFunction"))
             {
-                if(value.Equals("RELATIVE"))
+                if (value.Equals("RELATIVE"))
                 {
                     fi.SetValue(this, LossFunction.RELATIVE);
                     return true;
@@ -324,7 +325,7 @@ namespace MachineLearning.Learning
                 }
                 if (value.Equals("ABSOLUTE"))
                 {
-                    fi.SetValue(this, LossFunction.ABSOLUTE); 
+                    fi.SetValue(this, LossFunction.ABSOLUTE);
                     return true;
                 }
             }
@@ -362,10 +363,12 @@ namespace MachineLearning.Learning
             if (fi.FieldType.FullName.Equals("MachineLearning.Learning.ML_Settings+ScoreMeasure"))
             {
                 ScoreMeasure parsedValue;
-                try {
-                    parsedValue = (ScoreMeasure) Enum.Parse(typeof(ScoreMeasure), value.ToUpperInvariant());
+                try
+                {
+                    parsedValue = (ScoreMeasure)Enum.Parse(typeof(ScoreMeasure), value.ToUpperInvariant());
                 }
-                catch (ArgumentException) {
+                catch (ArgumentException)
+                {
                     return false;
                 }
                 fi.SetValue(this, parsedValue);
@@ -430,7 +433,8 @@ namespace MachineLearning.Learning
                         sb.Append(field.Name + ":");
                         ((List<String>)field.GetValue(this)).ForEach(x => sb.Append(x + ","));
                         sb.Append(" ");
-                    } else
+                    }
+                    else
                     {
                         // Replace underscore with '-' for uniform naming in string representation.
                         sb.Append(field.Name.Replace("_", "-") + ":" + field.GetValue(this) + " ");
@@ -438,7 +442,7 @@ namespace MachineLearning.Learning
                 }
             }
             sb.Append(System.Environment.NewLine);
- 	        return sb.ToString();
+            return sb.ToString();
         }
 
     }

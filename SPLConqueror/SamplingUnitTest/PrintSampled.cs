@@ -24,10 +24,10 @@ namespace SamplingUnitTest
             cmd.performOneCommand(Commands.COMMAND_VARIABILITYMODEL + " " + modelPath);
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_FEATUREWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " " + Commands.COMMAND_EXPDESIGN_BOXBEHNKEN);
-            cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " " 
+            cmd.performOneCommand(Commands.COMMAND_PRINT_CONFIGURATIONS + " "
                 + System.AppDomain.CurrentDomain.BaseDirectory + "testSampledConfigs.txt");
 
-            StreamReader sr = new StreamReader(System.AppDomain.CurrentDomain.BaseDirectory 
+            StreamReader sr = new StreamReader(System.AppDomain.CurrentDomain.BaseDirectory
                 + "testSampledConfigs.txt");
             string line = "";
             int count = 1;
@@ -44,7 +44,7 @@ namespace SamplingUnitTest
                 if (count == 1)
                 {
                     Assert.AreEqual("prefix \"root%;%binOpt1%;%binOpt2%;%group%;"
-                        + "%member3%;%group2%;%member23%;%numOpt1;0%;%numOpt2;1%;%\"    " 
+                        + "%member3%;%group2%;%member23%;%numOpt1;0%;%numOpt2;1%;%\"    "
                         + "   num1-0-- 1  postfix ", line);
                 }
             }

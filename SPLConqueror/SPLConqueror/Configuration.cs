@@ -97,27 +97,31 @@ namespace SPLConqueror_Core
                         try
                         {
                             optionValues[option.Key] = numericOptions[option.Value as NumericOption];
-                        } catch(KeyNotFoundException)
+                        }
+                        catch (KeyNotFoundException)
                         {
                             GlobalState.logError.logLine(option.Value.Name + "not found in selected numeric options."
                                 + "This option is usually mandatory. Unless you removed it from your sampling domain"
                                 + ", make sure your measurements contain all numeric options.");
                         }
-                    } else if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
+                    }
+                    else if (!GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
                     {
                         optionValues[option.Key - shift] = numericOptions[option.Value as NumericOption];
-                    } else
+                    }
+                    else
                     {
                         shift++;
                     }
                 }
                 else
                 {
-                    if (GlobalState.allMeasurements.blacklisted != null && 
+                    if (GlobalState.allMeasurements.blacklisted != null &&
                         GlobalState.allMeasurements.blacklisted.Contains(option.Value.Name.ToLower()))
                     {
                         shift++;
-                    } else
+                    }
+                    else
                     {
                         if (binaryOptions.ContainsKey(option.Value as BinaryOption))
                         {
@@ -165,7 +169,7 @@ namespace SPLConqueror_Core
             {
                 binaryOptions.Add(opt, BinaryOption.BinaryValue.Selected);
             }
-            if(numConf!=null)
+            if (numConf != null)
                 numericOptions = numConf;
 
             identifier = generateIdentifier(DEFAULT_SEPARATOR);
@@ -206,15 +210,15 @@ namespace SPLConqueror_Core
 
             foreach (BinaryOption binary in binarySelection)
             {
-                if(binaryOptions[binary].Equals(BinaryOption.BinaryValue.Selected))
-                    sb.Append(binary.Name+ separator);
+                if (binaryOptions[binary].Equals(BinaryOption.BinaryValue.Selected))
+                    sb.Append(binary.Name + separator);
             }
 
             foreach (NumericOption numeric in numericSelection)
             {
-                sb.Append(numeric.Name +"="+ numericOptions[numeric] + separator);
+                sb.Append(numeric.Name + "=" + numericOptions[numeric] + separator);
             }
-            
+
 
 
             return sb.ToString();
@@ -318,8 +322,8 @@ namespace SPLConqueror_Core
         {
             List<BinaryOption> result = new List<BinaryOption>();
 
-            foreach(KeyValuePair<BinaryOption, BinaryOption.BinaryValue> bin in this.binaryOptions)
-                if(bin.Value.Equals(binaryValue))
+            foreach (KeyValuePair<BinaryOption, BinaryOption.BinaryValue> bin in this.binaryOptions)
+                if (bin.Value.Equals(binaryValue))
                     result.Add(bin.Key);
 
             return result;
@@ -335,7 +339,7 @@ namespace SPLConqueror_Core
         public static Configuration getConfiguration(List<BinaryOption> selectedBinaryOptions, Dictionary<NumericOption, double> numericOptions)
         {
             Configuration result = new Configuration(selectedBinaryOptions);
-            if(numericOptions != null)
+            if (numericOptions != null)
                 result.numericOptions = numericOptions;
             result.update();
             return result;
@@ -385,7 +389,7 @@ namespace SPLConqueror_Core
             return false;
         }
 
-       
+
         /// <summary>
         /// Compare two lists of binary configuration options. If both lists contains the same binary options, the mehthod retuns true and otherwise false. 
         /// </summary>
@@ -450,9 +454,9 @@ namespace SPLConqueror_Core
                         foreach (List<BinaryOption> binary in binarySelections)
                         {
                             Configuration config = Configuration.getConfiguration(binary, numeric);
-                           // if (!configurations.Contains(config))
+                            // if (!configurations.Contains(config))
                             //{
-                                configurations.Add(config);
+                            configurations.Add(config);
                             //}
                         }
                     }
@@ -487,7 +491,8 @@ namespace SPLConqueror_Core
         /// <param name="val">The value for the non-functional property.</param>
         public void setMeasuredValue(NFProperty prop, double val)
         {
-            if (prop == null) {
+            if (prop == null)
+            {
                 return;
             }
             if (this.nfpValues.Keys.Contains(prop))
@@ -509,7 +514,7 @@ namespace SPLConqueror_Core
                 else
                 {
                     if (this.numericOptions.ContainsKey((NumericOption)c))
-                        sb.Append(c.Name +";"+ this.numericOptions[(NumericOption)c] + DEFAULT_SEPARATOR);
+                        sb.Append(c.Name + ";" + this.numericOptions[(NumericOption)c] + DEFAULT_SEPARATOR);
                 }
 
             }
@@ -531,7 +536,7 @@ namespace SPLConqueror_Core
                     if (this.BinaryOptions.ContainsKey((BinaryOption)c))
                     {
                         String outPutString = c.OutputString;
-                        if(outPutString!="noOutput")
+                        if (outPutString != "noOutput")
                             sb.Append(c.OutputString + " ");
                     }
                 }
@@ -570,8 +575,8 @@ namespace SPLConqueror_Core
                         index--;
                         last = option[index];
                     }
-                    Double optionsValue = Math.Round(Double.Parse(option.Substring(index + 1).Replace(',','.')),1);
-                    NumericOption no = vm.getNumericOption(option.Substring(0, index+1));
+                    Double optionsValue = Math.Round(Double.Parse(option.Substring(index + 1).Replace(',', '.')), 1);
+                    NumericOption no = vm.getNumericOption(option.Substring(0, index + 1));
                     if (no == null)
                         continue;
                     numOptions.Add(no, optionsValue);
@@ -645,30 +650,36 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <returns>The csv-representation of the configuration.</returns>
         /// <param name="order">The order of the configuration options.</param>
-        public string toCsv(List<ConfigurationOption> order) {
-            StringBuilder result = new StringBuilder ();
+        public string toCsv(List<ConfigurationOption> order)
+        {
+            StringBuilder result = new StringBuilder();
 
             for (int i = 0; i < order.Count; i++)
             {
                 ConfigurationOption c = order[i];
 
-                if (i != 0) {
-                    result.Append (ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+                if (i != 0)
+                {
+                    result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
                 }
 
                 if (c.GetType().Equals(typeof(BinaryOption)))
                 {
-                    if (this.BinaryOptions.ContainsKey ((BinaryOption)c)) {
-                        result.Append (1);
-                    } else {
-                        result.Append (0);
+                    if (this.BinaryOptions.ContainsKey((BinaryOption)c))
+                    {
+                        result.Append(1);
+                    }
+                    else
+                    {
+                        result.Append(0);
                     }
                 }
                 else
                 {
                     NumericOption n = (NumericOption)c;
-                    if (this.numericOptions.ContainsKey(n)) {
-                        result.Append (this.NumericOptions[n]);
+                    if (this.numericOptions.ContainsKey(n))
+                    {
+                        result.Append(this.NumericOptions[n]);
                     }
                 }
 
@@ -677,14 +688,16 @@ namespace SPLConqueror_Core
             if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
             {
                 result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
-                if (this.nfpValues.ContainsKey(GlobalState.currentNFP)) {
+                if (this.nfpValues.ContainsKey(GlobalState.currentNFP))
+                {
                     result.Append(this.nfpValues[GlobalState.currentNFP]);
-                } else
+                }
+                else
                 {
                     result.Append(Double.NaN);
                 }
             }
-            result.Append (ConfigurationPrinter.CSV_ROW_DELIMITER);
+            result.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
             return result.ToString();
         }
     }

@@ -18,7 +18,7 @@ namespace SPLConquerorCoreTest
             measuredValuesFirst.Add(GlobalState.getOrCreateProperty("test"), 2);
             Dictionary<NFProperty, double> measuredValuesSecond = new Dictionary<NFProperty, double>();
             measuredValuesSecond.Add(GlobalState.getOrCreateProperty("test"), 3);
-            Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptionsFirst = 
+            Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptionsFirst =
                 new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
             fillUpBinaryOptions(binaryOptionsFirst, vm);
             Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptionsSecond =
@@ -30,7 +30,7 @@ namespace SPLConquerorCoreTest
             Dictionary<NumericOption, double> numericOptionsSecond =
                 new Dictionary<NumericOption, double>();
             fillUpNumericOptions(numericOptionsSecond, vm);
-            Configuration configFirst = new Configuration(binaryOptionsFirst, 
+            Configuration configFirst = new Configuration(binaryOptionsFirst,
                 numericOptionsFirst, measuredValuesFirst);
             Configuration configSecond = new Configuration(binaryOptionsSecond,
                 numericOptionsSecond, measuredValuesSecond);
@@ -43,7 +43,7 @@ namespace SPLConquerorCoreTest
             VariabilityModel vm = new VariabilityModel("test");
             initVM(vm);
             GlobalState.varModel = vm;
-            Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptionsFirst = 
+            Dictionary<BinaryOption, BinaryOption.BinaryValue> binaryOptionsFirst =
                 new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
             fillUpBinaryOptions(binaryOptionsFirst, vm);
             Dictionary<NumericOption, double> numericOptionsFirst =

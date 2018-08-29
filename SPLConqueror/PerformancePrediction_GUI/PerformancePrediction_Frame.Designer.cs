@@ -814,7 +814,7 @@ namespace PerformancePrediction_GUI
         public System.Windows.Forms.TextBox LogBox;
         private System.Windows.Forms.Button readVarModel;
         private System.Windows.Forms.CheckBox binWholePop;
-private System.Windows.Forms.Button LearnAllMeasurements;private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button LearnAllMeasurements; private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox PrintConfigsGroupBox;
         private System.Windows.Forms.Button PrintconfigsButton;
         private System.Windows.Forms.Label PostfixLabel;

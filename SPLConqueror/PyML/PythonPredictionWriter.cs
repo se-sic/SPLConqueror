@@ -26,7 +26,7 @@ namespace ProcessWrapper
             path = path.Substring(0, (path.Length - ((logFilename).Length)));
             path += csvFilename + "_";
             path += learningSettings[0] + "_";
-            path += identifier.Replace(":","_");
+            path += identifier.Replace(":", "_");
             if (path.Length > 250)
             {
                 path = path.Substring(0, path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
@@ -36,7 +36,7 @@ namespace ProcessWrapper
             }
             path += csv;
 
-            
+
 
 
             FileStream csvFileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
