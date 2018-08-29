@@ -960,15 +960,15 @@ namespace MachineLearning.Learning.Regression
                 switch (this.MLsettings.lossFunction)
                 {
                     case ML_Settings.LossFunction.RELATIVE:
-                        //if (Math.Abs(realValue) < 0.001)
-                        //{
-                        //    error = Math.Abs(((2 * (realValue - estimatedValue) / (realValue + estimatedValue)) - 1) * 100);
-                        //}
-                        //else
-
+			// Check for division by 0
+			if (realValue == 0) {
+				GlobalState.logError.logLine ("The machine-learning parameter 'lossFunction' does not work with NFP values of 0. " +
+				                              "To fix it, use lossFunction:ABSOLUTE as machine-learning parameter.");
+				return 0.0;
+			}
+                        
                         error = Math.Abs((estimatedValue - realValue) / realValue ) * 100;
-
-                        //    error = Math.Abs(100 - ((estimatedValue * 100) / realValue));
+                        
 
                         // Consider epsilon tube
                         if (considerEpsilonTube)

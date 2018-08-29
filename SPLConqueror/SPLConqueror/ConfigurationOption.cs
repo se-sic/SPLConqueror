@@ -137,7 +137,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <param name="doc">The XML document to which the node will be added</param>
         /// <returns>XmlNode containing information about the option</returns>
-        internal XmlNode saveXML(XmlDocument doc)
+	 internal virtual XmlNode saveXML(XmlDocument doc)
         {
             XmlNode node = doc.CreateNode(XmlNodeType.Element, "configurationOption", "");
             
