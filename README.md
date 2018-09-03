@@ -781,6 +781,10 @@ For example:
 resume-log C:\abortedScript.a
 ```
 
+
+Within your .a script you can also use the ```save /some/path/to/folder/``` command to persist the current state. 
+Later this state can be recovered with a new .a script using the ```resume-dump /some/path/to/folder/ /executed/a/script.a``` by providing the .a script that was executed and the old state.
+
 </details>
 <details>
 <summary>Exemplary Script-Files</summary>

@@ -45,9 +45,6 @@ namespace CommandLine
         //save current SPLConqueror state to a file.
         public const string COMMAND_SAVE = "save";
 
-        // shouldnt be used by user.
-        public const string COMMAND_ROLLBACK = "rollback";
-
         public const string COMMAND_VALIDATION = "validation";
 
         public const string COMMAND_EVALUATION_SET = "evaluationset";
@@ -133,6 +130,11 @@ namespace CommandLine
         public const string COMMAND_PYTHON_LEARN_OPT = "learn-python-opt";
 
         List<SamplingStrategies> binaryToSample = new List<SamplingStrategies>();
+
+        #region Intern commands
+        // shouldnt be used by user.
+        public const string ROLLBACK_FLAG = "rollback";
+        #endregion
 
         public List<SamplingStrategies> BinaryToSample
         {
@@ -224,7 +226,7 @@ namespace CommandLine
                 command = components[0];
                 if (!command.Equals(COMMAND_SUBSCRIPT))
                 {
-                    command = COMMAND_ROLLBACK;
+                    command = ROLLBACK_FLAG;
                 }
             }
 
@@ -263,7 +265,7 @@ namespace CommandLine
                             this.binaryToSample = recoveredData.Item2;
                             this.binaryToSampleValidation = recoveredData.Item3;
 
-                            FileInfo fi = new FileInfo(taskAsParameter[7]);
+                            FileInfo fi = new FileInfo(taskAsParameter[1]);
                             StreamReader reader = null;
                             if (!fi.Exists)
                                 throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
@@ -296,7 +298,7 @@ namespace CommandLine
                             this.binaryToSampleValidation, this.exp, this.currentHistory);
                         break;
                     }
-                case COMMAND_ROLLBACK:
+                case ROLLBACK_FLAG:
                     if (currentHistory.Equals(CommandPersistence.history))
                     {
                         GlobalState.rollback = false;
