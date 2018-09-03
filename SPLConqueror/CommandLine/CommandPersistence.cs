@@ -33,31 +33,31 @@ namespace CommandLine
         /// <param name="toSampleValidation">Validation sampling strategies to save.</param>
         /// <param name="exp">Learning object to save.</param>
         /// <param name="history">Command history to save.</param>
-        public static void dump(string[] pathArray, ML_Settings mlSettings, List<SamplingStrategies> toSample, List<SamplingStrategies> toSampleValidation, Learning exp, CommandHistory history)
+        public static void dump(string[] path, ML_Settings mlSettings, List<SamplingStrategies> toSample, List<SamplingStrategies> toSampleValidation, Learning exp, CommandHistory history)
         {
-            if (pathArray.Length >= 6)
+            if (path.Length >= 1)
             {
-                StreamWriter sw = new StreamWriter(pathArray[0]);
+                StreamWriter sw = new StreamWriter(path[0] + "GlobalState.xml");
                 sw.Write(PersistGlobalState.dump());
                 sw.Flush();
                 sw.Close();
-                sw = new StreamWriter(pathArray[1]);
+                sw = new StreamWriter(path[0] + "mlSettings.xml");
                 sw.Write(PersistMLSettings.dump(mlSettings));
                 sw.Flush();
                 sw.Close();
-                sw = new StreamWriter(pathArray[2]);
+                sw = new StreamWriter(path[0] + "toSample.xml");
                 sw.Write(PersistSampling.dump(toSample));
                 sw.Flush();
                 sw.Close();
-                sw = new StreamWriter(pathArray[3]);
+                sw = new StreamWriter(path[0] + "toSampleValidation.xml");
                 sw.Write(PersistSampling.dump(toSampleValidation));
                 sw.Flush();
                 sw.Close();
-                sw = new StreamWriter(pathArray[4]);
+                sw = new StreamWriter(path[0] + "learning.xml");
                 sw.Write(PersistLearning.dump(exp));
                 sw.Flush();
                 sw.Close();
-                sw = new StreamWriter(pathArray[5]);
+                sw = new StreamWriter(path[0] + "history.xml");
                 sw.Write(PersistCommandHistory.dump(history));
                 sw.Flush();
                 sw.Close();
@@ -73,17 +73,17 @@ namespace CommandLine
         /// </summary>
         /// <param name="pathArray">String array with the file paths. Needs 6 file paths.</param>
         /// <returns>Tuple containing all recovered data.</returns>
-        public static Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoverDataFromDump(string[] pathArray)
+        public static Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoverDataFromDump(string[] path)
         {
-            if (pathArray.Length >= 6)
+            if (path.Length >= 1)
             {
-                PersistGlobalState.recoverFromPersistentDump(pathArray[0]);
-                ML_Settings mlSettings = PersistMLSettings.recoverFromPersistentDump(pathArray[1]);
-                List<SamplingStrategies> toSample = PersistSampling.recoverFromDump(pathArray[2]);
-                List<SamplingStrategies> toSampleValidation = PersistSampling.recoverFromDump(pathArray[3]);
-                List<List<string>> learningRounds = PersistLearning.recoverFromPersistentDump(pathArray[4]);
+                PersistGlobalState.recoverFromPersistentDump(path[0] +  "GlobalState.xml");
+                ML_Settings mlSettings = PersistMLSettings.recoverFromPersistentDump(path[0] + "mlSettings.xml");
+                List<SamplingStrategies> toSample = PersistSampling.recoverFromDump(path[0] + "toSample.xml");
+                List<SamplingStrategies> toSampleValidation = PersistSampling.recoverFromDump(path[0] + "toSampleValidation.xml");
+                List<List<string>> learningRounds = PersistLearning.recoverFromPersistentDump(path[0] + "learning.xml");
                 learningHistory = Tuple.Create(true, learningRounds.Last());
-                history = PersistCommandHistory.recoverFromDump(pathArray[5]);
+                history = PersistCommandHistory.recoverFromDump(path[0] + "history.xml");
                 return Tuple.Create(mlSettings, toSample, toSampleValidation);
             }
             else
@@ -273,6 +273,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_EXPERIMENTALDESIGN:
+                    case Commands.COMMAND_NUMERIC_SAMPLING:
                         wasPerformed = reconstructNumericSampling(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -313,6 +314,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_LOAD_MLSETTINGS:
+                    case Commands.COMMAND_LOAD_MLSETTINGS_UNIFORM:
                         wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, "mlsettings", line);
                         if (!wasPerformed)
                         {
@@ -394,6 +396,7 @@ namespace CommandLine
                         break;
 
                     case Commands.COMMAND_START_LEARNING:
+                    case Commands.COMMAND_START_LEARNING_SPL_CONQUEROR:
                         wasPerformed = reconstructLearn(logReader, relevantCommands, task, command, line);
                         if (!wasPerformed)
                         {
@@ -403,6 +406,29 @@ namespace CommandLine
                         else
                         {
                             learningHistory = Tuple.Create(false, learningHistory.Item2);
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+                    case Commands.DEFINE_PYTHON_PATH:
+                        wasPerformed = reconstructTrivialCommand(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            logReader.Close();
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        }
+                        else
+                        {
+                            history.addCommand(line.Trim());
+                        }
+                        break;
+                    case Commands.COMMAND_PYTHON_LEARN:
+                        wasPerformed = reconstructPython(logReader, relevantCommands, task, command, line);
+                        if (!wasPerformed)
+                        {
+                            logReader.Close();
+                            return Tuple.Create(wasPerformed, relevantCommands);
+                        } else
+                        {
                             history.addCommand(line.Trim());
                         }
                         break;
@@ -699,6 +725,25 @@ namespace CommandLine
             if (lineInLog.Equals(logReader.ReadLine()))
             {
                 addOrReplace(relevantCommands, command, commandLine);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool reconstructPython(StreamReader logReader, Dictionary<string, string> relevantCommands, string task, string command, string commandLine)
+        {
+            string lineInLog = Commands.COMMAND + commandLine.Trim();
+            bool performed = lineInLog.Equals(logReader.ReadLine());
+            performed = !logReader.EndOfStream && logReader.ReadLine().Contains("Learning");
+            performed = !logReader.EndOfStream && logReader.ReadLine().Contains("Starting Prediction");
+            performed = !logReader.EndOfStream && logReader.ReadLine().Contains("Optimal parameters");
+            performed = !logReader.EndOfStream && logReader.ReadLine().Contains("Starting Prediction");
+            performed = !logReader.EndOfStream && logReader.ReadLine().Contains("Prediction finished");
+            if (performed)
+            {
                 return true;
             }
             else
