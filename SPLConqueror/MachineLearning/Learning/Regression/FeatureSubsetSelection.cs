@@ -255,6 +255,27 @@ namespace MachineLearning.Learning.Regression
 
 
         /// <summary>
+        /// Receives a list of features and learns the coefficients for each of them.
+		/// The whole information is returned as <see cref="LearningRound"/>.
+        /// </summary>
+		/// <returns>All information that is relevant for the learning process as <see cref="LearningRound"/></returns>
+		public LearningRound LearnWithTrueModel(List<Feature> features)
+		{
+			setLearningSet(GlobalState.allMeasurements.Configurations);
+			setValidationSet (GlobalState.allMeasurements.Configurations);
+			startTime = DateTime.Now;
+			ModelFit fi = evaluateCandidate (features, MLsettings.considerEpsilonTube);
+
+			LearningRound newRound = new LearningRound (fi.newModel, fi.error, computeValidationError (fi.newModel), 0);
+			newRound.learningError_relative = fi.error;
+            newRound.validationError_relative = newRound.validationError;
+            newRound.elapsedTime = DateTime.Now - startTime;
+
+			return newRound;
+		}
+
+
+        /// <summary>
         /// Makes one further step in learning. That is, it adds a further feature to the current model.
         /// </summary>
         /// <param name="previousRound">State of the learning process untill this forward step.</param>
@@ -394,7 +415,6 @@ namespace MachineLearning.Learning.Regression
             }
 
             //error computations and logging stuff
-            double relativeErrorEval = 0;
             if (MLsettings.ignoreBadFeatures)
             {
                 addFeaturesToIgnore(errorOfFeature);
@@ -422,7 +442,6 @@ namespace MachineLearning.Learning.Regression
         {
             ModelFit fit = new ModelFit();
             fit.complete = fitModel(model);
-            double temp;
             fit.error = computeModelError(model);
             fit.newModel = model;
             return fit;
@@ -492,7 +511,7 @@ namespace MachineLearning.Learning.Regression
         /// <returns>Returns a list of candidates that can be added to the current model.</returns>
         protected List<Feature> generateCandidates(List<Feature> currentModel, List<Feature> basicFeatures)
         {
-            var listOfCandidates = new List<Feature>();
+            List<Feature> listOfCandidates = new List<Feature>();
             foreach (Feature basicFeature in basicFeatures)
             {
                 VariabilityModel varModel = basicFeature.getVariabilityModel();
@@ -507,7 +526,7 @@ namespace MachineLearning.Learning.Regression
                 foreach (Feature feature in currentModel)
                 {
 
-                    if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                    if (!checkWhetherCandidateIsValid(basicFeature, feature))
                         continue;
 
                     //Binary times the same binary makes no sense
@@ -534,7 +553,7 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                        if (!checkWhetherCandidateIsValid(basicFeature, feature))
                             continue;
 
                         newCandidate = new Feature(feature, newCandidate, varModel);
@@ -552,7 +571,7 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                        if (!checkWhetherCandidateIsValid(basicFeature, feature))
                             continue;
 
                         newCandidate = new Feature(feature.getPureString() + " * log10(" + basicFeature.getPureString() + ")", basicFeature.getVariabilityModel());
@@ -584,7 +603,7 @@ namespace MachineLearning.Learning.Regression
                     foreach (var feature in currentModel)
                     {
 
-                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                        if (!checkWhetherCandidateIsValid(basicFeature, feature))
                             continue;
 
                         newCandidate = new Feature(feature.getPureString() + " * 1 / " + basicFeature.getPureString(), varModel);
@@ -602,7 +621,7 @@ namespace MachineLearning.Learning.Regression
                     foreach (var feature in currentModel)
                     {
 
-                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                        if (!checkWhetherCandidateIsValid(basicFeature, feature))
                             continue;
 
                         if (basicFeature.canNotEvaluateToZero() && feature.canNotEvaluateToZero())
@@ -623,7 +642,7 @@ namespace MachineLearning.Learning.Regression
 
                     foreach (var feature in currentModel)
                     {
-                        if (!checkWhetherCandidateIsValide(basicFeature, feature))
+                        if (!checkWhetherCandidateIsValid(basicFeature, feature))
                             continue;
 
 
@@ -648,7 +667,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="partOfTheModel">Part of the model that is learned in the previous round.</param>
         /// <param name="newCandidate">The new candidate that have to be checked.</param>
         /// <returns>Restuns false if the new candidate is not valid for the ml settings. Checks, for example, if the number of participating configuration options is larger than the defined featureSizeTreshold of the ML_Settings. </returns>
-        protected bool checkWhetherCandidateIsValide(Feature partOfTheModel, Feature newCandidate)
+		protected bool checkWhetherCandidateIsValid(Feature partOfTheModel, Feature newCandidate)
         {
             //We do not want to generate interactions with the root option
             if ((newCandidate.participatingNumOptions.Count == 0 && newCandidate.participatingBoolOptions.Count == 1 && newCandidate.participatingBoolOptions.ElementAt(0) == infModel.Vm.Root)
