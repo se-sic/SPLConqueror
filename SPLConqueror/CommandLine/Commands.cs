@@ -1271,9 +1271,9 @@ namespace CommandLine
                     GlobalState.optionOrder.AddRange(GlobalState.varModel.NumericOptions);
                 }
                 ConfigurationPrinter printer = new ConfigurationPrinter(configsLearnFile, GlobalState.optionOrder);
-                printer.print(configurationsLearning);
+		 printer.print(configurationsLearning, new List<NFProperty>());
                 printer = new ConfigurationPrinter(configsValFile, GlobalState.optionOrder);
-                printer.print(GlobalState.allMeasurements.Configurations);
+		 printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty> ());
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
                 PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() +
