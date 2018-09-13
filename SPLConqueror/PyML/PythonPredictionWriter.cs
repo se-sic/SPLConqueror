@@ -39,7 +39,7 @@ namespace ProcessWrapper
 
 
 
-            FileStream csvFileStream = new FileStream(path, FileMode.Append, FileAccess.Write);
+            FileStream csvFileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
             csvWriter = new StreamWriter(csvFileStream);
         }
 
