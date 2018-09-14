@@ -1,0 +1,5 @@
+log ./out.log
+vm ./BerkeleyDBFeatureModel.xml
+all ./BerkeleyDBMeasurements.xml
+nfp MainMemory
+truemodel ./trueModel.txt

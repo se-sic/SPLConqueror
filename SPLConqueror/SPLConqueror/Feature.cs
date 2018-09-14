@@ -135,7 +135,7 @@ namespace SPLConqueror_Core
         {
             string[] thisFunction = this.wellFormedExpression.Split('*').Select(element => element.Trim()).ToArray();
             Array.Sort<string>(thisFunction);
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             string separator = "";
             foreach (string element in thisFunction)
             {
