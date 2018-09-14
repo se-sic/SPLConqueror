@@ -88,8 +88,10 @@ namespace SPLConqueror_Core
             }
             if (!File.Exists(file))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(file));
-                //File.Create(file);
+		 if (!Path.GetDirectoryName (file).Equals ("")) {
+			 Directory.CreateDirectory (Path.GetDirectoryName (file));
+		 }
+                File.Create(file);
             }
 
 			if (file.EndsWith(CSV_FILE_EXTENSION) && order != null)

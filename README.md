@@ -668,6 +668,13 @@ Of course, if someone wants to learn with a subset of the data after clearing th
 
 Under normal circumstances, SPL Conqueror cleans up the learning data itself. So handling this is usually not required, but if someone wants to forcefully clear all machine learning settings and the learned functions, the command ```clean-learning``` could be used.
 
+#### Cleaning all
+
+```clean-global```
+
+If it is necessary to load different automation scripts in a single run of SPL Conqueror, the command ```clean-global``` can be used, which removes all relevant data.
+Note that one has to read in the variability model and the measurements again when using this command.
+
 #### Subscript
 
 ```script <path_to_script>```
@@ -732,6 +739,22 @@ For example:
 ```
 allbinary validation
 expdesign random sampleSize:50 seed:3 validation
+```
+
+#### Learning with a specified model
+
+```truemodel <file>```
+
+The ```truemodel``` command offers the possibility to perform machine learning on a particular model.
+Therefore, fitting is applied on the given model and afterwards, the fitted model is used to predict all configurations.
+The model has to be stored in the given file, where each line contains one term of the model.
+For example, a model with three features 'A', 'B', and 'C' could look like this:
+```
+A
+C
+A * B
+B * C
+A * B * C
 ```
 
 #### Print settings
