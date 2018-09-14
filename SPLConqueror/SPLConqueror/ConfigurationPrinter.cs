@@ -86,12 +86,8 @@ namespace SPLConqueror_Core
                 }
                 GlobalState.logInfo.logLine("File name for configurations file was too long. Changed to" + file);
             }
-            if (!File.Exists(file))
-            {
-		 if (!Path.GetDirectoryName (file).Equals ("")) {
-			 Directory.CreateDirectory (Path.GetDirectoryName (file));
-		 }
-                File.Create(file);
+            if (!File.Exists(file) && !Path.GetDirectoryName (file).Equals ("")) {
+		 Directory.CreateDirectory (Path.GetDirectoryName (file));
             }
 
 			if (file.EndsWith(CSV_FILE_EXTENSION) && order != null)

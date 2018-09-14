@@ -743,10 +743,11 @@ expdesign random sampleSize:50 seed:3 validation
 
 #### Learning with a specified model
 
-```truemodel <file>```
+```truemodel <inputfile> [outputfile]```
 
 The ```truemodel``` command offers the possibility to perform machine learning on a particular model.
-Therefore, fitting is applied on the given model and afterwards, the fitted model is used to predict all configurations.
+Therefore, fitting is applied on the given model.
+If an output path is given, the predictions by using the fitted model are written into the output path.
 The model has to be stored in the given file, where each line contains one term of the model.
 For example, a model with three features 'A', 'B', and 'C' could look like this:
 ```

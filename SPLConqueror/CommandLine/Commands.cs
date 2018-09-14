@@ -1881,7 +1881,7 @@ namespace CommandLine
 				}
             }
 
-			// Choose the NFP's to print
+			// Choose the NFPs to print
 			List<NFProperty> nfpPropertiesToPrint = new List<NFProperty> ();
 			nfpPropertiesToPrint.Add (GlobalState.currentNFP);
 			nfpPropertiesToPrint.Add (nfpProperty);
