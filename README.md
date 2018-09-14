@@ -742,7 +742,7 @@ allbinary validation
 expdesign random sampleSize:50 seed:3 validation
 ```
 
-#### Learning with a specified model
+#### Learning with a specific model without coefficients
 
 ```truemodel <inputfile> [outputfile]```
 
@@ -757,6 +757,19 @@ C
 A * B
 B * C
 A * B * C
+```
+
+#### Learning with a specific model with coefficients
+
+```evaluate-model <inputfile> [outputfile]```
+
+If one is interested to evaluate a specific model including coefficients, the ```evaluate-model``` command can be used.
+The arguments are the same as for ```truemodel```.
+However, this function supports evaluating multiple models, where each model is written in one line of the input file.
+For instance:
+```
+3 * A + 2 * A * B
+1 * B + 1.5 * A * B
 ```
 
 #### Print settings
