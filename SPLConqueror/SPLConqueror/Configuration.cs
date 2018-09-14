@@ -650,7 +650,7 @@ namespace SPLConqueror_Core
         /// </summary>
         /// <returns>The csv-representation of the configuration.</returns>
         /// <param name="order">The order of the configuration options.</param>
-        public string toCsv(List<ConfigurationOption> order)
+		public string toCsv(List<ConfigurationOption> order, List<NFProperty> nfpProperties)
         {
             StringBuilder result = new StringBuilder();
 
@@ -685,17 +685,18 @@ namespace SPLConqueror_Core
 
             }
 
-            if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+	     if (nfpProperties.Count != 0 && !GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
             {
                 result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
-                if (this.nfpValues.ContainsKey(GlobalState.currentNFP))
-                {
-                    result.Append(this.nfpValues[GlobalState.currentNFP]);
-                }
-                else
-                {
-                    result.Append(Double.NaN);
-                }
+				foreach (NFProperty nfp in this.nfpValues.Keys) {
+					if (nfpProperties.Contains (nfp)) {
+						result.Append (this.nfpValues [nfp]);
+					} else {
+						result.Append (Double.NaN);
+					}
+					result.Append (ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+				}
+				result.Remove (result.Length - 1 - ConfigurationPrinter.CSV_ELEMENT_DELIMITER.Length, ConfigurationPrinter.CSV_ELEMENT_DELIMITER.Length);
             }
             result.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
             return result.ToString();

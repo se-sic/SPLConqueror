@@ -72,8 +72,7 @@ namespace CommandLine
         // deprecated
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
         #endregion
-
-        public const string COMMAND_PREDICT_TRUEMODEL = "predicttruemodel";
+        
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
 
         #region splconqueror predict configurations
@@ -364,14 +363,38 @@ namespace CommandLine
                     break;
 
                 case COMMAND_TRUEMODEL:
-                    StreamReader readModel = new StreamReader(task.TrimEnd());
-                    String model = readModel.ReadLine().Trim();
+    				// For this option, two arguments can be provided.
+    				// The first option is mandatory and represents the path of the model.
+    				// The second option is optional and represents the path to the file where the predictions should be written to.
+				    string [] paths = task.Trim().Split (' ');
+
+                    StreamReader readModel = new StreamReader(paths[0]);
+                    // Each line of the file contains one term of the model
+    				List<string> model = new List<string> ();
+    				while (!readModel.EndOfStream) {
+    					model.Add(readModel.ReadLine ());
+    				}
                     readModel.Close();
-                    this.trueModel = new InfluenceFunction(model.Replace(',', '.'), GlobalState.varModel);
-                    NFProperty artificalProp = new NFProperty("artificial");
-                    GlobalState.currentNFP = artificalProp;
-                    //computeEvaluationDataSetBasedOnTrueModel();
-                    break;
+    				List<Feature> trueModelFeatures = new List<Feature> ();
+    				foreach (string term in model) {
+					    trueModelFeatures.Add (new Feature (term, GlobalState.varModel));
+    				}
+
+				    InfluenceModel influenceModel = new InfluenceModel (GlobalState.varModel, GlobalState.currentNFP);
+				    FeatureSubsetSelection featureSubsetSelection = new FeatureSubsetSelection (influenceModel, this.mlSettings);
+
+				    LearningRound learningRound = featureSubsetSelection.LearnWithTrueModel (trueModelFeatures);
+				    GlobalState.logInfo.logLine (learningRound.ToString ());
+
+    				// Now, predict all configurations
+    				if (paths.Length == 2) {
+    					GlobalState.logInfo.logLine ("Writing the predictions to " + paths [1] + ".");
+    					predict (paths [1], null, learningRound.FeatureSet);
+    				} else {
+					    GlobalState.logInfo.logLine ("As no path is given, no predictions are written into a file.");
+    				}
+
+				    break;
 
                 case COMMAND_SUBSCRIPT:
                     {
@@ -534,27 +557,6 @@ namespace CommandLine
                     {
                         printPredictedConfigurations(task, this.exp);
 
-                        break;
-                    }
-
-                case COMMAND_PREDICT_TRUEMODEL:
-                    {
-                        if (this.trueModel == null)
-                        {
-                            GlobalState.logInfo.logLine("No trueModel is loaded.");
-                        }
-                        else if (task.Length == 0)
-                        {
-                            GlobalState.logInfo.logLine("Target file is required to print prediction results");
-                        }
-                        else if (GlobalState.allMeasurements.Configurations.Count == 0)
-                        {
-                            GlobalState.logError.logLine("No measurements loaded.");
-                        }
-                        else
-                        {
-                            predict(task, this.exp, useTrueModel: true);
-                        }
                         break;
                     }
 
@@ -1272,9 +1274,9 @@ namespace CommandLine
                     GlobalState.optionOrder.AddRange(GlobalState.varModel.NumericOptions);
                 }
                 ConfigurationPrinter printer = new ConfigurationPrinter(configsLearnFile, GlobalState.optionOrder);
-                printer.print(configurationsLearning);
+		 printer.print(configurationsLearning, new List<NFProperty>());
                 printer = new ConfigurationPrinter(configsValFile, GlobalState.optionOrder);
-                printer.print(GlobalState.allMeasurements.Configurations);
+		 printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty> ());
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
                 PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() +
@@ -1356,59 +1358,6 @@ namespace CommandLine
                 GlobalState.optionOrder.Add(GlobalState.varModel.getOption(option.Trim()));
             }
 
-        }
-
-        /// <summary>
-        /// The methods generates based on all binary sampling and 50% hyper sampling configurations for the validation set.
-        /// If we have the true model, we can just compute the true value of the nonfunctional property for a given configuration. 
-        /// </summary>
-        private void computeEvaluationDataSetBasedOnTrueModel()
-        {
-            /*   VariantGenerator vg = new VariantGenerator(null);
-               List<List<BinaryOption>> temp = vg.generateAllVariantsFast(GlobalState.varModel);
-               List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
-               //take only 10k
-               if (temp.Count > 1000)
-               {
-                   GlobalState.logInfo.log("Found " + temp.Count + " configurations. Use only 1000.");
-                   HashSet<int> picked = new HashSet<int>();
-                   Random r = new Random(1);
-                   for (int i = 0; i < 1000; i++)
-                   {
-                       int x = 0;
-                       do
-                       {
-                           x = r.Next(1, temp.Count);
-                       } while (picked.Contains(x));
-                       picked.Add(x);
-                       binaryConfigs.Add(temp[x]);
-                   }
-                   temp.Clear();
-               }
-               else
-                   binaryConfigs = temp;
-               exp.addBinarySelection_Validation(binaryConfigs);
-               var expDesign = new HyperSampling(GlobalState.varModel.NumericOptions);
-               expDesign.Precision = 10;
-               expDesign.computeDesign();
-               exp.addNumericalSelection_Validation(expDesign.SelectedConfigurations);
-               var numericConfigs = expDesign.SelectedConfigurations;
-               foreach (List<BinaryOption> binConfig in binaryConfigs)
-               {
-                   if (numericConfigs.Count == 0)
-                   {
-                       Configuration c = new Configuration(binConfig);
-                       c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
-                       GlobalState.addConfiguration(c);
-                   }
-                   foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
-                   {
-
-                       Configuration c = new Configuration(binConfig, numConf);
-                       c.setMeasuredValue(GlobalState.currentNFP, this.trueModel.eval(c));
-                       GlobalState.addConfiguration(c);
-                   }
-               }*/
         }
 
 
@@ -1847,7 +1796,7 @@ namespace CommandLine
             GlobalState.logInfo.logLine("Learning: " + "NumberOfConfigurationsLearning:" + configurations_Learning.Count);
             exp.models.Clear();
             var mod = exp.models;
-            exp = new MachineLearning.Learning.Regression.Learning(configurations_Learning, configurations_Learning);
+            exp = new Learning(configurations_Learning, configurations_Learning);
             exp.models = mod;
             exp.metaModel = infMod;
             exp.mlSettings = this.mlSettings;
@@ -1908,36 +1857,41 @@ namespace CommandLine
 
         }
 
-        private void predict(string task, Learning exp, bool useTrueModel = false)
+        private void predict(string task, Learning exp, List<Feature> model = null)
         {
-            StreamWriter sw = new StreamWriter(task);
-            sw.Write("configuration;MeasuredValue;PredictedValue" + Environment.NewLine);
+			NFProperty nfpProperty = new NFProperty ("Prediction");
+
             for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
             {
                 Configuration currentConfiguration = GlobalState.allMeasurements.Configurations.ElementAt(i);
                 double realValue = GlobalState.allMeasurements.Configurations.ElementAt(i).GetNFPValue();
                 double prediction;
 
-                if (useTrueModel)
+                if (model != null)
                 {
-                    prediction = trueModel.eval(currentConfiguration);
+					prediction = FeatureSubsetSelection.predict (model, currentConfiguration);
                 }
                 else
                 {
                     prediction = FeatureSubsetSelection
                     .predict(exp.models.ElementAt(exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
                 }
-                double difference = Math.Abs(realValue - prediction);
-                double percentage = 0;
-                if (difference != 0)
-                {
-                    percentage = difference / realValue;
-                }
-                sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + Environment.NewLine);
-                //sw.Write(currentConfiguration.ToString().Replace(';', ',') + ";" + realValue + ";" + prediction + ";" + difference + ";" + percentage + ";" + Environment.NewLine);
+                            
+				if (currentConfiguration.nfpValues.ContainsKey (nfpProperty)) {
+					currentConfiguration.nfpValues [nfpProperty] = prediction;
+				} else {
+					currentConfiguration.nfpValues.Add (nfpProperty, prediction);
+				}
             }
-            sw.Flush();
-            sw.Close();
+
+			// Choose the NFPs to print
+			List<NFProperty> nfpPropertiesToPrint = new List<NFProperty> ();
+			nfpPropertiesToPrint.Add (GlobalState.currentNFP);
+			nfpPropertiesToPrint.Add (nfpProperty);
+
+			// Use the ConfigurationPrinter to print the file.
+			ConfigurationPrinter configurationPrinter = new ConfigurationPrinter (task, GlobalState.optionOrder, "", "");
+			configurationPrinter.print (GlobalState.allMeasurements.Configurations, nfpPropertiesToPrint);
         }
 
         /// <summary>
