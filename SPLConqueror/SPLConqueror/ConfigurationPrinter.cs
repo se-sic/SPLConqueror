@@ -92,9 +92,11 @@ namespace SPLConqueror_Core
 
 			if (file.EndsWith(CSV_FILE_EXTENSION) && order != null)
             {
-				if (nfpPropertiesToPrint == null && !GlobalState.currentNFP.Equals(NFProperty.DefaultProperty)) {
+				if (nfpPropertiesToPrint == null) {
 					nfpPropertiesToPrint = new List<NFProperty> ();
-					nfpPropertiesToPrint.Add (GlobalState.currentNFP);
+					if (!GlobalState.currentNFP.Equals (NFProperty.DefaultProperty)) {
+						nfpPropertiesToPrint.Add (GlobalState.currentNFP);
+					}
 				}
 				return print_csv(configurations, nfpPropertiesToPrint);
             }
