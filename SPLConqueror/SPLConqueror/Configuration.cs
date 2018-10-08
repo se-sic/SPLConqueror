@@ -685,16 +685,18 @@ namespace SPLConqueror_Core
 
             }
 
-	     if (nfpProperties != null && nfpProperties.Count != 0 && !GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+            if (nfpProperties != null && nfpProperties.Count != 0 && !GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
             {
                 result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
-				foreach (NFProperty nfp in this.nfpValues.Keys) {
-					if (nfpProperties.Contains (nfp)) {
-						result.Append (this.nfpValues [nfp]);
-						result.Append (ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
-					}               
-				}
-				result.Remove (result.Length - ConfigurationPrinter.CSV_ELEMENT_DELIMITER.Length, ConfigurationPrinter.CSV_ELEMENT_DELIMITER.Length);
+                foreach (NFProperty nfp in this.nfpValues.Keys)
+                {
+                    if (nfpProperties.Contains(nfp))
+                    {
+                        result.Append(this.nfpValues[nfp]);
+                        result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+                    }
+                }
+                result.Remove(result.Length - ConfigurationPrinter.CSV_ELEMENT_DELIMITER.Length, ConfigurationPrinter.CSV_ELEMENT_DELIMITER.Length);
             }
             result.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
             return result.ToString();

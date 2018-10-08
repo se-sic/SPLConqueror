@@ -71,9 +71,9 @@ namespace CommandLine
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC = "predict-all-configs-splconqueror";
         // deprecated
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
-	 #endregion
+        #endregion
 
-	 public const string COMMAND_EVALUATE_MODEL = "evaluate-model";
+        public const string COMMAND_EVALUATE_MODEL = "evaluate-model";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
 
         #region splconqueror predict configurations
@@ -364,89 +364,101 @@ namespace CommandLine
                     break;
 
                 case COMMAND_TRUEMODEL:
-    				// For this option, two arguments can be provided.
-    				// The first option is mandatory and represents the path of the model.
-    				// The second option is optional and represents the path to the file where the predictions should be written to.
-				    string [] paths = task.Trim().Split (' ');
+                    // For this option, two arguments can be provided.
+                    // The first option is mandatory and represents the path of the model.
+                    // The second option is optional and represents the path to the file where the predictions should be written to.
+                    string[] paths = task.Trim().Split(' ');
 
                     StreamReader readModel = new StreamReader(paths[0]);
                     // Each line of the file contains one term of the model
-    				List<string> model = new List<string> ();
-    				while (!readModel.EndOfStream) {
-    					model.Add(readModel.ReadLine ());
-    				}
+                    List<string> model = new List<string>();
+                    while (!readModel.EndOfStream)
+                    {
+                        model.Add(readModel.ReadLine());
+                    }
                     readModel.Close();
-    				List<Feature> trueModelFeatures = new List<Feature> ();
-    				foreach (string term in model) {
-					    trueModelFeatures.Add (new Feature (term, GlobalState.varModel));
-    				}
+                    List<Feature> trueModelFeatures = new List<Feature>();
+                    foreach (string term in model)
+                    {
+                        trueModelFeatures.Add(new Feature(term, GlobalState.varModel));
+                    }
 
-				    InfluenceModel influenceModel = new InfluenceModel (GlobalState.varModel, GlobalState.currentNFP);
-				    FeatureSubsetSelection featureSubsetSelection = new FeatureSubsetSelection (influenceModel, this.mlSettings);
+                    InfluenceModel influenceModel = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                    FeatureSubsetSelection featureSubsetSelection = new FeatureSubsetSelection(influenceModel, this.mlSettings);
 
-				    LearningRound learningRound = featureSubsetSelection.LearnWithTrueModel (trueModelFeatures);
-				    GlobalState.logInfo.logLine (learningRound.ToString ());
+                    LearningRound learningRound = featureSubsetSelection.LearnWithTrueModel(trueModelFeatures);
+                    GlobalState.logInfo.logLine(learningRound.ToString());
 
-    				// Now, predict all configurations
-    				if (paths.Length == 2) {
-    					GlobalState.logInfo.logLine ("Writing the predictions to " + paths [1] + ".");
-    					predict (paths [1], null, learningRound.FeatureSet);
-    				} else {
-					    GlobalState.logInfo.logLine ("As no path is given, no predictions are written into a file.");
-    				}
+                    // Now, predict all configurations
+                    if (paths.Length == 2)
+                    {
+                        GlobalState.logInfo.logLine("Writing the predictions to " + paths[1] + ".");
+                        predict(paths[1], null, learningRound.FeatureSet);
+                    }
+                    else
+                    {
+                        GlobalState.logInfo.logLine("As no path is given, no predictions are written into a file.");
+                    }
 
-				    break;
+                    break;
 
-    			case COMMAND_EVALUATE_MODEL:
-    				// For this option, two arguments can be provided.
+                case COMMAND_EVALUATE_MODEL:
+                    // For this option, two arguments can be provided.
                     // The first option is mandatory and represents the path of the model.
                     // The second option is optional and represents the path to the file where the predictions should be written to.
-				    string [] filePaths = task.Trim ().Split (' ');
-    				if (!File.Exists (filePaths[0].Trim ())) {
-    					GlobalState.logError.logLine ("The given file '" + filePaths [0].Trim () + "' does not exist.");
+                    string[] filePaths = task.Trim().Split(' ');
+                    if (!File.Exists(filePaths[0].Trim()))
+                    {
+                        GlobalState.logError.logLine("The given file '" + filePaths[0].Trim() + "' does not exist.");
                     }
                     // A file may contain multiple models
-				    StreamReader modelReader = new StreamReader (filePaths [0].Trim ());
-                    List<string> models = new List<string> ();
-                    while (!modelReader.EndOfStream) {
-                        models.Add (modelReader.ReadLine ());
+                    StreamReader modelReader = new StreamReader(filePaths[0].Trim());
+                    List<string> models = new List<string>();
+                    while (!modelReader.EndOfStream)
+                    {
+                        models.Add(modelReader.ReadLine());
                     }
-                    modelReader.Close ();
-                    
+                    modelReader.Close();
+
                     // Initialization
-    				InfluenceModel infModel = new InfluenceModel (GlobalState.varModel, GlobalState.currentNFP);
-				    FeatureSubsetSelection fSS = new FeatureSubsetSelection (infModel, this.mlSettings);
-                    
+                    InfluenceModel infModel = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
+                    FeatureSubsetSelection fSS = new FeatureSubsetSelection(infModel, this.mlSettings);
+
                     // Evaluate each model in the input file
-				    for (int i = 0; i < models.Count; i++) {
-					    string m = models [i];
-    					string [] terms = m.Split ('+');
-    					List<Feature> currentModel = new List<Feature> ();
+                    for (int i = 0; i < models.Count; i++)
+                    {
+                        string m = models[i];
+                        string[] terms = m.Split('+');
+                        List<Feature> currentModel = new List<Feature>();
 
-    					foreach (string term in terms) {
-    						string[] elements = term.Split ('*');
-    						string coefficient = elements [0];
-    						string variables = string.Join (" * ", elements.Skip (1).ToArray ());
-    						Feature f = new Feature (variables, GlobalState.varModel);
-    						f.Constant = double.Parse (coefficient);
+                        foreach (string term in terms)
+                        {
+                            string[] elements = term.Split('*');
+                            string coefficient = elements[0];
+                            string variables = string.Join(" * ", elements.Skip(1).ToArray());
+                            Feature f = new Feature(variables, GlobalState.varModel);
+                            f.Constant = double.Parse(coefficient);
 
-    						currentModel.Add(f);
-    					}
-
-
-    					LearningRound lR = fSS.LearnWithTrueModel (currentModel);
-					    GlobalState.logInfo.logLine (lR.ToString ());
-
-    					// Now, predict all configurations
-                        if (filePaths.Length == 2) {
-    						string currentPath = filePaths [1];
-						    currentPath = Path.GetDirectoryName(currentPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension (currentPath) + "_" + i + Path.GetExtension (currentPath);
-    						GlobalState.logInfo.logLine ("Writing the predictions to " + currentPath + ".");
-    						predict (currentPath, null, lR.FeatureSet);
-                        } else {
-                            GlobalState.logInfo.logLine ("As no path is given, no predictions are written into a file.");
+                            currentModel.Add(f);
                         }
-    				}
+
+
+                        LearningRound lR = fSS.LearnWithTrueModel(currentModel);
+                        GlobalState.logInfo.logLine(lR.ToString());
+
+                        // Now, predict all configurations
+                        if (filePaths.Length == 2)
+                        {
+                            string currentPath = filePaths[1];
+                            currentPath = Path.GetDirectoryName(currentPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(currentPath) + "_" + i + Path.GetExtension(currentPath);
+                            GlobalState.logInfo.logLine("Writing the predictions to " + currentPath + ".");
+                            predict(currentPath, null, lR.FeatureSet);
+                        }
+                        else
+                        {
+                            GlobalState.logInfo.logLine("As no path is given, no predictions are written into a file.");
+                        }
+                    }
 
                     break;
 
@@ -1328,9 +1340,9 @@ namespace CommandLine
                     GlobalState.optionOrder.AddRange(GlobalState.varModel.NumericOptions);
                 }
                 ConfigurationPrinter printer = new ConfigurationPrinter(configsLearnFile, GlobalState.optionOrder);
-		 printer.print(configurationsLearning, new List<NFProperty>());
+                printer.print(configurationsLearning, new List<NFProperty>());
                 printer = new ConfigurationPrinter(configsValFile, GlobalState.optionOrder);
-		 printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty> ());
+                printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty>());
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
                 PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() +
@@ -1913,7 +1925,7 @@ namespace CommandLine
 
         private void predict(string task, Learning exp, List<Feature> model = null)
         {
-			NFProperty nfpProperty = new NFProperty ("Prediction");
+            NFProperty nfpProperty = new NFProperty("Prediction");
 
             for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; ++i)
             {
@@ -1923,29 +1935,32 @@ namespace CommandLine
 
                 if (model != null)
                 {
-					prediction = FeatureSubsetSelection.predict (model, currentConfiguration);
+                    prediction = FeatureSubsetSelection.predict(model, currentConfiguration);
                 }
                 else
                 {
                     prediction = FeatureSubsetSelection
                     .predict(exp.models.ElementAt(exp.models.Count - 1).LearningHistory.Last().FeatureSet, currentConfiguration);
                 }
-                            
-				if (currentConfiguration.nfpValues.ContainsKey (nfpProperty)) {
-					currentConfiguration.nfpValues [nfpProperty] = prediction;
-				} else {
-					currentConfiguration.nfpValues.Add (nfpProperty, prediction);
-				}
+
+                if (currentConfiguration.nfpValues.ContainsKey(nfpProperty))
+                {
+                    currentConfiguration.nfpValues[nfpProperty] = prediction;
+                }
+                else
+                {
+                    currentConfiguration.nfpValues.Add(nfpProperty, prediction);
+                }
             }
 
-			// Choose the NFPs to print
-			List<NFProperty> nfpPropertiesToPrint = new List<NFProperty> ();
-			nfpPropertiesToPrint.Add (GlobalState.currentNFP);
-			nfpPropertiesToPrint.Add (nfpProperty);
+            // Choose the NFPs to print
+            List<NFProperty> nfpPropertiesToPrint = new List<NFProperty>();
+            nfpPropertiesToPrint.Add(GlobalState.currentNFP);
+            nfpPropertiesToPrint.Add(nfpProperty);
 
-			// Use the ConfigurationPrinter to print the file.
-			ConfigurationPrinter configurationPrinter = new ConfigurationPrinter (task, GlobalState.optionOrder, "", "");
-			configurationPrinter.print (GlobalState.allMeasurements.Configurations, nfpPropertiesToPrint);
+            // Use the ConfigurationPrinter to print the file.
+            ConfigurationPrinter configurationPrinter = new ConfigurationPrinter(task, GlobalState.optionOrder, "", "");
+            configurationPrinter.print(GlobalState.allMeasurements.Configurations, nfpPropertiesToPrint);
         }
 
         /// <summary>

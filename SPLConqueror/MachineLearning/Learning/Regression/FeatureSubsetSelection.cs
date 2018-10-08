@@ -260,19 +260,19 @@ namespace MachineLearning.Learning.Regression
         /// </summary>
 		/// <returns>All information that is relevant for the learning process as <see cref="LearningRound"/></returns>
 		public LearningRound LearnWithTrueModel(List<Feature> features)
-		{
-			setLearningSet(GlobalState.allMeasurements.Configurations);
-			setValidationSet (GlobalState.allMeasurements.Configurations);
-			startTime = DateTime.Now;
-			ModelFit fi = evaluateCandidate (features, MLsettings.considerEpsilonTube);
+        {
+            setLearningSet(GlobalState.allMeasurements.Configurations);
+            setValidationSet(GlobalState.allMeasurements.Configurations);
+            startTime = DateTime.Now;
+            ModelFit fi = evaluateCandidate(features, MLsettings.considerEpsilonTube);
 
-			LearningRound newRound = new LearningRound (fi.newModel, fi.error, computeValidationError (fi.newModel), 0);
-			newRound.learningError_relative = fi.error;
+            LearningRound newRound = new LearningRound(fi.newModel, fi.error, computeValidationError(fi.newModel), 0);
+            newRound.learningError_relative = fi.error;
             newRound.validationError_relative = newRound.validationError;
             newRound.elapsedTime = DateTime.Now - startTime;
 
-			return newRound;
-		}
+            return newRound;
+        }
 
 
         /// <summary>
