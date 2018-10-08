@@ -86,19 +86,22 @@ namespace SPLConqueror_Core
                 }
                 GlobalState.logInfo.logLine("File name for configurations file was too long. Changed to" + file);
             }
-            if (!File.Exists(file) && !Path.GetDirectoryName (file).Equals ("")) {
-		 Directory.CreateDirectory (Path.GetDirectoryName (file));
+            if (!File.Exists(file) && !Path.GetDirectoryName(file).Equals(""))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(file));
             }
 
-			if (file.EndsWith(CSV_FILE_EXTENSION) && order != null)
+            if (file.EndsWith(CSV_FILE_EXTENSION) && order != null)
             {
-				if (nfpPropertiesToPrint == null) {
-					nfpPropertiesToPrint = new List<NFProperty> ();
-					if (!GlobalState.currentNFP.Equals (NFProperty.DefaultProperty)) {
-						nfpPropertiesToPrint.Add (GlobalState.currentNFP);
-					}
-				}
-				return print_csv(configurations, nfpPropertiesToPrint);
+                if (nfpPropertiesToPrint == null)
+                {
+                    nfpPropertiesToPrint = new List<NFProperty>();
+                    if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+                    {
+                        nfpPropertiesToPrint.Add(GlobalState.currentNFP);
+                    }
+                }
+                return print_csv(configurations, nfpPropertiesToPrint);
             }
 
             if (order == null)
@@ -109,7 +112,7 @@ namespace SPLConqueror_Core
 
         }
 
-		private bool print_csv(List<Configuration> configurations, List<NFProperty> nfpPropertiesToPrint)
+        private bool print_csv(List<Configuration> configurations, List<NFProperty> nfpPropertiesToPrint)
         {
             StringBuilder csvContent = new StringBuilder();
 
@@ -125,17 +128,18 @@ namespace SPLConqueror_Core
 
             if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
             {
-				foreach (NFProperty nfpProperty in nfpPropertiesToPrint) {
-					csvContent.Append (CSV_ELEMENT_DELIMITER);
-					csvContent.Append (nfpProperty.Name);
-				}
+                foreach (NFProperty nfpProperty in nfpPropertiesToPrint)
+                {
+                    csvContent.Append(CSV_ELEMENT_DELIMITER);
+                    csvContent.Append(nfpProperty.Name);
+                }
             }
 
             csvContent.Append(CSV_ROW_DELIMITER);
 
             foreach (Configuration c in configurations)
             {
-				csvContent.Append(c.toCsv(this.order, nfpPropertiesToPrint));
+                csvContent.Append(c.toCsv(this.order, nfpPropertiesToPrint));
             }
 
             File.WriteAllText(file, csvContent.ToString());
@@ -143,7 +147,7 @@ namespace SPLConqueror_Core
             return true;
         }
 
-		private bool print_noOrder(List<Configuration> configurations)
+        private bool print_noOrder(List<Configuration> configurations)
         {
 
             StringBuilder sb = new StringBuilder();
