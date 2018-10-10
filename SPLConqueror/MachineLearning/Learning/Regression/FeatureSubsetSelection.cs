@@ -351,6 +351,7 @@ namespace MachineLearning.Learning.Regression
                     ModelFit fi = evaluateCandidate(newModel, MLsettings.considerEpsilonTube);
                     if (fi.complete)
                     {
+                        GlobalState.logInfo.logLine("Candidate: " + candidate + " -->Error: " + fi.error);
                         errorOfFeature.GetOrAdd(threadCandidate, fi.error);
                         errorOfFeatureWithModel.GetOrAdd(threadCandidate, fi.newModel);
                     }
@@ -376,7 +377,21 @@ namespace MachineLearning.Learning.Regression
                 foreach (Feature candidate in sortedFeatures)
                 {
                     var candidateError = errorOfFeature[candidate];
+                    //GlobalState.logInfo.logLine("Candidate: " + candidate + " -->Error: " + candidateError);
+
                     var candidateScore = previousRound.validationError_relative - candidateError;
+
+
+                    if (previousRound.round == 0) // now, we are in the first round where we perform the learning
+                    {
+                        double maxError = errorOfFeature.Values.ToList().Max();
+                        candidateScore = maxError - candidateError;
+                    }
+                    else
+                    {
+                        candidateScore = previousRound.validationError_relative - candidateError;
+                    }
+
                     if (candidateScore > 0)
                     {
                         if (MLsettings.candidateSizePenalty)
@@ -385,6 +400,7 @@ namespace MachineLearning.Learning.Regression
                         }
                         if (candidateScore > maximalRoundScore)
                         {
+                           
                             maximalRoundScore = candidateScore;
                             minimalRoundError = errorOfFeature[candidate];
                             bestCandidate = candidate;
