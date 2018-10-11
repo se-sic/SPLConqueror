@@ -34,6 +34,8 @@ It can be used to continue the execution of script files that are aborted in the
 
 ## How to install SPL Conqueror
 
+**Note: Since mono version 5.16.0, the results between mono and .NET when performing machine learning differ.**
+
 <details>
 <summary>
 On Ubuntu 16.04
