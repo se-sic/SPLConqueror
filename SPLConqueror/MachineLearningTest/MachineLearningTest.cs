@@ -44,7 +44,9 @@ namespace MachineLearningTest
 
         public static bool isHigherThanV16()
         {
-            return false;
+            string version = monoVers();
+            string[] numbers = version.Split(new char[] { '.' });
+            return (int.Parse(numbers[0]) > 5) || (int.Parse(numbers[0]) == 5 && int.Parse(numbers[1]) >= 16);
         }
 
         [OneTimeSetUp]
@@ -139,6 +141,9 @@ namespace MachineLearningTest
                 Assert.True("12728.6666666667 * HAVE_VERIFY" == polynoms[2].Trim().Replace(",","."));
             } else if (isHigherThanV16())
             {
+                Assert.AreEqual(2, polynoms.Length);
+                Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
+                Assert.AreEqual("507.033333333333 * PS32K", polynoms[1].Trim());
 
             }
             else
@@ -214,7 +219,12 @@ namespace MachineLearningTest
                 isExpected &= Math.Round(coefficients[1], 2) == -12927.14;
             } else if(isHigherThanV16())
             {
-                
+                isExpected &= variables.Count == 2;
+                isExpected &= variables[0].Equals("PAGESIZE");
+                isExpected &= variables[1].Equals("PS32K");
+                isExpected &= Math.Round(coefficients[0], 2) == 1600.2;
+                isExpected &= Math.Round(coefficients[1], 2) == 495.95;
+
             } else
             {
                 isExpected &= variables.Count == 2;
