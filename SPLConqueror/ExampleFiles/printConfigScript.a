@@ -1,9 +1,5 @@
 log ./out.txt
-vm ./BerkeleyDBFeatureModel.xml
-all ./BerkeleyDBMeasurements.xml
-nfp MainMemory
-binary pairWise
-numeric random
-define-python-path C:\Anaconda2\
-learn-python SVR
-#printConfigs ./ConfigurationsByPrinter.txt PREFIX POSTFIX
+vm ./VariabilityModelSampling.xml
+binary random numConfigs:asTW2 seed:15
+numeric centralcomposite
+printconfigs ./out.csv

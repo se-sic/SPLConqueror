@@ -11,7 +11,7 @@ namespace PythonTest
         {
             Commands cmd = new Commands();
             string pathVS = Path.GetFullPath(
-            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//...")) + Path.DirectorySeparatorChar
+            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..")) + Path.DirectorySeparatorChar
             + "ExampleFiles" + Path.DirectorySeparatorChar;
 
             string pathCI = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"

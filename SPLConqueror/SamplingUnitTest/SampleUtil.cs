@@ -14,7 +14,7 @@ namespace SamplingUnitTest
         public static int EXPECTED_CENTRALCOMP_ALLBINARY = 756;
         public static int EXPECTED_PAIRWISE = 280;
 
-        private static string modelPath = Path.GetFullPath(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..."))
+        private static string modelPath = Path.GetFullPath(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//.."))
             + Path.DirectorySeparatorChar + "ExampleFiles"
             + Path.DirectorySeparatorChar + "VariabilityModelSampling.xml";
 

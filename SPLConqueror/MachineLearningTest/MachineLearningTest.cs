@@ -3,6 +3,7 @@ using CommandLine;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MachineLearningTest
 {
@@ -14,20 +15,32 @@ namespace MachineLearningTest
         private StringWriter consoleOutput = new StringWriter();
 
         private static string modelPathVS = Path.GetFullPath(
-            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//...")) + Path.DirectorySeparatorChar
+            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..")) + Path.DirectorySeparatorChar
             + "ExampleFiles" + Path.DirectorySeparatorChar + "BerkeleyDBFeatureModel.xml";
 
         private static string modelPathCI = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/BerkeleyDBFeatureModel.xml";
 
         private static string measurementPathVS = Path.GetFullPath(
-            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//...")) + Path.DirectorySeparatorChar
+            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..")) + Path.DirectorySeparatorChar
             + "ExampleFiles" + Path.DirectorySeparatorChar + "BerkeleyDBMeasurements.xml";
 
         private static string measurementPathCI = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/BerkeleyDBMeasurements.xml";
 
         private bool isCIEnvironment;
+
+        public static bool IsMono()
+        {
+            return Type.GetType("Mono.Runtime") != null;
+        }
+
+        public static string monoVers()
+        {
+            Type type = Type.GetType("Mono.Runtime");
+            MethodInfo dispalayName = type.GetMethod("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
+            return dispalayName.Invoke(null, null).ToString();
+        }
 
         [OneTimeSetUp]
         public void init()
@@ -68,7 +81,6 @@ namespace MachineLearningTest
 
         private void performSimpleLearning(Commands cmd)
         {
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " withHierarchy:true");
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
@@ -106,7 +118,7 @@ namespace MachineLearningTest
         public void testBagging()
         {
             cleanUp(cmd, "");
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " withHierarchy:true bagging:true baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:true baggingNumbers:3");
             cmd.performOneCommand(Commands.COMMAND_START_LEARNING_SPL_CONQUEROR);
 
             string averageModel = consoleOutput.ToString()
@@ -114,10 +126,20 @@ namespace MachineLearningTest
             string[] polynoms = averageModel.Replace("\n", "").Trim()
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
-            Assert.AreEqual(3, polynoms.Length);
-            Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
-            Assert.AreEqual("-12.3111111111108 * CS32MB", polynoms[1].Trim());
-            Assert.AreEqual("510.111111111112 * PS32K", polynoms[2].Trim());
+            if (!IsMono())
+            {
+                Assert.True((8 == polynoms.Length));
+                Assert.True("1748 * PAGESIZE" == polynoms[0].Trim());
+                Assert.True("19182 * HAVE_STATISTICS" == polynoms[1].Trim());
+                Assert.True("12728.6666666667 * HAVE_VERIFY" == polynoms[2].Trim().Replace(",","."));
+            }
+            else
+            {
+                Assert.AreEqual(3, polynoms.Length);
+                Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
+                Assert.AreEqual("-12.3111111111108 * CS32MB", polynoms[1].Trim());
+                Assert.AreEqual("510.111111111112 * PS32K", polynoms[2].Trim());
+            }
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
@@ -126,7 +148,7 @@ namespace MachineLearningTest
             cmd.performOneCommand(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_OPTIONWISE);
             cmd.performOneCommand(Commands.COMMAND_NUMERIC_SAMPLING + " "
                 + Commands.COMMAND_EXPDESIGN_CENTRALCOMPOSITE);
-            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false withHierarchy:true baggingNumbers:3");
+            cmd.performOneCommand(Commands.COMMAND_SET_MLSETTING + " bagging:false baggingNumbers:3");
         }
 
         [Test, Order(3)]
@@ -174,12 +196,22 @@ namespace MachineLearningTest
                 variables.Add(coefficientAndVariable[1].Trim());
                 coefficients.Add(Double.Parse(coefficientAndVariable[0].Trim()));
             }
-
-            isExpected &= variables.Count == 2;
-            isExpected &= variables[0].Equals("PAGESIZE");
-            isExpected &= variables[1].Equals("CS16MB");
-            isExpected &= Math.Round(coefficients[0], 2) == 1955.51;
-            isExpected &= Math.Round(coefficients[1], 2) == 125.69;
+            if(!IsMono())
+            {
+                isExpected &= variables.Count == 2;
+                isExpected &= variables[0].Equals("PAGESIZE");
+                isExpected &= variables[1].Equals("PS8K");
+                isExpected &= Math.Round(coefficients[0], 2) == 14509.14;
+                isExpected &= Math.Round(coefficients[1], 2) == -12927.14;
+            } else
+            {
+                Console.Error.Write(monoVers());
+                isExpected &= variables.Count == 2;
+                isExpected &= variables[0].Equals("PAGESIZE");
+                isExpected &= variables[1].Equals("CS16MB");
+                isExpected &= Math.Round(coefficients[0], 2) == 1955.51;
+                isExpected &= Math.Round(coefficients[1], 2) == 125.69;
+            }
             return isExpected;
         }
 
