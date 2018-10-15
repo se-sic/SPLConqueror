@@ -26,7 +26,7 @@ namespace SamplingUnitTest
         private const int EXPECTED_KEXCHANGE_3_1 = 120;
         private const int EXPECTED_T_WISE_3 = 588;
         private const int EXPECTED_T_WISE_2 = 280;
-        private const int EXPECTED_BINARY_RANDOM_TW_15 = 7;
+        private const int EXPECTED_BINARY_RANDOM_AS_TW_15 = 280;
         private const int EXPECTED_DIST_AW = 40;
         private const int EXPECTED_DIST_AW_SOLVER = 280;
         private const int EXPECTED_DIST_PRESERVING = 40;
@@ -38,85 +38,86 @@ namespace SamplingUnitTest
         }
 
         [Test, Order(2)]
-        public void TestWholePop()
+        public void TestAllbinaryCCD()
         {
             Assert.True(SampleUtil.TestBinaryNoParam(SampleUtil.EXPECTED_CENTRALCOMP_ALLBINARY, "msSolver"
                 , SamplingStrategies.ALLBINARY, "AllbinarySampling.csv"));
         }
 
         [Test, Order(3)]
-        public void TestNegFeatureWise()
+        public void TestNegFeatureWiseCCD()
         {
             Assert.True(SampleUtil.TestBinaryNoParam(EXPECTED_NEG_FEATURE_WISE, "msSolver"
                 , SamplingStrategies.NEGATIVE_OPTIONWISE, "NegFWSampling.csv"));
         }
 
         [Test, Order(4)]
-        public void TestPairWise()
+        public void TestPairWiseCCD()
         {
             Assert.True(SampleUtil.TestBinaryNoParam(SampleUtil.EXPECTED_PAIRWISE, "msSolver"
                 , SamplingStrategies.PAIRWISE, "PairwiseSampling.csv"));
         }
 
         [Test, Order(5)]
-        public void TestFeatureWise()
+        public void TestFeatureWiseCCD()
         {
             Assert.True(SampleUtil.TestBinaryNoParam(EXPECTED_OPTIONWISE, "msSolver"
                 , SamplingStrategies.OPTIONWISE, "FeaturewiseSampling.csv"));
         }
 
         [Test, Order(6)]
-        public void TestBoxBehnken()
+        public void TestBoxBehnkenPairwise()
         {
             Assert.True(SampleUtil.TestBoxBehnken("msSolver", EXPECTED_BOXBEHNKEN));
         }
 
         [Test, Order(7)]
-        public void TestHypersampling()
+        public void TestHypersamplingPairwise()
         {
             Assert.True(SampleUtil.TestHypersampling("msSolver", EXPECTED_HYPERSAMPLING_50, 50));
             Assert.True(SampleUtil.TestHypersampling("msSolver", EXPECTED_HYPERSAMPLING_40, 40));
         }
 
         [Test, Order(8)]
-        public void TestOneFactorAtATime()
+        public void TestOneFactorAtATimePairwise()
         {
             Assert.True(SampleUtil.TestOneFactorAtATime("msSolver", EXPECTED_ONE_FACTOR_AT_A_TIME_5, 5));
             Assert.True(SampleUtil.TestOneFactorAtATime("msSolver", EXPECTED_ONE_FACTOR_AT_A_TIME_3, 3));
         }
 
         [Test, Order(9)]
-        public void TestNumericRandom()
+        public void TestNumericRandomPairwise()
         {
             Assert.True(SampleUtil.TestNumericRandom("msSolver", EXPECTED_RANDOM_12_1, 1, 12));
             Assert.True(SampleUtil.TestNumericRandom("msSolver", EXPECTED_RANDOM_10_0, 0, 10));
         }
 
         [Test, Order(10)]
-        public void TestPlackettBurman()
+        public void TestPlackettBurmanPairwise()
         {
             Assert.True(SampleUtil.TestPlackettBurman("msSolver", EXPECTED_PLACKETT_BURMAN_3_9, 3, 9));
             Assert.True(SampleUtil.TestPlackettBurman("msSolver", EXPECTED_PLACKETT_BURMAN_5_125, 5, 125));
         }
 
         [Test, Order(11)]
-        public void TestKExchange()
+        public void TestKExchangePairwisePairwise()
         {
             Assert.True(SampleUtil.TestKExchange("msSolver", EXPECTED_KEXCHANGE_7_2, 7, 2));
             Assert.True(SampleUtil.TestKExchange("msSolver", EXPECTED_KEXCHANGE_3_1, 3, 1));
         }
 
         [Test, Order(12)]
-        public void TestTWise()
+        public void TestTWiseCCD()
         {
             Assert.True(SampleUtil.TestTWise("msSolver", EXPECTED_T_WISE_3, 3));
             Assert.True(SampleUtil.TestTWise("msSolver", EXPECTED_T_WISE_2, 2));
         }
 
         [Test, Order(13)]
-        public void TestBinaryRandom()
+        public void TestBinaryRandomCCD()
         {
-            Assert.True(SampleUtil.TestBinaryRandom("msSolver", EXPECTED_BINARY_RANDOM_TW_15, "asTW", 15));
+            // Test binary random with the same number of configurations as Twise 2
+            Assert.True(SampleUtil.TestBinaryRandom("msSolver", EXPECTED_BINARY_RANDOM_AS_TW_15, "asTW2", 15));
         }
 
         [Test, Order(14)]
