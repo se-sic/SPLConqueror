@@ -30,6 +30,7 @@ namespace MachineLearningTest
 
         private bool isCIEnvironment;
 
+        /* Not needed currently
         public static bool IsMono()
         {
             return Type.GetType("Mono.Runtime") != null;
@@ -47,7 +48,7 @@ namespace MachineLearningTest
             string version = monoVers();
             string[] numbers = version.Split(new char[] { '.' });
             return (int.Parse(numbers[0]) > 5) || (int.Parse(numbers[0]) == 5 && int.Parse(numbers[1]) >= 16);
-        }
+        } */
 
         [OneTimeSetUp]
         public void init()
@@ -133,26 +134,9 @@ namespace MachineLearningTest
             string[] polynoms = averageModel.Replace("\n", "").Trim()
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
-            if (!IsMono())
-            {
-                Assert.True((8 == polynoms.Length));
-                Assert.True("1748 * PAGESIZE" == polynoms[0].Trim());
-                Assert.True("19182 * HAVE_STATISTICS" == polynoms[1].Trim());
-                Assert.True("12728.6666666667 * HAVE_VERIFY" == polynoms[2].Trim().Replace(",","."));
-            } else if (isHigherThanV16())
-            {
-                Assert.AreEqual(2, polynoms.Length);
-                Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
-                Assert.AreEqual("507.033333333333 * PS32K", polynoms[1].Trim());
-
-            }
-            else
-            {
-                Assert.AreEqual(3, polynoms.Length);
-                Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
-                Assert.AreEqual("-12.3111111111108 * CS32MB", polynoms[1].Trim());
-                Assert.AreEqual("510.111111111112 * PS32K", polynoms[2].Trim());
-            }
+            Assert.AreEqual(2, polynoms.Length);
+            Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
+            Assert.AreEqual("507.033333333333 * PS32K", polynoms[1].Trim());
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
@@ -197,7 +181,6 @@ namespace MachineLearningTest
 
         private bool isExpectedResult(string learningResult)
         {
-            Console.Error.Write(monoVers());
             Console.Error.Write(learningResult);
             bool isExpected = true;
             string[] polynoms = learningResult.Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
@@ -210,29 +193,11 @@ namespace MachineLearningTest
                 variables.Add(coefficientAndVariable[1].Trim());
                 coefficients.Add(Double.Parse(coefficientAndVariable[0].Trim()));
             }
-            if(!IsMono())
-            {
-                isExpected &= variables.Count == 2;
-                isExpected &= variables[0].Equals("PAGESIZE");
-                isExpected &= variables[1].Equals("PS8K");
-                isExpected &= Math.Round(coefficients[0], 2) == 14509.14;
-                isExpected &= Math.Round(coefficients[1], 2) == -12927.14;
-            } else if(isHigherThanV16())
-            {
-                isExpected &= variables.Count == 2;
-                isExpected &= variables[0].Equals("PAGESIZE");
-                isExpected &= variables[1].Equals("PS32K");
-                isExpected &= Math.Round(coefficients[0], 2) == 1600.2;
-                isExpected &= Math.Round(coefficients[1], 2) == 495.95;
-
-            } else
-            {
-                isExpected &= variables.Count == 2;
-                isExpected &= variables[0].Equals("PAGESIZE");
-                isExpected &= variables[1].Equals("CS16MB");
-                isExpected &= Math.Round(coefficients[0], 2) == 1955.51;
-                isExpected &= Math.Round(coefficients[1], 2) == 125.69;
-            }
+            isExpected &= variables.Count == 2;
+            isExpected &= variables[0].Equals("PAGESIZE");
+            isExpected &= variables[1].Equals("PS32K");
+            isExpected &= Math.Round(coefficients[0], 2) == 1600.2;
+            isExpected &= Math.Round(coefficients[1], 2) == 495.95;
             return isExpected;
         }
 
