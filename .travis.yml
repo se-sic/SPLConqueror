@@ -20,9 +20,9 @@ before_script:
   - sudo apt-get install p7zip-full
   - 7z e z3-4.6.0-x64-ubuntu-14.04.zip
   - sudo cp libz3.so /usr/lib/libz3.so
-  - ls /home/travis/build/DonHok/SPLConqueror/SPLConqueror/packages
-  - ls /home/travis/build/DonHok/SPLConqueror/SPLConqueror/packages/z3x64win.4.5.0.1/
-  - ls /home/travis/build/DonHok/SPLConqueror/SPLConqueror/packages/z3x64win.4.5.0.1/lib/
+  - ls /home/travis/build/se-passau/SPLConqueror/SPLConqueror/packages
+  - ls /home/travis/build/se-passau/SPLConqueror/SPLConqueror/packages/z3x64win.4.5.0.1/
+  - ls /home/travis/build/se-passau/SPLConqueror/SPLConqueror/packages/z3x64win.4.5.0.1/lib/
   - ls /usr/lib/libz3.so
 script:
   - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
