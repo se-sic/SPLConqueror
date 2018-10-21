@@ -135,8 +135,8 @@ namespace MachineLearningTest
                 .Split(new string[] { "+" }, StringSplitOptions.RemoveEmptyEntries);
             Console.Error.Write(consoleOutput.ToString());
             Assert.AreEqual(2, polynoms.Length);
-            Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim());
-            Assert.AreEqual("507.033333333333 * PS32K", polynoms[1].Trim());
+            Assert.AreEqual("1585.8 * PAGESIZE", polynoms[0].Trim().Replace(",","."));
+            Assert.AreEqual("507.033333333333 * PS32K", polynoms[1].Trim().Replace(",","."));
         }
 
         private void cleanUp(Commands cmd, String mlSettings)
