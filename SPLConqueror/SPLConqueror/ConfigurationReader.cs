@@ -175,7 +175,7 @@ namespace SPLConqueror_Core
                                     double avg = 0;
                                     foreach (var i in m)
                                     {
-                                        double d = Convert.ToDouble(i.Replace(decimalDelimiter, '.'));
+                                        double d = double.Parse(i.Replace(decimalDelimiter, '.'), System.Globalization.CultureInfo.InvariantCulture);
                                         if (d != -1)
                                         {
                                             values.Add(d);
@@ -213,7 +213,9 @@ namespace SPLConqueror_Core
                                     measuredValue = val1;
                             }
                             else
-                                measuredValue = Convert.ToDouble(childNode.InnerText.ToString().Replace(decimalDelimiter, '.'));
+                            {
+                                measuredValue = double.Parse(childNode.InnerText.ToString().Replace(decimalDelimiter, '.'), System.Globalization.CultureInfo.InvariantCulture);
+                            }
                             // TODO how to handle configurations with negative nfps?
                             if (measuredValue < 0)
                                 goto nextConfig;
@@ -611,7 +613,7 @@ namespace SPLConqueror_Core
                     BinaryOption b = model.getBinaryOption(line[i]);
                     temp.Add(b);
                 }
-                double value = Double.Parse(line[line.Length - 1].Replace(',', '.'));
+                double value = Double.Parse(line[line.Length - 1].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                 var c = new Configuration(temp);
                 c.setMeasuredValue(GlobalState.currentNFP, value);
                 result.Add(c);
