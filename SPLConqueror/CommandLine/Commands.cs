@@ -13,6 +13,7 @@ using Persistence;
 using ProcessWrapper;
 using MachineLearning.Sampling.Hybrid;
 using MachineLearning.Sampling.Hybrid.Distributive;
+using System.Diagnostics;
 
 namespace CommandLine
 {
@@ -1327,10 +1328,10 @@ namespace CommandLine
 
             //print configurations and nfps to temp folder
             string tempPath = Path.GetTempPath();
-            string configsLearnFile = tempPath + "learn_" + samplingIdentifier + ".csv";
-            string configsValFile = tempPath + "validation_" + samplingIdentifier + ".csv";
-            string nfpLearnFile = tempPath + "nfp_learn_" + samplingIdentifier + ".nfp";
-            string nfpValFile = tempPath + "nfp_validation_" + samplingIdentifier + ".nfp";
+            string configsLearnFile = tempPath + "learn_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".csv";
+            string configsValFile = tempPath + "validation_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".csv";
+            string nfpLearnFile = tempPath + "nfp_learn_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".nfp";
+            string nfpValFile = tempPath + "nfp_validation_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".nfp";
 
             try
             {
