@@ -371,7 +371,7 @@ namespace MachineLearning.Learning.Regression
 
             // Evaluation of the candidates
             List<Feature> sortedFeatures = errorOfFeature.Keys.ToList();
-            sortedFeatures.Sort(sortedFeatures.First());
+            sortedFeatures = sortedFeatures.OrderBy(x => x.GetHashCode()).ToList();
             if (MLsettings.scoreMeasure == ML_Settings.ScoreMeasure.RELERROR)
             {
                 foreach (Feature candidate in sortedFeatures)
@@ -470,7 +470,7 @@ namespace MachineLearning.Learning.Regression
         private void addFeaturesToIgnore(ConcurrentDictionary<Feature, double> errorOfCandidates)
         {
             List<KeyValuePair<Feature, double>> myList = errorOfCandidates.ToList();
-            myList.Sort((x, y) => x.Value.CompareTo(y.Value));
+            myList = myList.OrderBy(x => x.Value).ToList();
             int minNumberToKeep = 5;
             for (int i = myList.Count - 1; i > myList.Count / 2; i--)
             {
