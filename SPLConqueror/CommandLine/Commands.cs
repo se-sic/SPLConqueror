@@ -443,17 +443,13 @@ namespace CommandLine
                             currentModel.Add(f);
                         }
 
-
-                        LearningRound lR = fSS.LearnWithTrueModel(currentModel);
-                        GlobalState.logInfo.logLine(lR.ToString());
-
                         // Now, predict all configurations
                         if (filePaths.Length == 2)
                         {
                             string currentPath = filePaths[1];
                             currentPath = Path.GetDirectoryName(currentPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(currentPath) + "_" + i + Path.GetExtension(currentPath);
                             GlobalState.logInfo.logLine("Writing the predictions to " + currentPath + ".");
-                            predict(currentPath, null, lR.FeatureSet);
+                            predict(currentPath, null, currentModel);
                         }
                         else
                         {
