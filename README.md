@@ -696,6 +696,8 @@ An example would be as follows:
 
 To set which python interpreter is used, use the ```define-python-path``` command.
 
+**Note**: In SPL Conqueror, only python3 is supported. Additionally, the ```sklearn``` module (version 0.19.0) is needed. We recommend to set up a virtual environment by using virtualenv.
+
 #### Learning with scikit-learn
 
 ```learn-python <learner>```

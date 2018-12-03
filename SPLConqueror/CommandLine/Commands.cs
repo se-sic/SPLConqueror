@@ -1369,8 +1369,12 @@ namespace CommandLine
                         PythonWrapper.START_LEARN, GlobalState.varModel);
                     PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
                         GlobalState.varModel.Name + "_" + samplingIdentifier);
-                    pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                    double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
                     GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                    if (!Double.IsNaN(error))
+                    {
+                        GlobalState.logInfo.logLine("Error rate: " + error);
+                    }
                     csvWriter.close();
                 }
             }
