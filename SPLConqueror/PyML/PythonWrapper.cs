@@ -138,11 +138,18 @@ namespace ProcessWrapper
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
         }
 
-        private List<Configuration> printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
+        /// <summary>
+        /// This method prints the predictions in the specified file and returns the error rate.
+        /// </summary>
+        /// <param name="pythonList">The predictions from python.</param>
+        /// <param name="predictedConfigurations">The configurations that were predicted.</param>
+        /// <param name="writer">The writer object for the file.</param>
+        /// <returns></returns>
+        private double printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer, out  List<Configuration> predictedByPython)
         {
+            predictedByPython = new List<Configuration>();
             string[] separators = new String[] { "," };
             string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            List<Configuration> configurationsWithPrediction = new List<Configuration>();
 
             if (predictedConfigurations.Count != predictions.Length)
                 GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
@@ -156,22 +163,25 @@ namespace ProcessWrapper
                     errMessage.Append(errInfo);
                 }
                 GlobalState.logError.log("Error message: " + errMessage.ToString());
+                return Double.NaN;
             }
             else
             {
+                double error = 0;
                 writer.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
                 for (int i = 0; i < predictedConfigurations.Count; i++)
                 {
                     writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" + Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
 
-                    #if InfluenceAnalysis
-                    Configuration copy = predictedConfigurations[i].Copy();
-                    copy.setMeasuredValue(GlobalState.currentNFP, Convert.ToDouble(predictions[i]));
-                    configurationsWithPrediction.Add(copy);
-                    #endif
+                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) / predictedConfigurations[i].GetNFPValue() ;
+                    var copy = predictedConfigurations[i].Copy();
+                    copy.setMeasuredValue(GlobalState.currentNFP, predictedConfigurations[i].GetNFPValue());
+                    predictedByPython.Add(copy);
                 }
+
+                error /= predictedConfigurations.Count;
+                return error;
             }
-            return configurationsWithPrediction;
         }
 
         /// <summary>
@@ -219,7 +229,8 @@ namespace ProcessWrapper
         /// </summary>
         /// <param name="predictedConfigurations">The configurations that were used to predict the nfp values by the learner.</param>
         /// <param name="writer">Writer to write the prediction results into a csv File.</param>
-        public List<Configuration> getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
+        /// <returns>A double indicating the error rate (NaN if there is none)</returns>
+        public double getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer, out List<Configuration> predictedByPython)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
@@ -228,7 +239,7 @@ namespace ProcessWrapper
             }
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
-            return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer);
+            return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer, out predictedByPython);
         }
 
         /// <summary>
