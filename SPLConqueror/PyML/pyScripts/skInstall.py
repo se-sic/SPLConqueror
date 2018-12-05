@@ -24,9 +24,9 @@ scipy_version = "scipy==0.17.1"
 
 try:
     import pip
-    pip.main(['install', numpy_version])
-    pip.main(['install', scipy_version])
-    pip.main(['install', sklearn_version])
+    pip._internal.main(['install', numpy_version])
+    pip._internal.main(['install', scipy_version])
+    pip._internal.main(['install', sklearn_version])
 except ImportError:
     raise MissingPipError("Pip has to be installed. Please install pip"
                           " Note pip is distributed with python version >= 2.7.9")
