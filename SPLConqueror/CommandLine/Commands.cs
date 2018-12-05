@@ -443,17 +443,13 @@ namespace CommandLine
                             currentModel.Add(f);
                         }
 
-
-                        LearningRound lR = fSS.LearnWithTrueModel(currentModel);
-                        GlobalState.logInfo.logLine(lR.ToString());
-
                         // Now, predict all configurations
                         if (filePaths.Length == 2)
                         {
                             string currentPath = filePaths[1];
                             currentPath = Path.GetDirectoryName(currentPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(currentPath) + "_" + i + Path.GetExtension(currentPath);
                             GlobalState.logInfo.logLine("Writing the predictions to " + currentPath + ".");
-                            predict(currentPath, null, lR.FeatureSet);
+                            predict(currentPath, null, currentModel);
                         }
                         else
                         {
@@ -1380,7 +1376,8 @@ namespace CommandLine
                         PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
                     PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
                         GlobalState.varModel.Name + "_" + samplingIdentifier);
-                    List<Configuration> predicted = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                    List<Configuration> predictedByPython;
+                    double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter, out predictedByPython);
 
                     if (File.Exists(treePath))
                     {
@@ -1401,12 +1398,15 @@ namespace CommandLine
 
 #if PythonInfluenceAnalysis
                     List<Configuration> tmp = GlobalState.allMeasurements.Configurations;
-                    GlobalState.allMeasurements.Configurations = predicted;
+                    GlobalState.allMeasurements.Configurations = predictedByPython;
                     learnWithAllMeasurements();
                     GlobalState.allMeasurements.Configurations = tmp;
 #endif
-
                     GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                    if (!Double.IsNaN(error))
+                    {
+                        GlobalState.logInfo.logLine("Error rate: " + error);
+                    }
                     csvWriter.close();
                 }
             }
