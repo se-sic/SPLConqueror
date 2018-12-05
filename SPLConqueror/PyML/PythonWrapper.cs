@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 using System.Threading;
+using System.Linq;
 
 namespace ProcessWrapper
 {
@@ -61,8 +62,13 @@ namespace ProcessWrapper
         /// <param name="mlProperties">Configurations for the machine learning algorithm.</param>
         public PythonWrapper(string path, string[] mlProperties)
         {
+            bool debugTrace = false;
+            if((mlProperties.Length > 1) && mlProperties[1] == "Debug") {
+                debugTrace = true;
+                mlProperties = mlProperties.Except(new string[] { mlProperties[1] }).ToArray();
+            }
             this.mlProperties = mlProperties;
-            ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_PATH, path);
+            ProcessStartInfo pythonSetup = new ProcessStartInfo(PYTHON_PATH, path + " " + debugTrace.ToString());
             pythonSetup.UseShellExecute = false;
             pythonSetup.RedirectStandardInput = true;
             pythonSetup.RedirectStandardOutput = true;
@@ -70,6 +76,11 @@ namespace ProcessWrapper
             pythonProcess = Process.Start(pythonSetup);
             Thread errorRedirect = new Thread(() => redirectOutputThread(pythonProcess));
             errorRedirect.Start();
+        }
+
+        public bool isRunning()
+        {
+            return pythonProcess != null && !pythonProcess.HasExited;
         }
 
 
@@ -127,10 +138,11 @@ namespace ProcessWrapper
             passLineToApplication(LEARNING_SETTINGS_STREAM_END);
         }
 
-        private void printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
+        private List<Configuration> printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
         {
             string[] separators = new String[] { "," };
             string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            List<Configuration> configurationsWithPrediction = new List<Configuration>();
 
             if (predictedConfigurations.Count != predictions.Length)
                 GlobalState.logError.log("number of predictions using a python learner does not match with number of configurations");
@@ -151,8 +163,15 @@ namespace ProcessWrapper
                 for (int i = 0; i < predictedConfigurations.Count; i++)
                 {
                     writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" + Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
+
+                    #if InfluenceAnalysis
+                    Configuration copy = predictedConfigurations[i].Copy();
+                    copy.setMeasuredValue(GlobalState.currentNFP, Convert.ToDouble(predictions[i]));
+                    configurationsWithPrediction.Add(copy);
+                    #endif
                 }
             }
+            return configurationsWithPrediction;
         }
 
         /// <summary>
@@ -170,7 +189,7 @@ namespace ProcessWrapper
         /// or learning.</param>
         /// <param name="model">Model that contains all the configuration options.</param>
         public void setupApplication(string configsLearn, string nfpLearn, string configsPredict, string nfpPredict,
-            string task, VariabilityModel model)
+            string task, VariabilityModel model, string treePath = " ")
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
@@ -181,7 +200,9 @@ namespace ProcessWrapper
                     while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
                     passLineToApplication(configsPredict + " " + nfpPredict);
                     while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
-                    List<string> opts = new List<string>();
+                    passLineToApplication(treePath);
+                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                        List<string> opts = new List<string>();
                     model.BinaryOptions.ForEach(opt => opts.Add(opt.Name));
                     model.NumericOptions.ForEach(opt => opts.Add(opt.Name));
                     passLineToApplication(string.Join(",", opts));
@@ -198,7 +219,7 @@ namespace ProcessWrapper
         /// </summary>
         /// <param name="predictedConfigurations">The configurations that were used to predict the nfp values by the learner.</param>
         /// <param name="writer">Writer to write the prediction results into a csv File.</param>
-        public void getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
+        public List<Configuration> getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
@@ -207,7 +228,7 @@ namespace ProcessWrapper
             }
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
-            printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer);
+            return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer);
         }
 
         /// <summary>

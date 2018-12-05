@@ -1369,11 +1369,43 @@ namespace CommandLine
                 }
                 else
                 {
+#if WriteTree
+                    string treePath = (targetPath.Split(Path.DirectorySeparatorChar)).Last();
+                    treePath = targetPath.Substring(0, (targetPath.Length - ((treePath).Length)));
+                    treePath += samplingIdentifier + "_tree_" + taskAsParameter[0] + ".tree";
+#else
+                    string treePath = " ";
+#endif
                     pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
-                        PythonWrapper.START_LEARN, GlobalState.varModel);
+                        PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
                     PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
                         GlobalState.varModel.Name + "_" + samplingIdentifier);
-                    pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+                    List<Configuration> predicted = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter);
+
+                    if (File.Exists(treePath))
+                    {
+                        while (pyInterpreter.isRunning())
+                            System.Threading.Thread.Sleep(100);
+                        StreamReader reader = new StreamReader(treePath);
+                        string content = reader.ReadToEnd();
+                        reader.Close();
+                        for(int i = 0; i < GlobalState.optionOrder.Count; ++i)
+                        {
+                            content = content.Replace("(" + i + "<","(" + GlobalState.optionOrder[i].Name + "<")
+                                .Replace("(" + i + ">","(" + GlobalState.optionOrder[i].Name + ">");
+                        }
+                        StreamWriter writer = new StreamWriter(treePath);
+                        writer.Write(content);
+                        writer.Close();
+                    }
+
+#if PythonInfluenceAnalysis
+                    List<Configuration> tmp = GlobalState.allMeasurements.Configurations;
+                    GlobalState.allMeasurements.Configurations = predicted;
+                    learnWithAllMeasurements();
+                    GlobalState.allMeasurements.Configurations = tmp;
+#endif
+
                     GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
                     csvWriter.close();
                 }
