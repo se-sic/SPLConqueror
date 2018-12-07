@@ -31,6 +31,16 @@ namespace SPLConqueror_Core
             get { return numericOptions; }
         }
 
+        /// <summary>
+        /// Shallow copy of configuration.
+        /// </summary>
+        /// <returns></returns>
+        public Configuration Copy()
+        {
+            Configuration copy = new Configuration(this.binaryOptions, this.NumericOptions);
+            return copy;
+        }
+
         private Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
 
         /// <summary>
