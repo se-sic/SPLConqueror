@@ -1243,7 +1243,7 @@ namespace CommandLine
         {
             StringBuilder sb = new StringBuilder();
             // add binay sampling strategy to the identifier
-            sb.Append(this.exp.info.binarySamplings_Learning + "_");
+            sb.Append(this.exp.info.binarySamplings_Learning.Replace("/", "") + "_");
 
             // add numeric sampling strategy to the identifier
             foreach (ExperimentalDesign sampling in numericToSample)
