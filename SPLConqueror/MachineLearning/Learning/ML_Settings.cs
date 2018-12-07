@@ -165,6 +165,19 @@ namespace MachineLearning.Learning
         /// </summary>
         public bool outputRoundsToStdout = false;
 
+        /// <summary>
+        /// If true, additional information from the machine-learning
+        /// approaches is written to the output.
+        /// </summary>
+        public bool debug = false;
+
+        /// <summary>
+        /// By using this option, multiple linear regression is used
+        /// to detect the influences that could be derived by the
+        /// machine-learning technique from Python.
+        /// </summary>
+        public bool pythonInfluenceAnalysis = false;
+
         public List<string> blacklisted = new List<string>();
 
         /// <summary>

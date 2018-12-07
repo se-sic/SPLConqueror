@@ -1365,13 +1365,14 @@ namespace CommandLine
                 }
                 else
                 {
-#if WriteTree
-                    string treePath = (targetPath.Split(Path.DirectorySeparatorChar)).Last();
-                    treePath = targetPath.Substring(0, (targetPath.Length - ((treePath).Length)));
-                    treePath += samplingIdentifier + "_tree_" + taskAsParameter[0] + ".tree";
-#else
                     string treePath = " ";
-#endif
+                    if (mlSettings.debug)
+                    {
+                        treePath = (targetPath.Split(Path.DirectorySeparatorChar)).Last();
+                        treePath = targetPath.Substring(0, (targetPath.Length - ((treePath).Length)));
+                        treePath += samplingIdentifier + "_tree_" + taskAsParameter[0] + ".tree";
+                    }
+                    
                     pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
                         PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
                     PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
@@ -1396,12 +1397,14 @@ namespace CommandLine
                         writer.Close();
                     }
 
-#if PythonInfluenceAnalysis
-                    List<Configuration> tmp = GlobalState.allMeasurements.Configurations;
-                    GlobalState.allMeasurements.Configurations = predictedByPython;
-                    learnWithAllMeasurements();
-                    GlobalState.allMeasurements.Configurations = tmp;
-#endif
+                    if (mlSettings.pythonInfluenceAnalysis)
+                    {
+                        List<Configuration> tmp = GlobalState.allMeasurements.Configurations;
+                        GlobalState.allMeasurements.Configurations = predictedByPython;
+                        learnWithAllMeasurements();
+                        GlobalState.allMeasurements.Configurations = tmp;
+                    }
+                    
                     GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
                     if (!Double.IsNaN(error))
                     {
