@@ -1389,8 +1389,11 @@ namespace CommandLine
                         reader.Close();
                         for(int i = 0; i < GlobalState.optionOrder.Count; ++i)
                         {
-                            content = content.Replace("(" + i + "<","(" + GlobalState.optionOrder[i].Name + "<")
-                                .Replace("(" + i + ">","(" + GlobalState.optionOrder[i].Name + ">");
+                            if (taskAsParameter[0].ToLower() == "svr")
+                                content = content.Replace("C(" + i + ")", GlobalState.optionOrder[i].Name );
+                            else
+                                content = content.Replace("(" + i + "<","(" + GlobalState.optionOrder[i].Name + "<")
+                                    .Replace("(" + i + ">","(" + GlobalState.optionOrder[i].Name + ">");
                         }
                         StreamWriter writer = new StreamWriter(treePath);
                         writer.Write(content);

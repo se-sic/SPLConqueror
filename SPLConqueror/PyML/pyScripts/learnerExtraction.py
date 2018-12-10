@@ -1,12 +1,26 @@
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble.forest import RandomForestRegressor
+from sklearn.svm import SVR
 
 paths = []
 forest_paths = []
 
-
-paths = []
-forest_paths = []
+def extract_svr(svm):
+    to_return = ""
+    if svm.kernel == "linear":
+        to_return += str(svm.intercept_[0])
+        for (index, value) in enumerate(svm.coef_[0]):
+            to_return += " + C(" + str(index) + ") * " + str(value)
+    elif svm.kernel == "poly" and svm.gamma is not None and not svm._pairwise:
+        #TODO Work in progress if needed
+        raise NotImplemented
+        to_return += str(svm.intercept_[0])
+        for (index, value) in enumerate(svm.dual_coef_[0]):
+            # TODO right indexing
+            to_return += " + " + str(value) + "* (" + str(svm._gamma) + " * " + str(svm.support_vectors_[index][0]) + " * " + str(rep[0])  +")**" + str(svm.degree)
+    else:
+        raise NotImplemented
+    return to_return
 
 
 def extract_tree(tree):
@@ -36,6 +50,8 @@ def extract(learner):
         return [extract_tree(learner)]
     elif isinstance(learner, RandomForestRegressor):
         return extract_forest(learner)
+    elif isinstance(learner, SVR):
+        return [extract_svr(learner)]
     else:
         raise NotImplementedError
 
