@@ -3,8 +3,9 @@ import learning
 import parameterTuning
 import configParser
 import learnerExtraction
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble.forest import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor as DTR
+from sklearn.ensemble.forest import RandomForestRegressor as RF
+from sklearn.svm import SVR
 from sys import argv
 
 
@@ -32,6 +33,9 @@ def print_line(string):
     print(string)
     # flushing output buffer
     sys.stdout.flush()
+
+def check_prereq(model):
+    return isinstance(model, DTR) or isinstance(model, RF) or (isinstance(model, SVR) and model.kernel=="linear")
 
 
 # format and print a list
@@ -140,8 +144,7 @@ def main():
             if debug:
                 print("Extracting trees.\n", file=sys.stderr, flush=True)
             print_line_array(predictions)
-        if not tree_path.strip() is "" \
-                and (isinstance(model.learning_model, DecisionTreeRegressor) or isinstance(model.learning_model, RandomForestRegressor)):
+        if not tree_path.strip() is "" and check_prereq(model.learning_model):
             tree_file = open(tree_path, 'w')
             tree = learnerExtraction.extract(model.learning_model)
             if len(tree) == 1:

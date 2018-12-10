@@ -70,7 +70,7 @@ namespace PerformancePrediction_GUI
         private void readMeasurements_Click(object sender, EventArgs e)
         {
             OpenFileDialog pfd = new OpenFileDialog();
-            pfd.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+            pfd.Filter = "xml files (*.xml)|*.xml|csv files(*.csv)|*.csv|All files (*.*)|*.*";
             String filePath = "";
             if (pfd.ShowDialog() == DialogResult.OK)
             {
