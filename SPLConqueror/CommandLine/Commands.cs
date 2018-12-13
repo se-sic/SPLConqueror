@@ -1382,6 +1382,7 @@ namespace CommandLine
 
                     if (File.Exists(treePath))
                     {
+                        GlobalState.logInfo.logLine("Elapsed learning time(seconds): " + pyInterpreter.getTimeToLearning());
                         while (pyInterpreter.isRunning())
                             System.Threading.Thread.Sleep(100);
                         StreamReader reader = new StreamReader(treePath);

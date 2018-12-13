@@ -242,6 +242,11 @@ namespace ProcessWrapper
             return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer, out predictedByPython);
         }
 
+        public string getTimeToLearning()
+        {
+            return waitForNextReceivedLine();
+        }
+
         /// <summary>
         /// Send a request to the process to get the parameter tuning results(optimal configuration of the learner for the current
         /// scenario).
