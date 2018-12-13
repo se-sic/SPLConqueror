@@ -7,6 +7,7 @@ from sklearn.tree import DecisionTreeRegressor as DTR
 from sklearn.ensemble.forest import RandomForestRegressor as RF
 from sklearn.svm import SVR
 from sys import argv
+from time import perf_counter
 
 
 # Messages received by the parent process
@@ -132,7 +133,9 @@ def main():
 
         learning.number_of_configurations = len(configurations_learn.results)
         model = learning.Learner(learning_strategy, learner_settings)
+        start = perf_counter()
         model.learn(configurations_learn.features, configurations_learn.results)
+        elapsed = perf_counter() - start
         predictions = model.predict(configurations_predict.features)
 
         print_line(FINISHED_LEARNING)
@@ -145,6 +148,7 @@ def main():
                 print("Extracting trees.\n", file=sys.stderr, flush=True)
             print_line_array(predictions)
         if not tree_path.strip() is "" and check_prereq(model.learning_model):
+            print_line(str(elapsed))
             tree_file = open(tree_path, 'w')
             tree = learnerExtraction.extract(model.learning_model)
             if len(tree) == 1:
