@@ -83,7 +83,7 @@ namespace MachineLearning.Learning.Regression
         /// <param name="list">List.</param>
         /// <param name="partitions">Partitions.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-		private static List<T>[] SplitList<T>(List<T> list, int partitions)
+	private static List<T>[] SplitList<T>(List<T> list, int partitions)
         {
             List<T>[] splitList = new List<T>[partitions];
             int sizeOfPartitions = list.Count / partitions;
@@ -129,9 +129,9 @@ namespace MachineLearning.Learning.Regression
                 n--;
 
                 // Swap
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                T value = shuffledList[k];
+                shuffledList[k] = shuffledList[n];
+                shuffledList[n] = value;
             }
             return shuffledList;
         }
