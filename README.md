@@ -484,6 +484,8 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | learnTimeLimit | Defines the time limit for the learning process. If 0, no time limit. Format: HH:MM:SS | 0 | TimeSpan |
 | scoreMeasure | Defines which measure is used to select the best candidate and to compute the score of a candidate. | RELERROR | RELERROR, INFLUENCE |
 | outputRoundsToStdout | If true, the info about the rounds is output not only to the log file at the end of the learning, but also to the stdout during the learning after each round completion. | false | true, false |
+| debug | Print model of selected learners in scikit-learn(currently on supports Random Forest, DecisionTree and SVR with linear kernel). | false | true,false |
+| pythonInfluenceAnalysis | Perform regression on the predictions of algorithms provided by scikit-learn. | false | true,false |
 
 Generally, to change the default settings, there are two options, namely:
 1. The first is to add the settings in the format ```SETTING_NAME:VALUE``` to the *mlsettings*-command. For instance, if the number of learning rounds should be reduced to 25, allow logarithmic functions and don't want to stop on long learning rounds, the associated command would be:
@@ -704,6 +706,12 @@ To set which python interpreter is used, use the ```define-python-path``` comman
 
 To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
 For more information on the algorithms see:[Scikit-Learn](http://scikit-learn.org/stable/documentation.html)
+
+Further, machine-learning parameters for the individual strategies can be passed as additional arguments. The parameters have to be separated by whitespaces and each machine-learning paramter has to be passed in the form of
+
+```parameter_name=value```
+
+. The full list of the machine-learning parameters for each individual algorithm can be found in the [Scikit-Learn API documentation](https://scikit-learn.org/stable/modules/classes.html)
 
 #### Performing parameter optimization for scikit-learn
 
