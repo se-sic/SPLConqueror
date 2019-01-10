@@ -688,6 +688,18 @@ Sometimes it makes sense to split up the current .a-script into smaller scripts 
 An example would be as follows:
 ```script C:\subScript.a```
 
+#### Convert Measurements
+
+It is possible to convert measurement files and variability models that contain numeric options to files that only contain binary options.
+For this the ```convert-measurements``` and ```convert-vm``` commands are provided. These commands convert all files that match the patterns that are provided.
+These commands are used as follows:
+
+```convert-[measurements/vm] <base_directory> <search_pattern_to_subdirectories> <pattern_to_find_files> <target_folder>```
+
+Note that to convert .csv measurements files, the corresponding needs to be loaded first.
+An example for this command would be:
+```convert-measurements E:\case-studies\ system1-version1.5.* system1*.xml E:\case-studies\system1-bin\```
+
 </details>
 <details>
 <summary>Additional command-line commands</summary>
