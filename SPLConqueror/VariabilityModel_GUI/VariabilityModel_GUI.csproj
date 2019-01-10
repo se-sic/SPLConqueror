@@ -157,6 +157,10 @@
       <Project>{1F035958-15B1-450A-BFC5-BEBD95376C40}</Project>
       <Name>SPLConqueror_Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Util\Util.csproj">
+      <Project>{9f6b4c96-40a8-46d0-9fe5-c501a2f9a4a4}</Project>
+      <Name>Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
