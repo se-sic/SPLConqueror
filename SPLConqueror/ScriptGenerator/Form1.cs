@@ -31,10 +31,12 @@ namespace ScriptGenerator
         private bool splconqueror_learner = true;
         private string interpreter_Path = null;
         private string learnPythonCommand = "learn-python";
+        private bool isHybridMode = false;
 
         public Form1()
         {
             InitializeComponent();
+            hybridGroupBox.Visible = false;
             addMlSettingsBoxContent();
 
         }
@@ -247,6 +249,14 @@ namespace ScriptGenerator
                 samplingNames.Add(Commands.COMMAND_BINARY_SAMPLING + " " + Commands.COMMAND_SAMPLE_BINARY_RANDOM
                     + " " + param + " " + validation);
                 keyInfo += "random " + numConfigsTextBox.Text + randomSeedTextBox.Text;
+            }
+            if (distanceCheckBox.Checked)
+            {
+                string param = "";
+                if (distanceNumBox.Text != "")
+                    param += "numConfigs:" + distanceNumBox.Text + " ";
+                if (distanceWeightBox.Text != "")
+                    param += "optionWeight:" + distanceWeightBox.Text + " ";
             }
             if (tWiseCheckBox.Checked)
             {
@@ -689,6 +699,21 @@ namespace ScriptGenerator
 
 
             StringBuilder sb = new StringBuilder();
+            foreach (Container hybridSamp in runs["hybrid"])
+            {
+                string hybridSamplingString = "";
+                if (hybridSamp.Content != null)
+                {
+                    List<string> samplingNamesHybrid = (List<string>)hybridSamp.Content;
+                    foreach (string samplingHybrid in samplingNamesHybrid)
+                    {
+                        hybridSamplingString += (samplingHybrid + System.Environment.NewLine);
+                    }
+                }
+                sb.Append(hybridSamplingString);
+            }
+
+
             foreach (Container cBSamp in runs[CONTAINERKEY_BINARY])
             {
                 string binarySamplingString = "";
@@ -1080,6 +1105,76 @@ namespace ScriptGenerator
             sw.Flush();
             sw.Close();
             MessageBox.Show("Converted script.");
+        }
+
+        private void numericBinaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            expDasign_group.Visible = true;
+            bsamp_group.Visible = true;
+            hybridGroupBox.Visible = false;
+            isHybridMode = false;
+        }
+
+        private void hybridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            expDasign_group.Visible = false;
+            bsamp_group.Visible = false;
+            hybridGroupBox.Visible = true;
+            isHybridMode = true;
+        }
+
+        private void hybridBtnClick(object sender, EventArgs e)
+        {
+            string containerKey = "hybrid";
+            string keyInfo = "";
+            List<string> samplingNames = new List<string>();
+            string validation = "";
+
+            if (hybrid_valcb.Checked)
+            {
+                containerKey += "validation";
+                validation = "validation";
+            }
+
+            if (h_distributionaw_cb.Checked)
+            {
+                string param = "";
+                if (h_da_metrictb.Text != "")
+                    param += "metric:" + h_da_metrictb.Text + " ";
+                if (h_da_distrtb.Text != "")
+                    param += "distribution:" + h_da_distrtb.Text + " ";
+                if (h_da_selection_box.Text != "")
+                    param += "selection:" + h_da_selection_box.Text + " ";
+                if (h_da_numconfstb.Text != "")
+                    param += "numConfigs:" + h_da_numconfstb.Text + " ";
+                if (h_da_opttb.Text != "")
+                    param += "optimization:" + h_da_opttb.Text + " ";
+                if (h_da_seedtb.Text != "")
+                    param += "seed:" + h_da_seedtb.Text + " ";
+                samplingNames.Add(Commands.COMMAND_HYBRID + " " + Commands.COMMAND_HYBRID_DISTRIBUTION_AWARE + " "
+                    + param + validation);
+            }
+            if (h_dp_cb.Checked)
+            {
+                string param = "";
+                if (h_dp_metr_tb.Text != "")
+                    param += "metric:" + h_dp_metr_tb.Text + " ";
+                if (h_dp_distrtb.Text != "")
+                    param += "distribution:" + h_dp_distrtb.Text + " ";
+                if (h_dp_selectiontb.Text != "")
+                    param += "selection:" + h_dp_selectiontb.Text + " ";
+                if (h_dp_numconftb.Text != "")
+                    param += "numConfigs:" + h_dp_numconftb.Text + " ";
+                if (h_dp_opttb.Text != "")
+                    param += "optimization:" + h_dp_opttb.Text + " ";
+                if (h_dp_seedtb.Text != "")
+                    param += "seed:" + h_dp_seedtb.Text + " ";
+                samplingNames.Add(Commands.COMMAND_HYBRID + " " + Commands.COMMAND_HYBRID_DISTRIBUTION_PRESERVING + " "
+                    + param + validation);
+            }
+            Container cont = new Container(containerKey, samplingNames);
+            cont.AdditionalKeyInformation = keyInfo;
+            addedElementsList.Items.Add(cont);
         }
     }
 

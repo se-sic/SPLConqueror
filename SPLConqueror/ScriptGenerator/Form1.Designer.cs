@@ -32,7 +32,6 @@
             this.MlSettings_Box = new System.Windows.Forms.GroupBox();
             this.AddMlSetting = new System.Windows.Forms.Button();
             this.mlSettingsPanel = new System.Windows.Forms.Panel();
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.addedElementsBox = new System.Windows.Forms.GroupBox();
             this.removeElement = new System.Windows.Forms.Button();
             this.addedElementsList = new System.Windows.Forms.ListBox();
@@ -45,6 +44,11 @@
             this.cleanGlobalAfterVM = new System.Windows.Forms.CheckBox();
             this.informatioLabel = new System.Windows.Forms.Label();
             this.bsamp_group = new System.Windows.Forms.GroupBox();
+            this.distanceWeightBox = new System.Windows.Forms.TextBox();
+            this.distanceWeightLabel = new System.Windows.Forms.Label();
+            this.distanceNumBox = new System.Windows.Forms.TextBox();
+            this.distanceNumLabel = new System.Windows.Forms.Label();
+            this.distanceCheckBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.randomNumConfs = new System.Windows.Forms.Label();
             this.tTextBox = new System.Windows.Forms.TextBox();
@@ -86,6 +90,35 @@
             this.num_BoxBehnken_check = new System.Windows.Forms.CheckBox();
             this.num_forValidationCheckBox = new System.Windows.Forms.CheckBox();
             this.expDesign_addButton = new System.Windows.Forms.Button();
+            this.hybridGroupBox = new System.Windows.Forms.GroupBox();
+            this.h_dp_seedtb = new System.Windows.Forms.TextBox();
+            this.h_dp_opttb = new System.Windows.Forms.TextBox();
+            this.h_dp_optl = new System.Windows.Forms.Label();
+            this.h_dp_numconfl = new System.Windows.Forms.Label();
+            this.h_dp_selectiontb = new System.Windows.Forms.TextBox();
+            this.h_dp_selectionl = new System.Windows.Forms.Label();
+            this.h_dp_seedl = new System.Windows.Forms.Label();
+            this.h_dp_numconftb = new System.Windows.Forms.TextBox();
+            this.h_dp_distrtb = new System.Windows.Forms.TextBox();
+            this.ha_dp_distrl = new System.Windows.Forms.Label();
+            this.h_dp_metr_tb = new System.Windows.Forms.TextBox();
+            this.h_dp_metrl = new System.Windows.Forms.Label();
+            this.h_da_seedtb = new System.Windows.Forms.TextBox();
+            this.h_da_opttb = new System.Windows.Forms.TextBox();
+            this.h_da_optiml = new System.Windows.Forms.Label();
+            this.h_da_numconfl = new System.Windows.Forms.Label();
+            this.h_da_selection_box = new System.Windows.Forms.TextBox();
+            this.h_da_selectionl = new System.Windows.Forms.Label();
+            this.h_da_seedl = new System.Windows.Forms.Label();
+            this.h_da_numconfstb = new System.Windows.Forms.TextBox();
+            this.h_da_distrtb = new System.Windows.Forms.TextBox();
+            this.h_da_distrl = new System.Windows.Forms.Label();
+            this.h_da_metrictb = new System.Windows.Forms.TextBox();
+            this.h_da_metricl = new System.Windows.Forms.Label();
+            this.h_dp_cb = new System.Windows.Forms.CheckBox();
+            this.h_distributionaw_cb = new System.Windows.Forms.CheckBox();
+            this.hybrid_valcb = new System.Windows.Forms.CheckBox();
+            this.h_addbt = new System.Windows.Forms.Button();
             this.logFile_Button = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.learn_button = new System.Windows.Forms.RadioButton();
@@ -114,12 +147,15 @@
             this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.converterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertLegacyScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.samplingModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.numericBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hybridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MlSettings_Box.SuspendLayout();
-            this.mlSettingsPanel.SuspendLayout();
             this.addedElementsBox.SuspendLayout();
             this.addResultFile_Group.SuspendLayout();
             this.bsamp_group.SuspendLayout();
             this.expDasign_group.SuspendLayout();
+            this.hybridGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.subscriptGroupBox.SuspendLayout();
             this.pythonLearnerGroupBox.SuspendLayout();
@@ -163,19 +199,12 @@
             // 
             // mlSettingsPanel
             // 
-            this.mlSettingsPanel.Controls.Add(this.vScrollBar1);
+            this.mlSettingsPanel.AutoScroll = true;
             this.mlSettingsPanel.Location = new System.Drawing.Point(9, 25);
             this.mlSettingsPanel.Margin = new System.Windows.Forms.Padding(4);
             this.mlSettingsPanel.Name = "mlSettingsPanel";
             this.mlSettingsPanel.Size = new System.Drawing.Size(372, 204);
             this.mlSettingsPanel.TabIndex = 0;
-            // 
-            // vScrollBar1
-            // 
-            this.vScrollBar1.Location = new System.Drawing.Point(349, 1);
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(17, 203);
-            this.vScrollBar1.TabIndex = 0;
             // 
             // addedElementsBox
             // 
@@ -300,6 +329,11 @@
             // 
             // bsamp_group
             // 
+            this.bsamp_group.Controls.Add(this.distanceWeightBox);
+            this.bsamp_group.Controls.Add(this.distanceWeightLabel);
+            this.bsamp_group.Controls.Add(this.distanceNumBox);
+            this.bsamp_group.Controls.Add(this.distanceNumLabel);
+            this.bsamp_group.Controls.Add(this.distanceCheckBox);
             this.bsamp_group.Controls.Add(this.label1);
             this.bsamp_group.Controls.Add(this.randomNumConfs);
             this.bsamp_group.Controls.Add(this.tTextBox);
@@ -318,10 +352,57 @@
             this.bsamp_group.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_group.Name = "bsamp_group";
             this.bsamp_group.Padding = new System.Windows.Forms.Padding(4);
-            this.bsamp_group.Size = new System.Drawing.Size(267, 188);
+            this.bsamp_group.Size = new System.Drawing.Size(267, 211);
             this.bsamp_group.TabIndex = 6;
             this.bsamp_group.TabStop = false;
             this.bsamp_group.Text = "binary sampling heuristics";
+            // 
+            // distanceWeightBox
+            // 
+            this.distanceWeightBox.Location = new System.Drawing.Point(234, 147);
+            this.distanceWeightBox.Margin = new System.Windows.Forms.Padding(4);
+            this.distanceWeightBox.Name = "distanceWeightBox";
+            this.distanceWeightBox.ShortcutsEnabled = false;
+            this.distanceWeightBox.Size = new System.Drawing.Size(25, 22);
+            this.distanceWeightBox.TabIndex = 18;
+            this.distanceWeightBox.Text = "0";
+            // 
+            // distanceWeightLabel
+            // 
+            this.distanceWeightLabel.AutoSize = true;
+            this.distanceWeightLabel.Location = new System.Drawing.Point(181, 150);
+            this.distanceWeightLabel.Name = "distanceWeightLabel";
+            this.distanceWeightLabel.Size = new System.Drawing.Size(56, 17);
+            this.distanceWeightLabel.TabIndex = 17;
+            this.distanceWeightLabel.Text = "Weight:";
+            // 
+            // distanceNumBox
+            // 
+            this.distanceNumBox.Location = new System.Drawing.Point(133, 147);
+            this.distanceNumBox.Margin = new System.Windows.Forms.Padding(4);
+            this.distanceNumBox.Name = "distanceNumBox";
+            this.distanceNumBox.Size = new System.Drawing.Size(41, 22);
+            this.distanceNumBox.TabIndex = 16;
+            this.distanceNumBox.Text = "asOW";
+            // 
+            // distanceNumLabel
+            // 
+            this.distanceNumLabel.AutoSize = true;
+            this.distanceNumLabel.Location = new System.Drawing.Point(94, 150);
+            this.distanceNumLabel.Name = "distanceNumLabel";
+            this.distanceNumLabel.Size = new System.Drawing.Size(39, 17);
+            this.distanceNumLabel.TabIndex = 15;
+            this.distanceNumLabel.Text = "num:";
+            // 
+            // distanceCheckBox
+            // 
+            this.distanceCheckBox.AutoSize = true;
+            this.distanceCheckBox.Location = new System.Drawing.Point(9, 149);
+            this.distanceCheckBox.Name = "distanceCheckBox";
+            this.distanceCheckBox.Size = new System.Drawing.Size(85, 21);
+            this.distanceCheckBox.TabIndex = 14;
+            this.distanceCheckBox.Text = "Distance";
+            this.distanceCheckBox.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -370,11 +451,11 @@
             // 
             // randomSeedTextBox
             // 
-            this.randomSeedTextBox.Location = new System.Drawing.Point(226, 91);
+            this.randomSeedTextBox.Location = new System.Drawing.Point(233, 91);
             this.randomSeedTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.randomSeedTextBox.Name = "randomSeedTextBox";
             this.randomSeedTextBox.ShortcutsEnabled = false;
-            this.randomSeedTextBox.Size = new System.Drawing.Size(41, 22);
+            this.randomSeedTextBox.Size = new System.Drawing.Size(26, 22);
             this.randomSeedTextBox.TabIndex = 8;
             this.randomSeedTextBox.Text = "0";
             // 
@@ -445,7 +526,7 @@
             // bsamp_ForValidation
             // 
             this.bsamp_ForValidation.AutoSize = true;
-            this.bsamp_ForValidation.Location = new System.Drawing.Point(127, 157);
+            this.bsamp_ForValidation.Location = new System.Drawing.Point(127, 177);
             this.bsamp_ForValidation.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_ForValidation.Name = "bsamp_ForValidation";
             this.bsamp_ForValidation.Size = new System.Drawing.Size(111, 21);
@@ -455,7 +536,7 @@
             // 
             // bsamp_addButton
             // 
-            this.bsamp_addButton.Location = new System.Drawing.Point(9, 152);
+            this.bsamp_addButton.Location = new System.Drawing.Point(9, 172);
             this.bsamp_addButton.Margin = new System.Windows.Forms.Padding(4);
             this.bsamp_addButton.Name = "bsamp_addButton";
             this.bsamp_addButton.Size = new System.Drawing.Size(100, 28);
@@ -771,6 +852,329 @@
             this.expDesign_addButton.UseVisualStyleBackColor = true;
             this.expDesign_addButton.Click += new System.EventHandler(this.expDesign_addButton_Click);
             // 
+            // hybridGroupBox
+            // 
+            this.hybridGroupBox.Controls.Add(this.h_dp_seedtb);
+            this.hybridGroupBox.Controls.Add(this.h_dp_opttb);
+            this.hybridGroupBox.Controls.Add(this.h_dp_optl);
+            this.hybridGroupBox.Controls.Add(this.h_dp_numconfl);
+            this.hybridGroupBox.Controls.Add(this.h_dp_selectiontb);
+            this.hybridGroupBox.Controls.Add(this.h_dp_selectionl);
+            this.hybridGroupBox.Controls.Add(this.h_dp_seedl);
+            this.hybridGroupBox.Controls.Add(this.h_dp_numconftb);
+            this.hybridGroupBox.Controls.Add(this.h_dp_distrtb);
+            this.hybridGroupBox.Controls.Add(this.ha_dp_distrl);
+            this.hybridGroupBox.Controls.Add(this.h_dp_metr_tb);
+            this.hybridGroupBox.Controls.Add(this.h_dp_metrl);
+            this.hybridGroupBox.Controls.Add(this.h_da_seedtb);
+            this.hybridGroupBox.Controls.Add(this.h_da_opttb);
+            this.hybridGroupBox.Controls.Add(this.h_da_optiml);
+            this.hybridGroupBox.Controls.Add(this.h_da_numconfl);
+            this.hybridGroupBox.Controls.Add(this.h_da_selection_box);
+            this.hybridGroupBox.Controls.Add(this.h_da_selectionl);
+            this.hybridGroupBox.Controls.Add(this.h_da_seedl);
+            this.hybridGroupBox.Controls.Add(this.h_da_numconfstb);
+            this.hybridGroupBox.Controls.Add(this.h_da_distrtb);
+            this.hybridGroupBox.Controls.Add(this.h_da_distrl);
+            this.hybridGroupBox.Controls.Add(this.h_da_metrictb);
+            this.hybridGroupBox.Controls.Add(this.h_da_metricl);
+            this.hybridGroupBox.Controls.Add(this.h_dp_cb);
+            this.hybridGroupBox.Controls.Add(this.h_distributionaw_cb);
+            this.hybridGroupBox.Controls.Add(this.hybrid_valcb);
+            this.hybridGroupBox.Controls.Add(this.h_addbt);
+            this.hybridGroupBox.Location = new System.Drawing.Point(292, 26);
+            this.hybridGroupBox.Margin = new System.Windows.Forms.Padding(4);
+            this.hybridGroupBox.Name = "hybridGroupBox";
+            this.hybridGroupBox.Padding = new System.Windows.Forms.Padding(4);
+            this.hybridGroupBox.Size = new System.Drawing.Size(371, 310);
+            this.hybridGroupBox.TabIndex = 35;
+            this.hybridGroupBox.TabStop = false;
+            this.hybridGroupBox.Text = "Hybrid design";
+            // 
+            // h_dp_seedtb
+            // 
+            this.h_dp_seedtb.Location = new System.Drawing.Point(269, 244);
+            this.h_dp_seedtb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_seedtb.Name = "h_dp_seedtb";
+            this.h_dp_seedtb.Size = new System.Drawing.Size(68, 22);
+            this.h_dp_seedtb.TabIndex = 53;
+            this.h_dp_seedtb.Text = "0";
+            this.h_dp_seedtb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_dp_opttb
+            // 
+            this.h_dp_opttb.Location = new System.Drawing.Point(100, 244);
+            this.h_dp_opttb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_opttb.Name = "h_dp_opttb";
+            this.h_dp_opttb.Size = new System.Drawing.Size(70, 22);
+            this.h_dp_opttb.TabIndex = 52;
+            this.h_dp_opttb.Text = "none";
+            this.h_dp_opttb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_dp_optl
+            // 
+            this.h_dp_optl.AutoSize = true;
+            this.h_dp_optl.Location = new System.Drawing.Point(6, 247);
+            this.h_dp_optl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_dp_optl.Name = "h_dp_optl";
+            this.h_dp_optl.Size = new System.Drawing.Size(82, 17);
+            this.h_dp_optl.TabIndex = 51;
+            this.h_dp_optl.Text = "Optimiztion:";
+            // 
+            // h_dp_numconfl
+            // 
+            this.h_dp_numconfl.AutoSize = true;
+            this.h_dp_numconfl.Location = new System.Drawing.Point(178, 215);
+            this.h_dp_numconfl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_dp_numconfl.Name = "h_dp_numconfl";
+            this.h_dp_numconfl.Size = new System.Drawing.Size(88, 17);
+            this.h_dp_numconfl.TabIndex = 50;
+            this.h_dp_numconfl.Text = "NumConfigs:";
+            // 
+            // h_dp_selectiontb
+            // 
+            this.h_dp_selectiontb.Location = new System.Drawing.Point(100, 212);
+            this.h_dp_selectiontb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_selectiontb.Name = "h_dp_selectiontb";
+            this.h_dp_selectiontb.Size = new System.Drawing.Size(70, 22);
+            this.h_dp_selectiontb.TabIndex = 49;
+            this.h_dp_selectiontb.Text = "SolverSelection";
+            this.h_dp_selectiontb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_dp_selectionl
+            // 
+            this.h_dp_selectionl.AutoSize = true;
+            this.h_dp_selectionl.Location = new System.Drawing.Point(6, 215);
+            this.h_dp_selectionl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_dp_selectionl.Name = "h_dp_selectionl";
+            this.h_dp_selectionl.Size = new System.Drawing.Size(70, 17);
+            this.h_dp_selectionl.TabIndex = 48;
+            this.h_dp_selectionl.Text = "Selection:";
+            // 
+            // h_dp_seedl
+            // 
+            this.h_dp_seedl.AutoSize = true;
+            this.h_dp_seedl.Location = new System.Drawing.Point(178, 247);
+            this.h_dp_seedl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_dp_seedl.Name = "h_dp_seedl";
+            this.h_dp_seedl.Size = new System.Drawing.Size(45, 17);
+            this.h_dp_seedl.TabIndex = 47;
+            this.h_dp_seedl.Text = "Seed:";
+            // 
+            // h_dp_numconftb
+            // 
+            this.h_dp_numconftb.Location = new System.Drawing.Point(269, 215);
+            this.h_dp_numconftb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_numconftb.Name = "h_dp_numconftb";
+            this.h_dp_numconftb.Size = new System.Drawing.Size(68, 22);
+            this.h_dp_numconftb.TabIndex = 46;
+            this.h_dp_numconftb.Text = "asOw";
+            this.h_dp_numconftb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_dp_distrtb
+            // 
+            this.h_dp_distrtb.Location = new System.Drawing.Point(269, 177);
+            this.h_dp_distrtb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_distrtb.Name = "h_dp_distrtb";
+            this.h_dp_distrtb.Size = new System.Drawing.Size(68, 22);
+            this.h_dp_distrtb.TabIndex = 45;
+            this.h_dp_distrtb.Text = "uniform";
+            this.h_dp_distrtb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // ha_dp_distrl
+            // 
+            this.ha_dp_distrl.AutoSize = true;
+            this.ha_dp_distrl.Location = new System.Drawing.Point(178, 180);
+            this.ha_dp_distrl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.ha_dp_distrl.Name = "ha_dp_distrl";
+            this.ha_dp_distrl.Size = new System.Drawing.Size(83, 17);
+            this.ha_dp_distrl.TabIndex = 44;
+            this.ha_dp_distrl.Text = "Distribution:";
+            // 
+            // h_dp_metr_tb
+            // 
+            this.h_dp_metr_tb.Location = new System.Drawing.Point(100, 177);
+            this.h_dp_metr_tb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_metr_tb.Name = "h_dp_metr_tb";
+            this.h_dp_metr_tb.Size = new System.Drawing.Size(70, 22);
+            this.h_dp_metr_tb.TabIndex = 43;
+            this.h_dp_metr_tb.Text = "manhattan";
+            this.h_dp_metr_tb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_dp_metrl
+            // 
+            this.h_dp_metrl.AutoSize = true;
+            this.h_dp_metrl.Location = new System.Drawing.Point(6, 180);
+            this.h_dp_metrl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_dp_metrl.Name = "h_dp_metrl";
+            this.h_dp_metrl.Size = new System.Drawing.Size(50, 17);
+            this.h_dp_metrl.TabIndex = 42;
+            this.h_dp_metrl.Text = "Metric:";
+            // 
+            // h_da_seedtb
+            // 
+            this.h_da_seedtb.Location = new System.Drawing.Point(271, 117);
+            this.h_da_seedtb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_da_seedtb.Name = "h_da_seedtb";
+            this.h_da_seedtb.Size = new System.Drawing.Size(68, 22);
+            this.h_da_seedtb.TabIndex = 40;
+            this.h_da_seedtb.Text = "0";
+            this.h_da_seedtb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_da_opttb
+            // 
+            this.h_da_opttb.Location = new System.Drawing.Point(102, 117);
+            this.h_da_opttb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_da_opttb.Name = "h_da_opttb";
+            this.h_da_opttb.Size = new System.Drawing.Size(70, 22);
+            this.h_da_opttb.TabIndex = 39;
+            this.h_da_opttb.Text = "none";
+            this.h_da_opttb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_da_optiml
+            // 
+            this.h_da_optiml.AutoSize = true;
+            this.h_da_optiml.Location = new System.Drawing.Point(8, 120);
+            this.h_da_optiml.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_da_optiml.Name = "h_da_optiml";
+            this.h_da_optiml.Size = new System.Drawing.Size(82, 17);
+            this.h_da_optiml.TabIndex = 38;
+            this.h_da_optiml.Text = "Optimiztion:";
+            // 
+            // h_da_numconfl
+            // 
+            this.h_da_numconfl.AutoSize = true;
+            this.h_da_numconfl.Location = new System.Drawing.Point(180, 88);
+            this.h_da_numconfl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_da_numconfl.Name = "h_da_numconfl";
+            this.h_da_numconfl.Size = new System.Drawing.Size(88, 17);
+            this.h_da_numconfl.TabIndex = 37;
+            this.h_da_numconfl.Text = "NumConfigs:";
+            // 
+            // h_da_selection_box
+            // 
+            this.h_da_selection_box.Location = new System.Drawing.Point(102, 85);
+            this.h_da_selection_box.Margin = new System.Windows.Forms.Padding(4);
+            this.h_da_selection_box.Name = "h_da_selection_box";
+            this.h_da_selection_box.Size = new System.Drawing.Size(70, 22);
+            this.h_da_selection_box.TabIndex = 36;
+            this.h_da_selection_box.Text = "SolverSelection";
+            this.h_da_selection_box.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_da_selectionl
+            // 
+            this.h_da_selectionl.AutoSize = true;
+            this.h_da_selectionl.Location = new System.Drawing.Point(8, 88);
+            this.h_da_selectionl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_da_selectionl.Name = "h_da_selectionl";
+            this.h_da_selectionl.Size = new System.Drawing.Size(70, 17);
+            this.h_da_selectionl.TabIndex = 35;
+            this.h_da_selectionl.Text = "Selection:";
+            // 
+            // h_da_seedl
+            // 
+            this.h_da_seedl.AutoSize = true;
+            this.h_da_seedl.Location = new System.Drawing.Point(180, 120);
+            this.h_da_seedl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_da_seedl.Name = "h_da_seedl";
+            this.h_da_seedl.Size = new System.Drawing.Size(45, 17);
+            this.h_da_seedl.TabIndex = 30;
+            this.h_da_seedl.Text = "Seed:";
+            // 
+            // h_da_numconfstb
+            // 
+            this.h_da_numconfstb.Location = new System.Drawing.Point(271, 88);
+            this.h_da_numconfstb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_da_numconfstb.Name = "h_da_numconfstb";
+            this.h_da_numconfstb.Size = new System.Drawing.Size(68, 22);
+            this.h_da_numconfstb.TabIndex = 25;
+            this.h_da_numconfstb.Text = "asOw";
+            this.h_da_numconfstb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_da_distrtb
+            // 
+            this.h_da_distrtb.Location = new System.Drawing.Point(271, 50);
+            this.h_da_distrtb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_da_distrtb.Name = "h_da_distrtb";
+            this.h_da_distrtb.Size = new System.Drawing.Size(68, 22);
+            this.h_da_distrtb.TabIndex = 21;
+            this.h_da_distrtb.Text = "uniform";
+            this.h_da_distrtb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_da_distrl
+            // 
+            this.h_da_distrl.AutoSize = true;
+            this.h_da_distrl.Location = new System.Drawing.Point(180, 53);
+            this.h_da_distrl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_da_distrl.Name = "h_da_distrl";
+            this.h_da_distrl.Size = new System.Drawing.Size(83, 17);
+            this.h_da_distrl.TabIndex = 20;
+            this.h_da_distrl.Text = "Distribution:";
+            // 
+            // h_da_metrictb
+            // 
+            this.h_da_metrictb.Location = new System.Drawing.Point(102, 50);
+            this.h_da_metrictb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_da_metrictb.Name = "h_da_metrictb";
+            this.h_da_metrictb.Size = new System.Drawing.Size(70, 22);
+            this.h_da_metrictb.TabIndex = 19;
+            this.h_da_metrictb.Text = "manhattan";
+            this.h_da_metrictb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // h_da_metricl
+            // 
+            this.h_da_metricl.AutoSize = true;
+            this.h_da_metricl.Location = new System.Drawing.Point(8, 53);
+            this.h_da_metricl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.h_da_metricl.Name = "h_da_metricl";
+            this.h_da_metricl.Size = new System.Drawing.Size(50, 17);
+            this.h_da_metricl.TabIndex = 18;
+            this.h_da_metricl.Text = "Metric:";
+            // 
+            // h_dp_cb
+            // 
+            this.h_dp_cb.AutoSize = true;
+            this.h_dp_cb.Location = new System.Drawing.Point(9, 154);
+            this.h_dp_cb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_dp_cb.Name = "h_dp_cb";
+            this.h_dp_cb.Size = new System.Drawing.Size(169, 21);
+            this.h_dp_cb.TabIndex = 10;
+            this.h_dp_cb.Text = "DistributionPreserving";
+            this.h_dp_cb.UseVisualStyleBackColor = true;
+            // 
+            // h_distributionaw_cb
+            // 
+            this.h_distributionaw_cb.AutoSize = true;
+            this.h_distributionaw_cb.Location = new System.Drawing.Point(9, 25);
+            this.h_distributionaw_cb.Margin = new System.Windows.Forms.Padding(4);
+            this.h_distributionaw_cb.Name = "h_distributionaw_cb";
+            this.h_distributionaw_cb.Size = new System.Drawing.Size(140, 21);
+            this.h_distributionaw_cb.TabIndex = 9;
+            this.h_distributionaw_cb.Text = "DistributionAware";
+            this.h_distributionaw_cb.UseVisualStyleBackColor = true;
+            // 
+            // hybrid_valcb
+            // 
+            this.hybrid_valcb.AutoSize = true;
+            this.hybrid_valcb.Location = new System.Drawing.Point(201, 276);
+            this.hybrid_valcb.Margin = new System.Windows.Forms.Padding(4);
+            this.hybrid_valcb.Name = "hybrid_valcb";
+            this.hybrid_valcb.Size = new System.Drawing.Size(111, 21);
+            this.hybrid_valcb.TabIndex = 1;
+            this.hybrid_valcb.Text = "for validation";
+            this.hybrid_valcb.UseVisualStyleBackColor = true;
+            // 
+            // h_addbt
+            // 
+            this.h_addbt.Location = new System.Drawing.Point(9, 271);
+            this.h_addbt.Margin = new System.Windows.Forms.Padding(4);
+            this.h_addbt.Name = "h_addbt";
+            this.h_addbt.Size = new System.Drawing.Size(100, 28);
+            this.h_addbt.TabIndex = 0;
+            this.h_addbt.Text = "add";
+            this.h_addbt.UseVisualStyleBackColor = true;
+            this.h_addbt.Click += new System.EventHandler(this.hybridBtnClick);
+            // 
             // logFile_Button
             // 
             this.logFile_Button.Location = new System.Drawing.Point(167, 39);
@@ -1016,7 +1420,8 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.learnerToolStripMenuItem,
-            this.converterToolStripMenuItem});
+            this.converterToolStripMenuItem,
+            this.samplingModeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1081, 28);
@@ -1061,6 +1466,29 @@
             this.convertLegacyScriptToolStripMenuItem.Text = "Convert legacy script";
             this.convertLegacyScriptToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyScriptToolStripMenuItem_Click);
             // 
+            // samplingModeToolStripMenuItem
+            // 
+            this.samplingModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.numericBinaryToolStripMenuItem,
+            this.hybridToolStripMenuItem});
+            this.samplingModeToolStripMenuItem.Name = "samplingModeToolStripMenuItem";
+            this.samplingModeToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
+            this.samplingModeToolStripMenuItem.Text = "Sampling Mode";
+            // 
+            // numericBinaryToolStripMenuItem
+            // 
+            this.numericBinaryToolStripMenuItem.Name = "numericBinaryToolStripMenuItem";
+            this.numericBinaryToolStripMenuItem.Size = new System.Drawing.Size(187, 26);
+            this.numericBinaryToolStripMenuItem.Text = "Numeric/Binary";
+            this.numericBinaryToolStripMenuItem.Click += new System.EventHandler(this.numericBinaryToolStripMenuItem_Click);
+            // 
+            // hybridToolStripMenuItem
+            // 
+            this.hybridToolStripMenuItem.Name = "hybridToolStripMenuItem";
+            this.hybridToolStripMenuItem.Size = new System.Drawing.Size(187, 26);
+            this.hybridToolStripMenuItem.Text = "Hybrid";
+            this.hybridToolStripMenuItem.Click += new System.EventHandler(this.hybridToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1068,6 +1496,7 @@
             this.AutoScroll = true;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1081, 615);
+            this.Controls.Add(this.hybridGroupBox);
             this.Controls.Add(this.pythonLearnerGroupBox);
             this.Controls.Add(this.logForEachSubscript);
             this.Controls.Add(this.subscriptEachNfp);
@@ -1093,13 +1522,14 @@
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.MlSettings_Box.ResumeLayout(false);
-            this.mlSettingsPanel.ResumeLayout(false);
             this.addedElementsBox.ResumeLayout(false);
             this.addResultFile_Group.ResumeLayout(false);
             this.bsamp_group.ResumeLayout(false);
             this.bsamp_group.PerformLayout();
             this.expDasign_group.ResumeLayout(false);
             this.expDasign_group.PerformLayout();
+            this.hybridGroupBox.ResumeLayout(false);
+            this.hybridGroupBox.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.subscriptGroupBox.ResumeLayout(false);
@@ -1118,7 +1548,6 @@
         private System.Windows.Forms.GroupBox MlSettings_Box;
         private System.Windows.Forms.Panel mlSettingsPanel;
         private System.Windows.Forms.Button AddMlSetting;
-        private System.Windows.Forms.VScrollBar vScrollBar1;
         private System.Windows.Forms.GroupBox addedElementsBox;
         private System.Windows.Forms.Button removeElement;
         private System.Windows.Forms.ListBox addedElementsList;
@@ -1200,6 +1629,43 @@
         private System.Windows.Forms.Label randomNumConfs;
         private System.Windows.Forms.ToolStripMenuItem converterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertLegacyScriptToolStripMenuItem;
+        private System.Windows.Forms.CheckBox distanceCheckBox;
+        private System.Windows.Forms.TextBox distanceWeightBox;
+        private System.Windows.Forms.Label distanceWeightLabel;
+        private System.Windows.Forms.TextBox distanceNumBox;
+        private System.Windows.Forms.Label distanceNumLabel;
+        private System.Windows.Forms.ToolStripMenuItem samplingModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem numericBinaryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hybridToolStripMenuItem;
+        private System.Windows.Forms.GroupBox hybridGroupBox;
+        private System.Windows.Forms.Label h_da_seedl;
+        private System.Windows.Forms.TextBox h_da_numconfstb;
+        private System.Windows.Forms.TextBox h_da_distrtb;
+        private System.Windows.Forms.Label h_da_distrl;
+        private System.Windows.Forms.TextBox h_da_metrictb;
+        private System.Windows.Forms.Label h_da_metricl;
+        private System.Windows.Forms.CheckBox h_dp_cb;
+        private System.Windows.Forms.CheckBox h_distributionaw_cb;
+        private System.Windows.Forms.CheckBox hybrid_valcb;
+        private System.Windows.Forms.Button h_addbt;
+        private System.Windows.Forms.Label h_da_numconfl;
+        private System.Windows.Forms.TextBox h_da_selection_box;
+        private System.Windows.Forms.Label h_da_selectionl;
+        private System.Windows.Forms.TextBox h_da_seedtb;
+        private System.Windows.Forms.TextBox h_da_opttb;
+        private System.Windows.Forms.Label h_da_optiml;
+        private System.Windows.Forms.TextBox h_dp_seedtb;
+        private System.Windows.Forms.TextBox h_dp_opttb;
+        private System.Windows.Forms.Label h_dp_optl;
+        private System.Windows.Forms.Label h_dp_numconfl;
+        private System.Windows.Forms.TextBox h_dp_selectiontb;
+        private System.Windows.Forms.Label h_dp_selectionl;
+        private System.Windows.Forms.Label h_dp_seedl;
+        private System.Windows.Forms.TextBox h_dp_numconftb;
+        private System.Windows.Forms.TextBox h_dp_distrtb;
+        private System.Windows.Forms.Label ha_dp_distrl;
+        private System.Windows.Forms.TextBox h_dp_metr_tb;
+        private System.Windows.Forms.Label h_dp_metrl;
     }
 }
 
