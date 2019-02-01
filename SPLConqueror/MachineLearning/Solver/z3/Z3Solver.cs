@@ -265,8 +265,9 @@ namespace MachineLearning.Solver
         /// <param name="options">The options that are selected.</param>
         /// <param name="optionToTerm">The mapping from <see cref="BinaryOption"/> to the according <see cref="BoolExpr"/>.</param>
         /// <param name="vm">The variability model that contains all configuration options and constraints.</param>
+        /// <param name="partial"><code>true</code> if the configuration is a partial configuration; <code>false</code> otherwise.</param>
         /// <returns>The corresponding <see cref="BoolExpr"/>.</returns>
-        public static BoolExpr ConvertConfiguration(Context context, List<BinaryOption> options, Dictionary<BinaryOption, BoolExpr> optionToTerm, VariabilityModel vm)
+        public static BoolExpr ConvertConfiguration(Context context, List<BinaryOption> options, Dictionary<BinaryOption, BoolExpr> optionToTerm, VariabilityModel vm, bool partial = false)
         {
             List<BoolExpr> andGroup = new List<BoolExpr>();
             foreach (BinaryOption binOpt in vm.BinaryOptions)
@@ -275,7 +276,7 @@ namespace MachineLearning.Solver
                 {
                     andGroup.Add(optionToTerm[binOpt]);
                 }
-                else
+                else if (!partial)
                 {
                     andGroup.Add(context.MkNot(optionToTerm[binOpt]));
                 }
