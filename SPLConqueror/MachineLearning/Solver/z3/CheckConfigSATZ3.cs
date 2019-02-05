@@ -32,9 +32,26 @@ namespace MachineLearning.Solver
             return false;
         }
 
-        public bool checkConfigurationSAT(Configuration c, VariabilityModel vm)
+        public bool checkConfigurationSAT(Configuration c, VariabilityModel vm, bool partialConfiguration = false)
         {
-            return checkConfigurationSAT(c.getBinaryOptions(BinaryOption.BinaryValue.Selected), vm, false);
+            List<Expr> variables;
+            Dictionary<Expr, ConfigurationOption> termToOption;
+            Dictionary<ConfigurationOption, Expr> optionToTerm;
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedSolverSystem(out variables, out optionToTerm, out termToOption, vm);
+            Context z3Context = z3Tuple.Item1;
+            BoolExpr z3Constraints = z3Tuple.Item2;
+
+            List<Expr> constraints = new List<Expr>();
+            Microsoft.Z3.Solver solver = z3Context.MkSolver();
+            solver.Assert(z3Constraints);
+
+            solver.Assert(Z3Solver.ConvertConfiguration(z3Context, c.getBinaryOptions(BinaryOption.BinaryValue.Selected), optionToTerm, vm, partialConfiguration, c.NumericOptions));
+
+            if (solver.Check() == Status.SATISFIABLE)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
