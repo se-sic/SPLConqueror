@@ -23,7 +23,7 @@ namespace MachineLearning.Solver
         /// <param name="c">The configuration that needs to be checked.</param>
         /// <param name="vm">The variability model that represents the context of the configuration.</param>
         /// <returns>True if it is a valid selection w.r.t. the VM, false otherwise</returns>
-        bool checkConfigurationSAT(Configuration c, VariabilityModel vm);
+        bool checkConfigurationSAT(Configuration c, VariabilityModel vm, bool partialConfiguration = false);
 
         //Not important
         //List<ConfigurationOption> determineSetOfInvalidFeatures(int nbOfFeatures, VariabilityModel vm, bool withDerivatives, List<ConfigurationOption> forbiddenFeatures, RuntimeProperty rp, NFPConstraint constraint);

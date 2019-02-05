@@ -56,7 +56,7 @@ namespace MachineLearning.Solver
         /// <param name="c">The configuration that needs to be checked.</param>
         /// <param name="vm">The variability model that represents the context of the configuration.</param>
         /// <returns>True if it is a valid selection w.r.t. the VM, false otherwise</returns>
-        public bool checkConfigurationSAT(Configuration c, VariabilityModel vm)
+        public bool checkConfigurationSAT(Configuration c, VariabilityModel vm, bool partialConfiguration = false)
         {
             List<CspTerm> variables = new List<CspTerm>();
             Dictionary<BinaryOption, CspTerm> elemToTerm = new Dictionary<BinaryOption, CspTerm>();
