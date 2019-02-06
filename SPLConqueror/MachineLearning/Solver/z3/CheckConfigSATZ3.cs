@@ -8,7 +8,7 @@ using SPLConqueror_Core;
 
 namespace MachineLearning.Solver
 {
-    class CheckConfigSATZ3 : ICheckConfigSAT
+    public class CheckConfigSATZ3 : ICheckConfigSAT
     {
         public bool checkConfigurationSAT(List<BinaryOption> config, VariabilityModel vm, bool partialConfiguration)
         {

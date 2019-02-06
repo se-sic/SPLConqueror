@@ -43,7 +43,7 @@ namespace MachineLearning.Solver
             // Create the numeric configuration options
             foreach (NumericOption numOpt in vm.NumericOptions)
             {
-                Expr numericVariable = GenerateIntVariable(context, numOpt.Name);
+                Expr numericVariable = GenerateDoubleVariable(context, numOpt.Name);
                 variables.Add(numericVariable);
                 optionToTerm.Add(numOpt, numericVariable);
                 termToOption.Add(numericVariable, numOpt);
@@ -144,14 +144,14 @@ namespace MachineLearning.Solver
             // Parse the constraints (ranges, step) of the numeric features
             foreach (NumericOption numOpt in vm.NumericOptions)
             {
-                ArithExpr numExpression = (ArithExpr) optionToTerm[numOpt];
+                Expr numExpression = optionToTerm[numOpt];
                 List<double> allValues = numOpt.getAllValues();
                 List<BoolExpr> valueExpressions = new List<BoolExpr>();
                 foreach (double value in allValues)
                 {
                     valueExpressions.Add(context.MkEq(numExpression, context.MkFPNumeral(value, context.MkFPSortDouble())));
                 }
-                andGroup.Add(context.MkAnd(valueExpressions.ToArray()));
+                andGroup.Add(context.MkOr(valueExpressions.ToArray()));
             }
 
 
@@ -510,7 +510,7 @@ namespace MachineLearning.Solver
             // Now, also do this for numeric configuration options
             foreach (NumericOption numOpt in vm.NumericOptions)
             {
-                ArithExpr numericExpression = (ArithExpr) optionToTerm[numOpt];
+                Expr numericExpression = optionToTerm[numOpt];
                 // Throw an exception if the configuration is not partial and does not contain a numeric option
                 if (!partial && !numericValues.Keys.Contains(numOpt))
                 {
@@ -555,6 +555,17 @@ namespace MachineLearning.Solver
         private static Expr GenerateIntVariable(Context context, string name)
         {
             return context.MkIntConst(name);
+        }
+        
+        /// <summary>
+        /// Generates an integer variable with the given name.
+        /// </summary>
+        /// <param name="context">The <see cref="Context"/>-object, from which the boolean variable should be generated.</param>
+        /// <param name="name">The name of the variable.</param>
+        /// <returns>An <see cref="Expr"/>-object containing the integer variable.</returns>
+        private static Expr GenerateDoubleVariable(Context context, string name)
+        {
+            return context.MkConst(name, context.MkFPSortDouble());
         }
 
         /// <summary>

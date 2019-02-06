@@ -1,8 +1,12 @@
-﻿using CommandLine;
+﻿using System.Collections.Generic;
+using CommandLine;
 using MachineLearning.Sampling;
+using MachineLearning.Sampling.ExperimentalDesigns;
+using MachineLearning.Sampling.Hybrid;
 using MachineLearning.Sampling.Hybrid.Distributive;
 using MachineLearning.Solver;
 using NUnit.Framework;
+using SPLConqueror_Core;
 
 namespace SamplingUnitTest
 {
@@ -116,6 +120,37 @@ namespace SamplingUnitTest
         {
             setupEnvironment();
             Assert.True(SampleUtil.TestTWise("z3", 602, 3));
+        }
+
+        [Test, Order(17)]
+        public void TestConfigurationFunctionality()
+        {
+            setupEnvironment();
+            
+            // Do a allbinary and a fullfactorial sampling to receive the whole population
+            List<SamplingStrategies> binaryToSample = new List<SamplingStrategies>();
+            binaryToSample.Add(SamplingStrategies.ALLBINARY);
+            List<ExperimentalDesign> numericToSample = new List<ExperimentalDesign>();
+            numericToSample.Add(new FullFactorialDesign());
+            List<HybridStrategy> hybridToSample = new List<HybridStrategy>();
+            
+            List<Configuration> configurations = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binaryToSample, numericToSample, hybridToSample);
+            
+            CheckConfigSATZ3 configurationChecker = new CheckConfigSATZ3();
+            foreach (Configuration config in configurations)
+            {
+                Assert.True(configurationChecker.checkConfigurationSAT(config, GlobalState.varModel));
+            }
+            
+            foreach (Configuration config in configurations)
+            {
+                Configuration newBooleanPartialConfiguration = new Configuration(config.BinaryOptions, new Dictionary<NumericOption, double>());
+                Assert.True(configurationChecker.checkConfigurationSAT(newBooleanPartialConfiguration, GlobalState.varModel, true));
+                
+                Configuration newNumericPartialConfiguration = new Configuration(new List<BinaryOption>(), config.NumericOptions);
+                Assert.True(configurationChecker.checkConfigurationSAT(newNumericPartialConfiguration, GlobalState.varModel, true));
+            }
+
         }
     }
 }
