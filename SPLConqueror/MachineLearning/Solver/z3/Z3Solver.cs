@@ -198,7 +198,17 @@ namespace MachineLearning.Solver
                     andGroup.Add(context.MkOr(smtTerms));
             }
 
-            // TODO: Parse the mixed constraints
+            // Parse the mixed constraints
+            if (vm.MixedConstraints.Count > 0)
+            {
+                // TODO: Save this mapping?
+                Dictionary<BinaryOption, Expr> optionMapping = new Dictionary<BinaryOption, Expr>();
+                foreach (MixedConstraint constr in vm.MixedConstraints)
+                {
+                    andGroup.Add(ProcessMixedConstraint(constr, optionMapping, context, optionToTerm));
+                }
+            }
+
 
 
             // Return the initialized system
@@ -206,6 +216,171 @@ namespace MachineLearning.Solver
 
             return new Tuple<Context, BoolExpr>(context, generalConstraint);
         }
+
+        /// <summary>
+        /// The mixed constraints are constraints among binary and numeric configuration options.
+        /// Currently, these constraints are implemented as inequation of multiplicative terms.
+        /// However, z3 does not support the multiplication among boolean variables (i.e., binary configuration options)
+        /// and numeric variables (i.e., numeric configuration options).
+        /// Thus, the approach is as follows:
+        /// (1) Create a numeric variable for each binary configuration option in the mixed constraint and add a constraint
+        /// for each of them, so that the numeric variable has the value 1 when the binary configuration option is true; 0 otherwise
+        /// (2) Translate the constraints into z3
+        /// </summary>
+        /// <param name="constr">The <see cref="MixedConstraint"/> to translate.</param>
+        /// <param name="optionMapping">The mapping of already used binary options and their <see cref="Expr"/> counterparts.</param>
+        /// <param name="context">The z3 <see cref="Context"/> needed for the translatation of these constraints.</param>
+        /// <param name="optionToTerm">A mapping that maps the given option to a term.</param>
+        /// <returns>A <see cref="BoolExpr"/> that represents this constraint.</returns>
+        private static BoolExpr ProcessMixedConstraint(MixedConstraint constr, Dictionary<BinaryOption, Expr> optionMapping, Context context, Dictionary<ConfigurationOption, Expr> optionToTerm)
+        {
+            List<BoolExpr> constraints = new List<BoolExpr>();
+
+            // Process the binary options in the formula
+            HashSet<BinaryOption> binOpts = constr.leftHandSide.participatingBoolOptions;
+            foreach (BinaryOption binOpt in constr.rightHandSide.participatingBoolOptions)
+            {
+                if (!binOpts.Contains(binOpt))
+                {
+                    binOpts.Add(binOpt);
+                }
+            }
+            foreach (BinaryOption binOpt in binOpts)
+            {
+                if (!optionMapping.ContainsKey(binOpt))
+                {
+                    Expr newExpr = GenerateDoubleVariable(context, binOpt.Name + "_num");
+                    optionMapping[binOpt] = newExpr;
+
+                    // Add the constraints to ensure that the values of the binary and the numeric variable correspond to each other.
+                    BoolExpr constraint = (BoolExpr)optionToTerm[binOpt];
+                    constraints.Add(context.MkImplies(constraint, context.MkEq(newExpr, context.MkFPNumeral(1, context.MkFPSortDouble()))));
+                    constraints.Add(context.MkImplies(context.MkNot(constraint), context.MkEq(newExpr, context.MkFPNumeral(0, context.MkFPSortDouble()))));
+                }
+            }
+
+            // Note: The 'require'-tag is ignored here, as it does not make sense when translating the mixed constraints for z3
+
+            // Translate the mixed constraint
+            FPExpr leftSide = (FPExpr) TranslateMixedConstraint(constr.leftHandSide, optionMapping, context, optionToTerm);
+            FPExpr rightSide = (FPExpr) TranslateMixedConstraint(constr.rightHandSide, optionMapping, context, optionToTerm);
+
+
+            // Next, check if the constraint has to evaluate to true or not
+            string comparator = constr.comparator;
+            if (constr.requirement.Equals(MixedConstraint.NEGATIVE))
+            {
+                comparator = GetNegatedInequation(comparator);
+            }
+
+            switch (comparator)
+            {
+                case ">=":
+                    return context.MkFPGEq(leftSide, rightSide);
+                case "<=":
+                    return context.MkFPLEq(leftSide, rightSide);
+                case "!=":
+                    return context.MkNot(context.MkEq(leftSide, rightSide));
+                case "=":
+                    return context.MkEq(leftSide, rightSide);
+                case ">":
+                    return context.MkFPGt(leftSide, rightSide);
+                case "<":
+                    return context.MkFPLt(leftSide, rightSide);
+                default:
+                    throw new ArgumentException("The inequation sign " + comparator + " is not supported.");
+            }
+        }
+
+        private static string GetNegatedInequation(string inequSign)
+        {
+            switch(inequSign)
+            {
+                case ">=":
+                    return "<";
+                case "<=":
+                    return ">";
+                case "!=":
+                    return "=";
+                case "=":
+                    return "!=";
+                case ">":
+                    return "<=";
+                case "<":
+                    return ">=";
+                default:
+                    throw new ArgumentException("The inequation sign " + inequSign + " is not supported.");
+            }
+        }
+
+
+        private static Expr TranslateMixedConstraint(InfluenceFunction influenceFunction, Dictionary<BinaryOption, Expr> optionMapping, Context context, Dictionary<ConfigurationOption, Expr> optionToTerm)
+        {
+            string[] expression = influenceFunction.getExpressionTree();
+
+            if (expression.Length == 0)
+            {
+                return null;
+            }
+
+            Stack<Expr> expressionStack = new Stack<Expr>();
+
+            for (int i = 0; i < expression.Length; i++)
+            {
+                if (!InfluenceFunction.isOperatorEval(expression[i]))
+                {
+                    ConfigurationOption option = GlobalState.varModel.getOption(expression[i]);
+                    Expr expr = null;
+                    if (option is BinaryOption && optionMapping.ContainsKey((BinaryOption) option))
+                    {
+                        expr = optionMapping[(BinaryOption)option];
+                    } else
+                    {
+                        expr = optionToTerm[option];
+                    }
+                    expressionStack.Push(expr);
+                } else
+                {
+                    // Be aware of the rounding mode
+                    FPRMExpr roundingMode = context.MkFPRoundNearestTiesToEven();
+                    switch (expression[i])
+                    {
+                        case "+":
+                            FPExpr left = (FPExpr) expressionStack.Pop();
+                            FPExpr right = (FPExpr)expressionStack.Pop();
+                            
+                            expressionStack.Push(context.MkFPAdd(roundingMode, left, right));
+                            break;
+                        case "-":
+                            FPExpr leftSub = (FPExpr)expressionStack.Pop();
+                            FPExpr rightSub = (FPExpr)expressionStack.Pop();
+
+                            expressionStack.Push(context.MkFPSub(roundingMode, leftSub, rightSub));
+                            break;
+                        case "/":
+                            FPExpr leftDiv = (FPExpr)expressionStack.Pop();
+                            FPExpr rightDiv = (FPExpr)expressionStack.Pop();
+
+                            expressionStack.Push(context.MkFPDiv(roundingMode, leftDiv, rightDiv));
+                            break;
+                        case "*":
+                            FPExpr leftMul = (FPExpr)expressionStack.Pop();
+                            FPExpr rightMul = (FPExpr)expressionStack.Pop();
+
+                            expressionStack.Push(context.MkFPMul(roundingMode, leftMul, rightMul));
+                            break;
+                        // Note that the logarithm function is not supported by z3.
+                        default:
+                            throw new ArgumentException("The operator " + expression[i] + " is currently not supported in mixed constraints by z3.");
+                    }
+                }
+            }
+
+            return expressionStack.Pop();
+        }
+
+
+
 
         /// <summary>
         /// Generates a solver system (in z3: context) based on a variability model. The solver system can be used to check for satisfiability of configurations as well as optimization.

@@ -12,9 +12,9 @@ namespace SPLConqueror_Core
     /// </summary>
     public class NonBooleanConstraint
     {
-        private InfluenceFunction leftHandSide = null;
-        private InfluenceFunction rightHandSide = null;
-        private String comparator = "";
+        public InfluenceFunction leftHandSide { protected set; get; } = null;
+        public InfluenceFunction rightHandSide { protected set; get; } = null;
+        public String comparator { private set; get; } = "";
 
         /// <summary>
         /// Creates a new NonBooleanConstraint for a expression. The expression have to consist binary and numeric options and operators such as +, *, &lt;=, &lt;, &gt;=, &gt;, and = only. 
@@ -31,6 +31,10 @@ namespace SPLConqueror_Core
             else if (unparsedExpression.Contains("<="))
             {
                 comparator = "<=";
+            }
+            else if (unparsedExpression.Contains("!="))
+            {
+                comparator = "!=";
             }
             else if (unparsedExpression.Contains("="))
             {
@@ -77,6 +81,12 @@ namespace SPLConqueror_Core
                 case "<=":
                     {
                         if (left <= right)
+                            return true;
+                        break;
+                    }
+                case "!=":
+                    {
+                        if (left != right)
                             return true;
                         break;
                     }
