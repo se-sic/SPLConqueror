@@ -10,23 +10,19 @@ namespace SPLConqueror_Core
     /// </summary>
     public class MixedConstraint : NonBooleanConstraint
     {
-        private const string REQUIRE_ALL = "all";
+        public const string REQUIRE_ALL = "all";
 
-        private const string REQUIRE_NONE = "none";
+        public const string REQUIRE_NONE = "none";
 
-        private const string NEGATIVE = "neg";
+        public const string NEGATIVE = "neg";
 
-        private const string POSITIVE = "pos";
-
-        private InfluenceFunction leftHandSide = null;
-
-        private InfluenceFunction rightHandSide = null;
+        public const string POSITIVE = "pos";
 
         private VariabilityModel var;
 
-        private string requirement;
+        public string requirement { private set; get; }
 
-        private string negativeOrPositiveExpr;
+        public string negativeOrPositiveExpr { private set; get; }
 
         /// <summary>
         /// Creates a new mixed constraint between boolean and numeric options and literals.
