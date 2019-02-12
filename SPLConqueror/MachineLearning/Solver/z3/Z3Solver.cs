@@ -10,6 +10,8 @@ namespace MachineLearning.Solver
     {
         public static List<BoolExpr> lastConstraints { get; private set; } = null;
 
+        private static Dictionary<string, double> numericLookUpTable = new Dictionary<string, double>();
+
         /// <summary>
         /// Generates a solver system (in z3: context) based on a variability model. The solver system can be used to check for satisfiability of configurations as well as optimization.
         /// Additionally to <see cref="Z3Solver.GetInitializedBooleanSolverSystem(out List{BoolExpr}, out Dictionary{BinaryOption, BoolExpr}, out Dictionary{BoolExpr, BinaryOption}, VariabilityModel, bool, int)"/>, this method supports numeric features.
@@ -149,7 +151,13 @@ namespace MachineLearning.Solver
                 List<BoolExpr> valueExpressions = new List<BoolExpr>();
                 foreach (double value in allValues)
                 {
-                    valueExpressions.Add(context.MkEq(numExpression, context.MkFPNumeral(value, context.MkFPSortDouble())));
+                     
+                    FPNum fpNum = context.MkFPNumeral(value, context.MkFPSortDouble());
+                    if (!numericLookUpTable.ContainsKey(fpNum.ToString()))
+                    {
+                        numericLookUpTable.Add(fpNum.ToString(), value);
+                    }
+                    valueExpressions.Add(context.MkEq(numExpression, fpNum));
                 }
                 andGroup.Add(context.MkOr(valueExpressions.ToArray()));
             }
@@ -197,17 +205,28 @@ namespace MachineLearning.Solver
                 else
                     andGroup.Add(context.MkOr(smtTerms));
             }
-
-            // Parse the mixed constraints
-            if (vm.MixedConstraints.Count > 0)
+            
+            // Parse the non-boolean constraints
+            Dictionary<BinaryOption, Expr> optionMapping = new Dictionary<BinaryOption, Expr>();
+            if (vm.NonBooleanConstraints.Count > 0)
             {
-                // TODO: Save this mapping?
-                Dictionary<BinaryOption, Expr> optionMapping = new Dictionary<BinaryOption, Expr>();
-                foreach (MixedConstraint constr in vm.MixedConstraints)
+                foreach (NonBooleanConstraint nonBooleanConstraint in vm.NonBooleanConstraints)
                 {
-                    andGroup.Add(ProcessMixedConstraint(constr, optionMapping, context, optionToTerm));
+                    andGroup.Add(ProcessMixedConstraint(nonBooleanConstraint, optionMapping, context, optionToTerm));
                 }
             }
+
+            // Parse the mixed constraints
+            // Note that this step is currently omitted due to critical performance issues.
+            // Therefore, we check whether the mixed constraints are satisfied after finding the configuration.
+            //if (vm.MixedConstraints.Count > 0)
+            //{
+                
+                //foreach (MixedConstraint constr in vm.MixedConstraints)
+                //{
+                //    andGroup.Add(ProcessMixedConstraint(constr, optionMapping, context, optionToTerm));
+                //}
+            //}
 
 
 
@@ -218,7 +237,18 @@ namespace MachineLearning.Solver
         }
 
         /// <summary>
-        /// The mixed constraints are constraints among binary and numeric configuration options.
+        /// Returns the numeric double value since z3's internal representation is not trivial to understand.
+        /// To store the mapping from the internal representation to C# doubles, we use a lookup table. 
+        /// </summary>
+        /// <param name="value">The value to search for.</param>
+        /// <returns>The according <see cref="double"/> value.</returns>
+        public static double lookUpNumericValue(string value)
+        {
+            return numericLookUpTable[value];
+        }
+
+        /// <summary>
+        /// The non-boolean constraints are constraints among binary and numeric configuration options.
         /// Currently, these constraints are implemented as inequation of multiplicative terms.
         /// However, z3 does not support the multiplication among boolean variables (i.e., binary configuration options)
         /// and numeric variables (i.e., numeric configuration options).
@@ -227,12 +257,12 @@ namespace MachineLearning.Solver
         /// for each of them, so that the numeric variable has the value 1 when the binary configuration option is true; 0 otherwise
         /// (2) Translate the constraints into z3
         /// </summary>
-        /// <param name="constr">The <see cref="MixedConstraint"/> to translate.</param>
+        /// <param name="constr">The <see cref="NonBooleanConstraint"/> to translate.</param>
         /// <param name="optionMapping">The mapping of already used binary options and their <see cref="Expr"/> counterparts.</param>
         /// <param name="context">The z3 <see cref="Context"/> needed for the translatation of these constraints.</param>
         /// <param name="optionToTerm">A mapping that maps the given option to a term.</param>
         /// <returns>A <see cref="BoolExpr"/> that represents this constraint.</returns>
-        private static BoolExpr ProcessMixedConstraint(MixedConstraint constr, Dictionary<BinaryOption, Expr> optionMapping, Context context, Dictionary<ConfigurationOption, Expr> optionToTerm)
+        private static BoolExpr ProcessMixedConstraint(NonBooleanConstraint constr, Dictionary<BinaryOption, Expr> optionMapping, Context context, Dictionary<ConfigurationOption, Expr> optionToTerm)
         {
             List<BoolExpr> constraints = new List<BoolExpr>();
 
@@ -268,7 +298,8 @@ namespace MachineLearning.Solver
 
             // Next, check if the constraint has to evaluate to true or not
             string comparator = constr.comparator;
-            if (constr.requirement.Equals(MixedConstraint.NEGATIVE))
+            if (constr.GetType() == typeof(MixedConstraint) &&
+                ((MixedConstraint) constr).negativeOrPositiveExpr.Equals(MixedConstraint.NEGATIVE))
             {
                 comparator = GetNegatedInequation(comparator);
             }
@@ -329,16 +360,26 @@ namespace MachineLearning.Solver
             {
                 if (!InfluenceFunction.isOperatorEval(expression[i]))
                 {
-                    ConfigurationOption option = GlobalState.varModel.getOption(expression[i]);
-                    Expr expr = null;
-                    if (option is BinaryOption && optionMapping.ContainsKey((BinaryOption) option))
+                    double value;
+                    if (Double.TryParse(expression[i], out value))
                     {
-                        expr = optionMapping[(BinaryOption)option];
-                    } else
-                    {
-                        expr = optionToTerm[option];
+                        expressionStack.Push(context.MkFPNumeral(value, context.MkFPSortDouble()));
                     }
-                    expressionStack.Push(expr);
+                    else
+                    {
+                        ConfigurationOption option = GlobalState.varModel.getOption(expression[i]);
+                        Expr expr = null;
+                        if (option is BinaryOption && optionMapping.ContainsKey((BinaryOption) option))
+                        {
+                            expr = optionMapping[(BinaryOption) option];
+                        }
+                        else
+                        {
+                            expr = optionToTerm[option];
+                        }
+
+                        expressionStack.Push(expr);
+                    }
                 } else
                 {
                     // Be aware of the rounding mode
