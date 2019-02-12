@@ -83,8 +83,8 @@
       <HintPath>..\packages\Microsoft.Solver.Foundation.3.1.0\lib\Microsoft.Solver.Foundation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Z3, Version=4.5.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=AMD64">
-      <HintPath>..\packages\z3x64win.4.5.0.1\lib\Microsoft.Z3.dll</HintPath>
+    <Reference Include="Microsoft.Z3, Version=4.8.1.9857, Culture=neutral, PublicKeyToken=9c8d792caae602a2">
+      <HintPath>..\packages\Microsoft.Z3.x64.4.8.1\lib\net40\Microsoft.Z3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -185,7 +185,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Accord.3.4.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.4.0\build\Accord.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Z3.x64.4.8.1\build\Microsoft.Z3.x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Z3.x64.4.8.1\build\Microsoft.Z3.x64.targets'))" />
   </Target>
+  <Import Project="..\packages\Microsoft.Z3.x64.4.8.1\build\Microsoft.Z3.x64.targets" Condition="Exists('..\packages\Microsoft.Z3.x64.4.8.1\build\Microsoft.Z3.x64.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

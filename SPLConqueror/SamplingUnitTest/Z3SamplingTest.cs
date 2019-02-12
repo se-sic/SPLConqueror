@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CommandLine;
 using MachineLearning.Sampling;
 using MachineLearning.Sampling.ExperimentalDesigns;
@@ -14,13 +17,27 @@ namespace SamplingUnitTest
     class Z3SamplingTest
     {
         private int EXPECTED_PAIRWISE = 308;
+        private string file = null;
 
         [OneTimeSetUp]
         public void setupEnvironment()
         {
             Commands cmd = new Commands();
             cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
-            SampleUtil.loadVM();
+            
+            if (file != null)
+            {
+                string path = Path.GetFullPath(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//.."))
+                              + Path.DirectorySeparatorChar + "ExampleFiles"
+                              + Path.DirectorySeparatorChar + file;
+                SampleUtil.loadVM(path);
+            }
+            else
+            {
+                SampleUtil.loadVM();
+            }
+            
+            
             ConfigurationBuilder.vg = VariantGeneratorFactory.GetVariantGenerator("z3");
         }
 
@@ -144,13 +161,32 @@ namespace SamplingUnitTest
             
             foreach (Configuration config in configurations)
             {
+                
+                TextWriter errorWriter = Console.Error;
+                // Suppress error output. These are intended here.
+                Console.SetOut(new StreamWriter(Stream.Null));
                 Configuration newBooleanPartialConfiguration = new Configuration(config.BinaryOptions, new Dictionary<NumericOption, double>());
                 Assert.True(configurationChecker.checkConfigurationSAT(newBooleanPartialConfiguration, GlobalState.varModel, true));
+                Console.SetOut(errorWriter);
                 
                 Configuration newNumericPartialConfiguration = new Configuration(new List<BinaryOption>(), config.NumericOptions);
                 Assert.True(configurationChecker.checkConfigurationSAT(newNumericPartialConfiguration, GlobalState.varModel, true));
             }
 
+        }
+
+        [Test, Order(18)]
+        public void TestMixedConstraints()
+        {
+            this.file = "Hipacc_red.xml";
+            setupEnvironment();
+            this.file = null;
+            
+            // Do #SAT and count all variants of the reduced variability model of HiPacc
+            Z3VariantGenerator variantGenerator = new Z3VariantGenerator();
+            List<Configuration> configs = variantGenerator.GenerateAllVariants(GlobalState.varModel, GlobalState.varModel.getOptions());
+            Console.WriteLine(configs.Count);
+            Assert.AreEqual(configs.Count(), 8060);
         }
     }
 }
