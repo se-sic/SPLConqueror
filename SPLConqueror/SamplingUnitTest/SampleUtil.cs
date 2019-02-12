@@ -34,13 +34,18 @@ namespace SamplingUnitTest
             return allExist;
         }
 
-        public static bool loadVM()
+        public static bool loadVM(string modelPath = null)
         {
-            if (!File.Exists(modelPath))
+            if (modelPath == null && !File.Exists(SampleUtil.modelPath))
             {
                 // TODO: Find a better way to find the example files if app base is incorrect
                 modelPath = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/VariabilityModelSampling.xml";
+            }
+
+            if (modelPath == null)
+            {
+                modelPath = SampleUtil.modelPath;
             }
 
             model = new VariabilityModel("test");
