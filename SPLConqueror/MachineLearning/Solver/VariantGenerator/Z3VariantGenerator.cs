@@ -146,20 +146,16 @@ namespace MachineLearning.Solver
         public List<Configuration> GenerateAllVariants(VariabilityModel vm, List<ConfigurationOption> optionsToConsider)
         {
             List<Configuration> allConfigurations = new List<Configuration>();
-            List<BoolExpr> variables;
-            Dictionary<BoolExpr, BinaryOption> termToOption;
-            Dictionary<BinaryOption, BoolExpr> optionToTerm;
-            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedBooleanSolverSystem(out variables, out optionToTerm, out termToOption, vm, this.henard);
+            List<Expr> variables;
+            Dictionary<Expr, ConfigurationOption> termToOption;
+            Dictionary<ConfigurationOption, Expr> optionToTerm;
+            Tuple<Context, BoolExpr> z3Tuple = Z3Solver.GetInitializedSolverSystem(out variables, out optionToTerm, out termToOption, vm);
             Context z3Context = z3Tuple.Item1;
             BoolExpr z3Constraints = z3Tuple.Item2;
 
             Microsoft.Z3.Solver solver = z3Context.MkSolver();
 
-            // TODO: The following line works for z3Solver version >= 4.6.0
-            //solver.Set (RANDOM_SEED, z3RandomSeed);
-            Params solverParameter = z3Context.MkParams();
-            solverParameter.Add(RANDOM_SEED, z3RandomSeed);
-            solver.Parameters = solverParameter;
+            solver.Set (RANDOM_SEED, z3RandomSeed);
 
             solver.Assert(z3Constraints);
 
@@ -167,16 +163,19 @@ namespace MachineLearning.Solver
             {
                 Model model = solver.Model;
 
-                List<BinaryOption> binOpts = RetrieveConfiguration(variables, model, termToOption, optionsToConsider);
+                Tuple<List<BinaryOption>, Dictionary<NumericOption, double>> confOpts = RetrieveConfiguration(variables, model, termToOption, optionsToConsider);
 
-                Configuration c = new Configuration(binOpts);
+                Configuration c = new Configuration(confOpts.Item1, confOpts.Item2);
                 // Check if the non-boolean constraints are satisfied
-                if (vm.configurationIsValid(c) && !VariantGenerator.IsInConfigurationFile(c, allConfigurations) && VariantGenerator.FulfillsMixedConstraints(c, vm))
+                bool configIsValid = vm.configurationIsValid(c);
+                bool isInConfigurationFile = !VariantGenerator.IsInConfigurationFile(c, allConfigurations);
+                bool fulfillsMixedConstraintrs = VariantGenerator.FulfillsMixedConstraints(c, vm);
+                if (configIsValid && isInConfigurationFile && fulfillsMixedConstraintrs)
                 {
                     allConfigurations.Add(c);
                 }
                 solver.Push();
-                solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, binOpts, optionToTerm, vm)));
+                solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, confOpts.Item1, optionToTerm, vm, numericValues: confOpts.Item2)));
             }
 
             solver.Push();
@@ -220,18 +219,14 @@ namespace MachineLearning.Solver
 
             Microsoft.Z3.Solver s = z3Context.MkSolver();
 
-            // TODO: The following line works for z3Solver version >= 4.6.0
-            //solver.Set (RANDOM_SEED, z3RandomSeed);
-            Params solverParameter = z3Context.MkParams();
             if (henard)
             {
-                solverParameter.Add(RANDOM_SEED, NextUInt(random));
+                s.Set (RANDOM_SEED, NextUInt(random));
             }
             else
             {
-                solverParameter.Add(RANDOM_SEED, z3RandomSeed);
+                s.Set (RANDOM_SEED, z3RandomSeed);
             }
-            s.Parameters = solverParameter;
 
             s.Assert(z3Constraints);
             s.Push();
@@ -260,11 +255,7 @@ namespace MachineLearning.Solver
 
                     s = z3Context.MkSolver();
 
-                    //s.Set (RANDOM_SEED, NextUInt (random));
-                    solverParameter = z3Context.MkParams();
-
-                    solverParameter.Add(RANDOM_SEED, NextUInt(random));
-                    s.Parameters = solverParameter;
+                    s.Set (RANDOM_SEED, NextUInt (random));
 
                     constraints = Z3Solver.lastConstraints;
 
@@ -303,6 +294,50 @@ namespace MachineLearning.Solver
                 }
             }
             return result;
+        }
+        
+        /// <summary>
+        /// Parses a z3 solution into a configuration.
+        /// This method also supports numeric variables.
+        /// </summary>
+        /// <param name="variables">List of all variables in the z3 context.</param>
+        /// <param name="model">Solution of the context.</param>
+        /// <param name="termToOption">Map from variables to binary options.</param>
+        /// <param name="optionsToConsider">The options that are considered for the solution.</param>
+        /// <returns>Configuration parsed from the solution.</returns>
+        public static Tuple<List<BinaryOption>, Dictionary<NumericOption, double>> RetrieveConfiguration(
+            List<Expr> variables, Model model, Dictionary<Expr, ConfigurationOption> termToOption, 
+            List<ConfigurationOption> optionsToConsider = null)
+        {
+            List<BinaryOption> binOpts = new List<BinaryOption>();
+            Dictionary<NumericOption, double> config = new Dictionary<NumericOption, double>();
+            foreach (Expr variable in variables)
+            {
+                if (optionsToConsider != null && !optionsToConsider.Contains(termToOption[variable]))
+                {
+                    continue;
+                }
+
+                Expr allocation = model.Eval(variable, completion: true);
+                if (allocation.GetType() == typeof(BoolExpr))
+                {
+                    BoolExpr boolExpr = (BoolExpr)allocation;
+                    if (boolExpr.IsTrue)
+                    {
+                        binOpts.Add((BinaryOption) termToOption[variable]);
+                    }
+                }
+                else
+                {
+                    // In this case, we have a numeric variable
+                    FPNum fpNum = (FPNum) allocation;
+
+                    config.Add((NumericOption) termToOption[variable], Z3Solver.lookUpNumericValue(fpNum.ToString()));
+
+                }
+                
+            }
+            return new Tuple<List<BinaryOption>, Dictionary<NumericOption, double>>(binOpts, config);
         }
 
         /// <summary>
@@ -553,11 +588,7 @@ namespace MachineLearning.Solver
                 // Return the first configuration returned by the solver
                 Microsoft.Z3.Solver solver = z3Context.MkSolver();
 
-                // TODO: The following line works for z3Solver version >= 4.6.0
-                //solver.Set (RANDOM_SEED, z3RandomSeed);
-                Params solverParameter = z3Context.MkParams();
-                solverParameter.Add(RANDOM_SEED, z3RandomSeed);
-                solver.Parameters = solverParameter;
+                solver.Set (RANDOM_SEED, z3RandomSeed);
 
                 solver.Assert(constraints.ToArray());
 
@@ -631,11 +662,7 @@ namespace MachineLearning.Solver
                 BoolExpr z3Constraints = z3Tuple.Item2;
                 solver = z3Context.MkSolver();
 
-                // TODO: The following line works for z3Solver version >= 4.6.0
-                //solver.Set (RANDOM_SEED, z3RandomSeed);
-                Params solverParameter = z3Context.MkParams();
-                solverParameter.Add(RANDOM_SEED, z3RandomSeed);
-                solver.Parameters = solverParameter;
+                solver.Set (RANDOM_SEED, z3RandomSeed);
 
                 solver.Assert(z3Constraints);
 
