@@ -35,7 +35,21 @@ It can be used to continue the execution of script files that are aborted in the
 ## How to install SPL Conqueror
 
 **Note: Since mono version 5.16.0, the results between mono and .NET when performing machine learning differ.**
-
+<details>
+<summary>
+Via Docker
+</summary>
+We provide a Dockerfile in this repository for an automatic setup of SPL Conqueror in a Docker container.
+To set up the Docker container, make sure that you have properly installed Docker (https://docs.docker.com/get-started/) and the Docker daemon is running.
+Afterwards, the image is set up by:
+```
+sudo docker build -t splconqueror ./
+```
+Based on this image, a container is created and an interactive session is started by:
+```
+sudo docker run -ti splconqueror
+```
+</details>
 <details>
 <summary>
 On Ubuntu 16.04
@@ -47,7 +61,7 @@ Submodules can be cloned on the command line by:
 git submodule update --init --recursive
 ```
 
-2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ -- description available on https://www.mono-project.com/download/stable/ -- und die MonoDevelop-Version 5.10.0+)
+2. Install Mono and MonoDevelop(Recommended: Mono-Version 5.4.1.6+ -- description available on https://www.mono-project.com/download/stable/ -- and MonoDevelop-Version 5.10.0+)
 ```
 sudo apt install mono-complete monodevelop
 ```
