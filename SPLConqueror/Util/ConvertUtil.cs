@@ -19,7 +19,10 @@ namespace Util
                 if (opt is BinaryOption)
                     index.Add(opt.Name, opt.Name);
                 else
+                {
                     ((NumericOption)opt).getAllValues().ForEach(val => index.Add(opt.Name + "_" + (int)val, opt.Name));
+                    index.Add(opt.Name, opt.Name);
+                }
             });
             GlobalState.nfProperties.Keys.ToList().ForEach(k => index.Add(k, k));
             StreamWriter sw = new StreamWriter(target);
@@ -41,7 +44,7 @@ namespace Util
                         }
                         else
                         {
-                            if (x == opt.Name + "_" + (int)conf.NumericOptions[(NumericOption)opt])
+                            if (x == opt.Name + "_" + (int)conf.NumericOptions[(NumericOption)opt] || x == opt.Name)
                                 values.Add("1");
                             else
                                 values.Add("0");
