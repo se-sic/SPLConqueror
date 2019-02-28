@@ -667,7 +667,7 @@ namespace SPLConqueror_Core
             return false;
         }
 
-        private static bool isOperatorEval(string token)
+        public static bool isOperatorEval(string token)
         {
             token = token.Trim();
 
