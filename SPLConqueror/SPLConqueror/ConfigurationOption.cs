@@ -85,11 +85,18 @@ namespace SPLConqueror_Core
             set { excluded_Options = value; }
         }
 
-        private VariabilityModel vm = null;
+        /// <summary>
+        /// Variability model this configuration option is part of.
+        /// </summary>
+        protected VariabilityModel vm { get; private set; }
 
         private ConfigurationOption parent = null;
         private String parentName = "";
 
+        // <summary>
+        /// States whether an configuration option is optional or not.
+        /// </summary>
+        public bool Optional { get; set; }
 
         /// <summary>
         /// Restuns the name of the parent feature.

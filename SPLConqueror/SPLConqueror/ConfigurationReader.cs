@@ -104,6 +104,7 @@ namespace SPLConqueror_Core
         {
             XmlElement currentElemt = dat.DocumentElement;
 
+            bool containsOptionalNumeric = varModel.NumericOptions.Any(opt => opt.Optional);
 
             parseHeaderOfDocument(currentElemt);
 
@@ -271,6 +272,21 @@ namespace SPLConqueror_Core
                 // parse the numeric options string
                 Dictionary<NumericOption, double> numericOptions = new Dictionary<NumericOption, double>();
                 valid &= parseNumericOptionString(numericString, out numericOptions, varModel);
+
+                // Check if optional numeric options are present and set the appropriate flags.
+                if (containsOptionalNumeric)
+                {
+                    foreach(var kv in numericOptions.Where(x => x.Key.Optional))
+                    {
+                        if (kv.Value == kv.Key.OptionalFlag)
+                        {
+                            binaryOptions.Add(kv.Key.abstractOptionalConfigurationOption(), BinaryOption.BinaryValue.Deselected);
+                        } else
+                        {
+                            binaryOptions.Add(kv.Key.abstractOptionalConfigurationOption(), BinaryOption.BinaryValue.Selected);
+                        }
+                    }
+                }
 
                 // Add "root" binary option to the configuration
                 if (!binaryOptions.ContainsKey(varModel.Root))
@@ -476,7 +492,7 @@ namespace SPLConqueror_Core
 
             String[] optionOrder = new String[model.getOptions().Count];
             String[] nfpOrder = null;
-
+            bool containsOptionalNumeric = model.NumericOptions.Any(opt => opt.Optional);
             bool isHeader = true;
 
             while (!sr.EndOfStream)
@@ -525,6 +541,16 @@ namespace SPLConqueror_Core
                             {
                                 double value = Convert.ToDouble(token);
                                 numOptions.Add((NumericOption)option, value);
+
+                                // Check if optional and set the appropriate flags.
+                                if (containsOptionalNumeric && option.Optional)
+                                {
+                                    BinaryOption abstractOpt = ((NumericOption)option).abstractOptionalConfigurationOption();
+                                    if (((NumericOption)option).OptionalFlag == value)
+                                        binOptions.Add(abstractOpt, BinaryOption.BinaryValue.Deselected);
+                                    else
+                                        binOptions.Add(abstractOpt, BinaryOption.BinaryValue.Selected);
+                                }
                             }
                         }
                         else

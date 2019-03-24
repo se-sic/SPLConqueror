@@ -519,6 +519,12 @@ namespace SPLConqueror_Core
                 return config.NumericOptions[numOpt];
             }
             BinaryOption binOpt = fm.getBinaryOption(token);
+
+            if (token.StartsWith("Enabled"))
+            {
+                binOpt = getAbstractOption(token, fm);
+            }
+
             if (binOpt != null)
             {
                 if (token.Equals("base") || token.Equals("root"))
@@ -541,6 +547,14 @@ namespace SPLConqueror_Core
             }
             return 0.0;
 
+        }
+
+        private static BinaryOption getAbstractOption(String token, VariabilityModel vm)
+        {
+            NumericOption numOpt = vm.getNumericOption(token.Substring(7));
+            if (numOpt != null)
+                return numOpt.abstractOptionalConfigurationOption();
+            return null;
         }
 
         private double getValueOfToken(Dictionary<NumericOption, double> config, string token, VariabilityModel varModel)
@@ -630,6 +644,12 @@ namespace SPLConqueror_Core
                 }
 
                 BinaryOption binOption = varModel.getBinaryOption(token);
+
+                if (token.StartsWith("Enabled"))
+                {
+                    binOption = getAbstractOption(token, varModel);
+                }
+
                 if (binOption != null)
                 {
                     if (!participatingBoolOptions.Contains(binOption))

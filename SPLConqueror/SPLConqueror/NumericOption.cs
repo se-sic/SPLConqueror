@@ -46,6 +46,53 @@ namespace SPLConqueror_Core
 
         private InfluenceFunction stepFunction = null;
 
+        private BinaryOption abstractOption = null;
+
+        /// <summary>
+        /// Value of the numeric option when it is deselected.
+        /// </summary>
+        public int OptionalFlag { get; private set; }
+
+        private BinaryOption getOrCreateAbstract()
+        {
+            if (this.abstractOption == null)
+            {
+                abstractOption = new BinaryOption(base.vm, "Enabled" + this.Name);
+                abstractOption.IsStrictlyAbstract = true;
+            }
+                
+            return abstractOption;
+        }
+
+        /// <summary>
+        /// Method that returns the abstract option that serves as flag to mark this configuration option as optional.
+        /// </summary>
+        /// <returns>Abstract configuration option.</returns>
+        public BinaryOption abstractOptionalConfigurationOption()
+        {
+            return Optional ? getOrCreateAbstract() : null;
+        }
+
+        /// <summary>
+        /// Set optional value of the configuration option.
+        /// </summary>
+        /// <param name="optional">Boolean that indicates the optionality of this option.</param>
+        /// <param name="flag">The flag that indicates that this option was deselected. 
+        /// Only required when setting the option to optional.</param>
+        public void setOptional(bool optional, int flag = -1)
+        {
+            this.Optional = optional;
+            if (optional)
+            {
+                this.OptionalFlag = flag;
+                getOrCreateAbstract();
+            } else
+            {
+                this.abstractOption = null;
+            }
+
+        }
+
         /// <summary>
         /// A function that computes each value within the value range of that option
         /// </summary>
@@ -70,7 +117,7 @@ namespace SPLConqueror_Core
         public NumericOption(VariabilityModel vm, String name)
             : base(vm, name)
         {
-
+            this.Optional = false;
         }
 
         /// <summary>
@@ -261,6 +308,13 @@ namespace SPLConqueror_Core
                 valuesNode.InnerText = values.ToString();
                 node.AppendChild(valuesNode);
             }
+
+            if (this.Optional)
+            {
+                XmlNode deselectedFlag = doc.CreateNode(XmlNodeType.Element, "deselectedFlag", "");
+                deselectedFlag.InnerText = this.OptionalFlag.ToString();
+                node.AppendChild(deselectedFlag);
+            }
             return node;
         }
 
@@ -297,6 +351,9 @@ namespace SPLConqueror_Core
                         break;
                     case "stepFunction":
                         this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',', '.'), this);
+                        break;
+                    case "deselectedFlag":
+                        this.setOptional(true, Int32.Parse(xmlInfo.InnerText.Replace(',', '.')));
                         break;
                     case "values":
                         String[] valueArray = xmlInfo.InnerText.Replace(',', '.').Split(';');
