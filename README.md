@@ -42,10 +42,13 @@ Via Docker
 We provide a Dockerfile in this repository for an automatic setup of SPL Conqueror in a Docker container.
 To set up the Docker container, make sure that you have properly installed Docker (https://docs.docker.com/get-started/) and the Docker daemon is running.
 Afterwards, the image is set up by:
+	
 ```
 sudo docker build -t splconqueror ./
 ```
+
 Based on this image, a container is created and an interactive session is started by:
+
 ```
 sudo docker run -ti splconqueror
 ```
