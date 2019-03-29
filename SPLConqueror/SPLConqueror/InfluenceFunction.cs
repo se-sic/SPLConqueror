@@ -359,6 +359,10 @@ namespace SPLConqueror_Core
             while (counter < expressionArray.Length)
             {
                 string curr = expressionArray[counter];
+                if (wellFormedExpression.Contains("Enabled"))
+                {
+                    int dbg = 1;
+                }
                 counter++;
 
                 if (!InfluenceFunction.isOperatorEval(curr))
@@ -520,7 +524,7 @@ namespace SPLConqueror_Core
             }
             BinaryOption binOpt = fm.getBinaryOption(token);
 
-            if (token.StartsWith("Enabled"))
+            if (token.StartsWith("Enabled") || token.StartsWith("Disabled"))
             {
                 binOpt = getAbstractOption(token, fm);
             }
@@ -551,9 +555,19 @@ namespace SPLConqueror_Core
 
         private static BinaryOption getAbstractOption(String token, VariabilityModel vm)
         {
-            NumericOption numOpt = vm.getNumericOption(token.Substring(7));
-            if (numOpt != null)
-                return numOpt.abstractOptionalConfigurationOption();
+            NumericOption numOpt;
+            if (token.StartsWith("Enabled"))
+            {
+                numOpt = vm.getNumericOption(token.Substring(7));
+                if (numOpt != null)
+                    return numOpt.abstractEnabledConfigurationOption();
+            }
+            else
+            {
+                numOpt = vm.getNumericOption(token.Substring(8));
+                if (numOpt != null)
+                    return numOpt.abstractDisabledConfigurationOption();
+            }
             return null;
         }
 
@@ -645,7 +659,7 @@ namespace SPLConqueror_Core
 
                 BinaryOption binOption = varModel.getBinaryOption(token);
 
-                if (token.StartsWith("Enabled"))
+                if (token.StartsWith("Enabled") || token.StartsWith("Disabled"))
                 {
                     binOption = getAbstractOption(token, varModel);
                 }

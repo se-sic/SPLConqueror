@@ -46,31 +46,53 @@ namespace SPLConqueror_Core
 
         private InfluenceFunction stepFunction = null;
 
-        private BinaryOption abstractOption = null;
+        private BinaryOption abstractEnabled = null;
+
+        private BinaryOption abstractDisabled = null;
 
         /// <summary>
         /// Value of the numeric option when it is deselected.
         /// </summary>
         public int OptionalFlag { get; private set; }
 
-        private BinaryOption getOrCreateAbstract()
+        private BinaryOption getOrCreateEnabled()
         {
-            if (this.abstractOption == null)
+            if (this.abstractEnabled == null)
             {
-                abstractOption = new BinaryOption(base.vm, "Enabled" + this.Name);
-                abstractOption.IsStrictlyAbstract = true;
+                abstractEnabled = new BinaryOption(base.vm, "Enabled" + this.Name);
+                abstractEnabled.IsStrictlyAbstract = true;
             }
                 
-            return abstractOption;
+            return abstractEnabled;
+        }
+
+        private BinaryOption getOrCreateDisabled()
+        {
+            if (this.abstractDisabled == null)
+            {
+                abstractDisabled = new BinaryOption(base.vm, "Disabled" + this.Name);
+                abstractDisabled.IsStrictlyAbstract = true;
+            }
+
+            return abstractDisabled;
         }
 
         /// <summary>
-        /// Method that returns the abstract option that serves as flag to mark this configuration option as optional.
+        /// Method that returns the abstract option that serves as flag to mark this configuration option as enabled.
         /// </summary>
         /// <returns>Abstract configuration option.</returns>
-        public BinaryOption abstractOptionalConfigurationOption()
+        public BinaryOption abstractEnabledConfigurationOption()
         {
-            return Optional ? getOrCreateAbstract() : null;
+            return Optional ? getOrCreateEnabled() : null;
+        }
+
+        /// <summary>
+        /// Method that returns the abstract option that serves as flag to mark this configuration option as disabled.
+        /// </summary>
+        /// <returns>Abstract configuration option.</returns>
+        public BinaryOption abstractDisabledConfigurationOption()
+        {
+            return Optional ? getOrCreateDisabled() : null;
         }
 
         /// <summary>
@@ -85,12 +107,13 @@ namespace SPLConqueror_Core
             if (optional)
             {
                 this.OptionalFlag = flag;
-                getOrCreateAbstract();
+                getOrCreateEnabled();
+                getOrCreateDisabled();
             } else
             {
-                this.abstractOption = null;
+                this.abstractEnabled = null;
+                this.abstractDisabled = null;
             }
-
         }
 
         /// <summary>

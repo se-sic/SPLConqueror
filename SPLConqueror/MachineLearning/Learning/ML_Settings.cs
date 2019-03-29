@@ -101,6 +101,12 @@ namespace MachineLearning.Learning
         public bool learn_mirrowedFunction = false;
 
         /// <summary>
+        /// Learn the performance influence of a numeric configuration option being disabled, additionally to the 
+        /// influence of it being enabled.
+        /// </summary>
+        public bool learn_numeric_disabled = true;
+
+        /// <summary>
         /// Defines the number of rounds the learning process have to be performed. 
         /// </summary>
         public int numberOfRounds = 70;

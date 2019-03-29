@@ -80,8 +80,11 @@ namespace MachineLearning.Learning.Regression
                     initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
                 } else
                 {
-                    initialFeatures.Add(new Feature(opt.abstractOptionalConfigurationOption().Name, infModel.Vm));
-                    initialFeatures.Add(new Feature(opt.abstractOptionalConfigurationOption().Name 
+                    if (MLsettings.learn_numeric_disabled)
+                    {
+                        initialFeatures.Add(new Feature(opt.abstractDisabledConfigurationOption().Name, infModel.Vm));
+                    }
+                    initialFeatures.Add(new Feature(opt.abstractEnabledConfigurationOption().Name 
                         + "*" + opt.Name, infModel.Vm));
                 }
             }

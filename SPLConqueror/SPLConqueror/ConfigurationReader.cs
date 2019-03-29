@@ -280,10 +280,12 @@ namespace SPLConqueror_Core
                     {
                         if (kv.Value == kv.Key.OptionalFlag)
                         {
-                            binaryOptions.Add(kv.Key.abstractOptionalConfigurationOption(), BinaryOption.BinaryValue.Deselected);
+                            binaryOptions.Add(kv.Key.abstractEnabledConfigurationOption(), BinaryOption.BinaryValue.Deselected);
+                            binaryOptions.Add(kv.Key.abstractDisabledConfigurationOption(), BinaryOption.BinaryValue.Selected);
                         } else
                         {
-                            binaryOptions.Add(kv.Key.abstractOptionalConfigurationOption(), BinaryOption.BinaryValue.Selected);
+                            binaryOptions.Add(kv.Key.abstractEnabledConfigurationOption(), BinaryOption.BinaryValue.Selected);
+                            binaryOptions.Add(kv.Key.abstractDisabledConfigurationOption(), BinaryOption.BinaryValue.Deselected);
                         }
                     }
                 }
@@ -545,11 +547,20 @@ namespace SPLConqueror_Core
                                 // Check if optional and set the appropriate flags.
                                 if (containsOptionalNumeric && option.Optional)
                                 {
-                                    BinaryOption abstractOpt = ((NumericOption)option).abstractOptionalConfigurationOption();
-                                    if (((NumericOption)option).OptionalFlag == value)
-                                        binOptions.Add(abstractOpt, BinaryOption.BinaryValue.Deselected);
+                                    var opt = (NumericOption)option;
+                                    BinaryOption abstractEnabledOpt = opt.abstractEnabledConfigurationOption();
+                                    BinaryOption abstractDisabledOpt = opt.abstractDisabledConfigurationOption();
+                                    if (opt.OptionalFlag == value)
+                                    {
+                                        binOptions.Add(abstractEnabledOpt, BinaryOption.BinaryValue.Deselected);
+                                        binOptions.Add(abstractDisabledOpt, BinaryOption.BinaryValue.Selected);
+                                    }
                                     else
-                                        binOptions.Add(abstractOpt, BinaryOption.BinaryValue.Selected);
+                                    {
+                                        binOptions.Add(abstractEnabledOpt, BinaryOption.BinaryValue.Selected);
+                                        binOptions.Add(abstractDisabledOpt, BinaryOption.BinaryValue.Deselected);
+                                    }
+                                        
                                 }
                             }
                         }

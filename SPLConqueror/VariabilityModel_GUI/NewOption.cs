@@ -324,5 +324,18 @@ namespace VariabilitModel_GUI
             GlobalState.varModel.addConfigurationOption(newOption);
             this.Close();
         }
+
+        private void numOptionalCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (numOptionalCheckBox.Checked)
+            {
+                deselectedFlagTextBox.Enabled = true;
+                numOptionalLabel.Enabled = true;
+            } else
+            {
+                deselectedFlagTextBox.Enabled = false;
+                numOptionalLabel.Enabled = false;
+            }
+        }
     }
 }
