@@ -304,6 +304,19 @@ namespace VariabilitModel_GUI
                         stepSizeTextBox.Text == "" ? "n + 1" : stepSizeTextBox.Text, (NumericOption)newOption);
                 else
                     ((NumericOption)newOption).StepFunction = new InfluenceFunction("n + 1", (NumericOption)newOption);
+                if (numOptionalCheckBox.Checked)
+                {
+                    ((NumericOption)newOption).Optional = true;
+                    int flag;
+                    if (!int.TryParse(deselectedFlagTextBox.Text, out flag))
+                    {
+                        MessageBox.Show("Invalid deselection flag. Value must be integer.");
+                        return;
+                    } else
+                    {
+                        ((NumericOption)newOption).setOptional(true, flag);
+                    }
+                }
 
             }
             else
