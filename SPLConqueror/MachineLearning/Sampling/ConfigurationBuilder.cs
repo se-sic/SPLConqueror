@@ -327,6 +327,7 @@ namespace MachineLearning.Sampling
                         if (!constr.requirementsFulfilled(toTest))
                         {
                             isValid = false;
+                            break;
                         }
                     }
 

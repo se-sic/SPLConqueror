@@ -675,7 +675,8 @@ namespace SPLConqueror_Core
 
                 if (c.GetType().Equals(typeof(BinaryOption)))
                 {
-                    if (this.BinaryOptions.ContainsKey((BinaryOption)c))
+                    if (this.BinaryOptions.ContainsKey((BinaryOption)c) 
+                        && this.BinaryOptions[(BinaryOption)c] == BinaryOption.BinaryValue.Selected)
                     {
                         result.Append(1);
                     }

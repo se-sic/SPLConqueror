@@ -249,6 +249,7 @@ namespace MicrosoftSolverFoundation
                 CspTerm cT = optionToTerm[current];
                 if (current.Parent == null || current.Parent == vm.Root)
                 {
+                    // Note if option has excluded options it is automatically interpreted as optional even if outside of alternative group.
                     if (current.Optional == false && current.Excluded_Options.Count == 0)
                         S.AddConstraints(S.Implies(S.True, cT));
                     else
@@ -297,6 +298,7 @@ namespace MicrosoftSolverFoundation
                     }
 
                     //Excluded option(s) as cross-tree constraint(s)
+                    // Potential wrong interpretation in case of both having same parent but only 1 being optional
                     List<List<ConfigurationOption>> nonAlternative = current.getNonAlternativeExlcudedOptions();
                     if (nonAlternative.Count > 0)
                     {
