@@ -1702,7 +1702,7 @@ namespace CommandLine
         {
             if (optionsToConsider.Count > 0)
             {
-                ConfigurationBuilder.optionsToConsider.Add(strat, optionsToConsider);
+                ConfigurationBuilder.optionsToConsider.Add(strat, optionsToConsider.Concat(GlobalState.varModel.AbrstactOptions).ToList());
             }
         }
 

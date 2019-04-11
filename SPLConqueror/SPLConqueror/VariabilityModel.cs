@@ -33,6 +33,24 @@ namespace SPLConqueror_Core
         }
 
         /// <summary>
+        /// The set of all binary configuration options of the system including abstract options.
+        /// </summary>
+        public List<BinaryOption> WithAbstractBinaryOptions
+        {
+            get { return binaryOptions.Concat(abstractOptions).ToList(); }
+        }
+
+        List<BinaryOption> abstractOptions = new List<BinaryOption>();
+
+        /// <summary>
+        /// The set of internal abstract configuration options.
+        /// </summary>
+        public List<BinaryOption> AbrstactOptions
+        {
+            get { return abstractOptions; }
+        }
+
+        /// <summary>
         /// A mapping from the index of an option to the object providing all information of the configuratio option.
         /// </summary>
         public Dictionary<int, ConfigurationOption> optionToIndex = new Dictionary<int, ConfigurationOption>();

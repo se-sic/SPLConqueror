@@ -61,6 +61,9 @@ namespace SPLConqueror_Core
             {
                 abstractEnabled = new BinaryOption(base.vm, "Enabled" + this.Name);
                 abstractEnabled.IsStrictlyAbstract = true;
+                abstractEnabled.Optional = true;
+                abstractEnabled.Parent = vm.Root;
+                base.vm.AbrstactOptions.Add(abstractEnabled);
             }
                 
             return abstractEnabled;
@@ -111,6 +114,7 @@ namespace SPLConqueror_Core
                 getOrCreateDisabled();
             } else
             {
+                base.vm.AbrstactOptions.Remove(abstractEnabled);
                 this.abstractEnabled = null;
                 this.abstractDisabled = null;
             }

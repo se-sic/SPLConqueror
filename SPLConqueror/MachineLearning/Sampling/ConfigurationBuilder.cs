@@ -219,40 +219,15 @@ namespace MachineLearning.Sampling
                 handleDesigns(experimentalDesigns, numericConfigs, vm);
             }
 
-
-            foreach (List<BinaryOption> binConfig in binaryConfigs)
+            if (vm.NumericOptions.Any(x => x.Optional))
             {
-                if (numericConfigs.Count == 0)
-                {
-                    Configuration c = new Configuration(binConfig);
-                    result.Add(c);
-                }
-                foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
-                {
-                    Configuration c = new Configuration(binConfig, numConf);
-                    result.Add(c);
-                }
-            }
-
-            // Filter configurations based on the NonBooleanConstratins
-            List<Configuration> filtered = new List<Configuration>();
-            foreach (Configuration conf in result)
+                createConfigurationsOptNumeric(vm, binaryConfigs, numericConfigs, result);
+            } else
             {
-                bool isValid = true;
-                foreach (NonBooleanConstraint nbc in vm.NonBooleanConstraints)
-                {
-                    if (!nbc.configIsValid(conf))
-                    {
-                        isValid = false;
-                        continue;
-                    }
-                }
-
-                if (isValid)
-                    filtered.Add(conf);
+                createConfigurations(binaryConfigs, numericConfigs, result);
             }
-            result = filtered;
-
+            
+            result = filterNonBoolean(result, vm);
 
             // Hybrid designs
             if (hybridStrategies.Count != 0)
@@ -339,10 +314,84 @@ namespace MachineLearning.Sampling
             }
         }
 
+        private static void createConfigurations(List<List<BinaryOption>> binaryParts, List<Dictionary<NumericOption, Double>> numericParts, List<Configuration> results)
+        {
+            foreach (List<BinaryOption> binConfig in binaryParts)
+            {
+                if (numericParts.Count == 0)
+                {
+                    Configuration c = new Configuration(binConfig);
+                    results.Add(c);
+                }
+                foreach (Dictionary<NumericOption, double> numConf in numericParts)
+                {
+                    Configuration c = new Configuration(binConfig, numConf);
+                    results.Add(c);
+                }
+            }
+        }
+
+        private static void createConfigurationsOptNumeric(VariabilityModel vm, List<List<BinaryOption>> binaryParts, List<Dictionary<NumericOption, Double>> numericParts, List<Configuration> results)
+        {
+            IEnumerable<NumericOption> optionalOptions = vm.NumericOptions.Where(x => x.Optional);
+            foreach (List<BinaryOption> binConfig in binaryParts)
+            {
+                // Get all abstract binary options
+                var abstractOptions = binConfig.Where(x => x.IsStrictlyAbstract);
+
+                // get all currently deselected numeric options
+                List<NumericOption> currentDeselected = optionalOptions
+                    .Where(x => !abstractOptions.Contains(x.abstractEnabledConfigurationOption())).ToList();
+                currentDeselected.ForEach(x => binConfig.Add(x.abstractDisabledConfigurationOption()));
+
+                List<String> alreadyAdded = new List<String>();
+                foreach (Dictionary<NumericOption, double> numConf in numericParts)
+                {
+                    Dictionary<NumericOption, double> buff = new Dictionary<NumericOption, double>();
+                    numConf.ToList().ForEach(x => { buff[x.Key] = currentDeselected.Contains(x.Key) ? x.Key.OptionalFlag : x.Value; });
+                    var selectedPart = String.Join(";", buff.Select(x => x.Value));
+                    if (!alreadyAdded.Contains(selectedPart))
+                    {
+                        alreadyAdded.Add(selectedPart);
+                    } else 
+                    {
+                        continue;
+                    }
+                    Configuration c = new Configuration(binConfig, buff);
+                    results.Add(c);
+                }
+            }
+        }
+
+        private static List<Configuration> filterNonBoolean(List<Configuration> intermediateResults, VariabilityModel vm)
+        {
+            // Filter configurations based on the NonBooleanConstratins
+            List<Configuration> filtered = new List<Configuration>();
+            foreach (Configuration conf in intermediateResults)
+            {
+                bool isValid = true;
+                foreach (NonBooleanConstraint nbc in vm.NonBooleanConstraints)
+                {
+                    if (!nbc.configIsValid(conf))
+                    {
+                        isValid = false;
+                        continue;
+                    }
+                }
+
+                if (isValid)
+                    filtered.Add(conf);
+            }
+            return filtered;
+        }
+
         private static List<Configuration> replaceReference(List<Configuration> sampled)
         {
             // Replaces the reference of the sampled configuration with the corresponding measured configurstion if it exists
+            if (GlobalState.varModel.AbrstactOptions.Count > 0)
+            {
 
+            } else { }
             var measured = GlobalState.allMeasurements.Configurations.Intersect(sampled);
             var notMeasured = sampled.Except(measured);
             return measured.Concat(notMeasured).ToList();

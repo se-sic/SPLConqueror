@@ -94,7 +94,7 @@ namespace MachineLearning.Solver
             {
                 List<ArithExpr> variables = new List<ArithExpr>();
 
-                foreach (BinaryOption binOpt in vm.BinaryOptions)
+                foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
                 {
                     if (!sample.Contains(binOpt))
                     {
