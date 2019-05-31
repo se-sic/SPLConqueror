@@ -1,5 +1,10 @@
 [![Build status](https://travis-ci.org/se-passau/SPLConqueror.svg?branch=master "Build status")](https://travis-ci.org/se-passau/SPLConqueror)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/se-passau/SPLConqueror/master/logo.png">
+</p>
+
+
 # SPL Conqueror Project Structure
 
 <details>
