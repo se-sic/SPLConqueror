@@ -182,7 +182,7 @@ namespace MachineLearningTest
             string trueModelFile = "true.model";
             Util.printToTmpFile(trueModelFile, trueModel);
 
-            cmd.performOneCommand(Commands.COMMAND_TRUEMODEL + " " + trueModelFile);
+            cmd.performOneCommand(Commands.COMMAND_TRUEMODEL + " " + Path.GetTempPath() + trueModelFile);
             string result = consoleOutput.ToString().Split(new string[] { "command: truemodel" }, StringSplitOptions.None)[1].Replace(",",".");
             Util.cleanUpTmpFiles(trueModelFile);
 
@@ -207,7 +207,7 @@ namespace MachineLearningTest
             Util.printToTmpFile(trueModelPath, trueModel);
             Util.printToTmpFile(measurementTrueModel, measurements);
 
-            cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + measurementTrueModel);
+            cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + Path.GetTempPath() + measurementTrueModel);
             cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
             consoleOutput.Flush();
             cmd.performOneCommand(Commands.COMMAND_EVALUATE_MODEL + " " + Path.GetTempPath() + trueModelPath + " " 
