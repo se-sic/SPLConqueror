@@ -215,9 +215,9 @@
             this.numOptionalLabel.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numOptionalLabel.Location = new System.Drawing.Point(29, 88);
             this.numOptionalLabel.Name = "numOptionalLabel";
-            this.numOptionalLabel.Size = new System.Drawing.Size(107, 18);
+            this.numOptionalLabel.Size = new System.Drawing.Size(105, 18);
             this.numOptionalLabel.TabIndex = 26;
-            this.numOptionalLabel.Text = "Deselected flag:";
+            this.numOptionalLabel.Text = "Optional     Flag:";
             // 
             // numOptionalCheckBox
             // 
