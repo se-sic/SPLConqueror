@@ -28,4 +28,4 @@ script:
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/MachineLearningTest/bin/Debug/MachineLearningTest.dll #Test machine learning and a few command line commands.
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/SPLConquerorCoreTest/bin/Debug/SPLConquerorCoreTest.dll #Test core
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/PythonTest/bin/Debug/PythonTest.dll #Test python
-  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/PythonTest/bin/Debug/UtilTest.dll
+  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/UtilTest/bin/Debug/UtilTest.dll
