@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="MachineLearningTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandLine\CommandLine.csproj">
