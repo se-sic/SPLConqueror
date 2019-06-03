@@ -188,5 +188,11 @@ namespace SamplingUnitTest
             Console.WriteLine(configs.Count);
             Assert.AreEqual(configs.Count(), 8060);
         }
+
+        [Test, Order(19)]
+        public void TestSamplingOptionalNumeric()
+        {
+            Assert.That(SampleUtil.testOptionalNumSample());
+        }
     }
 }

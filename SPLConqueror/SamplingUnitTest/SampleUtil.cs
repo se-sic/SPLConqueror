@@ -3,6 +3,7 @@ using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Hybrid;
 using MachineLearning.Sampling.Hybrid.Distributive;
 using SPLConqueror_Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -32,6 +33,39 @@ namespace SamplingUnitTest
             }
 
             return allExist;
+        }
+
+        public static VariabilityModel loadOptionalVM()
+        {
+
+            string optionalVm = "<vm name=\"test\">" +
+                            "<numericOptions>" +
+                                "<configurationOption>" +
+                                    "<name>opt</name>" +
+                                    "<minValue>0</minValue>" +
+                                    "<maxValue>50</maxValue>" +
+                                    "<deselectedFlag>-1</deselectedFlag>" +
+                                    "<stepFunction>opt + 10</stepFunction>" +
+                                "</configurationOption>" +
+                            "</numericOptions>" +
+                        "</vm>";
+            string vmName = Path.GetTempPath() + "optional_" 
+                + DateTime.Now.ToShortTimeString().Replace(":","-") + ".xml";
+            StreamWriter sr = new StreamWriter(vmName);
+            sr.Write(optionalVm);
+            sr.Flush();
+            sr.Close();
+            VariabilityModel withOptional = VariabilityModel.loadFromXML(vmName);
+            File.Delete(vmName);
+            return withOptional;
+        }
+
+        public static bool testOptionalNumSample()
+        {
+            VariabilityModel withOptional = SampleUtil.loadOptionalVM();
+            List<Configuration> sampledWithOptional = SampleUtil.sampleWholePopulation(withOptional);
+            return 7 == sampledWithOptional.Count && sampledWithOptional.Exists(x =>
+                x.BinaryOptions.ContainsKey(withOptional.AbrstactOptions[0]));
         }
 
         public static bool loadVM(string modelPath = null)
@@ -70,6 +104,15 @@ namespace SamplingUnitTest
             List<Configuration> result = ConfigurationBuilder.buildConfigs(model, binaryStrat, numericStrat, hybridStrat);
 
             return result;
+        }
+
+        public static List<Configuration> sampleWholePopulation(VariabilityModel vm)
+        {
+            List<SamplingStrategies> binStrat = new List<SamplingStrategies>();
+            binStrat.Add(SamplingStrategies.ALLBINARY);
+            List<ExperimentalDesign> expDesign = new List<ExperimentalDesign>();
+            expDesign.Add(new FullFactorialDesign());
+            return ConfigurationBuilder.buildConfigs(vm, binStrat, expDesign, new List<HybridStrategy>());
         }
 
         public static bool TestBinaryNoParam(int expected, string solver, SamplingStrategies strategy, string reference)
