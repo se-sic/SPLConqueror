@@ -345,8 +345,7 @@ def setup_BaggingSVR(learner_settings):
     return skEn.BaggingRegressor(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples,
                                  max_features=max_features, bootstrap=bootstrap,
                                  bootstrap_features=bootstrap_features, oob_score=oob_score, warm_start=warm_start,
-                                 n_jobs=n_jobs,
-                                 random_state=random_state, verbose=verbose)
+                                 n_jobs=n_jobs, random_state=random_state, verbose=verbose)
 
 
 def setup_KNeighborsRegressor(learner_settings):

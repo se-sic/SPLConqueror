@@ -86,7 +86,7 @@ Be aware that an internet connection is required to perform this step.
 
 6. Build the root project
 
-7.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+7.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
 
 </details>
 
@@ -125,7 +125,7 @@ git submodule update --init --recursive
 
 5. Build root project
 
-6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
 </details>
 
 <details>
@@ -159,7 +159,7 @@ git submodule update --init --recursive
     
 5. Build the root project
 
-6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
 </details>
 
 <details>
@@ -732,7 +732,7 @@ An example for this command would be:
 
 To set which python interpreter is used, use the ```define-python-path``` command.
 
-**Note**: In SPL Conqueror, only python3 is supported. Additionally, the ```sklearn``` module (version 0.19.0) is needed. We recommend to set up a virtual environment by using virtualenv.
+**Note**: In SPL Conqueror, only python3 is supported. Additionally, the ```sklearn``` module (version >=0.20.3 recommended) is needed. We recommend to set up a virtual environment by using virtualenv.
 
 #### Learning with scikit-learn
 

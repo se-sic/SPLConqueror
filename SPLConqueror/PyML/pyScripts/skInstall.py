@@ -11,16 +11,16 @@ class MissingPipError(ImportError):
         return repr(self.value)
 
 """Name and version of the scikit-learn package.
-It is advised to use this version, as some needed
-functions will be removed in sklearn >= 0.20
+It is advised to use these versions or higher as older versions will no
+longer be tested.
 """
-sklearn_version = "scikit-learn==0.19.0"
+sklearn_version = "scikit-learn==0.20.3"
 
 """numpy package needed for sklearn"""
-numpy_version = "numpy==1.11.1"
+numpy_version = "numpy==1.16.2"
 
 """scipy package needed for sklearn"""
-scipy_version = "scipy==0.17.1"
+scipy_version = "scipy==1.2.1"
 
 try:
     import pip
