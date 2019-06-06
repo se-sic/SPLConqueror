@@ -637,5 +637,20 @@ namespace VariabilitModel_GUI
                 }
             }
         }
+
+        private void saveSXFMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sxfm = new SaveFileDialog();
+            sxfm.OverwritePrompt = true;
+            sxfm.AddExtension = true;
+            sxfm.CheckPathExists = true;
+            sxfm.DefaultExt = "xml";
+            sxfm.Title = "Save model in SXFM format.";
+            if (sxfm.ShowDialog() == DialogResult.OK)
+            {
+                VariabilityModel toConvert = ConvertUtil.transformVarModelAllbinary(GlobalState.varModel);
+                toConvert.saveSXFM(sxfm.FileName);
+            }
+        }
     }
 }

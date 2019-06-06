@@ -274,6 +274,184 @@ namespace SPLConqueror_Core
             }
         }
 
+        public bool saveSXFM()
+        {
+            if (this.path.Length > 0)
+                return saveSXFM(this.path);
+            else
+                return false;
+        }
+
+        public bool saveSXFM(string path)
+        {
+            if (!Directory.Exists(System.IO.Path.GetDirectoryName(path)))
+                return false;
+            if (numericOptions.Count > 0)
+                throw new ArgumentException("Variability Models with numeric options can not be converted to SXFM");
+            if (mixedConstraints.Count > 0)
+                throw new ArgumentException("Variability Models with mixed constraints can not be converted to SXFM");
+            StringBuilder sxfm = new StringBuilder();
+            List<string> implicitConstraints;
+            sxfm.AppendLine("<feature_model name=\"" + this.name + "\">");
+            sxfm.AppendLine("<feature_tree>");
+            sxfm.Append(convertFeatureTree(out implicitConstraints));
+            sxfm.AppendLine("</feature_tree>");
+            sxfm.AppendLine("<constraints>");
+            sxfm.Append(convertConstraintsToSXFM(implicitConstraints));
+            sxfm.AppendLine("</constraints>");
+            sxfm.AppendLine("</feature_model>");
+            StreamWriter sr = new StreamWriter(path);
+            sr.Write(sxfm);
+            sr.Flush();
+            sr.Close();
+            return true;
+        }
+
+        private string convertFeatureTree(out List<string> implicitConstraints)
+        {
+            int currentDepth = 0;
+            int abstractCounter = 0;
+            char tab = '\t';
+            StringBuilder treeBuilder = new StringBuilder();
+            List<Tuple<int,BinaryOption>> queue = new List<Tuple<int,BinaryOption>>();
+            queue.Add(Tuple.Create(currentDepth,this.Root));
+            List<BinaryOption> noRoot = BinaryOptions.Where(opt => opt != this.Root).ToList();
+            string optional = ":o ";
+            string mandatory = ":m ";
+            string groupChild = ": ";
+            string exactlyOne = ":g [1,1] ";
+            string atMostOne = ":g [0,1] ";
+            string root = ":r ";
+
+            implicitConstraints = new List<string>();
+
+            List<BinaryOption> groupParents = new List<BinaryOption>();
+
+            while (queue.Count > 0)
+            {
+                Tuple<int,BinaryOption> current = queue.Last();
+                queue.RemoveAt(queue.Count - 1);
+                BinaryOption currentBinOpt = current.Item2;
+                currentDepth = current.Item1;
+
+                int indentationOffset = 0;
+
+                List<BinaryOption> allChildren = noRoot
+                    .Where(opt => opt.Parent.Equals(currentBinOpt)).ToList();
+
+                string indentation = new string(tab, currentDepth);
+                
+                BinaryOption first = allChildren.Count >  0 ? allChildren.First() : null;
+                bool isAlternativeGroupParent = first != null && allChildren
+                    .Where(x => !x.Equals(first)).ToList()
+                    .TrueForAll(
+                        x => first.Excluded_Options.Exists(group => group.Contains(x))
+                    );
+
+                if (currentBinOpt.Parent == null)
+                {
+                    treeBuilder.AppendLine(indentation + root + sxfmIdentifier(currentBinOpt));
+                }
+                else if (allChildren.Count == 0)
+                {
+                    if (groupParents.Contains(currentBinOpt.Parent)) 
+                    {
+                        treeBuilder.AppendLine(indentation + groupChild + sxfmIdentifier(currentBinOpt));
+                    } else if (currentBinOpt.Optional)
+                    {
+                        treeBuilder.AppendLine(indentation + optional + sxfmIdentifier(currentBinOpt));
+                    } else
+                    {
+                        treeBuilder.AppendLine(indentation + mandatory + sxfmIdentifier(currentBinOpt));
+                    }
+                }
+                else
+                {
+                    if (currentBinOpt.Optional)
+                    {
+                        treeBuilder.Append(indentation + optional + sxfmIdentifier(currentBinOpt));
+                        if (isAlternativeGroupParent &&
+                            (allChildren.TrueForAll(x => !x.Optional) || allChildren.TrueForAll(x => x.Optional)))
+                        {
+                            groupParents.Add(currentBinOpt);
+                            indentationOffset++;
+                            string groupName = "Group_" + abstractCounter + "(Group_" + abstractCounter++ + ")";
+                            string cardinality = allChildren.TrueForAll(x => !x.Optional) ? exactlyOne : atMostOne;
+                            treeBuilder.AppendLine(tab + indentation + cardinality + groupName);
+                        }
+                    }
+                    else if (isAlternativeGroupParent && allChildren.TrueForAll(x => !x.Optional))
+                    {
+                        groupParents.Add(currentBinOpt);
+                        treeBuilder.AppendLine(indentation + exactlyOne + sxfmIdentifier(currentBinOpt));
+                    }
+                    else if (isAlternativeGroupParent && allChildren.TrueForAll(x => x.Optional))
+                    {
+                        groupParents.Add(currentBinOpt);
+                        treeBuilder.AppendLine(indentation + atMostOne + sxfmIdentifier(currentBinOpt));
+                    }
+                    else
+                    {
+                        treeBuilder.AppendLine(indentation + mandatory + sxfmIdentifier(currentBinOpt));
+                    }
+                }
+
+                queue.AddRange(allChildren
+                      .Select(opt => Tuple.Create(currentDepth + 1 + indentationOffset, opt)));
+
+                implicitConstraints.AddRange(handleCrossTreeConstraints(currentBinOpt));
+            }
+
+            return treeBuilder.ToString();
+        }
+
+        private List<string> handleCrossTreeConstraints(BinaryOption binOpt)
+        {
+            List<string> constraints = new List<string>();
+            binOpt.Implied_Options.ForEach(implicationGroup =>
+                {
+                    constraints.Add("~" + binOpt.Name + " or " 
+                        + String.Join(" or ", implicationGroup.Select(opt => opt.Name)));
+                }
+            );
+
+            List<ConfigurationOption> trueExclusives = binOpt.Excluded_Options.SelectMany(i => i).ToList();
+            List<ConfigurationOption> alternatives = trueExclusives
+                .Where(x => x.Parent.Equals(binOpt.Parent)).ToList();
+
+            if (!binOpt.Optional)
+            {
+                trueExclusives = trueExclusives.Where(x => !alternatives.Contains(x)).ToList();
+            }
+            trueExclusives.ForEach(x => constraints.Add("~" + binOpt.Name + " or ~" + x.Name));
+            if (!alternatives.TrueForAll(x => ((BinaryOption)x).Optional) 
+                && !alternatives.TrueForAll(x => !((BinaryOption)x).Optional))
+            {
+                alternatives.ForEach(x => constraints.Add("~" + binOpt.Name + " or ~" + x.Name));
+            }
+
+            return constraints;
+        }
+
+        private static string sxfmIdentifier(BinaryOption binOpt)
+        {
+            return binOpt.Name + "(" + binOpt.Name + ")";
+        }
+
+        // TODO mixed constraints not handled
+        private string convertConstraintsToSXFM(List<string> implicitConstraints)
+        {
+            int constraintCounter = 0;
+            StringBuilder constraints = new StringBuilder();
+            this.BinaryConstraints.Union(implicitConstraints).ToList().ForEach(constraintExpr =>
+            {
+                constraintExpr.Split(new char[] { '&' }).ToList()
+                .ForEach(orExpr => constraints.AppendLine("Constraint_" + constraintCounter++ + ":" 
+                + orExpr.Replace("!", "~").Replace("|", "or")));
+            });
+            return constraints.ToString();
+        }
+
         /// <summary>
         /// Read a SXFM Feature Model and store all information in this VaribilityModel object.
         /// </summary>
