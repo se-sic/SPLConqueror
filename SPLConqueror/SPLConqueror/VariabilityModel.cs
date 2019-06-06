@@ -322,6 +322,7 @@ namespace SPLConqueror_Core
         private void parseFeaturesSXFM(string[] features)
         {
             int previousDepth = 0;
+            int groupCounter = 0;
             BinaryOption previousOption = null;
             string cardinality = null;
             List<BinaryOption> optionsInGroup = null;
@@ -364,12 +365,37 @@ namespace SPLConqueror_Core
                         resolveGroup(optionsInGroup, cardinality);
 
                     optionsInGroup = null;
-                    BinaryOption groupParent = new BinaryOption(this, information[2]);
+
+                    int offset = 0;
+                    if (information[1].Contains("["))
+                    {
+                        offset = 1;
+                    }
+
+                    BinaryOption groupParent;
+
+                    if (information.Length > 2)
+                    {
+                        groupParent = new BinaryOption(this, information[2 + offset]);
+                        groupParent.OutputString = information[1 + offset];
+                    } else
+                    {
+                        groupParent = new BinaryOption(this, "Group_" + groupCounter);
+                        groupParent.OutputString = "Group_" + groupCounter++;
+                    }
                     groupParent.Optional = false;
-                    groupParent.OutputString = information[1];
                     this.binaryOptions.Add(groupParent);
 
-                    cardinality = information[3];
+                    if (information[0].Contains("["))
+                    {
+                        cardinality = information[0].Split(new string[] { ":g" }, StringSplitOptions.None)[1];
+                    } else if (offset == 1)
+                    {
+                        cardinality = information[offset];
+                    } else
+                    {
+                        cardinality = information[3];
+                    }
 
                     setParent(groupParent, previousOption, currentDepth, previousDepth);
 
@@ -420,6 +446,9 @@ namespace SPLConqueror_Core
             {
                 group.ForEach(option => option.Optional = true);
                 createExclusiveGroup(group);
+            } else if (cardinality == "[0,*]")
+            {
+                group.ForEach(option => option.Optional = true);
             }
             else if (cardinality.StartsWith("[0,"))
             {

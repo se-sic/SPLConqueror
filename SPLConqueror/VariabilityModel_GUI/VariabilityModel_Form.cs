@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using SPLConqueror_Core;
 using System.IO;
-using System.Xml;
 using Util;
+using System.Threading.Tasks;
 
 namespace VariabilitModel_GUI
 {
@@ -623,8 +621,20 @@ namespace VariabilitModel_GUI
 
                 currentFilePath = fi.FullName;
                 dataSaved = true;
-
-                InitTreeView();
+                
+                if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > 1000)
+                {
+                    DialogResult doDisplay = MessageBox.Show("High Number of configuration options detected.\n" +
+                        "It might not be possible to visualize them. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
+                    if (doDisplay == DialogResult.Yes)
+                    {
+                        MessageBox.Show("Visualizing Model, this might take some time.");
+                        InitTreeView();
+                    }
+                } else
+                {
+                    InitTreeView();
+                }
             }
         }
     }
