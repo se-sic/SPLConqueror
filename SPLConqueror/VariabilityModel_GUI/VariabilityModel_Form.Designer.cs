@@ -39,6 +39,7 @@
             this.saveModelAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSXFMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editConstraintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,7 +55,6 @@
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAlternativeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -91,12 +91,12 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newModelToolStripMenuItem,
             this.loadModelToolStripMenuItem,
+            this.loadDimacsToolStripMenuItem,
             this.loadSXFMToolStripMenuItem,
             this.saveModelToolStripMenuItem,
             this.saveModelAsToolStripMenuItem,
-            this.exitToolStripMenuItem,
             this.saveSXFMToolStripMenuItem,
-            this.loadDimacsToolStripMenuItem});
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "File";
@@ -149,6 +149,13 @@
             this.saveSXFMToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.saveSXFMToolStripMenuItem.Text = "Save SXFM";
             this.saveSXFMToolStripMenuItem.Click += new System.EventHandler(this.saveSXFMToolStripMenuItem_Click);
+            // 
+            // loadDimacsToolStripMenuItem
+            // 
+            this.loadDimacsToolStripMenuItem.Name = "loadDimacsToolStripMenuItem";
+            this.loadDimacsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.loadDimacsToolStripMenuItem.Text = "Load Dimacs";
+            this.loadDimacsToolStripMenuItem.Click += new System.EventHandler(this.loadDimacsToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -265,13 +272,6 @@
             this.addAlternativeGroupToolStripMenuItem.Size = new System.Drawing.Size(227, 24);
             this.addAlternativeGroupToolStripMenuItem.Text = "Add Alternative Group";
             this.addAlternativeGroupToolStripMenuItem.Click += new System.EventHandler(this.addAlternativeGroupToolStripMenuItem_Click);
-            // 
-            // loadDimacsToolStripMenuItem
-            // 
-            this.loadDimacsToolStripMenuItem.Name = "loadDimacsToolStripMenuItem";
-            this.loadDimacsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
-            this.loadDimacsToolStripMenuItem.Text = "Load Dimacs";
-            this.loadDimacsToolStripMenuItem.Click += new System.EventHandler(this.loadDimacsToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 

@@ -666,8 +666,8 @@ namespace VariabilitModel_GUI
                 this.saveModelAsToolStripMenuItem.Enabled = true;
                 this.editToolStripMenuItem.Enabled = true;
                 this.addAlternativeGroupToolStripMenuItem.Enabled = true;
+                InitTreeView();
             }
-            InitTreeView();
         }
     }
 }
