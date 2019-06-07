@@ -133,8 +133,30 @@ namespace Util
                 }
             }
             transformNumericConstraintsToBoolean(transformedVarModel, vm);
+            transformMixedConstraints(transformedVarModel, vm);
             return transformedVarModel;
 
+        }
+
+        private static void transformMixedConstraints(VariabilityModel transformed, VariabilityModel vm)
+        {
+            foreach (MixedConstraint constraint in vm.MixedConstraints)
+            {
+                List<NumericOption> numOpts = constraint.leftHandSide.participatingNumOptions
+                    .Union(constraint.rightHandSide.participatingNumOptions).Distinct().ToList();
+                string unparsedExpression = constraint.leftHandSide + " " 
+                    + constraint.comparator + " " + constraint.rightHandSide;
+
+                foreach(NumericOption numOpt in numOpts) {
+                    List<String> allValues = new List<string>();
+                    numOpt.getAllValues().ForEach(val => allValues.Add(numOpt.Name + "_" + val));
+                    string replacement =  "( " + String.Join(" + ", allValues) + " )";
+                    unparsedExpression = unparsedExpression.Replace(numOpt.ToString(), replacement);
+                }
+
+                transformed.MixedConstraints.Add(new MixedConstraint(unparsedExpression, transformed,
+                    constraint.requirement, constraint.negativeOrPositiveExpr));
+            }
         }
 
         private static void transformNumericConstraintsToBoolean(VariabilityModel newVariabilityModel, VariabilityModel vm)

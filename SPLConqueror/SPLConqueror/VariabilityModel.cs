@@ -274,6 +274,65 @@ namespace SPLConqueror_Core
             }
         }
 
+        public static VariabilityModel loadFromDimacs(string path)
+        {
+            VariabilityModel model = new VariabilityModel("diamcs");
+            if (model.loadDimacs(path))
+            {
+                return model;
+            } else
+            {
+                return null;
+            }
+        }
+
+        private bool loadDimacs(string path)
+        {
+            if (!File.Exists(path))
+                return false;
+
+            StreamReader sr = new StreamReader(path);
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine().Trim();
+
+                if (line.StartsWith("c"))
+                    continue;
+                else if (line.StartsWith("p"))
+                {
+                    string[] header = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!(header[1] == "cnf"))
+                        throw new ArgumentException("Invalid dimacs format. Only cnf is supported");
+
+                    int numberConfigurationOptions;
+                    if (!Int32.TryParse(header[2], out numberConfigurationOptions) | numberConfigurationOptions < 1)
+                        throw new ArgumentException("Invalid dimacs format. " +
+                            "Expected number of configuration options.");
+
+                    Enumerable.Range(1, numberConfigurationOptions).Select(x =>
+                        {
+                            BinaryOption bin = new BinaryOption(this, x.ToString());
+                            bin.Optional = true;
+                            return bin;
+                        })
+                        .ToList().ForEach(opt => this.addConfigurationOption(opt));
+                } else if (line != "")
+                {
+                    if (!line.EndsWith("0"))
+                        throw new ArgumentException("Invalid dimacs format. Expected a cnf clause");
+
+                    this.binaryConstraints.Add(
+                        String.Join(" | ", line
+                            .Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                            .Where(variable => variable != "0")
+                            .Select(variable => variable.Replace("-", "!"))
+                        )
+                    );
+                }
+            }
+            return true;
+        }
+
         public bool saveSXFM()
         {
             if (this.path.Length > 0)
@@ -288,16 +347,15 @@ namespace SPLConqueror_Core
                 return false;
             if (numericOptions.Count > 0)
                 throw new ArgumentException("Variability Models with numeric options can not be converted to SXFM");
-            if (mixedConstraints.Count > 0)
-                throw new ArgumentException("Variability Models with mixed constraints can not be converted to SXFM");
             StringBuilder sxfm = new StringBuilder();
             List<string> implicitConstraints;
+            List<string> mixedConstraints = convertMixedConstraints();
             sxfm.AppendLine("<feature_model name=\"" + this.name + "\">");
             sxfm.AppendLine("<feature_tree>");
             sxfm.Append(convertFeatureTree(out implicitConstraints));
             sxfm.AppendLine("</feature_tree>");
             sxfm.AppendLine("<constraints>");
-            sxfm.Append(convertConstraintsToSXFM(implicitConstraints));
+            sxfm.Append(convertConstraintsToSXFM(implicitConstraints, mixedConstraints));
             sxfm.AppendLine("</constraints>");
             sxfm.AppendLine("</feature_model>");
             StreamWriter sr = new StreamWriter(path);
@@ -305,6 +363,40 @@ namespace SPLConqueror_Core
             sr.Flush();
             sr.Close();
             return true;
+        }
+
+        private List<string> convertMixedConstraints()
+        {
+            List<string> mixedConstraints = new List<string>();
+            foreach(MixedConstraint mixed in this.mixedConstraints)
+            {
+                List<BinaryOption> participatingOptions = mixed.leftHandSide.participatingBoolOptions
+                    .Union(mixed.rightHandSide.participatingBoolOptions).Distinct().ToList();
+                List<List<BinaryOption>> cartProduct = new List<List<BinaryOption>>();
+                cartProduct.Add(new List<BinaryOption>());
+                foreach(BinaryOption binOpt in participatingOptions)
+                {
+                    List<List<BinaryOption>> additions = new List<List<BinaryOption>>();
+                    cartProduct.ForEach(partialConfig =>
+                    {
+                        List<BinaryOption> withOption = new List<BinaryOption>(partialConfig);
+                        withOption.Add(binOpt);
+                        additions.Add(withOption);
+                    });
+                    cartProduct.AddRange(additions);
+                }
+
+                foreach(List<BinaryOption> configuration in cartProduct)
+                {
+                    if (!mixed.requirementsFulfilled(new Configuration(configuration)))
+                    {
+                        List<string> configNegationAsString = configuration.Select(x => "!" + x.Name)
+                            .Union(participatingOptions.Except(configuration).Select(x => x.Name)).ToList();
+                        mixedConstraints.Add(String.Join(" | ", configNegationAsString));
+                    }
+                }
+            }
+            return mixedConstraints;
         }
 
         private string convertFeatureTree(out List<string> implicitConstraints)
@@ -438,16 +530,15 @@ namespace SPLConqueror_Core
             return binOpt.Name + "(" + binOpt.Name + ")";
         }
 
-        // TODO mixed constraints not handled
-        private string convertConstraintsToSXFM(List<string> implicitConstraints)
+        private string convertConstraintsToSXFM(List<string> implicitConstraints, List<string> mixedConstraints)
         {
             int constraintCounter = 0;
             StringBuilder constraints = new StringBuilder();
-            this.BinaryConstraints.Union(implicitConstraints).ToList().ForEach(constraintExpr =>
+            this.BinaryConstraints.Union(implicitConstraints).Union(mixedConstraints).ToList().ForEach(constraintExpr =>
             {
                 constraintExpr.Split(new char[] { '&' }).ToList()
                 .ForEach(orExpr => constraints.AppendLine("Constraint_" + constraintCounter++ + ":" 
-                + orExpr.Replace("!", "~").Replace("|", "or")));
+                + orExpr.Replace("!", "~").Replace(" | ", " or ")));
             });
             return constraints.ToString();
         }
@@ -740,9 +831,9 @@ namespace SPLConqueror_Core
                 {
                     string cleanedConstraint = constraint.Split(new char[] { ':' })[1];
                     cleanedConstraint = cleanedConstraint.Replace("~", "!");
-                    cleanedConstraint = cleanedConstraint.Replace("OR", "|");
-                    cleanedConstraint = cleanedConstraint.Replace("or", "|");
-                    cleanedConstraint = cleanedConstraint.Replace("Or", "|");
+                    cleanedConstraint = cleanedConstraint.Replace(" OR ", " | ");
+                    cleanedConstraint = cleanedConstraint.Replace(" or ", " | ");
+                    cleanedConstraint = cleanedConstraint.Replace(" Or ", " | ");
                     this.binaryConstraints.Add(cleanedConstraint.Trim());
                 }
             }

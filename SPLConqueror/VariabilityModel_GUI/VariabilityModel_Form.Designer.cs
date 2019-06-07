@@ -38,6 +38,7 @@
             this.saveModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveModelAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSXFMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editConstraintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +54,7 @@
             this.editFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFeatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAlternativeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSXFMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadDimacsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -94,7 +95,8 @@
             this.saveModelToolStripMenuItem,
             this.saveModelAsToolStripMenuItem,
             this.exitToolStripMenuItem,
-            this.saveSXFMToolStripMenuItem});
+            this.saveSXFMToolStripMenuItem,
+            this.loadDimacsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "File";
@@ -140,6 +142,13 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // saveSXFMToolStripMenuItem
+            // 
+            this.saveSXFMToolStripMenuItem.Name = "saveSXFMToolStripMenuItem";
+            this.saveSXFMToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.saveSXFMToolStripMenuItem.Text = "Save SXFM";
+            this.saveSXFMToolStripMenuItem.Click += new System.EventHandler(this.saveSXFMToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -257,12 +266,12 @@
             this.addAlternativeGroupToolStripMenuItem.Text = "Add Alternative Group";
             this.addAlternativeGroupToolStripMenuItem.Click += new System.EventHandler(this.addAlternativeGroupToolStripMenuItem_Click);
             // 
-            // saveSXFMToolStripMenuItem
+            // loadDimacsToolStripMenuItem
             // 
-            this.saveSXFMToolStripMenuItem.Name = "saveSXFMToolStripMenuItem";
-            this.saveSXFMToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
-            this.saveSXFMToolStripMenuItem.Text = "Save SXFM";
-            this.saveSXFMToolStripMenuItem.Click += new System.EventHandler(this.saveSXFMToolStripMenuItem_Click);
+            this.loadDimacsToolStripMenuItem.Name = "loadDimacsToolStripMenuItem";
+            this.loadDimacsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.loadDimacsToolStripMenuItem.Text = "Load Dimacs";
+            this.loadDimacsToolStripMenuItem.Click += new System.EventHandler(this.loadDimacsToolStripMenuItem_Click);
             // 
             // VariabilityModel_Form
             // 
@@ -311,6 +320,7 @@
         private System.Windows.Forms.ToolStripMenuItem convertLegacyVariabilityModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSXFMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSXFMToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadDimacsToolStripMenuItem;
     }
 }
 

@@ -644,6 +644,7 @@ namespace VariabilitModel_GUI
             sxfm.OverwritePrompt = true;
             sxfm.AddExtension = true;
             sxfm.CheckPathExists = true;
+            sxfm.CheckPathExists = true;
             sxfm.DefaultExt = "xml";
             sxfm.Title = "Save model in SXFM format.";
             if (sxfm.ShowDialog() == DialogResult.OK)
@@ -651,6 +652,22 @@ namespace VariabilitModel_GUI
                 VariabilityModel toConvert = ConvertUtil.transformVarModelAllbinary(GlobalState.varModel);
                 toConvert.saveSXFM(sxfm.FileName);
             }
+        }
+
+        private void loadDimacsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Select SXFM model";
+            ofd.Filter = "cnf files (*.cnf)|*.cnf|dimacs files (*.dimacs)|*.dimacs|All files (*.*)|*.*";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                GlobalState.varModel = VariabilityModel.loadFromDimacs(ofd.FileName);
+                this.saveModelToolStripMenuItem.Enabled = true;
+                this.saveModelAsToolStripMenuItem.Enabled = true;
+                this.editToolStripMenuItem.Enabled = true;
+                this.addAlternativeGroupToolStripMenuItem.Enabled = true;
+            }
+            InitTreeView();
         }
     }
 }
