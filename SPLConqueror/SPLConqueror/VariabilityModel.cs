@@ -291,15 +291,32 @@ namespace SPLConqueror_Core
             if (!File.Exists(path))
                 return false;
 
+            Dictionary<String, String> variableMapping = new Dictionary<string, string>();
+            bool headerDefinition = true;
+
             StreamReader sr = new StreamReader(path);
             while (!sr.EndOfStream)
             {
                 string line = sr.ReadLine().Trim();
 
                 if (line.StartsWith("c"))
-                    continue;
+                {
+                    if (headerDefinition)
+                    {
+                        string[] parts = line.Split(new string[] { " " }, StringSplitOptions.None);
+                        if (parts.Length == 3)
+                        {
+                            variableMapping[parts[1]] = parts[2];
+                        }
+                    } else
+                    {
+                        continue;
+                    }
+                }
                 else if (line.StartsWith("p"))
                 {
+                    headerDefinition = false;
+
                     string[] header = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                     if (!(header[1] == "cnf"))
                         throw new ArgumentException("Invalid dimacs format. Only cnf is supported");
@@ -311,7 +328,17 @@ namespace SPLConqueror_Core
 
                     Enumerable.Range(1, numberConfigurationOptions).Select(x =>
                         {
-                            BinaryOption bin = new BinaryOption(this, x.ToString());
+                            string name = x.ToString();
+                            
+                            if (variableMapping.ContainsKey(name))
+                            {
+                                name = variableMapping[name];
+                            } else
+                            {
+                                variableMapping[name] = name;
+                            }
+
+                            BinaryOption bin = new BinaryOption(this, name);
                             bin.Optional = true;
                             return bin;
                         })
@@ -326,6 +353,8 @@ namespace SPLConqueror_Core
                             .Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)
                             .Where(variable => variable != "0")
                             .Select(variable => variable.Replace("-", "!"))
+                            .Select(variable => variable.StartsWith("!") ? 
+                                "!" + variableMapping[variable.Substring(1)] : variableMapping[variable])
                         )
                     );
                 }
