@@ -8,6 +8,7 @@ using SPLConqueror_Core;
 using System.IO;
 using Util;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace VariabilitModel_GUI
 {
@@ -621,20 +622,26 @@ namespace VariabilitModel_GUI
 
                 currentFilePath = fi.FullName;
                 dataSaved = true;
-                
-                if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > 1000)
+
+                checkedGUIUpdate();
+            }
+        }
+
+        private void checkedGUIUpdate()
+        {
+            if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > 1000)
+            {
+                DialogResult doDisplay = MessageBox.Show("High Number of configuration options detected.\n" +
+                    "It might not be possible to visualize them. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
+                if (doDisplay == DialogResult.Yes)
                 {
-                    DialogResult doDisplay = MessageBox.Show("High Number of configuration options detected.\n" +
-                        "It might not be possible to visualize them. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
-                    if (doDisplay == DialogResult.Yes)
-                    {
-                        MessageBox.Show("Visualizing Model, this might take some time.");
-                        InitTreeView();
-                    }
-                } else
-                {
+                    MessageBox.Show("Visualizing Model, this might take some time.");
                     InitTreeView();
                 }
+            }
+            else
+            {
+                InitTreeView();
             }
         }
 
@@ -661,12 +668,14 @@ namespace VariabilitModel_GUI
             ofd.Filter = "cnf files (*.cnf)|*.cnf|dimacs files (*.dimacs)|*.dimacs|All files (*.*)|*.*";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                GlobalState.varModel = VariabilityModel.loadFromDimacs(ofd.FileName);
+                var conv_thread = new Thread( () => { GlobalState.varModel = VariabilityModel.loadFromDimacs(ofd.FileName); });
+                conv_thread.Start();
+                conv_thread.Join();
                 this.saveModelToolStripMenuItem.Enabled = true;
                 this.saveModelAsToolStripMenuItem.Enabled = true;
                 this.editToolStripMenuItem.Enabled = true;
                 this.addAlternativeGroupToolStripMenuItem.Enabled = true;
-                InitTreeView();
+                checkedGUIUpdate();
             }
         }
     }
