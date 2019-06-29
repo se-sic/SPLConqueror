@@ -160,7 +160,7 @@ namespace SPLConqueror_Core
                         default:
                             NFProperty property = GlobalState.getOrCreateProperty(childNode.Attributes[0].Value);
                             double measuredValue = 0;
-                            //-1 means that measurement failed... 3rd values strongly devigates in C.'s measurements, hence we use it only in case we have no other measurements
+                            
                             if (readMultipleMeasurements)
                             {
                                 //if (property.Name != "run-real")
@@ -176,11 +176,9 @@ namespace SPLConqueror_Core
                                     foreach (var i in m)
                                     {
                                         double d = double.Parse(i.Replace(decimalDelimiter, '.'), System.Globalization.CultureInfo.InvariantCulture);
-                                        if (d != -1)
-                                        {
-                                            values.Add(d);
-                                            avg += d;
-                                        }
+                                        values.Add(d);
+                                        avg += d;
+                                        
                                     }
                                     if (values.Count == 0)
                                     {
@@ -216,9 +214,6 @@ namespace SPLConqueror_Core
                             {
                                 measuredValue = double.Parse(childNode.InnerText.ToString().Replace(decimalDelimiter, '.'), System.Globalization.CultureInfo.InvariantCulture);
                             }
-                            // TODO how to handle configurations with negative nfps?
-                            if (measuredValue < 0)
-                                goto nextConfig;
 
                             // Save the largest measured value.
                             double currentMaxMeasuredValue;
