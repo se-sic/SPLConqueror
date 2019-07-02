@@ -24,7 +24,7 @@ RUN git clone --depth=1 https://github.com/se-passau/SPLConqueror.git \
     && cd SPLConqueror/SPLConqueror/ \
     && git submodule update --init \
     && wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe \
-    && mono nuget.exe restore ./ \
+    && mono nuget.exe restore ./ -MSBuildPath /usr/lib/mono/xbuild/14.0/bin \
     && xbuild /p:Configuration=Release /p:TargetFrameworkVersion="v4.5" /p:TargetFrameworkProfile="" ./SPLConqueror.sln \
     && cd ../..
 
