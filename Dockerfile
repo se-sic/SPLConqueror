@@ -12,6 +12,9 @@ RUN apt update
 # Install git and wget
 RUN apt install -y -qq git wget unzip mono-complete
 
+# Install libgomp1 (dependency for z3)
+RUN apt install -y -qq libgomp1
+
 # Download z3 (the library is needed for the constraint solver that is used inside SPL Conqueror)
 RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-debian-8.10.zip \
     && unzip z3-4.7.1-x64-debian-8.10.zip \
