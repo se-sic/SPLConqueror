@@ -149,13 +149,47 @@ namespace Util
 
                 foreach(NumericOption numOpt in numOpts) {
                     List<String> allValues = new List<string>();
-                    numOpt.getAllValues().ForEach(val => allValues.Add(numOpt.Name + "_" + val));
+                    numOpt.getAllValues().ForEach(val => 
+                            allValues.Add("( " + numOpt.Name + "_" + val + " * " + val + " )")
+                    );
                     string replacement =  "( " + String.Join(" + ", allValues) + " )";
                     unparsedExpression = unparsedExpression.Replace(numOpt.ToString(), replacement);
                 }
 
+
+                // If the source constraints always evaluates to true in case of at least one of the present configuration options is
+                // deselected we have to do apply appropriate transformations to retain that meaning
+                if (constraint.requirement == "all")
+                {
+                    List<BinaryOption> leftBinOpts = constraint.leftHandSide.participatingBoolOptions.Distinct().ToList();
+                    List<BinaryOption> rightBinOpts = constraint.leftHandSide.participatingBoolOptions.Distinct().ToList();
+                    string[] tmp = unparsedExpression.Split(new string[] { constraint.comparator }, StringSplitOptions.None);
+                    string lhs = tmp[0];
+                    string rhs = tmp[1];
+                    // First we add a term to each side that always evaluates to
+                    // 0, in case one of the configuration options is deselected, and otherwise has no impact on the actually meaning
+                    // of the constraint
+                    // Added will be: prod(Binary options in source VM on the left) * (lhs) op prod(Binary options in source VM on the right) * (rhs)
+                    // In case the constraint includes equality this is enough
+                    lhs = "( " + (leftBinOpts.Count == 0 ? "" : (String.Join(" * ", leftBinOpts.Select(opt => opt.Name)) + " * ")) + " 1 * (" + lhs + " ) " + " )";
+                    rhs = "( " + "( " + rhs + " ) * 1 " + (rightBinOpts.Count == 0 ? "" : (" * " + String.Join(" * ", rightBinOpts.Select(opt => opt.Name)))) + " ) ";
+
+                    // If the constraint includes inequality we additionally shift one side by 1 and add/subtract 1 to the other side in case all configurations are present.
+                    // So this constraint will always be true of one option is missing and have no impact on the meaning of the constraint in case
+                    // configuration options are missing
+                    // The result will be: prod(BinOpts) + ((prod(left bin opts) * (lhs)) op (prod(right bin opts) * (rhs)) +/- 1
+                    if (constraint.comparator == "!=" || constraint.comparator == "<" || constraint.comparator == ">")
+                    {
+                        string shiftOp = constraint.comparator == ">" ? " - " : " + ";
+                        lhs = (leftBinOpts.Count == 0 ? "" : (String.Join(" * ", leftBinOpts.Select(opt => opt.Name))) + shiftOp) + " (" + lhs + " ) ";
+                        rhs = "( " + rhs + " ) " + shiftOp + " 1 ";
+                    }
+
+                    unparsedExpression = lhs + constraint.comparator + rhs;
+                }
+
                 transformed.MixedConstraints.Add(new MixedConstraint(unparsedExpression, transformed,
-                    constraint.requirement, constraint.negativeOrPositiveExpr));
+                    "none", constraint.negativeOrPositiveExpr));
             }
         }
 
