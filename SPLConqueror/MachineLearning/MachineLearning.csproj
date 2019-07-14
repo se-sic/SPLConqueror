@@ -140,6 +140,8 @@
     <Compile Include="Solver\ConstraintSystemCache.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />
+    <Compile Include="Solver\scip\OsilGenerator.cs" />
+    <Compile Include="Solver\scip\SCIPSolver.cs" />
     <Compile Include="Solver\VariantGenerator\IVariantGenerator.cs" />
     <Compile Include="Learning\LinearProgramming\SolverLP.cs" />
     <Compile Include="Solver\CSPsolver.cs" />

@@ -77,6 +77,8 @@ namespace CommandLine
         public const string COMMAND_EVALUATE_MODEL = "evaluate-model";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
 
+        public const string COMMAND_OPTIMIZE_CONFIGURATION = "find-optimal-configuration";
+
         #region splconqueror predict configurations
         public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
         // deprecated
@@ -907,6 +909,49 @@ namespace CommandLine
                     }
                     break;
 
+                case COMMAND_OPTIMIZE_CONFIGURATION:
+                    {
+                        if (exp.models == null)
+                        {
+                            GlobalState.logError.log("Error... learning was not performed! The optimization needs models which are already learned.");
+                            break;
+                        }
+
+                        MachineLearning.Solver.scip.SCIPSolver solver = new MachineLearning.Solver.scip.SCIPSolver(taskAsParameter[0]);
+                        var learningHistroy = exp.models[0].LearningHistory;
+                        LearningRound bestRound = learningHistroy.Last();
+                        string additionalConstraintsFile = null;
+                        bool maximization = false;
+
+                        for (int i = 0; i < taskAsParameter.Length; i++)
+                        {
+                            string[] parameterAndValue = taskAsParameter[i].Split(new char[] { '=' });
+                            switch(parameterAndValue[0].ToLower())
+                            {
+                                case "additionalConstraints":
+                                    additionalConstraintsFile = parameterAndValue[1];
+                                    break;
+                                case "maximization":
+                                    maximization = parameterAndValue[1].ToLower() == "true";
+                                    break;
+                            }
+                        }
+
+                        string[] columns = bestRound.ToString().Split(new char[] { ';' });
+                        solver.createModelForBestConfiguration(new InfluenceFunction(columns[1]), GlobalState.varModel, additionalConstraintsFile, maximization);
+                        solver.solveProblem();
+                        Configuration bestConf = solver.getBestConfiguration(GlobalState.varModel);
+                        GlobalState.logInfo.logLine(bestRound.ToString());
+                        if (bestConf == null)
+                        {
+                            GlobalState.logInfo.logLine("No optimal configuration found.");
+                        } else
+                        {
+                            GlobalState.logInfo.logLine("Optimal Configuration: " + bestConf.ToString());
+                        }
+                    }
+                    break;
+
                 case COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR:
                     {
                         InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
@@ -995,7 +1040,7 @@ namespace CommandLine
                         if (!Directory.Exists(jobDir))
                             Directory.CreateDirectory(jobDir);
                         if (job.EndsWith(".xml"))
-                            Util.ConvertUtil.convertToBinaryXml(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.xml" );
+                            Util.ConvertUtil.convertToBinaryXml(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.xml");
                         else if (job.EndsWith(".csv"))
                             Util.ConvertUtil.convertToBinaryCSV(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.csv", GlobalState.varModel);
                     });

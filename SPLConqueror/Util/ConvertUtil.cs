@@ -284,6 +284,16 @@ namespace Util
             return nameToIndex;
         }
 
+        public static Dictionary<BinaryOption, int> binaryOptionToIndex(List<BinaryOption> options)
+        {
+            Dictionary<BinaryOption, int> optionToIndex = new Dictionary<BinaryOption, int>();
+            for (int i = 1; i <= options.Count; i++)
+            {
+                optionToIndex.Add(options.ElementAt(i - 1), i);
+            }
+            return optionToIndex;
+         }
+
         private static List<string> parseNonOptionalAndNotExcluded(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
         {
             List<BinaryOption> nonOptionalAndNotExcluded = toParse.BinaryOptions
