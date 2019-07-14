@@ -68,11 +68,6 @@ namespace SPLConqueror_Core
         public static bool takeSimilarConfig = true;
 
         /// <summary>
-        /// Indication that the system is currently trying to recover a previous state.
-        /// </summary>
-        public static bool rollback = false;
-
-        /// <summary>
         /// All properties of the current case study. 
         /// </summary>
         public static Dictionary<string, NFProperty> nfProperties = new Dictionary<string, NFProperty>();

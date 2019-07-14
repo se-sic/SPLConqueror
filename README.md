@@ -30,8 +30,6 @@ To specify the experiments, SPL Conqueror offers a set of commands, which we exp
 
 * The **VariabilityModel_GUI** offers the possibility of defining a variability model of the configurable system being considered.
 
-* The **Persistence** sub-project offers the possibility of writing objects to the storage device. 
-It can be used to continue the execution of script files that are aborted in their execution.
 
 </details>
 
@@ -853,21 +851,6 @@ evaluationset C:\evaluationMeasurements.xml
 ```
 
 **Note**: The format specified in the evaluation-file is the same as in the measurements-file.
-
-#### Recover
-
-```resume-log <abortedAFile>```
-
-In the case that SPL Conqueror aborts unexpectedly, for instance because of a system crash, in a lot of cases the learning-process can be resumed. 
-To do so, a new .a-script has to be created, which contains the ```resume-log``` command with the .a-script that aborted as argument.
-For example: 
-```
-resume-log C:\abortedScript.a
-```
-
-
-Within your .a script you can also use the ```save /some/path/to/folder/``` command to persist the current state. 
-Later this state can be recovered with a new .a script using the ```resume-dump /some/path/to/folder/ /executed/a/script.a``` by providing the .a script that was executed and the old state.
 
 </details>
 <details>
