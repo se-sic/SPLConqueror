@@ -78,6 +78,7 @@ namespace CommandLine
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
 
         public const string COMMAND_OPTIMIZE_CONFIGURATION = "find-optimal-configuration";
+        public const string COMMAND_FIND_ALL_CONFIGURATIONS_MINLP = "sample-all-minlp";
 
         #region splconqueror predict configurations
         public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
@@ -938,9 +939,8 @@ namespace CommandLine
                         }
 
                         string[] columns = bestRound.ToString().Split(new char[] { ';' });
-                        solver.createModelForBestConfiguration(new InfluenceFunction(columns[1]), GlobalState.varModel, additionalConstraintsFile, maximization);
-                        solver.solveProblem();
-                        Configuration bestConf = solver.getBestConfiguration(GlobalState.varModel);
+                        Configuration bestConf = solver.findOptimalSolutionOfInfModel(new InfluenceFunction(columns[1]),
+                            GlobalState.varModel, additionalConstraintsFile, maximization);
                         GlobalState.logInfo.logLine(bestRound.ToString());
                         if (bestConf == null)
                         {
@@ -949,6 +949,15 @@ namespace CommandLine
                         {
                             GlobalState.logInfo.logLine("Optimal Configuration: " + bestConf.ToString());
                         }
+                    }
+                    break;
+
+                case COMMAND_FIND_ALL_CONFIGURATIONS_MINLP:
+                    {
+                        // TODO delete
+                        MachineLearning.Solver.scip.SCIPSolver solver = new MachineLearning.Solver.scip.SCIPSolver(taskAsParameter[0]);
+                        List<List<BinaryOption>> confs = solver.GenerateUpToNFast(GlobalState.varModel, 2560);
+                       
                     }
                     break;
 

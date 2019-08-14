@@ -165,6 +165,10 @@
       <Project>{1f035958-15b1-450a-bfc5-bebd95376c40}</Project>
       <Name>SPLConqueror_Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Util\Util.csproj">
+      <Project>{9f6b4c96-40a8-46d0-9fe5-c501a2f9a4a4}</Project>
+      <Name>Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

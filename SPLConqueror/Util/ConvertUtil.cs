@@ -284,12 +284,12 @@ namespace Util
             return nameToIndex;
         }
 
-        public static Dictionary<BinaryOption, int> binaryOptionToIndex(List<BinaryOption> options)
+        public static Dictionary<string, BinaryOption> IndexToBinaryOptionSCIP(List<BinaryOption> options)
         {
-            Dictionary<BinaryOption, int> optionToIndex = new Dictionary<BinaryOption, int>();
+            Dictionary<string, BinaryOption> optionToIndex = new Dictionary<string, BinaryOption>();
             for (int i = 1; i <= options.Count; i++)
             {
-                optionToIndex.Add(options.ElementAt(i - 1), i);
+                optionToIndex.Add("x" + i.ToString(), options.ElementAt(i - 1));
             }
             return optionToIndex;
          }
