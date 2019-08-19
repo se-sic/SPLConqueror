@@ -1,72 +1,37 @@
-﻿using SPLConqueror_Core;
+﻿using MachineLearning.Solver.scip;
+using SCIPExternal;
+using SCIPInternal;
+using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
-namespace MachineLearning.Solver.scip
+namespace MachineLearning.Solver
 {
-    public class SCIPSolver : IVariantGenerator
+    // TODO whole class if fully experimental and not really suited for the tasks of the variant generator
+    public class SCIPVariantGenerator : IVariantGenerator
     {
-        private Type VarType;
-        private Type SolType;
-        private Type ScipType;
-        private Type LinearConstraintType;
-        private Type LogicOrConstraintType;
-        private Dictionary<string, object> varType = new Dictionary<string, object>();
-        // Since we load the library dynamically at runtime we have to resort to using the dynamic type
-        private dynamic scip;
-        private dynamic oneConstant;
-        private Dictionary<BinaryOption, dynamic> binaryProblemVariables;
-        private Dictionary<NumericOption, dynamic> numericProblemVariables;
+        private SCIP scip;
+        private Var oneConstant;
+        private Dictionary<BinaryOption, Var> binaryProblemVariables;
+        private Dictionary<NumericOption, Var> numericProblemVariables;
 
         private Dictionary<String, int> numericOptionToPseudoOptionID = new Dictionary<string, int>();
         private Dictionary<string, Tuple<ConfigurationOption, int>> nameToOptionID = 
             new Dictionary<string, Tuple<ConfigurationOption, int>>();
 
-        public SCIPSolver(string interfaceLibPath)
+        public SCIPVariantGenerator()
         {
-            // Option 2: Use it by dynamically loading at runtime, only requires dlls when actually used
-            Assembly scipDll = Assembly.LoadFile(interfaceLibPath + "SharpScip.dll");
-
-            foreach (Type t in scipDll.GetExportedTypes())
-            {
-                switch (t.Name)
-                {
-                    case "Var":
-                        VarType = t;
-                        break;
-                    case "SCIP":
-                        ScipType = t;
-                        break;
-                    case "Sol":
-                        SolType = t;
-                        break;
-                    case "Vartype":
-                        Array enumVal = t.GetEnumValues();
-                        string[] names = t.GetEnumNames();
-                        for (int i = 0; i < names.Length; i++)
-                            varType[names[i]] = enumVal.GetValue(i);
-                        break;
-                    case "LinearConstraint":
-                        LinearConstraintType = t;
-                        break;
-                    case "LogicOrConstraint":
-                        LogicOrConstraintType = t;
-                        break;
-                }
-            }
         }
 
-        private Dictionary<BinaryOption, dynamic> initializeBinaryVariables(VariabilityModel vm, dynamic problem)
+        private Dictionary<BinaryOption, Var> initializeBinaryVariables(VariabilityModel vm, SCIP problem)
         {
-            oneConstant = Activator.CreateInstance(VarType, problem, "oneConstant", 1.0, 1.0, 0,
-                varType["SCIP_VARTYPE_INTEGER"]);
-            Dictionary<BinaryOption, dynamic> variables = new Dictionary<BinaryOption, dynamic>();
+            oneConstant = new Var(problem, "oneConstant", 1.0, 1.0, 0, Vartype.SCIP_VARTYPE_INTEGER);
+            Dictionary<BinaryOption, Var> variables = new Dictionary<BinaryOption, Var>();
             foreach (BinaryOption binOpt in vm.BinaryOptions)
             {
-                dynamic var;
+                Var var;
                 // Mandatory
                 // Note if option has excluded options it is automatically interpreted as optional 
                 // even if outside of alternative group.
@@ -74,30 +39,27 @@ namespace MachineLearning.Solver.scip
                 {
                     // create Instances of Var objects with the constructor: public Var(SCIP scip, string name,
                     // double lowerBound, double upperBound, double objectiveValue, Vartype vartype)
-                    var = Activator.CreateInstance(VarType, problem, binOpt.Name, 1.0, 1.0, 0,
-                        varType["SCIP_VARTYPE_BINARY"]);
-                    // Optional
+                    var = new Var(problem, binOpt.Name, 1.0, 1.0, 0, Vartype.SCIP_VARTYPE_BINARY);
+                // Optional
                 }
                 else
                 {
                     // create Instances of Var objects with the constructor: public Var(SCIP scip, string name, 
                     // double lowerBound, double upperBound, double objectiveValue, Vartype vartype)
-                    var = Activator.CreateInstance(VarType, problem, binOpt.Name, 0.0, 1.0, 0,
-                        varType["SCIP_VARTYPE_BINARY"]);
+                    var = new Var(problem, binOpt.Name, 0.0, 1.0, 0, Vartype.SCIP_VARTYPE_BINARY);
                 }
                 variables[binOpt] = var;
             }
             return variables;
         }
 
-        private void initializeBinaryParentChildConstraints(VariabilityModel vm, dynamic problem)
+        private void initializeBinaryParentChildConstraints(VariabilityModel vm, SCIP problem)
         {
             foreach (BinaryOption binOpt in vm.BinaryOptions)
             {
                 if (binOpt.Parent != null)
                 {
-                    // TODO passing dynamic arrays wont work this way
-                    dynamic[] variables = new dynamic[2];
+                    Var[] variables = new Var[2];
                     variables[0] = binaryProblemVariables[binOpt];
                     variables[1] = binaryProblemVariables[(BinaryOption)binOpt.Parent];
                     double[] coeffs = { 1, -1 };
@@ -105,21 +67,21 @@ namespace MachineLearning.Solver.scip
                     {
                         // 0 <= child - parent <= 0
                         // both options imply each other. Either both are selected or none are selected
-                        Activator.CreateInstance(LinearConstraintType, problem,
-                            binOpt.Name + "<->" + binOpt.Parent.Name, variables.Length, problem.unboxVars(variables), coeffs, 0.0, 0.0);
+                        new LinearConstraint( problem,
+                            binOpt.Name + "<->" + binOpt.Parent.Name, variables.Length, variables, coeffs, 0.0, 0.0);
                     }
                     else
                     {
                         // -1 <= child - parent <= 0
                         // Selection of child implies selection of parent
-                        Activator.CreateInstance(LinearConstraintType, problem, 
-                            binOpt.Name + "->" + binOpt.Parent.Name, variables.Length, problem.unboxVars(variables), coeffs, -1.0, 0.0);
+                        new LinearConstraint(problem, 
+                            binOpt.Name + "->" + binOpt.Parent.Name, variables.Length, variables, coeffs, -1.0, 0.0);
                     }
                 }
             }
         }
 
-        private void initializeBinaryImplications(VariabilityModel vm, dynamic problem)
+        private void initializeBinaryImplications(VariabilityModel vm, SCIP problem)
         {
             foreach (BinaryOption binOpt in vm.BinaryOptions)
             {
@@ -127,19 +89,18 @@ namespace MachineLearning.Solver.scip
                 {
                     foreach (List<ConfigurationOption> implied in binOpt.Implied_Options)
                     {
-                        dynamic[] implicationsVars = new dynamic[implied.Count + 1];
+                        Var[] implicationsVars = new Var[implied.Count + 1];
                         implicationsVars[0] = binaryProblemVariables[binOpt].negate(problem);
                         for (int i = 1; i <= implied.Count; i++)
                             implicationsVars[i] = binaryProblemVariables[(BinaryOption)implied.ElementAt(i - 1)];
-                        Activator.CreateInstance(LogicOrConstraintType, problem, "impl" + binOpt.Name,
-                            implicationsVars.Count(), implicationsVars);
+                        new LogicOrConstraint(problem, "impl" + binOpt.Name, implicationsVars.Count(), implicationsVars);
 
                     }
                 }
             }
         }
 
-        private void initializeArbitraryBooleanConstraints(VariabilityModel vm, dynamic problem)
+        private void initializeArbitraryBooleanConstraints(VariabilityModel vm, SCIP problem)
         {
             int i = 0;
             foreach (string booleanConstraint in vm.BinaryConstraints)
@@ -149,7 +110,7 @@ namespace MachineLearning.Solver.scip
                 foreach (string cnfExpression in cnfExpressions)
                 {
                     string[] variables = cnfExpression.Split('|');
-                    dynamic[] orExprVars = new dynamic[variables.Count()];
+                    Var[] orExprVars = new Var[variables.Count()];
                     int counter = 0;
 
                     foreach (string variable in variables)
@@ -164,14 +125,13 @@ namespace MachineLearning.Solver.scip
                         }
                         counter++;
                     }
-                    Activator.CreateInstance(LogicOrConstraintType, problem, "booleanConstr" + i++,
-                    orExprVars.Count(), problem.unboxVars(orExprVars));
+                    new LogicOrConstraint(problem, "booleanConstr" + i++, orExprVars.Count(), orExprVars);
                 }
             }
         }
 
         // Initialize alternative groups
-        private void initializeBinaryAlternativeGroups(VariabilityModel vm, dynamic problem)
+        private void initializeBinaryAlternativeGroups(VariabilityModel vm, SCIP problem)
         {
             HashSet<BinaryOption> alreadyHandledGroup = new HashSet<BinaryOption>();
             foreach (BinaryOption binOpt in vm.BinaryOptions.Where(x => !x.Optional))
@@ -180,10 +140,9 @@ namespace MachineLearning.Solver.scip
                     .Select(opt => (BinaryOption)opt);
                 if (alternatives.Count() > 0 && !alreadyHandledGroup.Contains(binOpt))
                 {
-                    dynamic[] vars;
+                    Var[] vars;
                     double[] coeffs;
-                    // TODO bug
-                    vars = new dynamic[alternatives.Count() + 2];
+                    vars = new Var[alternatives.Count() + 2];
 
                     if (binOpt.Parent != null)
                         vars[0] = binaryProblemVariables[(BinaryOption)binOpt.Parent];
@@ -202,8 +161,7 @@ namespace MachineLearning.Solver.scip
                     // LinearConstraint(SCIP scip, string name, int nVars, Var[] vars, double[] vals, double lhs, double rhs) 
                     // creates constraint in the form of 0 <= parent - sum_of_alternative_group <= 0 so at most
                     // 1 option in the group is selected 
-                    Activator.CreateInstance(LinearConstraintType, problem, "alt-" + binOpt.Name, vars.Length,
-                         problem.unboxVars(vars), coeffs, 0.0, 0.0);
+                    new LinearConstraint(problem, "alt-" + binOpt.Name, vars.Length, vars, coeffs, 0.0, 0.0);
                     alreadyHandledGroup.Add(binOpt);
                     foreach (BinaryOption alternative in alternatives)
                         alreadyHandledGroup.Add(alternative);
@@ -212,13 +170,13 @@ namespace MachineLearning.Solver.scip
         }
 
         // handle not alternative group excluded options
-        private void initializeBinaryNonAlternativeExcluded(dynamic problem, VariabilityModel vm)
+        private void initializeBinaryNonAlternativeExcluded(SCIP problem, VariabilityModel vm)
         {
             foreach (BinaryOption binOpt in vm.BinaryOptions)
             {
                 foreach (List<ConfigurationOption> alternativeGroup in binOpt.getNonAlternativeExlcudedOptions())
                 {
-                    dynamic[] vars = new dynamic[alternativeGroup.Count + 1];
+                    Var[] vars = new Var[alternativeGroup.Count + 1];
                     double[] coeffs = new double[vars.Length];
                     vars[0] = binaryProblemVariables[binOpt];
                     coeffs[0] = 1;
@@ -229,16 +187,15 @@ namespace MachineLearning.Solver.scip
                     }
                     // creates constraint in the form of 1 <= sum_of_exclusive_group <= 1 so at most 
                     // 1 option in the group is selected 
-                    Activator.CreateInstance(LinearConstraintType, problem, "excl-" + binOpt.Name, vars.Length,
-                         problem.unboxVars(vars), coeffs, 1.0, 1.0);
+                    new LinearConstraint(problem, "excl-" + binOpt.Name, vars.Length, vars, coeffs, 1.0, 1.0);
                 }
             }
         }
 
-        private dynamic initializeBinaryConstraintSystem(VariabilityModel vm)
+        private SCIP initializeBinaryConstraintSystem(VariabilityModel vm)
         {
             // create Instance of scip object with the constructor: public SCIP(bool useDefaultPlugins, string problemName)
-            dynamic problem = Activator.CreateInstance(ScipType, true, vm.Name);
+            SCIP problem = new SCIP(true, vm.Name);
             binaryProblemVariables = initializeBinaryVariables(vm, problem);
             initializeBinaryParentChildConstraints(vm, problem);
             initializeBinaryAlternativeGroups(vm, problem);
@@ -248,28 +205,24 @@ namespace MachineLearning.Solver.scip
             return problem;
         }
 
-        private void addNumericOptionsToConstraintSystem(VariabilityModel vm, dynamic problem)
+        private void addNumericOptionsToConstraintSystem(VariabilityModel vm, SCIP problem)
         {
-            numericProblemVariables = new Dictionary<NumericOption, dynamic>();
+            numericProblemVariables = new Dictionary<NumericOption, Var>();
             foreach (NumericOption numOpt in vm.NumericOptions)
             {
-                dynamic var = Activator.CreateInstance(VarType, problem, numOpt.Name, numOpt.Min_value,
-                    numOpt.Max_value, 0, varType["SCIP_VARTYPE_CONTINUOUS"]);
+                Var var = new Var(problem, numOpt.Name, numOpt.Min_value, numOpt.Max_value, 0, Vartype.SCIP_VARTYPE_CONTINUOUS);
                 numericProblemVariables[numOpt] = var;
                 // Parent can be ignored because we dont support optional numeric configuration options
-
-                dynamic temp = Activator.CreateInstance(VarType, problem, Math.Floor(numOpt.Min_value), 
-                    Math.Ceiling(numOpt.Max_value), 0, varType["SCIP_VARTYPE_CONTINUOUS"]);
+                Var temp = new Var(problem, "tmp" + numOpt.Name, Math.Floor(numOpt.Min_value), Math.Ceiling(numOpt.Max_value), 0, Vartype.SCIP_VARTYPE_CONTINUOUS);
                 // To model the step constraint in any efficient manner it has to be assumed that
                 // a numeric option can only be a multiple of its initial value
-                dynamic[] stepConstraint = new dynamic[2];
+                Var[] stepConstraint = new Var[2];
                 stepConstraint[0] = var;
                 stepConstraint[1] = temp;
                 double[] coeffs = new double[2];
                 coeffs[0] = 1;
                 coeffs[1] = -numOpt.getAllValues().Min(x => x);
-                Activator.CreateInstance(LinearConstraintType, problem, "step-" + numOpt.Name,
-                    stepConstraint.Length, problem.unboxVars(stepConstraint), coeffs, 0.0, 0.0);
+                new LinearConstraint(problem, "step-" + numOpt.Name, stepConstraint.Length, stepConstraint, coeffs, 0.0, 0.0);
             }
         }
 
@@ -282,10 +235,10 @@ namespace MachineLearning.Solver.scip
             string tmpFileName = Path.GetTempPath() + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss") + ".osil";
             File.AppendAllText(tmpFileName, osilContent);
             //solver = new SCIP(tmpFileName, "osil");
-            scip = Activator.CreateInstance(ScipType, tmpFileName, "osil");
+            scip = new SCIP(tmpFileName, "osil");
             File.Delete(tmpFileName);
 
-            binaryProblemVariables = scip.getVars();
+            Var[] problemVariables = scip.getVars();
             scip.solve();
 
             if (scip.getNSols() == 0)
@@ -294,10 +247,10 @@ namespace MachineLearning.Solver.scip
             }
             else
             {
-                dynamic bestSolution = scip.getBestSol();
+                Sol bestSolution = scip.getBestSol();
                 List<BinaryOption> bestBinOpts = new List<BinaryOption>();
                 Dictionary<NumericOption, double> bestNumOpts = new Dictionary<NumericOption, double>();
-                foreach (dynamic problemVariable in binaryProblemVariables)
+                foreach (Var problemVariable in problemVariables)
                 {
                     double value = bestSolution.getSolVal(problemVariable);
                     ConfigurationOption opt = vm.getOption(problemVariable.Name);
@@ -336,14 +289,14 @@ namespace MachineLearning.Solver.scip
         }
 
         private List<List<BinaryOption>> generateUpToNWithGivenProblem(VariabilityModel vm, 
-            int n, dynamic problem)
+            int n, SCIP problem)
         {
             List<List<BinaryOption>> results = new List<List<BinaryOption>>();
             bool hasSol = true;
             while (hasSol && (n != 0))
             {
-                dynamic copy = Activator.CreateInstance(ScipType, problem);
-                dynamic[] vars = copy.getVars();
+                SCIP copy = new SCIP(problem);
+                Var[] vars = copy.getVars();
 
                 copy.solve();
                 if (copy.getNSols() == 0)
@@ -352,10 +305,10 @@ namespace MachineLearning.Solver.scip
                     continue;
                 }
 
-                dynamic solution = copy.getBestSol();
+                Sol solution = copy.getBestSol();
                 List<BinaryOption> configuration = parseSolution(vm, vars, solution);
 
-                dynamic[] blacklist = new dynamic[vm.BinaryOptions.Count];
+                Var[] blacklist = new Var[vm.BinaryOptions.Count];
                 for (int i = 0; i < vm.BinaryOptions.Count; i++)
                 {
                     if (configuration.Contains(vm.BinaryOptions.ElementAt(i)))
@@ -367,8 +320,7 @@ namespace MachineLearning.Solver.scip
                         blacklist[i] = binaryProblemVariables[vm.BinaryOptions.ElementAt(i)];
                     }
                 }
-                Activator.CreateInstance(LogicOrConstraintType, problem, "blacklist" + n,
-                    blacklist.Count(), problem.unboxVars(blacklist));
+                new LogicOrConstraint(problem, "blacklist" + n, blacklist.Count(), problem.unboxVars(blacklist));
                 results.Add(configuration);
 
                 n--;
@@ -378,7 +330,7 @@ namespace MachineLearning.Solver.scip
 
         public List<List<BinaryOption>> GenerateUpToNFast(VariabilityModel vm, int n)
         {
-            dynamic problem = initializeBinaryConstraintSystem(vm);
+            SCIP problem = initializeBinaryConstraintSystem(vm);
             return generateUpToNWithGivenProblem(vm, n, problem);
         }
 
@@ -405,12 +357,12 @@ namespace MachineLearning.Solver.scip
         public List<BinaryOption> MinimizeConfig(List<BinaryOption> config, VariabilityModel vm,
             bool minimize, List<BinaryOption> unWantedOptions)
         {
-            dynamic problem = initializeBinaryConstraintSystem(vm);
+            SCIP problem = initializeBinaryConstraintSystem(vm);
             updateObjectiveValues(vm, unWantedOptions, config, minimize);
             return generateUpToNWithGivenProblem(vm, 1, problem).First();
         }
 
-        private List<BinaryOption> parseSolution(VariabilityModel vm, dynamic[] vars, dynamic solution)
+        private List<BinaryOption> parseSolution(VariabilityModel vm, Var[] vars, Sol solution)
         {
             List<BinaryOption> configuration = new List<BinaryOption>();
             for (int i = 0; i < vars.Length; i++)
@@ -429,10 +381,10 @@ namespace MachineLearning.Solver.scip
             bool minimize, List<BinaryOption> unwantedOptions)
         {
             List<List<BinaryOption>> results = new List<List<BinaryOption>>();
-            dynamic problem = initializeBinaryConstraintSystem(vm);
+            SCIP problem = initializeBinaryConstraintSystem(vm);
             updateObjectiveValues(vm, unwantedOptions, config, minimize);
 
-            dynamic[] vars = problem.getVars();
+            Var[] vars = problem.getVars();
 
             problem.solve();
             if (problem.getNSols() == 0)
@@ -443,9 +395,9 @@ namespace MachineLearning.Solver.scip
             // TODO: might actually not produce all best partial configuarations
             // might need iteration like the up to n version but with abort on configuration with
             // worse objsense
-            dynamic[] solutions = problem.getSols();
+            Sol[] solutions = problem.getSols();
 
-            foreach (dynamic solution in solutions)
+            foreach (Sol solution in solutions)
             {
                 results.Add(parseSolution(vm, vars, solution));
             }

@@ -1,5 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Cplex>..\packages\cplex\ILOG.Concert.dll</Cplex>
+    <SCIP>..\packages\scip\SharpScip.dll</SCIP>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="Exists($(Cplex))">
+      <ItemGroup>
+        <Compile Include="Solver\VariantGenerator\CplexVariantGenerator.cs" />
+      </ItemGroup>
+      <ItemGroup>
+        <Reference Include="ILOG.Concert">
+          <HintPath>..\packages\cplex\ILOG.Concert.dll</HintPath>
+        </Reference>
+        <Reference Include="ILOG.CPLEX">
+          <HintPath>..\packages\cplex\ILOG.CPLEX.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="Exists($(SCIP))">
+      <ItemGroup>
+        <Compile Include="Solver\scip\OsilGenerator.cs" />
+        <Compile Include="Solver\VariantGenerator\SCIPVariantGenerator.cs" />
+      </ItemGroup>
+      <ItemGroup>
+        <Reference Include="SharpScip">
+          <HintPath>..\packages\scip\SharpScip.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -140,8 +172,6 @@
     <Compile Include="Solver\ConstraintSystemCache.cs" />
     <Compile Include="Solver\ICheckConfigSAT.cs" />
     <Compile Include="Learning\LinearProgramming\ISolverLP.cs" />
-    <Compile Include="Solver\scip\OsilGenerator.cs" />
-    <Compile Include="Solver\scip\SCIPSolver.cs" />
     <Compile Include="Solver\VariantGenerator\IVariantGenerator.cs" />
     <Compile Include="Learning\LinearProgramming\SolverLP.cs" />
     <Compile Include="Solver\CSPsolver.cs" />

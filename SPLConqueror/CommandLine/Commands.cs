@@ -917,8 +917,19 @@ namespace CommandLine
                             GlobalState.logError.log("Error... learning was not performed! The optimization needs models which are already learned.");
                             break;
                         }
+                        Type scip = AppDomain.CurrentDomain
+                            .GetAssemblies()
+                            .SelectMany(asm => asm.GetTypes())
+                            .Where(type => type.Name.Contains("SCIPVariantGenerator")).First();
 
-                        MachineLearning.Solver.scip.SCIPSolver solver = new MachineLearning.Solver.scip.SCIPSolver(taskAsParameter[0]);
+                        if (scip == null)
+                        {
+                            GlobalState.logError
+                                .logLine("Scip solver could not be found. Make sure the interface is located in the packages directory.");
+                            return "";
+                        }
+
+                        dynamic solver = Activator.CreateInstance(scip, taskAsParameter[0]);
                         var learningHistroy = exp.models[0].LearningHistory;
                         LearningRound bestRound = learningHistroy.Last();
                         string additionalConstraintsFile = null;
@@ -952,10 +963,51 @@ namespace CommandLine
                     }
                     break;
 
+                // TODO delete this method is only used debugging purpose
                 case COMMAND_FIND_ALL_CONFIGURATIONS_MINLP:
                     {
-                        // TODO delete
-                        MachineLearning.Solver.scip.SCIPSolver solver = new MachineLearning.Solver.scip.SCIPSolver(taskAsParameter[0]);
+                        Type scip = AppDomain.CurrentDomain
+                            .GetAssemblies()
+                            .SelectMany(asm => asm.GetTypes())
+                            .Where(type => type.Name.Contains("SCIPVariantGenerator")).First();
+
+                        if (scip == null)
+                        {
+                            GlobalState.logError
+                                .logLine("Scip solver could not be found. Make sure the interface is located in the packages directory.");
+                            return "";
+                        }
+
+                        dynamic solver = Activator.CreateInstance(scip);
+                        solver.GenerateAllVariantsFast(GlobalState.varModel);
+                        MachineLearning.Solver.IVariantGenerator cplexvg = MachineLearning.Solver.VariantGeneratorFactory.GetVariantGenerator("smt");
+
+                        System.Diagnostics.Stopwatch cplexsw = System.Diagnostics.Stopwatch.StartNew();
+                        cplexsw.Start();
+                        List<List<BinaryOption>> res1 = cplexvg.GenerateAllVariantsFast(GlobalState.varModel);
+                        cplexsw.Stop();
+                        TimeSpan elapsed = cplexsw.Elapsed;
+                        MachineLearning.Solver.VariantGenerator vg = new MachineLearning.Solver.VariantGenerator();
+
+                        System.Diagnostics.Stopwatch msssw = System.Diagnostics.Stopwatch.StartNew();
+                        msssw.Start();
+                        List<List<BinaryOption>> res2 = vg.GenerateAllVariantsFast(GlobalState.varModel);
+                        msssw.Stop();
+                        TimeSpan elapsedMss = msssw.Elapsed;
+
+                        List<List<BinaryOption>> distanceMax = cplexvg.DistanceMaximization(GlobalState.varModel, null, 10, 0);
+                        List<Configuration> conf = cplexvg.GenerateAllVariants(GlobalState.varModel, null);
+
+                        bool eq = res1.TrueForAll(x => {
+                            foreach (List<BinaryOption> binOpts in res2)
+                            {
+                                if (binOpts.TrueForAll(y => x.Contains(y)) && x.TrueForAll(y => binOpts.Contains(y)))
+                                {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        });
                         List<List<BinaryOption>> confs = solver.GenerateUpToNFast(GlobalState.varModel, 2560);
                        
                     }
