@@ -48,9 +48,17 @@ namespace MachineLearning.Solver
             {
                 // Initialize with the numeric options as numeric variables with a range from min to max
                 INumVar curr = plex.NumVar(numOpt.Min_value, numOpt.Max_value, NumVarType.Float);
+
+         /*       plex.IfThen(
+                    plex.Eq(binOptsToCplexVars[vm.Root], 1), 
+                    plex.Or(new IConstraint[] { plex.Ge(curr, numOpt.Min_value),
+                                                    plex.Le(curr, numOpt.Max_value)}
+                    )
+                ); */
+
                 numOptsToCplexVars[numOpt] = curr;
                 List<double> values = numOpt.getAllValues();
-                IRange[] valueSet = new IRange[values.Count];
+                IConstraint[] valueSet = new IConstraint[values.Count];
                 // Limit the values numeric options can have to the precomputed valid values
                 for (int i = 0; i < values.Count; i++)
                     valueSet[i] = plex.Eq(curr, values.ElementAt(i));
@@ -228,10 +236,12 @@ namespace MachineLearning.Solver
             setPopulateParams(plex, MAX_NUMBER_SOLUTION);
             populate(plex, MAX_NUMBER_SOLUTION);
 
+            int nSols = plex.GetSolnPoolNsolns();
             for (int i = 0; i < plex.GetSolnPoolNsolns(); i++)
             {
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binOpts = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
                 Dictionary<NumericOption, double> numOpts = new Dictionary<NumericOption, double>();
+                Configuration toAdd;
 
                 foreach (ConfigurationOption option in vm.getOptions())
                 {
@@ -240,22 +250,22 @@ namespace MachineLearning.Solver
 
                     if (option is BinaryOption)
                     {
-                        if (plex.GetValue(binOptsToCplexVars[(BinaryOption)option]) > EPSILON_THRESHOLD)
+                        if (plex.GetValue(binOptsToCplexVars[(BinaryOption)option], i) > EPSILON_THRESHOLD)
                             binOpts[(BinaryOption)option] = BinaryOption.BinaryValue.Selected;
                         else
                             binOpts[(BinaryOption)option] = BinaryOption.BinaryValue.Deselected;
-                    } else
-                    {
-                        numOpts[(NumericOption)option] = plex.GetValue(numOptsToCplexVars[(NumericOption)option]);
                     }
+                    else
+                    {
+                        numOpts[(NumericOption)option] = plex.GetValue(numOptsToCplexVars[(NumericOption)option], i);
+                    }
+                }
 
-                    Configuration toAdd = new Configuration(binOpts, numOpts);
-
-                    // Check if the non-boolean constraints are satisfied
-                    if (!results.Contains(toAdd) && vm.configurationIsValid(toAdd) 
+                toAdd = new Configuration(binOpts, numOpts);
+                // Check if the non-boolean constraints are satisfied
+                if (!results.Contains(toAdd) && vm.configurationIsValid(toAdd) 
                         && vm.MixedConstraints.TrueForAll(constr => constr.requirementsFulfilled(toAdd)))
                         results.Add(toAdd);
-                }
             }
 
             plex.Dispose();
