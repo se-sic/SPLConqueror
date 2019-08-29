@@ -199,6 +199,17 @@ namespace MachineLearning.Solver
             objCache.Clear();
         }
 
+        ///<summary>
+        /// This method searches for the most diverse set of partial configurations by sampling a high number of configurations and only 
+        /// adding samples to the resulting set if they increase the diversity. 
+        /// The parameter numberToSample should be relatively low compared
+        /// to the number of possible partial configurations in order to ensure a high distance between configurations.
+        /// </summary>
+        /// <param name="vm">The domain for sampling.</param>
+        /// <param name="minimalConfiguration">This parameter is not required for this implementation of the approach.</param>
+        /// <param name="numberToSample">The number of configurations that should be sampled.</param>
+        /// <param name="optionWeight">This parameter is not required for this implementation of the approach.</param>
+        /// <returns>A list of distance maximized configurations.</returns> 
         public List<List<BinaryOption>> DistanceMaximization(VariabilityModel vm, List<BinaryOption> minimalConfiguration, int numberToSample, int optionWeight)
         {
             Cplex plex = initCplex(vm);
@@ -235,8 +246,6 @@ namespace MachineLearning.Solver
             initializeNumericVariables(plex, vm);
             setPopulateParams(plex, MAX_NUMBER_SOLUTION);
             populate(plex, MAX_NUMBER_SOLUTION);
-
-            int nSols = plex.GetSolnPoolNsolns();
             for (int i = 0; i < plex.GetSolnPoolNsolns(); i++)
             {
                 Dictionary<BinaryOption, BinaryOption.BinaryValue> binOpts = new Dictionary<BinaryOption, BinaryOption.BinaryValue>();
@@ -264,7 +273,7 @@ namespace MachineLearning.Solver
                 toAdd = new Configuration(binOpts, numOpts);
                 // Check if the non-boolean constraints are satisfied
                 if (!results.Contains(toAdd) && vm.configurationIsValid(toAdd) 
-                        && vm.MixedConstraints.TrueForAll(constr => constr.requirementsFulfilled(toAdd)))
+                        && VariantGenerator.FulfillsMixedConstraints(toAdd, vm))
                         results.Add(toAdd);
             }
 
@@ -283,22 +292,40 @@ namespace MachineLearning.Solver
 
             List<BinaryOption> solution = new List<BinaryOption>();
 
-            if (cplexCache[numberSelectedFeatures] == null)
+            if (!cplexCache.ContainsKey(numberSelectedFeatures))
             {
                 plex = initCplex(vm);
                 countConstraint(plex, vm.BinaryOptions, numberSelectedFeatures);
-                cplexCache[numberSelectedFeatures] = plex;
-            } else
-            {
-                plex = cplexCache[numberSelectedFeatures];
-
                 // Set intensity to store only litte information to generate few configurations fast
                 plex.SetParam(Cplex.Param.MIP.Pool.Intensity, 1);
                 plex.SetParam(Cplex.Param.MIP.Pool.Capacity, numberSelectedFeatures < 31 ? (int)Math.Pow(2, numberSelectedFeatures) : 2100000000);
                 // Set replacement to FIFO
                 plex.SetParam(Cplex.Param.MIP.Pool.Replace, 1);
+                cplexCache[numberSelectedFeatures] = plex;
+            } else
+            {
+                plex = cplexCache[numberSelectedFeatures];
 
-                plex.Remove(objCache[numberSelectedFeatures]);
+                if (lastSampledConfiguration != null)
+                {
+                    IConstraint[] blacklistConf = new IConstraint[GlobalState.varModel.BinaryOptions.Count];
+                    int i = 0;
+                    foreach (BinaryOption option in GlobalState.varModel.BinaryOptions)
+                    {
+                        if (lastSampledConfiguration.BinaryOptions.ContainsKey(option) && lastSampledConfiguration.BinaryOptions[option] == BinaryOption.BinaryValue.Selected)
+                        {
+                            blacklistConf[i] = plex.Eq(0, binOptsToCplexVars[option]);
+                        } else
+                        {
+                            blacklistConf[i] = plex.Eq(1, binOptsToCplexVars[option]);
+                        }
+                        i++;
+                    }
+                    plex.Add(plex.Or(blacklistConf));
+                }
+
+                if (objCache.ContainsKey(numberSelectedFeatures))
+                    plex.Remove(objCache[numberSelectedFeatures]);
             }
 
             // Solution pool will take care of the last sampled configuration and try to generate new configurations
@@ -447,24 +474,35 @@ namespace MachineLearning.Solver
             Cplex plex = initCplex(vm);
             initializeMinMaxObjective(vm, plex, minimize, config, unwantedOptions);
             initializeRequire(plex, config);
+            List<BinaryOption> globalOptimum = new List<BinaryOption>();
 
-            double currentObjValue = Double.MaxValue;
-            while (plex.Solve())
+            if (plex.Solve())
             {
-                if (plex.GetObjValue() > currentObjValue)
-                    break;
-                else
-                    currentObjValue = plex.GetObjValue();
-
-                List<BinaryOption> optimalSolution = new List<BinaryOption>();
                 foreach (BinaryOption binOpt in vm.BinaryOptions)
                 {
                     if (plex.GetValue(binOptsToCplexVars[binOpt]) > EPSILON_THRESHOLD)
                     {
-                        optimalSolution.Add(binOpt);
+                        globalOptimum.Add(binOpt);
                     }
                 }
-                results.Add(optimalSolution);
+                countConstraint(plex, vm.BinaryOptions, globalOptimum.Count);
+                setPopulateParams(plex, MAX_NUMBER_SOLUTION);
+                if (plex.Populate())
+                {
+                    for (int i = 0; i < plex.GetSolnPoolNsolns(); i++)
+                    {
+                        List<BinaryOption> optimalSolution = new List<BinaryOption>();
+                        foreach (BinaryOption binOpt in vm.BinaryOptions)
+                        {
+                            if (plex.GetValue(binOptsToCplexVars[binOpt], i) > EPSILON_THRESHOLD)
+                            {
+                                optimalSolution.Add(binOpt);
+                            }
+                        }
+                        results.Add(optimalSolution);
+                    }
+                }
+
             }
 
             plex.Dispose();
@@ -529,7 +567,7 @@ namespace MachineLearning.Solver
                 }
                 else if (unwanted != null && unwanted.Contains(curr))
                 {
-                    weights[i] = 100.0;
+                    weights[i] = 1000.0;
                 }
                 else
                 {
