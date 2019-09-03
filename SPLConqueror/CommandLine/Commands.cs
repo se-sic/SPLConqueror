@@ -77,9 +77,6 @@ namespace CommandLine
         public const string COMMAND_EVALUATE_MODEL = "evaluate-model";
         public const string COMMAND_ANALYZE_LEARNING = "analyze-learning";
 
-        public const string COMMAND_OPTIMIZE_CONFIGURATION = "find-optimal-configuration";
-        public const string COMMAND_FIND_ALL_CONFIGURATIONS_MINLP = "sample-all-minlp";
-
         #region splconqueror predict configurations
         public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
         // deprecated
