@@ -555,6 +555,7 @@ Currently, the following solver can be selected:
 | :---: | :---------: | :-----------: |
 | Microsoft Solver Foundation | The solver of the [Microsoft Solver Foundation](https://msdn.microsoft.com/en-us/library/ff524509(v=vs.93).aspx). | solver msf |
 | Z3 | The [Z3 solver](https://github.com/Z3Prover/z3). | solver z3 |
+| CPLEX | Use [CPLEX solver](https://www.ibm.com/de-de/products/ilog-cplex-optimization-studio). Requires that you have a working CPLEX license, manually added the libraries to the project and compiled it with CPLEX support. | solver CPLEX |
 
 By default, the solver from the Microsoft Solver Foundation is used to select valid configurations.
 
