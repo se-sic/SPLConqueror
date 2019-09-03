@@ -1,5 +1,6 @@
 language: csharp
 solution: ./SPLConqueror/SPLConqueror.sln
+dist: trusty
 mono:
   - latest
   - 5.14.0
@@ -23,7 +24,7 @@ before_script:
   - ls /home/travis/build/se-passau/SPLConqueror/SPLConqueror/packages
   - ls /usr/lib/libz3.so
 script:
-  - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
+  - msbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/MachineLearningTest/bin/Debug/MachineLearningTest.dll #Test machine learning and a few command line commands.
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/SPLConquerorCoreTest/bin/Debug/SPLConquerorCoreTest.dll #Test core

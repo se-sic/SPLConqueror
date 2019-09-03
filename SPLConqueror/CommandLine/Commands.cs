@@ -854,7 +854,7 @@ namespace CommandLine
                         if (!Directory.Exists(jobDir))
                             Directory.CreateDirectory(jobDir);
                         if (job.EndsWith(".xml"))
-                            Util.ConvertUtil.convertToBinaryXml(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.xml" );
+                            Util.ConvertUtil.convertToBinaryXml(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.xml");
                         else if (job.EndsWith(".csv"))
                             Util.ConvertUtil.convertToBinaryCSV(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.csv", GlobalState.varModel);
                     });

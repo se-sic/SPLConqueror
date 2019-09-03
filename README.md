@@ -84,7 +84,9 @@ Be aware that an internet connection is required to perform this step.
 
 6. Build the root project
 
-7.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+7. Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+
+8. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 
 </details>
 
@@ -124,6 +126,8 @@ git submodule update --init --recursive
 5. Build root project
 
 6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+
+7. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 </details>
 
 <details>
@@ -158,6 +162,8 @@ git submodule update --init --recursive
 5. Build the root project
 
 6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+
+7. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 </details>
 
 <details>
@@ -547,6 +553,7 @@ Currently, the following solver can be selected:
 | :---: | :---------: | :-----------: |
 | Microsoft Solver Foundation | The solver of the [Microsoft Solver Foundation](https://msdn.microsoft.com/en-us/library/ff524509(v=vs.93).aspx). | solver msf |
 | Z3 | The [Z3 solver](https://github.com/Z3Prover/z3). | solver z3 |
+| CPLEX | Use [CPLEX solver](https://www.ibm.com/de-de/products/ilog-cplex-optimization-studio). Requires that you have a working CPLEX license, manually added the libraries to the project and compiled it with CPLEX support. | solver CPLEX |
 
 By default, the solver from the Microsoft Solver Foundation is used to select valid configurations.
 

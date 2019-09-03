@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Cplex>..\packages\cplex\ILOG.Concert.dll</Cplex>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="Exists($(Cplex))">
+      <ItemGroup>
+        <Compile Include="CplexVariantGeneratorTest.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C15B0D58-A30A-4F45-AFE9-C6E2295305E1}</ProjectGuid>

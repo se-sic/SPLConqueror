@@ -1,5 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Cplex>..\packages\cplex\ILOG.Concert.dll</Cplex>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="Exists($(Cplex))">
+      <ItemGroup>
+        <Compile Include="Solver\VariantGenerator\CplexVariantGenerator.cs" />
+      </ItemGroup>
+      <ItemGroup>
+        <Reference Include="ILOG.Concert">
+          <HintPath>..\packages\cplex\ILOG.Concert.dll</HintPath>
+        </Reference>
+        <Reference Include="ILOG.CPLEX">
+          <HintPath>..\packages\cplex\ILOG.CPLEX.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -162,6 +180,10 @@
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">
       <Project>{1f035958-15b1-450a-bfc5-bebd95376c40}</Project>
       <Name>SPLConqueror_Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Util\Util.csproj">
+      <Project>{9f6b4c96-40a8-46d0-9fe5-c501a2f9a4a4}</Project>
+      <Name>Util</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

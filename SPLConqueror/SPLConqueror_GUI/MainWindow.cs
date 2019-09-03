@@ -11,6 +11,7 @@ using SPLConqueror_Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -80,7 +81,7 @@ namespace SPLConqueror_GUI
         // Everything for the measurements
         private bool measurementsLoaded = false;
         private string adjustedMeasurementFunction;
-        private Configuration configurationForCalculation;
+        private SPLConqueror_Core.Configuration configurationForCalculation;
         private Tuple<NumericOption, NumericOption> chosenOptions;
         private ILArray<float> drawnPerformances;
         private ILArray<float> calculatedPerformances;
@@ -1195,7 +1196,7 @@ namespace SPLConqueror_GUI
                     usedNumericOptions.Add(entry.Key, entry.Value);
             }
 
-            configurationForCalculation = new Configuration(bins, usedNumericOptions);
+            configurationForCalculation = new SPLConqueror_Core.Configuration(bins, usedNumericOptions);
 
             updateFunctionPanel();
             updateMeasurementTab();
@@ -2357,9 +2358,9 @@ namespace SPLConqueror_GUI
             }
 
             // Calculating all measured configurations that can be used
-            List<Configuration> neededConfigurations = new List<Configuration>();
+            List<SPLConqueror_Core.Configuration> neededConfigurations = new List<SPLConqueror_Core.Configuration>();
 
-            foreach (Configuration conf in GlobalState.allMeasurements.Configurations)
+            foreach (SPLConqueror_Core.Configuration conf in GlobalState.allMeasurements.Configurations)
             {
                 bool insert = true;
 
@@ -2506,7 +2507,7 @@ namespace SPLConqueror_GUI
 
                 foreach (double value in values)
                 {
-                    Configuration c = null;
+                    SPLConqueror_Core.Configuration c = null;
                     double d;
 
                     // Get the measurement for the current settings
@@ -2678,7 +2679,7 @@ namespace SPLConqueror_GUI
                 {
                     for (int j = 0; j < valuesY.Count; j++)
                     {
-                        Configuration c = null;
+                        SPLConqueror_Core.Configuration c = null;
                         double d1, d2;
 
                         for (int k = 0; k < neededConfigurations.Count && c == null; k++)
@@ -3982,7 +3983,7 @@ namespace SPLConqueror_GUI
                 }
 
                 double minValue = featureCoefficients[headerTwo[i]]
-                    * func.eval(new Configuration(binSelec, numericSelection));
+                    * func.eval(new SPLConqueror_Core.Configuration(binSelec, numericSelection));
 
                 foreach (BinaryOption binOpt in binSelec.Keys)
                 {
@@ -3995,7 +3996,7 @@ namespace SPLConqueror_GUI
                 }
 
                 double maxValue = featureCoefficients[headerTwo[i]]
-                    * func.eval(new Configuration(binSelec, numericSelection));
+                    * func.eval(new SPLConqueror_Core.Configuration(binSelec, numericSelection));
 
                 featureRanking[headerTwo[i]] = maxValue - minValue;
             }
@@ -4017,10 +4018,10 @@ namespace SPLConqueror_GUI
                 binStrat.Add(SamplingStrategies.ALLBINARY);
                 List<ExperimentalDesign> expDesigns = new List<ExperimentalDesign>();
                 expDesigns.Add(new FullFactorialDesign());
-                List<Configuration> configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binStrat, expDesigns,
+                List<SPLConqueror_Core.Configuration> configs = ConfigurationBuilder.buildConfigs(GlobalState.varModel, binStrat, expDesigns,
                     new List<MachineLearning.Sampling.Hybrid.HybridStrategy>());
 
-                foreach (Configuration config in configs)
+                foreach (SPLConqueror_Core.Configuration config in configs)
                 {
                     foreach (string feature in frequency.Keys)
                     {
