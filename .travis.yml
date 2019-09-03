@@ -7,8 +7,8 @@ python:
   -"3.6"
 install:
   - sudo apt-get update
-  - sudo apt-get install python-virtualenv 
-  - virtualenv -p python3.6 /home/travis/pyenv
+  - sudo pip install virtualenv
+  - python -m virtualenv /home/travis/pyenv
   - source /home/travis/pyenv/bin/activate
   - pip3 install numpy==1.16.2
   - pip3 install scipy==1.2.1
