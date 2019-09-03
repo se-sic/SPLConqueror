@@ -1196,7 +1196,7 @@ namespace SPLConqueror_GUI
                     usedNumericOptions.Add(entry.Key, entry.Value);
             }
 
-            configurationForCalculation = new Configuration(bins, usedNumericOptions);
+            configurationForCalculation = new SPLConqueror_Core.Configuration(bins, usedNumericOptions);
 
             updateFunctionPanel();
             updateMeasurementTab();
@@ -3983,7 +3983,7 @@ namespace SPLConqueror_GUI
                 }
 
                 double minValue = featureCoefficients[headerTwo[i]]
-                    * func.eval(new Configuration(binSelec, numericSelection));
+                    * func.eval(new SPLConqueror_Core.Configuration(binSelec, numericSelection));
 
                 foreach (BinaryOption binOpt in binSelec.Keys)
                 {
@@ -3996,7 +3996,7 @@ namespace SPLConqueror_GUI
                 }
 
                 double maxValue = featureCoefficients[headerTwo[i]]
-                    * func.eval(new Configuration(binSelec, numericSelection));
+                    * func.eval(new SPLConqueror_Core.Configuration(binSelec, numericSelection));
 
                 featureRanking[headerTwo[i]] = maxValue - minValue;
             }
