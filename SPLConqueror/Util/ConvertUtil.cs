@@ -284,16 +284,6 @@ namespace Util
             return nameToIndex;
         }
 
-        public static Dictionary<string, BinaryOption> IndexToBinaryOptionSCIP(List<BinaryOption> options)
-        {
-            Dictionary<string, BinaryOption> optionToIndex = new Dictionary<string, BinaryOption>();
-            for (int i = 1; i <= options.Count; i++)
-            {
-                optionToIndex.Add("x" + i.ToString(), options.ElementAt(i - 1));
-            }
-            return optionToIndex;
-         }
-
         private static List<string> parseNonOptionalAndNotExcluded(Dictionary<string, int> nameToIndex, VariabilityModel toParse)
         {
             List<BinaryOption> nonOptionalAndNotExcluded = toParse.BinaryOptions

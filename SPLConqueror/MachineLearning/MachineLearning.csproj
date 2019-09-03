@@ -2,7 +2,6 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Cplex>..\packages\cplex\ILOG.Concert.dll</Cplex>
-    <SCIP>..\packages\scip\SharpScip.dll</SCIP>
   </PropertyGroup>
   <Choose>
     <When Condition="Exists($(Cplex))">
@@ -15,19 +14,6 @@
         </Reference>
         <Reference Include="ILOG.CPLEX">
           <HintPath>..\packages\cplex\ILOG.CPLEX.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="Exists($(SCIP))">
-      <ItemGroup>
-        <Compile Include="Solver\scip\OsilGenerator.cs" />
-        <Compile Include="Solver\VariantGenerator\SCIPVariantGenerator.cs" />
-      </ItemGroup>
-      <ItemGroup>
-        <Reference Include="SharpScip">
-          <HintPath>..\packages\scip\SharpScip.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
