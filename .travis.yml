@@ -4,11 +4,11 @@ mono:
   - latest
   - 5.14.0
 python:
-  -"3.4"
+  -"3.6"
 install:
   - sudo apt-get update
   - sudo apt-get install python-virtualenv 
-  - virtualenv -p python3.4 /home/travis/pyenv
+  - virtualenv -p python3.6 /home/travis/pyenv
   - source /home/travis/pyenv/bin/activate
   - pip3 install numpy==1.16.2
   - pip3 install scipy==1.2.1
