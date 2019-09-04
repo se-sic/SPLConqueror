@@ -10,7 +10,7 @@ WORKDIR /application
 RUN apt update
 
 # Install git and wget
-RUN apt install -y -qq git wget unzip mono-complete
+RUN apt install -y -qq git wget unzip mono-complete mono-devel
 
 # Install libgomp1 (dependency for z3)
 RUN apt install -y -qq libgomp1
@@ -28,7 +28,7 @@ RUN git clone --depth=1 https://github.com/se-passau/SPLConqueror.git \
     && git submodule update --init \
     && wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe \
     && mono nuget.exe restore ./ -MSBuildPath /usr/lib/mono/xbuild/14.0/bin \
-    && xbuild /p:Configuration=Release /p:TargetFrameworkVersion="v4.5" /p:TargetFrameworkProfile="" ./SPLConqueror.sln \
+    && msbuild /p:Configuration=Release /p:TargetFrameworkVersion="v4.5" /p:TargetFrameworkProfile="" ./SPLConqueror.sln \
     && cd ../..
 
 # Install Python and its dependencies for the ML algorithms
