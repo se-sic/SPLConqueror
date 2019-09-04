@@ -34,7 +34,6 @@ namespace PerformancePrediction_GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.AutoSize = true;
             this.BinarySamplingGroup = new System.Windows.Forms.GroupBox();
             this.binRandomSeed = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -612,6 +611,7 @@ namespace PerformancePrediction_GUI
             // 
             // mlSettingsPanel
             // 
+            this.mlSettingsPanel.AutoScroll = true;
             this.mlSettingsPanel.Location = new System.Drawing.Point(8, 21);
             this.mlSettingsPanel.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.mlSettingsPanel.Name = "mlSettingsPanel";
@@ -733,6 +733,7 @@ namespace PerformancePrediction_GUI
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1237, 877);
             this.Controls.Add(this.PrintConfigsGroupBox);
             this.Controls.Add(this.LearnAllMeasurements);

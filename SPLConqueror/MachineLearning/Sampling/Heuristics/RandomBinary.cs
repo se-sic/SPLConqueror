@@ -43,7 +43,7 @@ namespace MachineLearning.Sampling.Heuristics
             configurations.Clear();
 
             int seed = 0;
-            int numConfigs = varModel.BinaryOptions.Count;
+            int numConfigs = varModel.WithAbstractBinaryOptions.Count;
 
             // parse parameters
             if (parameters.ContainsKey("numConfigs"))

@@ -359,6 +359,10 @@ namespace SPLConqueror_Core
             while (counter < expressionArray.Length)
             {
                 string curr = expressionArray[counter];
+                if (wellFormedExpression.Contains("Enabled"))
+                {
+                    int dbg = 1;
+                }
                 counter++;
 
                 if (!InfluenceFunction.isOperatorEval(curr))
@@ -519,6 +523,12 @@ namespace SPLConqueror_Core
                 return config.NumericOptions[numOpt];
             }
             BinaryOption binOpt = fm.getBinaryOption(token);
+
+            if (token.StartsWith("Enabled") || token.StartsWith("Disabled"))
+            {
+                binOpt = getAbstractOption(token, fm);
+            }
+
             if (binOpt != null)
             {
                 if (token.Equals("base") || token.Equals("root"))
@@ -541,6 +551,24 @@ namespace SPLConqueror_Core
             }
             return 0.0;
 
+        }
+
+        private static BinaryOption getAbstractOption(String token, VariabilityModel vm)
+        {
+            NumericOption numOpt;
+            if (token.StartsWith("Enabled"))
+            {
+                numOpt = vm.getNumericOption(token.Substring(7));
+                if (numOpt != null)
+                    return numOpt.abstractEnabledConfigurationOption();
+            }
+            else
+            {
+                numOpt = vm.getNumericOption(token.Substring(8));
+                if (numOpt != null)
+                    return numOpt.abstractDisabledConfigurationOption();
+            }
+            return null;
         }
 
         private double getValueOfToken(Dictionary<NumericOption, double> config, string token, VariabilityModel varModel)
@@ -630,6 +658,12 @@ namespace SPLConqueror_Core
                 }
 
                 BinaryOption binOption = varModel.getBinaryOption(token);
+
+                if (token.StartsWith("Enabled") || token.StartsWith("Disabled"))
+                {
+                    binOption = getAbstractOption(token, varModel);
+                }
+
                 if (binOption != null)
                 {
                     if (!participatingBoolOptions.Contains(binOption))

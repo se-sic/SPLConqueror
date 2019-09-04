@@ -26,7 +26,7 @@ namespace MachineLearning.Sampling.Heuristics
             //Idea try to vary only the first maximum configuration by removing only a single feature 
             //If a feature is not present in this maximum configuration, find a maximum configuration in which it is present and then remove the feature
             //Challenges: alternative features or mandatory features cannot be removed
-            foreach (BinaryOption binOpt in vm.BinaryOptions)
+            foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
             {
                 if (binOpt.Optional == false || binOpt.hasAlternatives())
                     continue;
@@ -120,7 +120,7 @@ namespace MachineLearning.Sampling.Heuristics
 
             if (allAlternativeCombinations)
             {
-                foreach (BinaryOption elem in vm.BinaryOptions)
+                foreach (BinaryOption elem in vm.WithAbstractBinaryOptions)
                 {
                     if (elem.hasAlternatives())
                     {
@@ -175,7 +175,7 @@ namespace MachineLearning.Sampling.Heuristics
             }
 
             //Verify whether each option is at least in one maximum configuration
-            foreach (BinaryOption elem in vm.BinaryOptions)
+            foreach (BinaryOption elem in vm.WithAbstractBinaryOptions)
             {
                 bool isCovered = false;
                 foreach (List<BinaryOption> config in maxConfigurations)

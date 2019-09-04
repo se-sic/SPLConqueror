@@ -272,6 +272,7 @@ Tags:
 | minValue | configurationOption | Minimum value a numeric option can assume |
 | maxValue | configurationOption | Maximum value a numeric option can assume |
 | stepFunction | configurationOption | Mathematical function that describes the values between min and max a numeric option can assume |
+| deselectedFlag | configurationOption | Value that will be interpreted as the deselection of a numeric configuration options. If the tag is not defined the option will be assumed mandatory |
 | booleanConstraints | vm | Collection of logical expressions with binary options a configuration of this model has to fulfill |
 | numericConstraints | vm | Collection of mathematical expressions with numeric options a configuration of this model has to fulfill |
 | mixedConstraints | vm | Collection of mathematical expressions with configuration options a configuration of this model has to fulfill |
@@ -512,6 +513,7 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | outputRoundsToStdout | If true, the info about the rounds is output not only to the log file at the end of the learning, but also to the stdout during the learning after each round completion. | false | true, false |
 | debug | Print model of selected learners in scikit-learn(currently on supports Random Forest, DecisionTree and SVR with linear kernel). | false | true,false |
 | pythonInfluenceAnalysis | Perform regression on the predictions of algorithms provided by scikit-learn. | false | true,false |
+| learn-numeric-disabled | Additionally learn the influences of the deselection of optional numeric configuration options. | true | true,false |
 
 Generally, to change the default settings, there are two options, namely:
 1. The first is to add the settings in the format ```SETTING_NAME:VALUE``` to the *mlsettings*-command. For instance, if the number of learning rounds should be reduced to 25, allow logarithmic functions and don't want to stop on long learning rounds, the associated command would be:

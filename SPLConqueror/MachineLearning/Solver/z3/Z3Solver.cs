@@ -34,7 +34,7 @@ namespace MachineLearning.Solver
             termToOption = new Dictionary<Expr, ConfigurationOption>();
 
             // Create the binary configuration options
-            foreach (BinaryOption binOpt in vm.BinaryOptions)
+            foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
             {
                 BoolExpr booleanVariable = GenerateBooleanVariable(context, binOpt.Name);
                 variables.Add(booleanVariable);
@@ -57,7 +57,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> andGroup = new List<BoolExpr>();
 
             // Parse the constraints of the binary (boolean) configuration options
-            foreach (BinaryOption current in vm.BinaryOptions)
+            foreach (BinaryOption current in vm.WithAbstractBinaryOptions)
             {
                 BoolExpr expr = (BoolExpr)optionToTerm[current];
                 if (current.Parent == null || current.Parent == vm.Root)
@@ -446,7 +446,7 @@ namespace MachineLearning.Solver
             {
                 // Select different (shuffled) literals for the features
                 Random random = new Random(randomSeed);
-                List<BinaryOption> randomizedOptions = (from item in vm.BinaryOptions
+                List<BinaryOption> randomizedOptions = (from item in vm.WithAbstractBinaryOptions
                                                         orderby random.Next()
                                                         select item).ToList();
 
@@ -474,7 +474,7 @@ namespace MachineLearning.Solver
             {
 
                 // Read in the binary variables
-                foreach (BinaryOption binOpt in vm.BinaryOptions)
+                foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
                 {
                     BoolExpr booleanVariable = GenerateBooleanVariable(context, binOpt.Name);
                     variables.Add(booleanVariable);
@@ -488,7 +488,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> andGroup = new List<BoolExpr>();
 
             //Constraints of a single configuration option
-            foreach (BinaryOption current in vm.BinaryOptions)
+            foreach (BinaryOption current in vm.WithAbstractBinaryOptions)
             {
                 BoolExpr expr = (BoolExpr)optionToTerm[current];
                 if (current.Parent == null || current.Parent == vm.Root)
@@ -684,7 +684,7 @@ namespace MachineLearning.Solver
         public static BoolExpr ConvertConfiguration(Context context, List<BinaryOption> options, Dictionary<BinaryOption, BoolExpr> optionToTerm, VariabilityModel vm, bool partial = false)
         {
             List<BoolExpr> andGroup = new List<BoolExpr>();
-            foreach (BinaryOption binOpt in vm.BinaryOptions)
+            foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
             {
                 if (options.Contains(binOpt))
                 {
@@ -711,7 +711,7 @@ namespace MachineLearning.Solver
         public static BoolExpr ConvertConfiguration(Context context, List<BinaryOption> options, Dictionary<ConfigurationOption, Expr> optionToTerm, VariabilityModel vm, bool partial = false, Dictionary<NumericOption, double> numericValues = null)
         {
             List<BoolExpr> andGroup = new List<BoolExpr>();
-            foreach (BinaryOption binOpt in vm.BinaryOptions)
+            foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
             {
                 if (options.Contains(binOpt))
                 {
