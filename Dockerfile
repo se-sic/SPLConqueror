@@ -10,7 +10,10 @@ WORKDIR /application
 RUN apt update
 
 # Install git and wget
-RUN apt install -y -qq git wget unzip mono-complete
+RUN apt install -y -qq git wget unzip mono-complete mono-devel
+
+# Install libgomp1 (dependency for z3)
+RUN apt install -y -qq libgomp1
 
 # Download z3 (the library is needed for the constraint solver that is used inside SPL Conqueror)
 RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-debian-8.10.zip \
@@ -24,8 +27,8 @@ RUN git clone --depth=1 https://github.com/se-passau/SPLConqueror.git \
     && cd SPLConqueror/SPLConqueror/ \
     && git submodule update --init \
     && wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe \
-    && mono nuget.exe restore ./ \
-    && xbuild /p:Configuration=Release /p:TargetFrameworkVersion="v4.5" /p:TargetFrameworkProfile="" ./SPLConqueror.sln \
+    && mono nuget.exe restore ./ -MSBuildPath /usr/lib/mono/xbuild/14.0/bin \
+    && msbuild /p:Configuration=Release /p:TargetFrameworkVersion="v4.5" /p:TargetFrameworkProfile="" ./SPLConqueror.sln \
     && cd ../..
 
 # Install Python and its dependencies for the ML algorithms

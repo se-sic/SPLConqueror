@@ -1,5 +1,10 @@
 [![Build status](https://travis-ci.org/se-passau/SPLConqueror.svg?branch=master "Build status")](https://travis-ci.org/se-passau/SPLConqueror)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/se-passau/SPLConqueror/master/logo.png">
+</p>
+
+
 # SPL Conqueror Project Structure
 
 <details>
@@ -25,8 +30,6 @@ To specify the experiments, SPL Conqueror offers a set of commands, which we exp
 
 * The **VariabilityModel_GUI** offers the possibility of defining a variability model of the configurable system being considered.
 
-* The **Persistence** sub-project offers the possibility of writing objects to the storage device. 
-It can be used to continue the execution of script files that are aborted in their execution.
 
 </details>
 
@@ -42,10 +45,13 @@ Via Docker
 We provide a Dockerfile in this repository for an automatic setup of SPL Conqueror in a Docker container.
 To set up the Docker container, make sure that you have properly installed Docker (https://docs.docker.com/get-started/) and the Docker daemon is running.
 Afterwards, the image is set up by:
+	
 ```
 sudo docker build -t splconqueror ./
 ```
+
 Based on this image, a container is created and an interactive session is started by:
+
 ```
 sudo docker run -ti splconqueror
 ```
@@ -78,7 +84,9 @@ Be aware that an internet connection is required to perform this step.
 
 6. Build the root project
 
-7.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+7. Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+
+8. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 
 </details>
 
@@ -117,7 +125,9 @@ git submodule update --init --recursive
 
 5. Build root project
 
-6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+
+7. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 </details>
 
 <details>
@@ -151,7 +161,9 @@ git submodule update --init --recursive
     
 5. Build the root project
 
-6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.19.0), numpy(1.11.1) and scipy(0.17.1) packages.
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+
+7. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 </details>
 
 <details>
@@ -543,6 +555,7 @@ Currently, the following solver can be selected:
 | :---: | :---------: | :-----------: |
 | Microsoft Solver Foundation | The solver of the [Microsoft Solver Foundation](https://msdn.microsoft.com/en-us/library/ff524509(v=vs.93).aspx). | solver msf |
 | Z3 | The [Z3 solver](https://github.com/Z3Prover/z3). | solver z3 |
+| CPLEX | Use [CPLEX solver](https://www.ibm.com/de-de/products/ilog-cplex-optimization-studio). Requires that you have a working CPLEX license, manually added the libraries to the project and compiled it with CPLEX support. | solver CPLEX |
 
 By default, the solver from the Microsoft Solver Foundation is used to select valid configurations.
 
@@ -726,7 +739,7 @@ An example for this command would be:
 
 To set which python interpreter is used, use the ```define-python-path``` command.
 
-**Note**: In SPL Conqueror, only python3 is supported. Additionally, the ```sklearn``` module (version 0.19.0) is needed. We recommend to set up a virtual environment by using virtualenv.
+**Note**: In SPL Conqueror, only python3 is supported. Additionally, the ```sklearn``` module (version >=0.20.3 recommended) is needed. We recommend to set up a virtual environment by using virtualenv.
 
 #### Learning with scikit-learn
 
@@ -847,21 +860,6 @@ evaluationset C:\evaluationMeasurements.xml
 ```
 
 **Note**: The format specified in the evaluation-file is the same as in the measurements-file.
-
-#### Recover
-
-```resume-log <abortedAFile>```
-
-In the case that SPL Conqueror aborts unexpectedly, for instance because of a system crash, in a lot of cases the learning-process can be resumed. 
-To do so, a new .a-script has to be created, which contains the ```resume-log``` command with the .a-script that aborted as argument.
-For example: 
-```
-resume-log C:\abortedScript.a
-```
-
-
-Within your .a script you can also use the ```save /some/path/to/folder/``` command to persist the current state. 
-Later this state can be recovered with a new .a script using the ```resume-dump /some/path/to/folder/ /executed/a/script.a``` by providing the .a script that was executed and the old state.
 
 </details>
 <details>

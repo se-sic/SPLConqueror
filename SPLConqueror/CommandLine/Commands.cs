@@ -9,7 +9,6 @@ using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
 using MachineLearning.Sampling;
-using Persistence;
 using ProcessWrapper;
 using MachineLearning.Sampling.Hybrid;
 using MachineLearning.Sampling.Hybrid.Distributive;
@@ -37,14 +36,6 @@ namespace CommandLine
         // for uniform format of commands
         public const string COMMAND_LOAD_MLSETTINGS_UNIFORM = "load-mlsettings";
         #endregion
-
-        public const string RESUME_FROM_DUMP = "resume-dump";
-
-        //resume a A script with only log files. 
-        public const string RESUME_FROM_LOG = "resume-log";
-
-        //save current SPLConqueror state to a file.
-        public const string COMMAND_SAVE = "save";
 
         public const string COMMAND_VALIDATION = "validation";
 
@@ -186,8 +177,7 @@ namespace CommandLine
 
         ML_Settings mlSettings = new ML_Settings();
         InfluenceFunction trueModel = null;
-
-        private CommandHistory currentHistory = new CommandHistory();
+        
         private bool hasLearnData = false;
 
         public Learning exp = new MachineLearning.Learning.Regression.Learning();
@@ -210,8 +200,6 @@ namespace CommandLine
             if (line.Length == 0)
                 return "";
 
-            currentHistory.addCommand(line);
-
             // split line in command and parameters of the command
             string[] components = line.Split(new Char[] { ' ' }, 2);
 
@@ -221,20 +209,10 @@ namespace CommandLine
                 task = components[1];
 
             string[] taskAsParameter = task.Split(new Char[] { ' ' });
-            if (!GlobalState.rollback)
-            {
-                GlobalState.logInfo.logLine(COMMAND + line);
 
-                command = components[0];
-            }
-            else
-            {
-                command = components[0];
-                if (!command.Equals(COMMAND_SUBSCRIPT))
-                {
-                    command = ROLLBACK_FLAG;
-                }
-            }
+            GlobalState.logInfo.logLine(COMMAND + line);
+
+            command = components[0];
 
             switch (command.ToLower())
             {
@@ -255,117 +233,6 @@ namespace CommandLine
                     else
                     {
                         GlobalState.logInfo.logLine("Invalid argument. Only true or false are allowed");
-                    }
-                    break;
-
-                case RESUME_FROM_DUMP:
-                    {
-                        Tuple<ML_Settings, List<SamplingStrategies>, List<SamplingStrategies>> recoveredData = CommandPersistence.recoverDataFromDump(taskAsParameter);
-                        if (recoveredData == null)
-                        {
-                            GlobalState.logError.logLine("Couldnt recover.");
-                        }
-                        else
-                        {
-                            this.mlSettings = recoveredData.Item1;
-                            this.binaryToSample = recoveredData.Item2;
-                            this.binaryToSampleValidation = recoveredData.Item3;
-
-                            FileInfo fi = new FileInfo(taskAsParameter[1]);
-                            StreamReader reader = null;
-                            if (!fi.Exists)
-                                throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
-
-                            reader = fi.OpenText();
-                            Commands co = new Commands();
-                            if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
-                            {
-                                //restore exp
-                                hasLearnData = true;
-                            }
-                            co.exp = this.exp;
-                            co.binaryToSample = this.binaryToSample;
-                            co.binaryToSampleValidation = this.binaryToSampleValidation;
-                            co.mlSettings = this.mlSettings;
-                            GlobalState.rollback = true;
-
-                            while (!reader.EndOfStream)
-                            {
-                                String oneLine = reader.ReadLine().Trim();
-                                co.performOneCommand(oneLine);
-
-                            }
-                        }
-                        break;
-                    }
-                case COMMAND_SAVE:
-                    {
-                        CommandPersistence.dump(taskAsParameter, this.mlSettings, this.binaryToSample,
-                            this.binaryToSampleValidation, this.exp, this.currentHistory);
-                        break;
-                    }
-                case ROLLBACK_FLAG:
-                    if (currentHistory.Equals(CommandPersistence.history))
-                    {
-                        GlobalState.rollback = false;
-                        GlobalState.logInfo.logLine("Performed rollback");
-                    }
-                    break;
-
-                case RESUME_FROM_LOG:
-                    Tuple<bool, Dictionary<string, string>> reachedEndAndRelevantCommands = CommandPersistence.findRelevantCommandsLogFiles(task.TrimEnd(), new Dictionary<string, string>());
-                    if (reachedEndAndRelevantCommands.Item1)
-                    {
-                        GlobalState.logInfo.logLine("The end of the script was already reached");
-                    }
-                    else
-                    {
-                        string logBuffer = null;
-                        foreach (KeyValuePair<string, string> kv in reachedEndAndRelevantCommands.Item2)
-                        {
-                            if (!kv.Key.Equals(COMMAND_SUBSCRIPT))
-                            {
-                                if (kv.Key.Equals(COMMAND_LOG))
-                                {
-                                    logBuffer = kv.Value.Split()[1].Trim();
-                                }
-                                else if (!(kv.Key.Equals(COMMAND_START_LEARNING) || kv.Key.Equals(COMMAND_START_ALLMEASUREMENTS)))
-                                {
-                                    performOneCommand(kv.Value);
-                                }
-                            }
-                        }
-                        GlobalState.logInfo = new InfoLogger(logBuffer, true);
-
-                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
-                        {
-                            //restore exp
-                            hasLearnData = true;
-                        }
-                        FileInfo fi = new FileInfo(task.TrimEnd());
-                        StreamReader reader = null;
-                        if (!fi.Exists)
-                            throw new FileNotFoundException(@"Automation script not found. ", fi.ToString());
-
-                        reader = fi.OpenText();
-                        Commands co = new Commands();
-                        if (CommandPersistence.learningHistory != null && CommandPersistence.learningHistory.Item2.Count > 0 && CommandPersistence.learningHistory.Item1)
-                        {
-                            //restore exp
-                            co.hasLearnData = true;
-                        }
-                        co.exp = this.exp;
-                        co.binaryToSample = this.binaryToSample;
-                        co.binaryToSampleValidation = this.binaryToSampleValidation;
-                        co.mlSettings = this.mlSettings;
-                        GlobalState.rollback = true;
-
-                        while (!reader.EndOfStream)
-                        {
-                            String oneLine = reader.ReadLine().Trim();
-                            co.performOneCommand(oneLine);
-
-                        }
                     }
                     break;
 
@@ -480,14 +347,6 @@ namespace CommandLine
                             String previousRootDirectory = Directory.GetCurrentDirectory();
                             String filePath = fi.DirectoryName;
                             Directory.SetCurrentDirectory(filePath);
-
-                            co.currentHistory = this.currentHistory;
-                            if (GlobalState.rollback)
-                            {
-                                co.binaryToSample = this.binaryToSample;
-                                co.binaryToSampleValidation = this.binaryToSampleValidation;
-                                co.mlSettings = this.mlSettings;
-                            }
 
                             co.hasLearnData = this.hasLearnData;
                             co.exp = this.exp;
@@ -995,7 +854,7 @@ namespace CommandLine
                         if (!Directory.Exists(jobDir))
                             Directory.CreateDirectory(jobDir);
                         if (job.EndsWith(".xml"))
-                            Util.ConvertUtil.convertToBinaryXml(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.xml" );
+                            Util.ConvertUtil.convertToBinaryXml(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.xml");
                         else if (job.EndsWith(".csv"))
                             Util.ConvertUtil.convertToBinaryCSV(job, jobDir + Path.GetFileNameWithoutExtension(job) + "_bin.csv", GlobalState.varModel);
                     });
@@ -1959,35 +1818,16 @@ namespace CommandLine
             if (!configurationsPreparedForLearning(learnAndValidation,
                 out configurationsLearning, out configurationsValidation))
                 return;
+            
 
-            // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
-            if (!hasLearnData)
-            {
-                exp.models.Clear();
-                var mod = exp.models;
-                exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                exp.models = mod;
+            exp.models.Clear();
+            var mod = exp.models;
+            exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
+            exp.models = mod;
 
-                exp.metaModel = infMod;
-                exp.mlSettings = this.mlSettings;
-                exp.learn();
-            }
-            else
-            {
-                GlobalState.logInfo.logLine("Continue learning");
-                exp.models.Clear();
-                var mod = exp.models;
-                exp = new MachineLearning.Learning.Regression.Learning(configurationsLearning, configurationsValidation);
-                exp.models = mod;
-                exp.metaModel = infMod;
-                exp.mlSettings = this.mlSettings;
-                List<LearningRound> lr = new List<LearningRound>();
-                foreach (string lrAsString in CommandPersistence.learningHistory.Item2)
-                {
-                    lr.Add(LearningRound.FromString(lrAsString, GlobalState.varModel));
-                }
-                exp.continueLearning(lr);
-            }
+            exp.metaModel = infMod;
+            exp.mlSettings = this.mlSettings;
+            exp.learn();
             GlobalState.logInfo.logLine("average model: \n" + exp.metaModel.printModelAsFunction());
             double relativeerror = 0;
             if (GlobalState.evaluationSet.Configurations.Count > 0)

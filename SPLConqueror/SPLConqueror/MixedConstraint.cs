@@ -61,7 +61,7 @@ namespace SPLConqueror_Core
                 throw new ArgumentException(String.Format("The expression kind {0} is not valid. Expression can either be neg or pos.", exprKind));
             }
 
-            String[] parts = base.ToString().Split(new string[] { ">", "<", "=", "<=", ">=" }, StringSplitOptions.None);
+            String[] parts = base.ToString().Split(new string[] { ">", "<", "=", "<=", ">=", "!=" }, StringSplitOptions.None);
             leftHandSide = new InfluenceFunction(parts[0], varMod);
             rightHandSide = new InfluenceFunction(parts[parts.Length - 1], varMod);
             var = varMod;

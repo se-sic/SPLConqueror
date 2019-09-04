@@ -22,8 +22,7 @@ namespace MachineLearning.Solver
             List<BoolExpr> constraints = new List<BoolExpr>();
             Microsoft.Z3.Solver solver = z3Context.MkSolver();
             solver.Assert(z3Constraints);
-
-            solver.Assert(Z3Solver.ConvertConfiguration(z3Context, vm.WithAbstractBinaryOptions, optionToTerm, vm, partialConfiguration));
+            solver.Assert(Z3Solver.ConvertConfiguration(z3Context, config, optionToTerm, vm, partialConfiguration));
 
             if (solver.Check() == Status.SATISFIABLE)
             {

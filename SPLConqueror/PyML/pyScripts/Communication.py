@@ -28,12 +28,14 @@ REQUESTING_LEARNING_SETTINGS = "req_settings"
 
 debug = False
 
+
 # Output function to pass strings to C#, flushing the output buffer is required to make sure the string is written
 #  in the stream
 def print_line(string):
     print(string)
     # flushing output buffer
     sys.stdout.flush()
+
 
 def check_prereq(model):
     return isinstance(model, DTR) or isinstance(model, RF) or (isinstance(model, SVR) and model.kernel=="linear")

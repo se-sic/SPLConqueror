@@ -3,7 +3,6 @@ using CommandLine;
 using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace MachineLearningTest
 {
@@ -14,20 +13,23 @@ namespace MachineLearningTest
         private Commands cmd;
         private StringWriter consoleOutput = new StringWriter();
 
-        private static string modelPathVS = Path.GetFullPath(
-            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..")) + Path.DirectorySeparatorChar
-            + "ExampleFiles" + Path.DirectorySeparatorChar + "BerkeleyDBFeatureModel.xml";
+        private static string modelPathVS = getApplicationDirectory() + "ExampleFiles" 
+            + Path.DirectorySeparatorChar + "BerkeleyDBFeatureModel.xml";
 
         private static string modelPathCI = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/BerkeleyDBFeatureModel.xml";
 
-        private static string measurementPathVS = Path.GetFullPath(
-            Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..")) + Path.DirectorySeparatorChar
-            + "ExampleFiles" + Path.DirectorySeparatorChar + "BerkeleyDBMeasurements.xml";
+        private static string measurementPathVS = getApplicationDirectory() + "ExampleFiles" 
+            + Path.DirectorySeparatorChar + "BerkeleyDBMeasurements.xml";
 
         private static string measurementPathCI = "/home/travis/build/se-passau/SPLConqueror/SPLConqueror/Example"
                   + "Files/BerkeleyDBMeasurements.xml";
 
+        private static string getApplicationDirectory()
+        {
+            return Path.GetFullPath(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "..//..//..")) 
+                + Path.DirectorySeparatorChar;
+        }
         private bool isCIEnvironment;
 
         /* Not needed currently
@@ -170,6 +172,58 @@ namespace MachineLearningTest
                 cmd.performOneCommand(Commands.COMMAND_CLEAR_GLOBAL);
                 performSimpleUseCase(cmd);
             });
+        }
+
+        [Test, Order(5)]
+        public void testTrueModel()
+        {
+            cleanUp(cmd, "");
+            string trueModel = "HAVE_HASH\nHAVE_CRYPTO\nPAGESIZE\nPS1K * CS64MB";
+            string trueModelFile = "true.model";
+            Util.printToTmpFile(trueModelFile, trueModel);
+
+            cmd.performOneCommand(Commands.COMMAND_TRUEMODEL + " " + Path.GetTempPath() + trueModelFile);
+            string result = consoleOutput.ToString().Split(new string[] { "command: truemodel" }, StringSplitOptions.None)[1].Replace(",",".");
+            Util.cleanUpTmpFiles(trueModelFile);
+
+            Assert.That(result.Contains("-29.9015624999827 * HAVE_HASH"));
+            Assert.That(result.Contains("56.4309375000046 * HAVE_CRYPTO"));
+            Assert.That(result.Contains("-70.4853618421029 * PS1K * CS64MB"));
+        }
+
+        [Test, Order(6)]
+        public void testEvaluateModel()
+        {
+            cleanUp(cmd, "");
+            string trueModel = "100 * HAVE_HASH + -20 * HAVE_CRYPTO + 30 * PAGESIZE + 250 * PS1K * CS32MB + 5 * CS64MB";
+            string trueModelPath = "true.model";
+            string measurementTrueModel = "measurement_true_model.xml";
+            string trueModelPrediction = "prediction_0.csv";
+            string measurements = "<results><row>" +
+                "<data columname=\"Configuration\" > PAGESIZE, PS1K, HAVE_HASH, HAVE_CRYPTO, CACHESIZE, CS32MB,</data>" +
+                "<data columname=\"MainMemory\" > 1620.8 </data>" +
+                "</row></results>";
+
+            Util.printToTmpFile(trueModelPath, trueModel);
+            Util.printToTmpFile(measurementTrueModel, measurements);
+
+            cmd.performOneCommand(Commands.COMMAND_LOAD_CONFIGURATIONS + " " + Path.GetTempPath() + measurementTrueModel);
+            cmd.performOneCommand(Commands.COMMAND_SET_NFP + " MainMemory");
+            consoleOutput.Flush();
+            cmd.performOneCommand(Commands.COMMAND_EVALUATE_MODEL + " " + Path.GetTempPath() + trueModelPath + " " 
+                + Path.GetTempPath() + "prediction.csv");
+
+            bool predicted360 = Util.readTmpFile(trueModelPrediction).TrimEnd().EndsWith("360");
+            Util.cleanUpTmpFiles(measurementTrueModel, trueModelPath, trueModelPrediction);
+
+            Assert.That(predicted360);
+        }
+
+        [OneTimeTearDown]
+        public void clear()
+        {
+            consoleOutput.Dispose();
+            consoleOutput.Close();
         }
 
         private void performSimpleUseCase(Commands cmd)

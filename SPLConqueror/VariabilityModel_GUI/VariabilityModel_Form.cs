@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using SPLConqueror_Core;
 using System.IO;
-using System.Xml;
 using Util;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace VariabilitModel_GUI
 {
@@ -624,7 +623,59 @@ namespace VariabilitModel_GUI
                 currentFilePath = fi.FullName;
                 dataSaved = true;
 
+                checkedGUIUpdate();
+            }
+        }
+
+        private void checkedGUIUpdate()
+        {
+            if (GlobalState.varModel.BinaryOptions.Count + GlobalState.varModel.NumericOptions.Count > 1000)
+            {
+                DialogResult doDisplay = MessageBox.Show("High Number of configuration options detected.\n" +
+                    "It might not be possible to visualize them. Do you want to continue?", "Warning", MessageBoxButtons.YesNo);
+                if (doDisplay == DialogResult.Yes)
+                {
+                    MessageBox.Show("Visualizing Model, this might take some time.");
+                    InitTreeView();
+                }
+            }
+            else
+            {
                 InitTreeView();
+            }
+        }
+
+        private void saveSXFMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sxfm = new SaveFileDialog();
+            sxfm.OverwritePrompt = true;
+            sxfm.AddExtension = true;
+            sxfm.CheckPathExists = true;
+            sxfm.CheckPathExists = true;
+            sxfm.DefaultExt = "xml";
+            sxfm.Title = "Save model in SXFM format.";
+            if (sxfm.ShowDialog() == DialogResult.OK)
+            {
+                VariabilityModel toConvert = ConvertUtil.transformVarModelAllbinary(GlobalState.varModel);
+                toConvert.saveSXFM(sxfm.FileName);
+            }
+        }
+
+        private void loadDimacsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Select SXFM model";
+            ofd.Filter = "cnf files (*.cnf)|*.cnf|dimacs files (*.dimacs)|*.dimacs|All files (*.*)|*.*";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                var conv_thread = new Thread( () => { GlobalState.varModel = VariabilityModel.loadFromDimacs(ofd.FileName); });
+                conv_thread.Start();
+                conv_thread.Join();
+                this.saveModelToolStripMenuItem.Enabled = true;
+                this.saveModelAsToolStripMenuItem.Enabled = true;
+                this.editToolStripMenuItem.Enabled = true;
+                this.addAlternativeGroupToolStripMenuItem.Enabled = true;
+                checkedGUIUpdate();
             }
         }
     }

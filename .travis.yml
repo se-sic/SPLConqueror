@@ -1,5 +1,6 @@
 language: csharp
 solution: ./SPLConqueror/SPLConqueror.sln
+dist: trusty
 mono:
   - latest
   - 5.14.0
@@ -10,9 +11,9 @@ install:
   - sudo apt-get install python-virtualenv 
   - virtualenv -p python3.4 /home/travis/pyenv
   - source /home/travis/pyenv/bin/activate
-  - pip3 install numpy==1.11.1
-  - pip3 install scipy==0.17.1
-  - pip3 install scikit-learn==0.19.0
+  - pip3 install numpy==1.16.2
+  - pip3 install scipy==1.2.1
+  - pip3 install scikit-learn==0.20.3
   - nuget restore ./SPLConqueror/SPLConqueror.sln #Download all packaged
   - nuget install NUnit.ConsoleRunner -Version 3.8.0 -OutputDirectory testrunner #Additional to the Nunit test framework download the runner to execue the test.
 before_script:
@@ -23,8 +24,9 @@ before_script:
   - ls /home/travis/build/se-passau/SPLConqueror/SPLConqueror/packages
   - ls /usr/lib/libz3.so
 script:
-  - xbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
+  - msbuild /p:Configuration=Debug ./SPLConqueror/SPLConqueror.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/SamplingUnitTest/bin/Debug/SamplingUnitTest.dll #Test sampling.
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/MachineLearningTest/bin/Debug/MachineLearningTest.dll #Test machine learning and a few command line commands.
   - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/SPLConquerorCoreTest/bin/Debug/SPLConquerorCoreTest.dll #Test core
-  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/PythonTest/bin/Debug/PythonTest.dll #Test python.
+  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/PythonTest/bin/Debug/PythonTest.dll #Test python
+  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./SPLConqueror/UtilTest/bin/Debug/UtilTest.dll

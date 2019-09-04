@@ -255,9 +255,12 @@ namespace SPLConqueror_Core
         /// </summary>
         internal void init()
         {
-            if (ParentName != null)
+            if (ParentName != null && ParentName.Length > 0)
             {
                 this.parent = vm.getBinaryOption(parentName);
+            } else if (!this.Equals(vm.Root))
+            {
+                this.Parent = vm.Root;
             }
 
             foreach (var imply_names in this.implied_Options_names)

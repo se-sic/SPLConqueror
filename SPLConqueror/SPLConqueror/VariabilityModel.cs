@@ -292,6 +292,304 @@ namespace SPLConqueror_Core
             }
         }
 
+        public static VariabilityModel loadFromDimacs(string path)
+        {
+            VariabilityModel model = new VariabilityModel("diamcs");
+            if (model.loadDimacs(path))
+            {
+                return model;
+            } else
+            {
+                return null;
+            }
+        }
+
+        private bool loadDimacs(string path)
+        {
+            if (!File.Exists(path))
+                return false;
+
+            Dictionary<String, String> variableMapping = new Dictionary<string, string>();
+            bool headerDefinition = true;
+
+            StreamReader sr = new StreamReader(path);
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine().Trim();
+
+                if (line.StartsWith("c"))
+                {
+                    if (headerDefinition)
+                    {
+                        string[] parts = line.Split(new string[] { " " }, StringSplitOptions.None);
+                        if (parts.Length == 3)
+                        {
+                            variableMapping[parts[1]] = parts[2];
+                        }
+                    } else
+                    {
+                        continue;
+                    }
+                }
+                else if (line.StartsWith("p"))
+                {
+                    headerDefinition = false;
+
+                    string[] header = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!(header[1] == "cnf"))
+                        throw new ArgumentException("Invalid dimacs format. Only cnf is supported");
+
+                    int numberConfigurationOptions;
+                    if (!Int32.TryParse(header[2], out numberConfigurationOptions) | numberConfigurationOptions < 1)
+                        throw new ArgumentException("Invalid dimacs format. " +
+                            "Expected number of configuration options.");
+
+                    Enumerable.Range(1, numberConfigurationOptions).Select(x =>
+                        {
+                            string name = x.ToString();
+                            
+                            if (variableMapping.ContainsKey(name))
+                            {
+                                name = variableMapping[name];
+                            } else
+                            {
+                                variableMapping[name] = name;
+                            }
+
+                            BinaryOption bin = new BinaryOption(this, name);
+                            bin.Optional = true;
+                            return bin;
+                        })
+                        .ToList().ForEach(opt => this.addConfigurationOption(opt));
+                } else if (line != "")
+                {
+                    if (!line.EndsWith("0"))
+                        throw new ArgumentException("Invalid dimacs format. Expected a cnf clause");
+
+                    this.binaryConstraints.Add(
+                        String.Join(" | ", line
+                            .Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                            .Where(variable => variable != "0")
+                            .Select(variable => variable.Replace("-", "!"))
+                            .Select(variable => variable.StartsWith("!") ? 
+                                "!" + variableMapping[variable.Substring(1)] : variableMapping[variable])
+                        )
+                    );
+                }
+            }
+            return true;
+        }
+
+        public bool saveSXFM()
+        {
+            if (this.path.Length > 0)
+                return saveSXFM(this.path);
+            else
+                return false;
+        }
+
+        public bool saveSXFM(string path)
+        {
+            if (!Directory.Exists(System.IO.Path.GetDirectoryName(path)))
+                return false;
+            if (numericOptions.Count > 0)
+                throw new ArgumentException("Variability Models with numeric options can not be converted to SXFM");
+            StringBuilder sxfm = new StringBuilder();
+            List<string> implicitConstraints;
+            List<string> mixedConstraints = convertMixedConstraints();
+            sxfm.AppendLine("<feature_model name=\"" + this.name + "\">");
+            sxfm.AppendLine("<feature_tree>");
+            sxfm.Append(convertFeatureTree(out implicitConstraints));
+            sxfm.AppendLine("</feature_tree>");
+            sxfm.AppendLine("<constraints>");
+            sxfm.Append(convertConstraintsToSXFM(implicitConstraints, mixedConstraints));
+            sxfm.AppendLine("</constraints>");
+            sxfm.AppendLine("</feature_model>");
+            StreamWriter sr = new StreamWriter(path);
+            sr.Write(sxfm);
+            sr.Flush();
+            sr.Close();
+            return true;
+        }
+
+        private List<string> convertMixedConstraints()
+        {
+            List<string> mixedConstraints = new List<string>();
+            foreach(MixedConstraint mixed in this.mixedConstraints)
+            {
+                List<BinaryOption> participatingOptions = mixed.leftHandSide.participatingBoolOptions
+                    .Union(mixed.rightHandSide.participatingBoolOptions).Distinct().ToList();
+                List<List<BinaryOption>> cartProduct = new List<List<BinaryOption>>();
+                cartProduct.Add(new List<BinaryOption>());
+                foreach(BinaryOption binOpt in participatingOptions)
+                {
+                    List<List<BinaryOption>> additions = new List<List<BinaryOption>>();
+                    cartProduct.ForEach(partialConfig =>
+                    {
+                        List<BinaryOption> withOption = new List<BinaryOption>(partialConfig);
+                        withOption.Add(binOpt);
+                        additions.Add(withOption);
+                    });
+                    cartProduct.AddRange(additions);
+                }
+
+                foreach(List<BinaryOption> configuration in cartProduct)
+                {
+                    if (!mixed.requirementsFulfilled(new Configuration(configuration)))
+                    {
+                        List<string> configNegationAsString = configuration.Select(x => "!" + x.Name)
+                            .Union(participatingOptions.Except(configuration).Select(x => x.Name)).ToList();
+                        mixedConstraints.Add(String.Join(" | ", configNegationAsString));
+                    }
+                }
+            }
+            return mixedConstraints;
+        }
+
+        private string convertFeatureTree(out List<string> implicitConstraints)
+        {
+            int currentDepth = 0;
+            int abstractCounter = 0;
+            char tab = '\t';
+            StringBuilder treeBuilder = new StringBuilder();
+            List<Tuple<int,BinaryOption>> queue = new List<Tuple<int,BinaryOption>>();
+            queue.Add(Tuple.Create(currentDepth,this.Root));
+            List<BinaryOption> noRoot = BinaryOptions.Where(opt => opt != this.Root).ToList();
+            string optional = ":o ";
+            string mandatory = ":m ";
+            string groupChild = ": ";
+            string exactlyOne = ":g [1,1] ";
+            string atMostOne = ":g [0,1] ";
+            string root = ":r ";
+
+            implicitConstraints = new List<string>();
+
+            List<BinaryOption> groupParents = new List<BinaryOption>();
+
+            while (queue.Count > 0)
+            {
+                Tuple<int,BinaryOption> current = queue.Last();
+                queue.RemoveAt(queue.Count - 1);
+                BinaryOption currentBinOpt = current.Item2;
+                currentDepth = current.Item1;
+
+                int indentationOffset = 0;
+
+                List<BinaryOption> allChildren = noRoot
+                    .Where(opt => opt.Parent.Equals(currentBinOpt)).ToList();
+
+                string indentation = new string(tab, currentDepth);
+                
+                BinaryOption first = allChildren.Count >  0 ? allChildren.First() : null;
+                bool isAlternativeGroupParent = first != null && allChildren
+                    .Where(x => !x.Equals(first)).ToList()
+                    .TrueForAll(
+                        x => first.Excluded_Options.Exists(group => group.Contains(x))
+                    );
+
+                if (currentBinOpt.Parent == null)
+                {
+                    treeBuilder.AppendLine(indentation + root + sxfmIdentifier(currentBinOpt));
+                }
+                else if (allChildren.Count == 0)
+                {
+                    if (groupParents.Contains(currentBinOpt.Parent)) 
+                    {
+                        treeBuilder.AppendLine(indentation + groupChild + sxfmIdentifier(currentBinOpt));
+                    } else if (currentBinOpt.Optional)
+                    {
+                        treeBuilder.AppendLine(indentation + optional + sxfmIdentifier(currentBinOpt));
+                    } else
+                    {
+                        treeBuilder.AppendLine(indentation + mandatory + sxfmIdentifier(currentBinOpt));
+                    }
+                }
+                else
+                {
+                    if (currentBinOpt.Optional)
+                    {
+                        treeBuilder.Append(indentation + optional + sxfmIdentifier(currentBinOpt));
+                        if (isAlternativeGroupParent &&
+                            (allChildren.TrueForAll(x => !x.Optional) || allChildren.TrueForAll(x => x.Optional)))
+                        {
+                            groupParents.Add(currentBinOpt);
+                            indentationOffset++;
+                            string groupName = "Group_" + abstractCounter + "(Group_" + abstractCounter++ + ")";
+                            string cardinality = allChildren.TrueForAll(x => !x.Optional) ? exactlyOne : atMostOne;
+                            treeBuilder.AppendLine(tab + indentation + cardinality + groupName);
+                        }
+                    }
+                    else if (isAlternativeGroupParent && allChildren.TrueForAll(x => !x.Optional))
+                    {
+                        groupParents.Add(currentBinOpt);
+                        treeBuilder.AppendLine(indentation + exactlyOne + sxfmIdentifier(currentBinOpt));
+                    }
+                    else if (isAlternativeGroupParent && allChildren.TrueForAll(x => x.Optional))
+                    {
+                        groupParents.Add(currentBinOpt);
+                        treeBuilder.AppendLine(indentation + atMostOne + sxfmIdentifier(currentBinOpt));
+                    }
+                    else
+                    {
+                        treeBuilder.AppendLine(indentation + mandatory + sxfmIdentifier(currentBinOpt));
+                    }
+                }
+
+                queue.AddRange(allChildren
+                      .Select(opt => Tuple.Create(currentDepth + 1 + indentationOffset, opt)));
+
+                implicitConstraints.AddRange(handleCrossTreeConstraints(currentBinOpt));
+            }
+
+            return treeBuilder.ToString();
+        }
+
+        private List<string> handleCrossTreeConstraints(BinaryOption binOpt)
+        {
+            List<string> constraints = new List<string>();
+            binOpt.Implied_Options.ForEach(implicationGroup =>
+                {
+                    constraints.Add("~" + binOpt.Name + " or " 
+                        + String.Join(" or ", implicationGroup.Select(opt => opt.Name)));
+                }
+            );
+
+            List<ConfigurationOption> trueExclusives = binOpt.Excluded_Options.SelectMany(i => i).ToList();
+            List<ConfigurationOption> alternatives = trueExclusives
+                .Where(x => x.Parent.Equals(binOpt.Parent)).ToList();
+
+            if (!binOpt.Optional)
+            {
+                trueExclusives = trueExclusives.Where(x => !alternatives.Contains(x)).ToList();
+            }
+            trueExclusives.ForEach(x => constraints.Add("~" + binOpt.Name + " or ~" + x.Name));
+            if (!alternatives.TrueForAll(x => ((BinaryOption)x).Optional) 
+                && !alternatives.TrueForAll(x => !((BinaryOption)x).Optional))
+            {
+                alternatives.ForEach(x => constraints.Add("~" + binOpt.Name + " or ~" + x.Name));
+            }
+
+            return constraints;
+        }
+
+        private static string sxfmIdentifier(BinaryOption binOpt)
+        {
+            return binOpt.Name + "(" + binOpt.Name + ")";
+        }
+
+        private string convertConstraintsToSXFM(List<string> implicitConstraints, List<string> mixedConstraints)
+        {
+            int constraintCounter = 0;
+            StringBuilder constraints = new StringBuilder();
+            this.BinaryConstraints.Union(implicitConstraints).Union(mixedConstraints).ToList().ForEach(constraintExpr =>
+            {
+                constraintExpr.Split(new char[] { '&' }).ToList()
+                .ForEach(orExpr => constraints.AppendLine("Constraint_" + constraintCounter++ + ":" 
+                + orExpr.Replace("!", "~").Replace(" | ", " or ")));
+            });
+            return constraints.ToString();
+        }
+
         /// <summary>
         /// Read a SXFM Feature Model and store all information in this VaribilityModel object.
         /// </summary>
@@ -340,6 +638,7 @@ namespace SPLConqueror_Core
         private void parseFeaturesSXFM(string[] features)
         {
             int previousDepth = 0;
+            int groupCounter = 0;
             BinaryOption previousOption = null;
             string cardinality = null;
             List<BinaryOption> optionsInGroup = null;
@@ -382,12 +681,37 @@ namespace SPLConqueror_Core
                         resolveGroup(optionsInGroup, cardinality);
 
                     optionsInGroup = null;
-                    BinaryOption groupParent = new BinaryOption(this, information[2]);
+
+                    int offset = 0;
+                    if (information[1].Contains("["))
+                    {
+                        offset = 1;
+                    }
+
+                    BinaryOption groupParent;
+
+                    if (information.Length > 2)
+                    {
+                        groupParent = new BinaryOption(this, information[2 + offset]);
+                        groupParent.OutputString = information[1 + offset];
+                    } else
+                    {
+                        groupParent = new BinaryOption(this, "Group_" + groupCounter);
+                        groupParent.OutputString = "Group_" + groupCounter++;
+                    }
                     groupParent.Optional = false;
-                    groupParent.OutputString = information[1];
                     this.binaryOptions.Add(groupParent);
 
-                    cardinality = information[3];
+                    if (information[0].Contains("["))
+                    {
+                        cardinality = information[0].Split(new string[] { ":g" }, StringSplitOptions.None)[1];
+                    } else if (offset == 1)
+                    {
+                        cardinality = information[offset];
+                    } else
+                    {
+                        cardinality = information[3];
+                    }
 
                     setParent(groupParent, previousOption, currentDepth, previousDepth);
 
@@ -438,6 +762,9 @@ namespace SPLConqueror_Core
             {
                 group.ForEach(option => option.Optional = true);
                 createExclusiveGroup(group);
+            } else if (cardinality == "[0,*]")
+            {
+                group.ForEach(option => option.Optional = true);
             }
             else if (cardinality.StartsWith("[0,"))
             {
@@ -551,9 +878,9 @@ namespace SPLConqueror_Core
                 {
                     string cleanedConstraint = constraint.Split(new char[] { ':' })[1];
                     cleanedConstraint = cleanedConstraint.Replace("~", "!");
-                    cleanedConstraint = cleanedConstraint.Replace("OR", "|");
-                    cleanedConstraint = cleanedConstraint.Replace("or", "|");
-                    cleanedConstraint = cleanedConstraint.Replace("Or", "|");
+                    cleanedConstraint = cleanedConstraint.Replace(" OR ", " | ");
+                    cleanedConstraint = cleanedConstraint.Replace(" or ", " | ");
+                    cleanedConstraint = cleanedConstraint.Replace(" Or ", " | ");
                     this.binaryConstraints.Add(cleanedConstraint.Trim());
                 }
             }
