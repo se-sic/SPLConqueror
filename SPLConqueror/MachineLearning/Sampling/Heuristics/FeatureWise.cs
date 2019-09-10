@@ -21,7 +21,7 @@ namespace MachineLearning.Sampling.Heuristics
         {
             configurations.Clear();
             List<BinaryOption> optionalFirstLevelElements = new List<BinaryOption>();
-            List<BinaryOption> binOptions = vm.BinaryOptions;
+            List<BinaryOption> binOptions = vm.WithAbstractBinaryOptions;
 
             //First: Add options that are present in all configurations
             List<BinaryOption> firstLevelMandatoryFeatures = new List<BinaryOption>();
@@ -79,7 +79,7 @@ namespace MachineLearning.Sampling.Heuristics
         public List<List<BinaryOption>> generateFeatureWiseConfigsCSP(VariabilityModel vm)
         {
             this.configurations.Clear();
-            foreach (var opt in vm.BinaryOptions)
+            foreach (var opt in vm.WithAbstractBinaryOptions)
             {
                 if (opt == vm.Root)
                     continue;

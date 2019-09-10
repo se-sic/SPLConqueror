@@ -180,5 +180,11 @@ namespace SamplingUnitTest
             }
 
         }
+
+        [Test, Order(18)]
+        public void TestSamplingOptionalNumeric()
+        {
+            Assert.That(SampleUtil.testOptionalNumSample());
+        }
     }
 }

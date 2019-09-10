@@ -157,6 +157,14 @@ namespace SPLConqueror_Core
                     if (!config.NumericOptions.TryGetValue(opt, out val))
                         val = opt.getCenterValue();
 
+                    if (opt.Optional && opt.OptionalFlag == val)
+                    {
+                        // So for deselected values we a starting 0 with 1 as padding, which can never be 
+                        // produced by non-deselected values.
+                        vector += new StringBuilder(splitFactor).Insert(0, "0").Insert(1, "1", splitFactor).ToString();
+                        continue;
+                    }
+
                     for (int i = 0; i < amountOfParts && !found; i++)
                     {
                         int rest = elems.Count - i * amountOfElemsInParts;

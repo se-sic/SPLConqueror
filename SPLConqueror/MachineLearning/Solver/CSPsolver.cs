@@ -232,8 +232,9 @@ namespace MicrosoftSolverFoundation
             optionToTerm = new Dictionary<BinaryOption, CspTerm>();
             termToOption = new Dictionary<CspTerm, BinaryOption>();
             variables = new List<CspTerm>();
-            foreach (BinaryOption binOpt in vm.BinaryOptions)
+            foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
             {
+                List<BinaryOption> all = vm.WithAbstractBinaryOptions.Concat(vm.AbrstactOptions).ToList();
                 CspDomain domain = S.DefaultBoolean;
                 CspTerm temp = S.CreateVariable(domain, binOpt);
                 optionToTerm.Add(binOpt, temp);
@@ -244,7 +245,7 @@ namespace MicrosoftSolverFoundation
             List<List<ConfigurationOption>> alreadyHandledAlternativeOptions = new List<List<ConfigurationOption>>();
 
             //Constraints of a single configuration option
-            foreach (BinaryOption current in vm.BinaryOptions)
+            foreach (BinaryOption current in vm.WithAbstractBinaryOptions)
             {
                 CspTerm cT = optionToTerm[current];
                 if (current.Parent == null || current.Parent == vm.Root)

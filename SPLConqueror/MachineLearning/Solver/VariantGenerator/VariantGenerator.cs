@@ -290,7 +290,7 @@ namespace MachineLearning.Solver
 
         private void AddBinaryConfigurationsToConstraintSystem(VariabilityModel vm, ConstraintSystem s, Configuration configurationToExclude, Dictionary<BinaryOption, CspTerm> elemToTerm)
         {
-            List<BinaryOption> allBinaryOptions = vm.BinaryOptions;
+            List<BinaryOption> allBinaryOptions = vm.WithAbstractBinaryOptions;
 
             List<CspTerm> positiveTerms = new List<CspTerm>();
             List<CspTerm> negativeTerms = new List<CspTerm>();
@@ -437,7 +437,7 @@ namespace MachineLearning.Solver
                 List<CspTerm> sum = new List<CspTerm>();
                 List<BinaryOption> configInSample = convertToBinaryOptionList(config);
 
-                foreach (BinaryOption binOpt in vm.BinaryOptions)
+                foreach (BinaryOption binOpt in vm.WithAbstractBinaryOptions)
                 {
                     if (!configInSample.Contains(binOpt))
                     {

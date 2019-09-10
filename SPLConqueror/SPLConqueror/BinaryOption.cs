@@ -27,9 +27,10 @@ namespace SPLConqueror_Core
         };
 
         /// <summary>
-        /// States whether an binary option is optional or not.
+        /// Strictly abstract configuration option that is not part of the actual configurable system, 
+        /// but is required in the variability model for structural reasons.
         /// </summary>
-        public bool Optional { get; set; }
+        public bool IsStrictlyAbstract { get; set; }
 
         /// <summary>
         /// Constructor of a binary option. Optional is set to false and the default value is set to selected.
@@ -40,6 +41,7 @@ namespace SPLConqueror_Core
             : base(vm, name)
         {
             this.Optional = false;
+            this.IsStrictlyAbstract = false;
         }
 
         /// <summary>

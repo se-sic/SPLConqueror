@@ -21,10 +21,10 @@ namespace MachineLearning.Sampling.Heuristics
             //List<String> activeLearning = new List<string>(new string[] { "ls", "inl", "cf", "dcr", "saa", "ive", "wlur", "lir", "vp", "saacyc" });
             this.configurations.Clear();
             List<BinaryOption> measuredElements = new List<BinaryOption>();
-            foreach (BinaryOption current in vm.BinaryOptions)
+            foreach (BinaryOption current in vm.WithAbstractBinaryOptions)
             {
                 measuredElements.Add(current);
-                foreach (BinaryOption pair in vm.BinaryOptions)
+                foreach (BinaryOption pair in vm.WithAbstractBinaryOptions)
                 {
                     //if (!activeLearning.Contains(pair.Name))
                     //    continue;

@@ -74,7 +74,20 @@ namespace MachineLearning.Learning.Regression
             if (this.strictlyMandatoryFeatures.Count == 0)
                 this.strictlyMandatoryFeatures.Add(new Feature(infModel.Vm.Root.Name, infModel.Vm));
             foreach (var opt in infModel.Vm.NumericOptions)
-                initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+            {
+                if (!opt.Optional)
+                {
+                    initialFeatures.Add(new Feature(opt.Name, infModel.Vm));
+                } else
+                {
+                    if (MLsettings.learn_numeric_disabled)
+                    {
+                        initialFeatures.Add(new Feature(opt.abstractDisabledConfigurationOption().Name, infModel.Vm));
+                    }
+                    initialFeatures.Add(new Feature(opt.abstractEnabledConfigurationOption().Name 
+                        + "*" + opt.Name, infModel.Vm));
+                }
+            }
 
             if (this.MLsettings.crossValidation)
             {

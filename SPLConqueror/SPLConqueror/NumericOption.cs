@@ -46,6 +46,80 @@ namespace SPLConqueror_Core
 
         private InfluenceFunction stepFunction = null;
 
+        private BinaryOption abstractEnabled = null;
+
+        private BinaryOption abstractDisabled = null;
+
+        /// <summary>
+        /// Value of the numeric option when it is deselected.
+        /// </summary>
+        public int OptionalFlag { get; private set; }
+
+        private BinaryOption getOrCreateEnabled()
+        {
+            if (this.abstractEnabled == null)
+            {
+                abstractEnabled = new BinaryOption(base.vm, "Enabled" + this.Name);
+                abstractEnabled.IsStrictlyAbstract = true;
+                abstractEnabled.Optional = true;
+                abstractEnabled.Parent = vm.Root;
+                base.vm.AbrstactOptions.Add(abstractEnabled);
+            }
+                
+            return abstractEnabled;
+        }
+
+        private BinaryOption getOrCreateDisabled()
+        {
+            if (this.abstractDisabled == null)
+            {
+                abstractDisabled = new BinaryOption(base.vm, "Disabled" + this.Name);
+                abstractDisabled.IsStrictlyAbstract = true;
+            }
+
+            return abstractDisabled;
+        }
+
+        /// <summary>
+        /// Method that returns the abstract option that serves as flag to mark this configuration option as enabled.
+        /// </summary>
+        /// <returns>Abstract configuration option.</returns>
+        public BinaryOption abstractEnabledConfigurationOption()
+        {
+            return Optional ? getOrCreateEnabled() : null;
+        }
+
+        /// <summary>
+        /// Method that returns the abstract option that serves as flag to mark this configuration option as disabled.
+        /// </summary>
+        /// <returns>Abstract configuration option.</returns>
+        public BinaryOption abstractDisabledConfigurationOption()
+        {
+            return Optional ? getOrCreateDisabled() : null;
+        }
+
+        /// <summary>
+        /// Set optional value of the configuration option.
+        /// </summary>
+        /// <param name="optional">Boolean that indicates the optionality of this option.</param>
+        /// <param name="flag">The flag that indicates that this option was deselected. 
+        /// Only required when setting the option to optional.</param>
+        public void setOptional(bool optional, int flag = -1)
+        {
+            this.Optional = optional;
+            if (optional)
+            {
+                this.OptionalFlag = flag;
+                getOrCreateEnabled();
+                getOrCreateDisabled();
+            } else
+            {
+                base.vm.AbrstactOptions.Remove(abstractEnabled);
+                this.abstractEnabled = null;
+                this.abstractDisabled = null;
+            }
+        }
+
         /// <summary>
         /// A function that computes each value within the value range of that option
         /// </summary>
@@ -70,7 +144,7 @@ namespace SPLConqueror_Core
         public NumericOption(VariabilityModel vm, String name)
             : base(vm, name)
         {
-
+            this.Optional = false;
         }
 
         /// <summary>
@@ -261,6 +335,13 @@ namespace SPLConqueror_Core
                 valuesNode.InnerText = values.ToString();
                 node.AppendChild(valuesNode);
             }
+
+            if (this.Optional)
+            {
+                XmlNode deselectedFlag = doc.CreateNode(XmlNodeType.Element, "deselectedFlag", "");
+                deselectedFlag.InnerText = this.OptionalFlag.ToString();
+                node.AppendChild(deselectedFlag);
+            }
             return node;
         }
 
@@ -297,6 +378,9 @@ namespace SPLConqueror_Core
                         break;
                     case "stepFunction":
                         this.stepFunction = new InfluenceFunction(xmlInfo.InnerText.Replace(',', '.'), this);
+                        break;
+                    case "deselectedFlag":
+                        this.setOptional(true, Int32.Parse(xmlInfo.InnerText.Replace(',', '.')));
                         break;
                     case "values":
                         String[] valueArray = xmlInfo.InnerText.Replace(',', '.').Split(';');
