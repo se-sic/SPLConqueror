@@ -6,11 +6,14 @@ FROM debian:stretch
 # Set the working directory to /app
 WORKDIR /application
 
-# Set up specific apt package repositories (if needed)
-RUN apt update
+# Add mono package repository and update repositories
+RUN apt install apt-transport-https dirmngr gnupg ca-certificates \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
+    && echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
+    && apt update
 
 # Install git and wget
-RUN apt install -y -qq git wget unzip mono-complete mono-devel
+RUN apt install -y -qq git wget unzip mono-complete mono-devel nuget
 
 # Install libgomp1 (dependency for z3)
 RUN apt install -y -qq libgomp1
@@ -26,8 +29,7 @@ RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.7.1/z3-4.7.1-x64-
 RUN git clone --depth=1 https://github.com/se-passau/SPLConqueror.git \
     && cd SPLConqueror/SPLConqueror/ \
     && git submodule update --init \
-    && wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe \
-    && mono nuget.exe restore ./ -MSBuildPath /usr/lib/mono/xbuild/14.0/bin \
+    && nuget restore ./ \
     && msbuild /p:Configuration=Release /p:TargetFrameworkVersion="v4.5" /p:TargetFrameworkProfile="" ./SPLConqueror.sln \
     && cd ../..
 
