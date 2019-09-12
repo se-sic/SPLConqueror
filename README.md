@@ -495,11 +495,11 @@ Before starting the learning process upon the loaded data, one can adjust the se
 | featureSizeThreshold | The maximal number of options participating in one interaction. | 4 | int |
 | quadraticFunctionSupport | The learner can learn quadratic functions of one numeric option, without learning the linear function apriory, if this property is true. | true | true, false |
 | crossValidation | Cross validation is used during learning process if this property is true. | false | true, false |
-| learn-logFunction (alternatively: learn_logFunction) | If true, the learn algorithm can learn logarithmic functions such as log(soption1). | false | true, false |
-| learn-accumulatedLogFunction (alternatively: learn-accumulatedLogFunction) | Allows the creation of logarithmic functions with multiple features such as log(soption1 * soption2). | false | true, false |
-| learn-asymFunction (alternatively: learn_asymFunction) | Allows the creation of functions with the form 1/soptions. | false | true, false |
-| learn-ratioFunction (alternatively: learn_ratioFunction) | Allows the creation of functions with the form soptions1/soptions2. | false | true, false |
-| learn-mirrowedFunction (alternatively: learn_mirrowedFunction) | Allows the creation of functions with the form (numericOption.maxValue - soptions). | false | true, false |
+| learn-logFunction | If true, the learn algorithm can learn logarithmic functions such as log(soption1). | false | true, false |
+| learn-accumulatedLogFunction | Allows the creation of logarithmic functions with multiple features such as log(soption1 * soption2). | false | true, false |
+| learn-asymFunction | Allows the creation of functions with the form 1/soptions. | false | true, false |
+| learn-ratioFunction | Allows the creation of functions with the form soptions1/soptions2. | false | true, false |
+| learn-mirrowedFunction | Allows the creation of functions with the form (numericOption.maxValue - soptions). | false | true, false |
 | numberOfRounds | Defines the number of rounds the learning process have to be performed. | 70 | int |
 | backwardErrorDelta | Defines the maximum increase of the error when removing a feature from the model. | 1 | double |
 |minImprovementPerRound | Defines the minimum error in improved a round must reach before either the learning is aborted or the hierarchy is increased for hierarchy learning. In combination with withHierarchy instead of aborting learning, minImprovementPerRound results in increasing the hierachy level.| 0.1 | double |
@@ -526,7 +526,7 @@ learn_logFunction true
 stopOnLongRound false
 ```
 
-To load these settings, the command ```load-mlsettings``` (deprecated: ```load_mlsettings```) can be used with the path to the file with the settings as argument. For example: 
+To load these settings, the command ```load-mlsettings``` can be used with the path to the file with the settings as argument. For example: 
 ```load-mlsettings C:\exampleSettings.txt```
 
 Please note that all the settings that are not stated will automatically be set to the default values. So if the commands are used to change the settings several times during the same run, the previous settings have no impact on the new settings.
@@ -577,22 +577,6 @@ select-all-measurements false
 To disable learning with all measurements you can use ```select-all-measurements false```.
 
 
-***
-
-Deprecated:
-
-Now, we have have enough to learn with all measurements. For this, just use the ```learn-all-splconqueror``` (deprecated: ```learnwithallmeasurements```) command. A .a-script for learning with all measurements at this point, using the examples from above is as follows:
-```
-log C:\exampleLog.log
-vm C:\exampleModel.xml
-all C:\exampleMeasurements.xml
-mlsettings numberOfRounds:25 learn_logFunction:true stopOnLongRound:false
-nfp nfp1
-learnwithallmeasurements
-```
-
-***
-
 #### Displaying the learning results
 
 The only thing missing for a very basic usage of SPL Conqueror, is displaying the learning results. For this use the ```analyze-learning```-command. This will print the current learning history with the learning error into the specified .log-file. Note, that each command for learning overwrites the previous learning history, so analyze-learning should always be the first command after a command for learning.
@@ -613,7 +597,7 @@ analyze-learning
 
 #### Sampling strategies
 
-SPLConqueror also supports learning on a subset of the data. Therefore, one has to set at least one sampling strategy for the binary options first and at least one for the numeric options. Numeric sampling strategies have to always start with ```numeric```(deprecated: ```expdesign```), while binary sampling strategies have to start with ```binary``` (deprecated: no prefix command). In the following, we list all sampling strategies:
+SPLConqueror also supports learning on a subset of the data. Therefore, one has to set at least one sampling strategy for the binary options first and at least one for the numeric options. Numeric sampling strategies have to always start with ```numeric```, while binary sampling strategies have to start with ```binary```. In the following, we list all sampling strategies:
 
 | Binary/Numeric | Name  | Description | Command | Example |
 | :------------: | :---: | :---------: | :-----: | :-----: |
@@ -662,7 +646,7 @@ numeric random [numOpt1,numOpt2,numOpt3]
 
 ```start```
 
-To learn only with a subset of the measurements, the command ```learn-splconqueror```(deprecated: ```start```) can be used. This command requires having set a binary and a numeric sampling strategy, before executing it.
+To learn only with a subset of the measurements, the command ```learn-splconqueror``` can be used. This command requires having set a binary and a numeric sampling strategy, before executing it.
 **Note**: A numeric sampling strategy is only needed if the variability model contains numeric options.
 
 If, for instance, only a subset of the data should be used for learning, the result looks as follows:
@@ -843,7 +827,7 @@ measurementstocsv C:\measurementsAsCSV.csv
 
 **Note**: The element separator is ```;```, whereas the line separator is ```\n```.
 
-```predict-configs-splconqueror``` (deprecated: ```predict-configurations```)
+```predict-configs-splconqueror```
 
 Predicts the ```nfp``` value of all configurations loaded with the ```all``` command and writes them together with the measured ```nfp``` value and the configuration identifier in a file.
 

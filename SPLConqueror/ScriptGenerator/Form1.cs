@@ -1020,11 +1020,7 @@ namespace ScriptGenerator
             return ((sampled.Intersect(existing)).Count() > 0);
         }
 
-
-
-
-
-
+        /*
         private void convertLegacyScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog scriptOFD = new OpenFileDialog();
@@ -1105,7 +1101,7 @@ namespace ScriptGenerator
             sw.Flush();
             sw.Close();
             MessageBox.Show("Converted script.");
-        }
+        } */
 
         private void numericBinaryToolStripMenuItem_Click(object sender, EventArgs e)
         {

@@ -1461,10 +1461,10 @@
             // 
             // convertLegacyScriptToolStripMenuItem
             // 
-            this.convertLegacyScriptToolStripMenuItem.Name = "convertLegacyScriptToolStripMenuItem";
+         /*   this.convertLegacyScriptToolStripMenuItem.Name = "convertLegacyScriptToolStripMenuItem";
             this.convertLegacyScriptToolStripMenuItem.Size = new System.Drawing.Size(222, 26);
             this.convertLegacyScriptToolStripMenuItem.Text = "Convert legacy script";
-            this.convertLegacyScriptToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyScriptToolStripMenuItem_Click);
+            this.convertLegacyScriptToolStripMenuItem.Click += new System.EventHandler(this.convertLegacyScriptToolStripMenuItem_Click); */
             // 
             // samplingModeToolStripMenuItem
             // 

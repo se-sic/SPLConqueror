@@ -31,8 +31,6 @@ namespace CommandLine
         public const string COMMAND_LOAD_CONFIGURATIONS = "all";
 
         #region load ml settings
-        // deprecated
-        public const string COMMAND_LOAD_MLSETTINGS = "load_mlsettings";
         // for uniform format of commands
         public const string COMMAND_LOAD_MLSETTINGS_UNIFORM = "load-mlsettings";
         #endregion
@@ -53,16 +51,12 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_DISTANCE = "distance-based";
 
         #region splconqueror learn with all measurements
-        // deprecated
-        public const string COMMAND_START_ALLMEASUREMENTS = "learnwithallmeasurements";
 
         public const string COMMAND_SELECT_ALL_MEASUREMENTS = "select-all-measurements";
         #endregion
 
         #region splconqueror predict all configurations
         public const string COMMAND_PREDICT_ALL_CONFIGURATIONS_SPLC = "predict-all-configs-splconqueror";
-        // deprecated
-        public const string COMMAND_PREDICT_ALL_CONFIGURATIONS = "predictall";
         #endregion
 
         public const string COMMAND_EVALUATE_MODEL = "evaluate-model";
@@ -70,8 +64,6 @@ namespace CommandLine
 
         #region splconqueror predict configurations
         public const string COMMAND_PREDICT_CONFIGURATIONS_SPLC = "predict-configs-splconqueror";
-        // deprecated
-        public const string COMMAND_PREDICT_CONFIGURATIONS = "predict-configurations";
         #endregion
 
         // using this option, a partial or full option order can be defined. The order is used in printconfigs. To define an order, the names of the options have to be defined separated with whitespace. If an option is not defined in the order its name and the value is printed at the end of the configurtion. 
@@ -86,20 +78,14 @@ namespace CommandLine
 
         #region splconqueror learn with sampling
         public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
-        // deprecated
-        public const string COMMAND_START_LEARNING = "start";
         #endregion
 
         #region Splconqueror parameter opt
         public const string COMMAND_OPTIMIZE_PARAMETER_SPLCONQUEROR = "learn-splconqueror-opt";
-        // deprecated
-        public const string COMMAND_OPTIMIZE_PARAMETER = "optimize-parameter";
         #endregion
 
         #region tag for numeric sampling
         public const string COMMAND_NUMERIC_SAMPLING = "numeric";
-        // deprecated
-        public const string COMMAND_EXPERIMENTALDESIGN = "expdesign";
         #endregion
         public const string COMMAND_EXPDESIGN_BOXBEHNKEN = "boxbehnken";
         public const string COMMAND_EXPDESIGN_CENTRALCOMPOSITE = "centralcomposite";
@@ -877,8 +863,6 @@ namespace CommandLine
                     break;
 
                 default:
-                    // Try to perform it as deprecated command.
-                    performOneCommand_Depr(line);
                     return command;
             }
             return "";
@@ -898,181 +882,6 @@ namespace CommandLine
             }
             return sb.ToString();
         }
-
-        #region execution of deprecated commands
-        [System.Obsolete("Warning: You are using deprecated commands. These commands might" +
-            " be removed in the future. Please update your scripts or use the converter.", false)]
-        public string performOneCommand_Depr(string line)
-        {
-            string command;
-            line = line.Split(new Char[] { '#' }, 2)[0];
-
-            if (line.Length == 0)
-                return "";
-
-            string[] components = line.Split(new Char[] { ' ' }, 2);
-            string task = "";
-            if (components.Length > 1)
-                task = components[1];
-            string[] taskAsParameter = task.Split(new Char[] { ' ' });
-            command = components[0];
-            switch (command.ToLower())
-            {
-                case COMMAND_LOAD_MLSETTINGS:
-                    this.mlSettings = ML_Settings.readSettingsFromFile(task);
-                    break;
-
-                case COMMAND_SAMPLE_PAIRWISE:
-                    addBinSamplingNoParams(SamplingStrategies.PAIRWISE,
-                        "PW", taskAsParameter.Contains(COMMAND_VALIDATION));
-                    break;
-
-                case COMMAND_SAMPLE_BINARY_TWISE:
-                    {
-                        string[] para = task.Split(new char[] { ' ' });
-
-                        Dictionary<String, String> parameters = new Dictionary<string, string>();
-                        //parseParametersToLinearAndQuadraticBinarySampling(para);
-
-                        for (int i = 0; i < para.Length; i++)
-                        {
-                            if (para[i].Contains(":"))
-                            {
-                                parameters.Add(para[i].Split(':')[0], para[i].Split(':')[1]);
-                            }
-                        }
-                        addBinSamplingParams(SamplingStrategies.T_WISE, "TW", parameters,
-                            para.Contains(Commands.COMMAND_VALIDATION));
-                    }
-                    break;
-
-                case COMMAND_EXPERIMENTALDESIGN:
-                    performOneCommand_ExpDesign(task);
-                    break;
-
-                case COMMAND_SAMPLE_FEATUREWISE:
-                case COMMAND_SAMPLE_OPTIONWISE:
-                    addBinSamplingNoParams(SamplingStrategies.OPTIONWISE,
-                        "OW", taskAsParameter.Contains(COMMAND_VALIDATION));
-                    break;
-
-                case COMMAND_PREDICT_CONFIGURATIONS:
-                    {
-                        FeatureSubsetSelection learnedModel = exp.models[exp.models.Count - 1];
-                        String samplingIdentifier = createSamplingIdentifier();
-
-                        PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, new String[] { "SPLConqueror" }, GlobalState.varModel.Name + "_" + samplingIdentifier);
-                        List<Feature> features = learnedModel.LearningHistory[learnedModel.LearningHistory.Count - 1].FeatureSet;
-                        csvWriter.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
-                        for (int i = 0; i < GlobalState.allMeasurements.Configurations.Count; i++)
-                        {
-
-                            Double predictedValue = FeatureSubsetSelection.estimate(features, GlobalState.allMeasurements.Configurations[i]);
-                            csvWriter.writePredictions(GlobalState.allMeasurements.Configurations[i].ToString().Replace(";", "_") + ";" + Math.Round(GlobalState.allMeasurements.Configurations[i].GetNFPValue(), 4) + ";" + Math.Round(predictedValue, 4) + "\n");
-                        }
-
-                        break;
-                    }
-
-                case COMMAND_PREDICT_ALL_CONFIGURATIONS:
-                    printPredictedConfigurations(task, this.exp);
-                    break;
-
-                case COMMAND_SAMPLE_ALLBINARY:
-                    addBinSamplingNoParams(SamplingStrategies.ALLBINARY, "ALLB",
-                        taskAsParameter.Contains(COMMAND_VALIDATION));
-                    break;
-
-                case COMMAND_START_ALLMEASUREMENTS:
-                    learnWithAllMeasurements();
-                    break;
-
-                case COMMAND_START_LEARNING:
-                    if (allMeasurementsSelected)
-                    {
-                        learnWithAllMeasurements();
-                    }
-                    else
-                    {
-                        learnWithSampling();
-                    }
-                    break;
-
-                case COMMAND_OPTIMIZE_PARAMETER:
-                    {
-                        InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                        Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
-                        List<Configuration> configurationsLearning;
-                        List<Configuration> configurationsValidation;
-                        if (!configurationsPreparedForLearning(learnAndValidation,
-                            out configurationsLearning, out configurationsValidation))
-                            break;
-
-                        List<ML_Settings> parameterSettings = new List<ML_Settings>();
-                        parameterSettings = ML_SettingsGenerator.generateSettings(taskAsParameter);
-
-                        ML_Settings optimalParameters = null;
-                        double minimalError = Double.MaxValue;
-
-                        foreach (ML_Settings parameters in parameterSettings)
-                        {
-                            // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
-                            KFoldCrossValidation kFold = new KFoldCrossValidation(parameters, configurationsLearning);
-                            double error = kFold.learn();
-
-                            if (error < minimalError)
-                            {
-                                optimalParameters = parameters;
-                                minimalError = error;
-                            }
-
-                        }
-                        GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
-                        GlobalState.logInfo.logLine("Parameters: " + optimalParameters.ToString());
-                        Learning experiment = new MachineLearning.Learning.Regression
-                            .Learning(configurationsLearning, configurationsValidation);
-                        experiment.mlSettings = optimalParameters;
-                        experiment.learn();
-                        StringBuilder taskAsString = new StringBuilder();
-                        taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
-                        printPredictedConfigurations("./CrossValidationResultPrediction"
-                            + taskAsString.ToString()
-                            .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
-                            .Replace(Environment.NewLine, "").Substring(0)
-                            + ".csv", experiment);
-
-                        break;
-                    }
-
-                case COMMAND_SAMPLE_BINARY_RANDOM:
-                    {
-                        Dictionary<String, String> parameter = new Dictionary<String, String>();
-                        string[] para = task.Split(new char[] { ' ' });
-                        for (int i = 0; i < para.Length; i++)
-                        {
-                            String key = para[i].Split(':')[0];
-                            String value = para[i].Split(':')[1];
-                            parameter.Add(key, value);
-                        }
-                        addBinSamplingParams(SamplingStrategies.BINARY_RANDOM, "RANDB",
-                            parameter, taskAsParameter.Contains(COMMAND_VALIDATION));
-
-                        break;
-                    }
-
-                case COMMAND_SAMPLE_NEGATIVE_OPTIONWISE:
-                    // TODO there are two different variants in generating NegFW configurations. 
-                    addBinSamplingNoParams(SamplingStrategies.NEGATIVE_OPTIONWISE,
-                        "NEGOW", taskAsParameter.Contains(COMMAND_VALIDATION));
-                    break;
-
-                default:
-                    GlobalState.logInfo.logLine("Invalid deprecated command: " + command);
-                    break;
-            }
-            return "";
-        }
-        #endregion
 
         private bool containsArgInvariant(string[] args, string toTest)
         {
