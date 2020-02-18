@@ -6,6 +6,7 @@ using MachineLearning.Solver;
 using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Hybrid;
+using MachineLearning.Sampling.Heuristics.UniformHeuristics;
 
 namespace MachineLearning.Sampling
 {
@@ -145,6 +146,10 @@ namespace MachineLearning.Sampling
                         }
                         break;
 
+                    case SamplingStrategies.GRAMMAR_BASED:
+                        UniformGrammarSampling grammarSampling = new UniformGrammarSampling();
+                        binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
+                        break;
                     //case SamplingStrategies.MINMAX:
                     //    {
                     //        MinMax mm = new MinMax();

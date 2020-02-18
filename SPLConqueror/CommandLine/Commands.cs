@@ -49,6 +49,7 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_TWISE = "twise";
         public const string COMMAND_SAMPLE_BINARY_SAT = "satoutput";
         public const string COMMAND_SAMPLE_BINARY_DISTANCE = "distance-based";
+        public const string COMMAND_SAMPLE_BINARY_GRAMMAR = "grammar-based";
 
         #region splconqueror learn with all measurements
 
@@ -1350,7 +1351,11 @@ namespace CommandLine
                     break;
                 case COMMAND_SAMPLE_BINARY_DISTANCE:
                     addBinarySamplingDomain(SamplingStrategies.DISTANCE_BASED, optionsToConsider);
-                    addBinSamplingParams(SamplingStrategies.DISTANCE_BASED, "DIST_BASE", parameterKeyAndValue, isValidation);
+                    addBinSamplingParams(SamplingStrategies.DISTANCE_BASED, "GRAMMAR_BASE", parameterKeyAndValue, isValidation);
+                    break;
+                case COMMAND_SAMPLE_BINARY_GRAMMAR:
+                    addBinarySamplingDomain(SamplingStrategies.GRAMMAR_BASED, optionsToConsider);
+                    addBinSamplingParams(SamplingStrategies.GRAMMAR_BASED, "GRAMMAR_BASE", parameterKeyAndValue, isValidation);
                     break;
                 //TODO:hybrid as bin/num
                 //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
@@ -1451,6 +1456,9 @@ namespace CommandLine
                     break;
                 case SamplingStrategies.DISTANCE_BASED:
                     ConfigurationBuilder.binaryParams.distanceMaxParameters.Add(parameter);
+                    break;
+                case SamplingStrategies.GRAMMAR_BASED:
+                    ConfigurationBuilder.binaryParams.grammarParameters.Add(parameter);
                     break;
             }
 
