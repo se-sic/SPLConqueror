@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MachineLearning.Solver;
 using SPLConqueror_Core;
 
 namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
@@ -9,7 +10,12 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
         private Grammar Grammar;
         private FMTree Tree;
         private List<List<string>> MergedTerminals = new List<List<string>>();
+        private Dictionary<string, string> strategyParameter;
 
+        #region constants
+        public const string NUM_SAMPLES = "numSamples";
+        public const string SEED = "seed";
+        #endregion
         // <summary>
         // This is only to convert an integer to a list of active features! Each position has the product of all bases that are left.
         // </summary>
@@ -19,28 +25,53 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
         private readonly int samples;
 
 
-        public UniformGrammarSampling()
+        public UniformGrammarSampling(Dictionary<string, string> parameters)
         {
+            this.strategyParameter = new Dictionary<string, string>()
+            {
+                {NUM_SAMPLES, "0,1" },
+                {SEED, "0" },
+            };        
+            foreach (KeyValuePair<string, string> keyValue in parameters)
+            {
+                if (strategyParameter.ContainsKey(keyValue.Key))
+                {
+                    strategyParameter[keyValue.Key] = keyValue.Value;
+                }
+            }
             GenerateGrammar();
             MergeTerminals();
-            samples = NumberWords / 10;
+            samples = (int) Math.Floor(NumberWords * float.Parse(this.strategyParameter[NUM_SAMPLES]));
             ComputeSamplingStrategy();
+            // printSamplingSet();
+
         }
 
         public override bool ComputeSamplingStrategy()
         {
-            Random random = new Random();
+            Random random = new Random(int.Parse(this.strategyParameter[SEED]));
             List<List<string>> featureLists = new List<List<string>>();
+            List<List<BinaryOption>> configurationList = new List<List<BinaryOption>>();
+            CheckConfigSATZ3 configSAT = new CheckConfigSATZ3();
             for (int i = 0; i < samples; i++)
             {
-                featureLists.Add(ConvertIntegerToFeatureList(random.Next(0, NumberWords)));
+                List<string> featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
+                List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
+                while (! configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
+                {
+                    featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
+                    configuration = ConvertFeatureListToConfiguration(featureList);
+                    // Console.WriteLine("get a new configuration: " + String.Join(", ", featureList));
+                }
+                featureLists.Add(featureList);
+                configurationList.Add(configuration);
             }
             foreach (List<string> featureList in featureLists)
             {
                 selectedConfigurations.Add(ConvertFeatureListToConfiguration(featureList));
             }
-            Grammar.print();
-            printMergedTerminals();
+            // Grammar.print();
+            // printMergedTerminals();
 
             return true;
         }
@@ -78,6 +109,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             {
                 configuration.Add(Tree.getNodeByName(name).ActualOption);
             }
+            configuration.Add(Tree.Root.ActualOption);
             return configuration;
         }
 
@@ -125,6 +157,19 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             }
             Console.WriteLine("};");
             Console.WriteLine("Bases: {" + String.Join(",", Bases) + "}");
+        }
+
+        private void printSamplingSet()
+        {
+            Console.WriteLine("Grammar-based Sample Set:");
+            foreach(List<BinaryOption> conf in selectedConfigurations)
+            {
+                foreach(BinaryOption feature in conf)
+                {
+                    Console.Write(feature.Name + " ");
+                }
+                Console.WriteLine(";");
+            }
         }
 
         public override string GetName()

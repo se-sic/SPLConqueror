@@ -147,8 +147,11 @@ namespace MachineLearning.Sampling
                         break;
 
                     case SamplingStrategies.GRAMMAR_BASED:
-                        UniformGrammarSampling grammarSampling = new UniformGrammarSampling();
-                        binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
+                        foreach (Dictionary<string, string> parameters in binaryParams.grammarParameters)
+                        {
+                            UniformGrammarSampling grammarSampling = new UniformGrammarSampling(parameters);
+                            binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
+                        }
                         break;
                     //case SamplingStrategies.MINMAX:
                     //    {
