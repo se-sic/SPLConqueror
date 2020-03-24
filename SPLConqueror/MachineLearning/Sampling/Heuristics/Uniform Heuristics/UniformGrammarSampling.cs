@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using MachineLearning.Solver;
 using SPLConqueror_Core;
+using System.IO;
 
 namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
 {
@@ -13,8 +15,12 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
         private Dictionary<string, string> strategyParameter;
 
         #region constants
-        public const string NUM_SAMPLES = "numSamples";
+        public const string NUM_CONFIGS = "numConfigs";
+        public const string AS_TW = "asTW";
         public const string SEED = "seed";
+        public const string WHOLE_POPULATION = "wholePopulation";
+        public const string LANGUAGE_FILE = "languageFile";
+        public const string CONF_FAULTS_REPORT = "confFaultsReport";
         #endregion
         // <summary>
         // This is only to convert an integer to a list of active features! Each position has the product of all bases that are left.
@@ -23,14 +29,18 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
 
         private int NumberWords;
         private readonly int samples;
+        private readonly bool wholePopulation;
 
 
         public UniformGrammarSampling(Dictionary<string, string> parameters)
         {
             this.strategyParameter = new Dictionary<string, string>()
             {
-                {NUM_SAMPLES, "0,1" },
                 {SEED, "0" },
+                {NUM_CONFIGS, "asTW2" },
+                {WHOLE_POPULATION, "false"},
+                {LANGUAGE_FILE, "language.csv"},
+                {CONF_FAULTS_REPORT, "false" }
             };        
             foreach (KeyValuePair<string, string> keyValue in parameters)
             {
@@ -41,8 +51,29 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             }
             GenerateGrammar();
             MergeTerminals();
-            samples = (int) Math.Floor(NumberWords * float.Parse(this.strategyParameter[NUM_SAMPLES]));
-            ComputeSamplingStrategy();
+            if (!int.TryParse(this.strategyParameter[NUM_CONFIGS], out samples))
+            {
+                samples = CountConfigurations();
+            }
+            if (this.strategyParameter[CONF_FAULTS_REPORT].Contains("false"))
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                ComputeSamplingStrategy();
+                stopwatch.Stop();
+                Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
+            }
+            else 
+            {
+                ComputeSamplingStrategyWithReport(this.strategyParameter[CONF_FAULTS_REPORT]);
+            }
+            
+            if (! bool.TryParse(this.strategyParameter[WHOLE_POPULATION], out wholePopulation))
+            {
+                wholePopulation = false;
+            }
+
+
             // printSamplingSet();
 
         }
@@ -61,7 +92,6 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                 {
                     featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
                     configuration = ConvertFeatureListToConfiguration(featureList);
-                    // Console.WriteLine("get a new configuration: " + String.Join(", ", featureList));
                 }
                 featureLists.Add(featureList);
                 configurationList.Add(configuration);
@@ -70,9 +100,40 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             {
                 selectedConfigurations.Add(ConvertFeatureListToConfiguration(featureList));
             }
-            // Grammar.print();
-            // printMergedTerminals();
+            return true;
+        }
 
+        //<summary>
+        // This method reports each sampled configuration within the grammar that is not valid
+        // considering all crosstree constraints
+        //</summary>
+        public bool ComputeSamplingStrategyWithReport(string Filename)
+        {
+            Random random = new Random(int.Parse(this.strategyParameter[SEED]));
+            List<List<string>> featureLists = new List<List<string>>();
+            List<List<BinaryOption>> configurationList = new List<List<BinaryOption>>();
+            CheckConfigSATZ3 configSAT = new CheckConfigSATZ3();
+            using (StreamWriter w = File.AppendText(Filename))
+            {
+                for (int i = 0; i < samples; i++)
+                {
+                    int number = random.Next(0, NumberWords);
+                    List<string> featureList = ConvertIntegerToFeatureList(number);
+                    List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
+                    while (!configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
+                    {
+                        w.WriteLine(number.ToString() + " - " + String.Join(", ", featureList));
+                        featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
+                        configuration = ConvertFeatureListToConfiguration(featureList);
+                    }
+                    featureLists.Add(featureList);
+                    configurationList.Add(configuration);
+                }
+            }
+            foreach (List<string> featureList in featureLists)
+            {
+                selectedConfigurations.Add(ConvertFeatureListToConfiguration(featureList));
+            }
             return true;
         }
 
@@ -172,6 +233,27 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             }
         }
 
+        private int CountConfigurations()
+        {
+            int numberConfigs;
+
+            string numConfigsValue = this.strategyParameter[NUM_CONFIGS];
+            // Only "asTW" is currently supported
+            if (numConfigsValue.Contains(AS_TW))
+            {
+                numConfigsValue = numConfigsValue.Replace(AS_TW, "").Trim();
+                int t;
+                int.TryParse(numConfigsValue, out t);
+                TWise tw = new TWise();
+                numberConfigs = tw.generateT_WiseVariants_new(GlobalState.varModel, t).Count;
+            }
+            else
+            {
+                throw new ArgumentException("Only asTW is currently supported. But was: " + numConfigsValue);
+            }
+
+            return numberConfigs;
+        }
         public override string GetName()
         {
             return "UNIFORM-GRAMMAR-SAMPLING";
