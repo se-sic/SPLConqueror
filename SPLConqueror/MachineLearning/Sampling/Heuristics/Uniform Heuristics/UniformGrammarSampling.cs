@@ -87,14 +87,15 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             int[] randomNumbers = new int[samples];
             for (int i = 0; i < samples; i++)
             {
-                randomNumbers[i] = -1;
+                randomNumbers[i] = -1;                
             }
 
             for (int i = 0; i < samples; i++)
             {
                 int number = random.Next(0, NumberWords);
                 while (Array.IndexOf(randomNumbers, number) < 0)
-                {
+                {                    
+                    Console.WriteLine("Draw a new random number, cause " + number.ToString() + " is already in drawn.");
                     number = random.Next(0, NumberWords);
                 }
                 randomNumbers[i] = number;
@@ -133,11 +134,13 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
 
             using (StreamWriter w = File.AppendText(Filename))
             {
+                Console.WriteLine("Number to sample: " + samples.ToString() + "; Number of Configurations in Grammar: " + NumberWords.ToString());
                 for (int i = 0; i < samples; i++)
                 {
                     int number = random.Next(0, NumberWords);
-                    while(Array.IndexOf(randomNumbers, number) < 0)
+                    while(Array.IndexOf(randomNumbers, number) > -1)
                     {
+                        Console.WriteLine("Draw a new random number, cause " + number.ToString() + " is already in drawn.");
                         number = random.Next(0, NumberWords);
                     }
                     randomNumbers[i] = number;
