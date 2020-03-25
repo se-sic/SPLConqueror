@@ -84,9 +84,21 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             List<List<string>> featureLists = new List<List<string>>();
             List<List<BinaryOption>> configurationList = new List<List<BinaryOption>>();
             CheckConfigSATZ3 configSAT = new CheckConfigSATZ3();
+            int[] randomNumbers = new int[samples];
             for (int i = 0; i < samples; i++)
             {
-                List<string> featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
+                randomNumbers[i] = -1;
+            }
+
+            for (int i = 0; i < samples; i++)
+            {
+                int number = random.Next(0, NumberWords);
+                while (Array.IndexOf(randomNumbers, number) < 0)
+                {
+                    number = random.Next(0, NumberWords);
+                }
+                randomNumbers[i] = number;
+                List<string> featureList = ConvertIntegerToFeatureList(number);
                 List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
                 while (! configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
                 {
@@ -113,11 +125,22 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             List<List<string>> featureLists = new List<List<string>>();
             List<List<BinaryOption>> configurationList = new List<List<BinaryOption>>();
             CheckConfigSATZ3 configSAT = new CheckConfigSATZ3();
+            int[] randomNumbers = new int[samples];
+            for (int i = 0; i < samples; i++)
+            {
+                randomNumbers[i] = -1;
+            }
+
             using (StreamWriter w = File.AppendText(Filename))
             {
                 for (int i = 0; i < samples; i++)
                 {
                     int number = random.Next(0, NumberWords);
+                    while(Array.IndexOf(randomNumbers, number) < 0)
+                    {
+                        number = random.Next(0, NumberWords);
+                    }
+                    randomNumbers[i] = number;
                     List<string> featureList = ConvertIntegerToFeatureList(number);
                     List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
                     while (!configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
