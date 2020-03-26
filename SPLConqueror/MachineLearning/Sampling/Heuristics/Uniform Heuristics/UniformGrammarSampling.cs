@@ -93,9 +93,8 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             for (int i = 0; i < samples; i++)
             {
                 int number = random.Next(0, NumberWords);
-                while (Array.IndexOf(randomNumbers, number) < 0)
+                while (Array.IndexOf(randomNumbers, number) > -1)
                 {                    
-                    Console.WriteLine("Draw a new random number, cause " + number.ToString() + " is already in drawn.");
                     number = random.Next(0, NumberWords);
                 }
                 randomNumbers[i] = number;
