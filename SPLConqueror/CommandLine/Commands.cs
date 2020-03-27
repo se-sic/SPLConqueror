@@ -77,6 +77,8 @@ namespace CommandLine
         public const string COMMAND_SET_MLSETTING = "mlsettings";
         public const string COMMAND_SET_SOLVER = "solver";
 
+        public const string COMMAND_SET_SAMPLE_SET = "setsampleset";
+
         #region splconqueror learn with sampling
         public const string COMMAND_START_LEARNING_SPL_CONQUEROR = "learn-splconqueror";
         #endregion
@@ -119,6 +121,8 @@ namespace CommandLine
         // shouldnt be used by user.
         public const string ROLLBACK_FLAG = "rollback";
         #endregion
+
+        private List<Configuration> SampleSet;
 
         public List<SamplingStrategies> BinaryToSample
         {
@@ -367,6 +371,9 @@ namespace CommandLine
                     break;
                 case COMMAND_CLEAR_LEARNING:
                     cleanLearning();
+                    break;
+                case COMMAND_SET_SAMPLE_SET:
+                    SetSampleSet(task.Trim());
                     break;
                 case COMMAND_LOAD_CONFIGURATIONS:
                     GlobalState.allMeasurements.setBlackList(mlSettings.blacklisted);
@@ -743,7 +750,7 @@ namespace CommandLine
                     }
 
                 case COMMAND_START_LEARNING_SPL_CONQUEROR:
-                    if (allMeasurementsSelected)
+                    if (allMeasurementsSelected && this.SampleSet == null)
                     {
                         learnWithAllMeasurements();
                     }
@@ -919,6 +926,21 @@ namespace CommandLine
 
         }
 
+        private void SetSampleSet(String filePathToSampleSet)
+        {
+            if (GlobalState.varModel == null)
+            {
+                GlobalState.logError.logLine("Please read in the variability model before reading in the sample set!");
+                return;
+            }
+            if (!File.Exists(filePathToSampleSet))
+            {
+                GlobalState.logError.logLine("The file " + filePathToSampleSet + " does not exist.");
+                return;
+            }
+            this.SampleSet = ConfigurationReader.readConfigurations_Header_CSV(filePathToSampleSet, GlobalState.varModel);
+        }
+
         private void cleanGlobal()
         {
             SPLConqueror_Core.GlobalState.clear();
@@ -929,6 +951,7 @@ namespace CommandLine
 
         private void cleanSampling()
         {
+            this.SampleSet = null;
             this.allMeasurementsSelected = false;
             exp.clearSampling();
             binaryToSample.Clear();
@@ -1142,7 +1165,12 @@ namespace CommandLine
             List<Configuration> configurationsLearning = new List<Configuration>();
             List<Configuration> configurationsValidation = new List<Configuration>();
 
-            if (isAllMeasurementsToSample() && allMeasurementsValid() && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
+            if (this.SampleSet != null)
+            {
+                List<Configuration> measuredConfigurations = GlobalState.getMeasuredConfigs(this.SampleSet);
+                configurationsLearning = measuredConfigurations;
+            }
+            else if (isAllMeasurementsToSample() && allMeasurementsValid() && (mlSettings.blacklisted == null || mlSettings.blacklisted.Count == 0))
             {
                 measurementsValid = true;
                 configurationsLearning = GlobalState.allMeasurements.Configurations;
@@ -1629,7 +1657,11 @@ namespace CommandLine
         private void learnWithSampling()
         {
             InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-            Tuple<List<Configuration>, List<Configuration>> learnAndValidation = buildSetsEfficient();
+
+            Tuple<List<Configuration>, List<Configuration>> learnAndValidation;
+
+            learnAndValidation = buildSetsEfficient();            
+
             List<Configuration> configurationsLearning;
             List<Configuration> configurationsValidation;
             if (!configurationsPreparedForLearning(learnAndValidation,
