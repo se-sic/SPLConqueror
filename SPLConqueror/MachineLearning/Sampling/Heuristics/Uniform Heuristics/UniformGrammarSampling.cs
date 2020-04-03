@@ -97,14 +97,15 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                 {                    
                     number = random.Next(0, NumberWords);
                 }
-                randomNumbers[i] = number;
                 List<string> featureList = ConvertIntegerToFeatureList(number);
                 List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
                 while (! configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
                 {
-                    featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
+                    number = random.Next(0, NumberWords);
+                    featureList = ConvertIntegerToFeatureList(number);
                     configuration = ConvertFeatureListToConfiguration(featureList);
                 }
+                randomNumbers[i] = number;
                 featureLists.Add(featureList);
                 configurationList.Add(configuration);
             }
@@ -130,8 +131,8 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             {
                 randomNumbers[i] = -1;
             }
-
-            using (StreamWriter w = File.AppendText(Filename))
+            int faults = 0;
+            using (StreamWriter w = File.CreateText(Filename))
             {
                 Console.WriteLine("Number to sample: " + samples.ToString() + "; Number of Configurations in Grammar: " + NumberWords.ToString());
                 for (int i = 0; i < samples; i++)
@@ -142,19 +143,23 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                         Console.WriteLine("Draw a new random number, cause " + number.ToString() + " is already in drawn.");
                         number = random.Next(0, NumberWords);
                     }
-                    randomNumbers[i] = number;
                     List<string> featureList = ConvertIntegerToFeatureList(number);
                     List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
                     while (!configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
                     {
                         w.WriteLine(number.ToString() + " - " + String.Join(", ", featureList));
-                        featureList = ConvertIntegerToFeatureList(random.Next(0, NumberWords));
+                        
+                        faults = faults + 1;
+                        number = random.Next(0, NumberWords);
+                        featureList = ConvertIntegerToFeatureList(number);
                         configuration = ConvertFeatureListToConfiguration(featureList);
                     }
+                    randomNumbers[i] = number;
                     featureLists.Add(featureList);
                     configurationList.Add(configuration);
                 }
             }
+            Console.WriteLine(faults.ToString() + " drawn configurations were invalid");
             foreach (List<string> featureList in featureLists)
             {
                 selectedConfigurations.Add(ConvertFeatureListToConfiguration(featureList));
