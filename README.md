@@ -218,7 +218,7 @@ An example for a variability model is given below:
       <parent/>
       <impliedOptions/>
       <excludedOptions>
-        <option>xorOption2<option>
+        <option>xorOption2</option>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
@@ -230,7 +230,7 @@ An example for a variability model is given below:
       <parent/>
       <impliedOptions/>
       <excludedOptions>
-        <option>xorOption1<option>
+        <option>xorOption1</option>
       </excludedOptions>
       <optional>False</optional>
     </configurationOption>
