@@ -96,8 +96,8 @@ namespace MachineLearning.Sampling
                                 ((Z3VariantGenerator)vg).setSeed(seed);
                             }
 
-                            Stopwatch stopwatch = new Stopwatch();
-                            stopwatch.Start();
+                            Stopwatch stopwatch_sat = new Stopwatch();
+                            stopwatch_sat.Start();
 
                             if (parameters.ContainsKey("measureTime")) {
                             }
@@ -112,8 +112,8 @@ namespace MachineLearning.Sampling
                             {
                                 binaryConfigs.AddRange(vg.GenerateUpToNFast(vm, numberSamples));
                             }
-                            stopwatch.Stop();
-                            Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
+                            stopwatch_sat.Stop();
+                            Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch_sat.ElapsedMilliseconds);
 
                             numberSamples = 2;
                         }
@@ -220,8 +220,8 @@ namespace MachineLearning.Sampling
                                     t = Convert.ToInt16(param.Value);
                                 }
 
-                                Stopwatch stopwatch = new Stopwatch();
-                                stopwatch.Start();
+                                Stopwatch stopwatch_t = new Stopwatch();
+                                stopwatch_t.Start();
 
                                 if (optionsToConsider.ContainsKey(SamplingStrategies.T_WISE))
                                 {
@@ -233,8 +233,8 @@ namespace MachineLearning.Sampling
                                 {
                                     binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
                                 }
-                                stopwatch.Stop();
-                                Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
+                                stopwatch_t.Stop();
+                                Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch_t.ElapsedMilliseconds);
                             }
                         }
                         break;
