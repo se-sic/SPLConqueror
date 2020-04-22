@@ -7,6 +7,7 @@ using MachineLearning.Sampling.Heuristics;
 using MachineLearning.Sampling.ExperimentalDesigns;
 using MachineLearning.Sampling.Hybrid;
 using MachineLearning.Sampling.Heuristics.UniformHeuristics;
+using System.Diagnostics;
 
 namespace MachineLearning.Sampling
 {
@@ -94,6 +95,13 @@ namespace MachineLearning.Sampling
                                 seed = UInt32.Parse(parameters["seed"]);
                                 ((Z3VariantGenerator)vg).setSeed(seed);
                             }
+
+                            Stopwatch stopwatch = new Stopwatch();
+                            stopwatch.Start();
+
+                            if (parameters.ContainsKey("measureTime")) {
+                            }
+
                             if (optionsToConsider.ContainsKey(SamplingStrategies.SAT))
                             {
                                 List<List<BinaryOption>> variants =
@@ -104,6 +112,9 @@ namespace MachineLearning.Sampling
                             {
                                 binaryConfigs.AddRange(vg.GenerateUpToNFast(vm, numberSamples));
                             }
+                            stopwatch.Stop();
+                            Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
+
                             numberSamples = 2;
                         }
                         break;
@@ -117,11 +128,15 @@ namespace MachineLearning.Sampling
                         {
                             rb = new RandomBinary(vm);
                         }
+                        Stopwatch stopwatch = new Stopwatch();
+                        stopwatch.Start();
                         foreach (Dictionary<string, string> expDesignParamSet in binaryParams.randomBinaryParameters)
                         {
                             binaryConfigs.AddRange(changeModel(vm, rb.getRandomConfigs(expDesignParamSet)));
                         }
-
+                        stopwatch.Stop();
+                        Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
+                        
                         break;
                     case SamplingStrategies.OPTIONWISE:
                         {
@@ -205,6 +220,9 @@ namespace MachineLearning.Sampling
                                     t = Convert.ToInt16(param.Value);
                                 }
 
+                                Stopwatch stopwatch = new Stopwatch();
+                                stopwatch.Start();
+
                                 if (optionsToConsider.ContainsKey(SamplingStrategies.T_WISE))
                                 {
                                     List<List<BinaryOption>> variants = tw.generateT_WiseVariants_new(
@@ -215,6 +233,8 @@ namespace MachineLearning.Sampling
                                 {
                                     binaryConfigs.AddRange(tw.generateT_WiseVariants_new(vm, t));
                                 }
+                                stopwatch.Stop();
+                                Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
                             }
                         }
                         break;
