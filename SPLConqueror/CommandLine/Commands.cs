@@ -669,9 +669,10 @@ namespace CommandLine
                 case DEFINE_PYTHON_PATH:
                     {
                         // Append a slash if it is not included
-                        if (!taskAsParameter[0].EndsWith("/") && !taskAsParameter[0].EndsWith("\\"))
+                        // Note that Windows also allows the usage of other slashes.
+                        if (!taskAsParameter[0].EndsWith("/") && !taskAsParameter[0].EndsWith(Path.DirectorySeparatorChar.ToString()))
                         {
-                            PythonWrapper.PYTHON_PATH = taskAsParameter[0] + "/";
+                            PythonWrapper.PYTHON_PATH = taskAsParameter[0] + Path.DirectorySeparatorChar;
                         }
                         else
                         {
@@ -1075,7 +1076,7 @@ namespace CommandLine
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
                 PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() +
-                    Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+                    PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
                 GlobalState.logInfo.logLine("Starting Prediction");
 
                 if (isParamTuning)
