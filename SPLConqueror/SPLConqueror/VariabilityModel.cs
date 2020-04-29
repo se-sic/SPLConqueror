@@ -939,7 +939,7 @@ namespace SPLConqueror_Core
 
 
             this.name = currentElemt.Attributes["name"].Value.ToString();
-            foreach (XmlElement xmlNode in currentElemt.ChildNodes)
+            foreach (XmlElement xmlNode in currentElemt.ChildNodes.OfType<XmlElement>())
             {
                 switch (xmlNode.Name)
                 {
