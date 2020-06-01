@@ -885,8 +885,11 @@ namespace CommandLine
             {
                 foreach (string opt in parameters)
                 {
-                    if (opt.StartsWith(param.Split(new char[] { '=' })[0]))
+                    if (opt.StartsWith(param.Split(new char[] {'='})[0].Replace("_", "-")))
+                    {
                         sb.Append(opt + ";");
+                        break;
+                    }
                 }
             }
             return sb.ToString();
