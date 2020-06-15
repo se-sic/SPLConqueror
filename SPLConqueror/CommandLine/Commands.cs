@@ -582,7 +582,20 @@ namespace CommandLine
                 case COMMAND_VARIABILITYMODEL:
                     String debug = Directory.GetCurrentDirectory();
                     GlobalState.vmSource = task.TrimEnd();
-                    GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
+
+                    // Switch between file endings. Currently supported: xml (SPL Conqueror format), sxfm, and dimacs
+                    switch (Path.GetExtension(GlobalState.vmSource).ToLower()) {
+                        case ".sxfm":
+                            GlobalState.varModel = VariabilityModel.loadFromSXFM(task.Trim());
+                            break;
+                        case ".dimacs":
+                            GlobalState.varModel = VariabilityModel.loadFromDimacs(task.Trim());
+                            break;
+                        default:
+                            GlobalState.varModel = VariabilityModel.loadFromXML(task.Trim());
+                            break;
+                    }
+
                     if (GlobalState.varModel == null)
                     {
                         GlobalState.logError.logLine("No variability model found at " + task);
