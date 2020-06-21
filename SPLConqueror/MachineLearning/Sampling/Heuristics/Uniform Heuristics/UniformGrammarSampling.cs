@@ -102,6 +102,10 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                 while (! configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
                 {
                     number = random.Next(0, NumberWords);
+                    while (Array.IndexOf(randomNumbers, number) > -1)
+                    {                    
+                        number = random.Next(0, NumberWords);
+                    }
                     featureList = ConvertIntegerToFeatureList(number);
                     configuration = ConvertFeatureListToConfiguration(featureList);
                 }
@@ -151,6 +155,11 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                         
                         faults = faults + 1;
                         number = random.Next(0, NumberWords);
+                        while(Array.IndexOf(randomNumbers, number) > -1)
+                        {
+                            Console.WriteLine("Draw a new random number, cause " + number.ToString() + " is already in drawn.");
+                            number = random.Next(0, NumberWords);
+                        }
                         featureList = ConvertIntegerToFeatureList(number);
                         configuration = ConvertFeatureListToConfiguration(featureList);
                     }
