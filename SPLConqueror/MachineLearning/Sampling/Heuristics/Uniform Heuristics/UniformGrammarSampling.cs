@@ -49,6 +49,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                     strategyParameter[keyValue.Key] = keyValue.Value;
                 }
             }
+
             GenerateGrammar();
             MergeTerminals();
             if (!int.TryParse(this.strategyParameter[NUM_CONFIGS], out samples))

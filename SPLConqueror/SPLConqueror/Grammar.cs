@@ -27,7 +27,8 @@ namespace SPLConqueror_Core
             {
                 if (rule.Contains(Terminal)) return rule;
             }
-            throw new InvalidOperationException("Terminnal was not in contained in a rule");
+            print();
+            throw new InvalidOperationException("Terminnal was not contained in a rule " + Terminal);
         }
 
         private void generateGrammar()
@@ -94,12 +95,8 @@ namespace SPLConqueror_Core
                             rules.Add("\u03B5");
                         }
                         rule += "" + child.Name + "";
-                        // TODO check if this is the right way to go
-                        if (child.ExcludedOptions.Count > 0)
-                        {
-                            rules.Add(rule);
-                            rule = "";
-                        }
+                        rules.Add(rule);
+                        rule = "";
                         Terminals.Add(child.Name);
                     }
                 }
@@ -108,7 +105,6 @@ namespace SPLConqueror_Core
                     foreach (FMNode child in node.Children)
                     {
                         rule += "<" + child.Name + ">";
-                        // TODO check if this is the right way to go
                         if (child.ExcludedOptions.Count > 0)
                         {
                             rules.Add(rule);
