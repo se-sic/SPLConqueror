@@ -168,6 +168,13 @@ namespace MachineLearning.Sampling
                             binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
                         }
                         break;
+                    case SamplingStrategies.GRAMMAR_BASED_VERYLARGE:
+                        foreach (Dictionary<string, string> parameters in binaryParams.grammarParameters)
+                        {
+                            UniformGrammarSamplingBigInt grammarSampling = new UniformGrammarSamplingBigInt(parameters);
+                            binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
+                        }
+                        break;
                     //case SamplingStrategies.MINMAX:
                     //    {
                     //        MinMax mm = new MinMax();

@@ -177,6 +177,8 @@
     <Compile Include="Sampling\Hybrid\Distributive\Distribution\DistributionUtils.cs" />
     <Compile Include="Sampling\Heuristics\Uniform Heuristics\UniformSampling.cs" />
     <Compile Include="Sampling\Heuristics\Uniform Heuristics\UniformGrammarSampling.cs" />
+    <Compile Include="Sampling\Heuristics\Uniform Heuristics\UniformGrammarSamplingBigInt.cs" />
+    <Compile Include="Sampling\Heuristics\Uniform Heuristics\RandomBigInteger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPLConqueror\SPLConqueror_Core.csproj">

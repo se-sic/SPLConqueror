@@ -33,34 +33,14 @@ namespace SPLConqueror_Core
 
         private void generateGrammar()
         {
-            List<string> rules = new List<string>();
-            string rule = "";
             FMNode root = VMTree.Root;
             if (root.Children.Count > 0)
             {
-                foreach (FMNode child in root.Children)
-                {
-                    rule += "<" + child.Name + ">";
-                    // TODO check if this is the right way to go
-                    if (child.ExcludedOptions.Count > 0)
-                    {
-                        rules.Add(rule);
-                        rule = "";
-                    }
-                }
-                if (rule != "")
-                {
-                    rules.Add(rule);
-                }
-                grammar.Add("<" + root.Name + ">", rules);
-                foreach (FMNode child in root.Children)
-                {
-                    generateGrammar(child);
-                }
-
+                generateGrammar(root);
             }
             else
-            {
+            {   
+                Terminals.Add(root.Name);
                 throw new InvalidOperationException();
             }
 
@@ -70,54 +50,53 @@ namespace SPLConqueror_Core
         {
             List<string> rules = new List<string>();
             string rule = "";
-            bool leafLevel = node.Children.TrueForAll(x => x.Children.Count == 0);
-            bool isLeaf = node.Children.Count == 0;
-            if (isLeaf)
+            foreach (FMNode child in node.Children)
             {
-                bool optional = checkOptional(node);
-                if (optional)
-                {
-                    rules.Add("\u03b5");
-                }
-                rule += "" + node.Name + "";
-                Terminals.Add(node.Name);
 
-            }
-            else
-            {
-                if (leafLevel)
+                if (child.Children.Count > 0)
                 {
-                    foreach (FMNode child in node.Children)
+                    rule += "<" + child.Name + ">";
+                    if (child.ExcludedOptions.Count > 0)
                     {
-                        bool optional = checkOptional(node);
-                        if (optional && !rules.Contains("\u03b5"))
-                        {
-                            rules.Add("\u03B5");
-                        }
-                        rule += "" + child.Name + "";
                         rules.Add(rule);
                         rule = "";
-                        Terminals.Add(child.Name);
                     }
-                }
-                else
-                {
-                    foreach (FMNode child in node.Children)
+                } else
+                { 
+                    if (checkOptional(child))
                     {
                         rule += "<" + child.Name + ">";
+                        List<string> tmpList = new List<string>();
+                        tmpList.Add("\u03B5");
+                        tmpList.Add(child.Name);
+                        grammar.Add("<" + child.Name + ">", tmpList);
+                    }
+                    else
+                    { 
                         if (child.ExcludedOptions.Count > 0)
                         {
+                            rule += "" + child.Name + "";
                             rules.Add(rule);
                             rule = "";
                         }
+                        else 
+                        { 
+                            rule += "<" + child.Name + ">";
+                            List<string> tmpList = new List<string>();
+                            tmpList.Add(child.Name);
+                            grammar.Add("<" + child.Name + ">", tmpList);
+                        }
                     }
+                    Terminals.Add(child.Name);
                 }
             }
             if (rule != "")
             {
                 rules.Add(rule);
             }
-            grammar.Add("<" + node.Name + ">", rules);
+            if (!grammar.ContainsKey("<" + node.Name + ">")) { 
+                grammar.Add("<" + node.Name + ">", rules);
+            }
             foreach (FMNode child in node.Children)
             {
                 if (child.Children.Count > 0) generateGrammar(child);
