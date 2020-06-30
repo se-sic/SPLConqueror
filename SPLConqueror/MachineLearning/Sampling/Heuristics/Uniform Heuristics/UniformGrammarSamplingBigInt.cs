@@ -135,7 +135,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             foreach (string name in featureList)
             {
                 FMNode node = Tree.getNodeByName(name);
-                while (node != null)
+                while (node.Parent != null)
                 {
                     if (configNames.Contains(node.Name)) break;
                     configNames.Add(node.Name);
