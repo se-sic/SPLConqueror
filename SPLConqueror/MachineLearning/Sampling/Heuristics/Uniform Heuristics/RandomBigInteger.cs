@@ -5,12 +5,14 @@ namespace System.Numerics
 {
     class RandomBigInteger : Random
     {
+        Random random;
         public RandomBigInteger() : base()
         {
         }
 
         public RandomBigInteger(int Seed) : base(Seed)
         {
+            random = new Random(Seed);
         }
 
         /// <summary>
@@ -60,6 +62,10 @@ namespace System.Numerics
                 res -= start;
 
             byte[] bs = res.ToByteArray();
+            if (bs.Length < 9)
+            {
+                return Next(0, (Int64)res);
+            }
 
             // Count the number of bits necessary for res.
             int bits = 8;
@@ -75,6 +81,25 @@ namespace System.Numerics
             // then scale the range down to the size of res,
             // finally add start back on to shift back to the desired range and return.
             return ((NextBigInteger(bits + 1) * res) / BigInteger.Pow(2, bits + 1)) + start;
+        }
+
+        public long Next(long min, long max)
+        {
+
+            if (max <= min)
+                throw new ArgumentOutOfRangeException("max", "max must be > min!");
+
+            ulong uRange = (ulong)(max - min);
+            ulong ulongRand;
+            do
+            {
+                byte[] buf = new byte[8];
+                random.NextBytes(buf);
+                ulongRand = (ulong)BitConverter.ToInt64(buf, 0);
+            } while (ulongRand > ulong.MaxValue - ((ulong.MaxValue % uRange) + 1) % uRange);
+
+            return (long)(ulongRand % uRange) + min;
+
         }
     }
 }
