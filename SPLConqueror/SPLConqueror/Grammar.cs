@@ -61,7 +61,8 @@ namespace SPLConqueror_Core
                         rules.Add(rule);
                         rule = "";
                     }
-                } else
+                } 
+                else
                 { 
                     if (checkOptional(child))
                     {
@@ -75,9 +76,22 @@ namespace SPLConqueror_Core
                     { 
                         if (child.ExcludedOptions.Count > 0)
                         {
-                            rule += "" + child.Name + "";
-                            rules.Add(rule);
-                            rule = "";
+                            if (node.Children.TrueForAll(x => x.Children.Count == 0))
+                            {
+                                rule += "" + child.Name + "";
+                                rules.Add(rule);
+                                rule = "";
+                            }
+                            else 
+                            { 
+
+                                rule += "<" + child.Name + ">";
+                                rules.Add(rule);
+                                rule = "";
+                                List<string> tmpList = new List<string>();
+                                tmpList.Add(child.Name);
+                                grammar.Add("<" + child.Name + ">", tmpList);
+                            }
                         }
                         else 
                         { 

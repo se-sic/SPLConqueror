@@ -63,7 +63,6 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             ComputeSamplingStrategy();
             stopwatch.Stop();
             Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
-
             Grammar.print();
             if (!bool.TryParse(this.strategyParameter[WHOLE_POPULATION], out wholePopulation))
             {
@@ -160,6 +159,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
         private void MergeTerminals()
         {
             List<string> terminals = Grammar.Terminals;
+            Console.WriteLine(String.Join(", ", Grammar.Terminals));
             foreach (string terminal in terminals)
             {
                 List<string> rule = Grammar.GetRule(terminal);
@@ -169,7 +169,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             {
                 Bases.Add(MergedTerminals[i].Count);
             }
-            int numWords = 1;
+            BigInteger numWords = 1;
             foreach (int i in Bases)
             {
                 numWords *= i;
