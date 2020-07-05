@@ -55,7 +55,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             GenerateGrammar();
-            MergeTerminals();
+            NumberWords = computeNumberGrammarValidConfigurations(Grammar.Root);
             if (!int.TryParse(this.strategyParameter[NUM_CONFIGS], out samples))
             {
                 samples = CountConfigurations();
@@ -63,6 +63,7 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             ComputeSamplingStrategy();
             stopwatch.Stop();
             Console.WriteLine("ConfigurationSampling done in {0} ms", stopwatch.ElapsedMilliseconds);
+            Console.WriteLine(NumberWords);
             Grammar.print();
             if (!bool.TryParse(this.strategyParameter[WHOLE_POPULATION], out wholePopulation))
             {
@@ -74,7 +75,6 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
         public override bool ComputeSamplingStrategy()
         {
             List<List<string>> featureLists = new List<List<string>>();
-            List<List<BinaryOption>> configurationList = new List<List<BinaryOption>>();
             CheckConfigSATZ3 configSAT = new CheckConfigSATZ3();
             BigInteger[] randomNumbers = new BigInteger[samples];
             for (int i = 0; i < samples; i++)
@@ -89,64 +89,78 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                 {
                     number = rand.NextBigInteger(0, NumberWords);
                 }
-                List<string> featureList = ConvertIntegerToFeatureList(number);
+                List<string> featureList = ConvertIntegerToFeatureList(number, Grammar.Root);
+                featureList.Add(Grammar.Root);
                 List<BinaryOption> configuration = ConvertFeatureListToConfiguration(featureList);
                 while (!configSAT.checkConfigurationSAT(configuration, GlobalState.varModel, false))
                 {
+                    Console.WriteLine("invalid number: " + number + " respective config: " + String.Join(", ", featureList));
                     number = rand.NextBigInteger(0, NumberWords);
                     while (Array.IndexOf(randomNumbers, number) > -1)
                     {
                         number = rand.NextBigInteger(0, NumberWords);
                     }
-                    featureList = ConvertIntegerToFeatureList(number);
+                    featureList = ConvertIntegerToFeatureList(number, Grammar.Root);
+                    featureList.Add(Grammar.Root);
                     configuration = ConvertFeatureListToConfiguration(featureList);
                 }
                 randomNumbers[i] = number;
                 featureLists.Add(featureList);
-                configurationList.Add(configuration);
-            }
-            foreach (List<string> featureList in featureLists)
-            {
-                selectedConfigurations.Add(ConvertFeatureListToConfiguration(featureList));
+                // Console.WriteLine("drawn number: " + number + "; config: " + String.Join(", ", featureList));
+                selectedConfigurations.Add(configuration);
             }
             return true;
         }
 
-        private List<string> ConvertIntegerToFeatureList(BigInteger index)
+        private List<string> ConvertIntegerToFeatureList(BigInteger index, string key)
         {
             List<string> features = new List<string>();
-            BigInteger remainder = index;
-            for (int i = 0; i < Bases.Count; i++)
+            Tuple<List<Tuple<string, BigInteger, Boolean>>, SymbolKind, Operation> rule_set = Grammar.GetRule(key);
+            List<Tuple<string, BigInteger, Boolean>> rule = rule_set.Item1;
+            if (rule_set.Item3 == Operation.MULT)
             {
-                BigInteger resBigInt = remainder / Bases[i];
-                int res = (int) resBigInt;
-                remainder %= Bases[i];
-                string feature = MergedTerminals[i][res];
-                if (feature != "\u03B5") features.Add(feature);
-
+                for (int j = 0; j < rule.Count; j++)
+                {
+                    BigInteger basis = 1;
+                    for (int i = rule.Count - 1; i > j; i--)
+                    {
+                        basis *= rule[i].Item2;
+                    }
+                    BigInteger number = index / basis;
+                    index = index % basis;
+                    // Console.WriteLine("Number: " + number + "; Index: " + index + "; Basis: " + basis + "; key: " + key + "; child: " + rule[j].Item1 + "; Symbolkind: " + rule_set.Item2);
+                    if (!rule[j].Item3) features.Add(rule[j].Item1);
+                    if (rule_set.Item2 == SymbolKind.NONTERMINAL) features.AddRange(ConvertIntegerToFeatureList(number, rule[j].Item1));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < rule.Count; i++)
+                {
+                    if (index >= rule[i].Item2) index = index - rule[i].Item2;
+                    else if (rule_set.Item2 == SymbolKind.NONTERMINAL)
+                    {
+                        if (!rule[i].Item3) features.Add(rule[i].Item1);
+                        features.AddRange(ConvertIntegerToFeatureList(index, rule[i].Item1));
+                        break;
+                    }
+                    else
+                    {
+                        if (!rule[i].Item3) features.Add(rule[i].Item1);
+                        break;
+                    }
+                }
             }
             return features;
         }
 
-        private List<BinaryOption> ConvertFeatureListToConfiguration(List<string> featureList)
-        {
-            List<string> configNames = new List<string>();
-            foreach (string name in featureList)
-            {
-                FMNode node = Tree.getNodeByName(name);
-                while (node.Parent != null)
-                {
-                    if (configNames.Contains(node.Name)) break;
-                    configNames.Add(node.Name);
-                    node = node.Parent;
-                }
-            }
+        private List<BinaryOption> ConvertFeatureListToConfiguration(List<string> features)
+        { 
             List<BinaryOption> configuration = new List<BinaryOption>();
-            foreach (string name in configNames)
+            foreach (string name in features)
             {
                 configuration.Add(Tree.getNodeByName(name).ActualOption);
             }
-            configuration.Add(Tree.Root.ActualOption);
             return configuration;
         }
 
@@ -156,45 +170,30 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             Grammar = new Grammar(Tree);
         }
 
-        private void MergeTerminals()
+        private BigInteger computeNumberGrammarValidConfigurations(string rule_key)
         {
-            List<string> terminals = Grammar.Terminals;
-            Console.WriteLine(String.Join(", ", Grammar.Terminals));
-            foreach (string terminal in terminals)
+            BigInteger number = 0;
+            Tuple<List<Tuple<string, BigInteger, Boolean>>, SymbolKind, Operation> ruleInfo = Grammar.GetRule(rule_key);
+            if (ruleInfo.Item3 == Operation.MULT) number = 1;
+            List<Tuple<string, BigInteger, Boolean>> rule_set = ruleInfo.Item1;
+            for (int i = 0; i < rule_set.Count; i++)
             {
-                List<string> rule = Grammar.GetRule(terminal);
-                if (!MergedTerminals.Contains(rule)) MergedTerminals.Add(rule);
-            }
-            for (int i = 0; i < MergedTerminals.Count; i++)
-            {
-                Bases.Add(MergedTerminals[i].Count);
-            }
-            BigInteger numWords = 1;
-            foreach (int i in Bases)
-            {
-                numWords *= i;
-            }
-            NumberWords = numWords;
-            for (int i = 0; i < Bases.Count; i++)
-            {
-                BigInteger basis = 1;
-                for (int j = i + 1; j < Bases.Count; j++)
+                Tuple<string, BigInteger, Boolean> tuple = rule_set[i];
+                if (tuple.Item2 == -1)
                 {
-                    basis *= Bases[j];
+                    rule_set[i] = new Tuple<string, BigInteger, Boolean> (tuple.Item1, computeNumberGrammarValidConfigurations(tuple.Item1), tuple.Item3);
                 }
-                Bases[i] = basis;
+                tuple = rule_set[i];
+                if (ruleInfo.Item3 == Operation.ADD)
+                {
+                    number += tuple.Item2;
+                }
+                else 
+                {
+                    number *= tuple.Item2; 
+                }
             }
-        }
-
-        private void printMergedTerminals()
-        {
-            Console.Write("Merged Terminals: {");
-            foreach (List<string> eqivClass in MergedTerminals)
-            {
-                Console.Write("{" + String.Join(", ", eqivClass) + "}");
-            }
-            Console.WriteLine("};");
-            Console.WriteLine("Bases: {" + String.Join(",", Bases) + "}");
+            return number;
         }
 
         private void printSamplingSet()

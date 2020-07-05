@@ -51,7 +51,6 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
             }
 
             GenerateGrammar();
-            MergeTerminals();
             if (!int.TryParse(this.strategyParameter[NUM_CONFIGS], out samples))
             {
                 samples = CountConfigurations();
@@ -218,46 +217,6 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
         {
             Tree = new FMTree();
             Grammar = new Grammar(Tree);
-        }
-
-        private void MergeTerminals()
-        {
-            List<string> terminals = Grammar.Terminals;
-            foreach (string terminal in terminals)
-            {
-                List<string> rule = Grammar.GetRule(terminal);
-                if (!MergedTerminals.Contains(rule)) MergedTerminals.Add(rule);
-            }
-            for (int i = 0; i < MergedTerminals.Count; i++)
-            {
-                Bases.Add(MergedTerminals[i].Count);
-            }
-            int numWords = 1;
-            foreach (int i in Bases)
-            {
-                numWords *= i;
-            }
-            NumberWords = numWords;
-            for (int i = 0; i < Bases.Count; i++)
-            {
-                int basis = 1;
-                for (int j = i + 1; j < Bases.Count; j++)
-                {
-                    basis *= Bases[j];
-                }
-                Bases[i] = basis;
-            }
-        }
-
-        private void printMergedTerminals()
-        {
-            Console.Write("Merged Terminals: {");
-            foreach (List<string> eqivClass in MergedTerminals)
-            {
-                Console.Write("{" + String.Join(", ", eqivClass) + "}");
-            }
-            Console.WriteLine("};");
-            Console.WriteLine("Bases: {" + String.Join(",", Bases) + "}");
         }
 
         private void printSamplingSet()

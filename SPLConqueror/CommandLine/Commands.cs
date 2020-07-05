@@ -50,7 +50,6 @@ namespace CommandLine
         public const string COMMAND_SAMPLE_BINARY_SAT = "satoutput";
         public const string COMMAND_SAMPLE_BINARY_DISTANCE = "distance-based";
         public const string COMMAND_SAMPLE_BINARY_GRAMMAR = "grammar-based";
-        public const string COMMAND_SAMPLE_BINARY_GRAMMAR_VERY_LARGE = "grammar-based-very-large";
 
         #region splconqueror learn with all measurements
 
@@ -1403,10 +1402,6 @@ namespace CommandLine
                     addBinarySamplingDomain(SamplingStrategies.GRAMMAR_BASED, optionsToConsider);
                     addBinSamplingParams(SamplingStrategies.GRAMMAR_BASED, "GRAMMAR_BASE", parameterKeyAndValue, isValidation);
                     break;
-                case COMMAND_SAMPLE_BINARY_GRAMMAR_VERY_LARGE:
-                    addBinarySamplingDomain(SamplingStrategies.GRAMMAR_BASED_VERYLARGE, optionsToConsider);
-                    addBinSamplingParams(SamplingStrategies.GRAMMAR_BASED_VERYLARGE, "GRAMMAR_BASE_VERYLARGE", parameterKeyAndValue, isValidation);
-                    break;
                 //TODO:hybrid as bin/num
                 //case COMMAND_HYBRID_DISTRIBUTION_AWARE:
                 //    addHybridAsBin(new DistributionAware(), task.Contains(COMMAND_VALIDATION), parameterKeyAndValue);
@@ -1508,9 +1503,6 @@ namespace CommandLine
                     ConfigurationBuilder.binaryParams.distanceMaxParameters.Add(parameter);
                     break;
                 case SamplingStrategies.GRAMMAR_BASED:
-                    ConfigurationBuilder.binaryParams.grammarParameters.Add(parameter);
-                    break;
-                case SamplingStrategies.GRAMMAR_BASED_VERYLARGE:
                     ConfigurationBuilder.binaryParams.grammarParameters.Add(parameter);
                     break;
             }

@@ -164,13 +164,6 @@ namespace MachineLearning.Sampling
                     case SamplingStrategies.GRAMMAR_BASED:
                         foreach (Dictionary<string, string> parameters in binaryParams.grammarParameters)
                         {
-                            UniformGrammarSampling grammarSampling = new UniformGrammarSampling(parameters);
-                            binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
-                        }
-                        break;
-                    case SamplingStrategies.GRAMMAR_BASED_VERYLARGE:
-                        foreach (Dictionary<string, string> parameters in binaryParams.grammarParameters)
-                        {
                             UniformGrammarSamplingBigInt grammarSampling = new UniformGrammarSamplingBigInt(parameters);
                             binaryConfigs.AddRange(grammarSampling.selectedConfigurations);
                         }
