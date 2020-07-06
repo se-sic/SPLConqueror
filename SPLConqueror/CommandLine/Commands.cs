@@ -839,13 +839,6 @@ namespace CommandLine
                         string samplingIdentifier = "PreVal_SPLCon_" + GlobalState.varModel.Name + "_" + createSmallerSamplingIdentifier() + ".csv";
 
                         printPredictedConfigurations(samplingIdentifier, experiment);
-
-                        //printPredictedConfigurations("./CrossValidationResultPrediction"
-                        //    + taskAsString.ToString()
-                        //    .Replace(" ", "-").Replace(":", "=").Replace("[", "").Replace("]", "")
-                        //    .Replace(Environment.NewLine, "").Substring(0)
-                        //    + ".csv", experiment);
-
                         break;
                     }
 
@@ -1107,7 +1100,7 @@ namespace CommandLine
                     File.Delete(configsValFile);
                     File.Delete(nfpLearnFile);
                     File.Delete(nfpValFile);
-                    var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
+                    List<string> optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
                         StringSplitOptions.RemoveEmptyEntries).ToList();
                     optimalParameters.Insert(0, taskAsParameter[0]);
                     handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());
