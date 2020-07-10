@@ -278,9 +278,26 @@ namespace CommandLine
                     // A file may contain multiple models
                     StreamReader modelReader = new StreamReader(filePaths[0].Trim());
                     List<string> models = new List<string>();
-                    while (!modelReader.EndOfStream)
+                    if (Path.GetExtension(filePaths[0]) == ".log")
                     {
-                        models.Add(modelReader.ReadLine());
+                        // If it is a log file, recover the last performance model and use it for learning
+                        string lastPerformanceModel = "";
+                        while (!modelReader.EndOfStream)
+                        {
+                            string currentLine = modelReader.ReadLine();
+                            if (currentLine.Contains(";") && !currentLine.Contains(";;"))
+                            {
+                                lastPerformanceModel = currentLine.Split(';')[1];
+                            }
+                        }
+                        models.Add(lastPerformanceModel);
+                    }
+                    else
+                    {
+                        while (!modelReader.EndOfStream)
+                        {
+                            models.Add(modelReader.ReadLine());
+                        }
                     }
                     modelReader.Close();
 
@@ -316,6 +333,9 @@ namespace CommandLine
                         }
                         else
                         {
+                            // Compute the error rate and return the error rate.
+                            double error = fSS.computeError(currentModel, GlobalState.allMeasurements.Configurations, false);
+                            GlobalState.logInfo.logLine("Error: " + error);
                             GlobalState.logInfo.logLine("As no path is given, no predictions are written into a file.");
                         }
                     }
