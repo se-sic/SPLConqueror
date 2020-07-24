@@ -129,8 +129,9 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                     BigInteger number = index / basis;
                     index = index % basis;
                     // Console.WriteLine("Number: " + number + "; Index: " + index + "; Basis: " + basis + "; key: " + key + "; child: " + rule[j].Item1 + "; Symbolkind: " + rule_set.Item2);
-                    if (!rule[j].Item3) features.Add(rule[j].Item1);
-                    if (rule_set.Item2 == SymbolKind.NONTERMINAL) features.AddRange(ConvertIntegerToFeatureList(number, rule[j].Item1));
+                    List<string> childFeatures = ConvertIntegerToFeatureList(number, rule[j].Item1);
+                    if (!rule[j].Item3 && childFeatures.Count > 0) features.Add(rule[j].Item1);
+                    if (rule_set.Item2 == SymbolKind.NONTERMINAL) features.AddRange(childFeatures);
                 }
             }
             else
@@ -140,8 +141,9 @@ namespace MachineLearning.Sampling.Heuristics.UniformHeuristics
                     if (index >= rule[i].Item2) index = index - rule[i].Item2;
                     else if (rule_set.Item2 == SymbolKind.NONTERMINAL)
                     {
-                        if (!rule[i].Item3) features.Add(rule[i].Item1);
-                        features.AddRange(ConvertIntegerToFeatureList(index, rule[i].Item1));
+                        List<string> childFeatures = ConvertIntegerToFeatureList(index, rule[i].Item1);
+                        if (!rule[i].Item3 && childFeatures.Count > 0) features.Add(rule[i].Item1);
+                        features.AddRange(childFeatures);
                         break;
                     }
                     else
