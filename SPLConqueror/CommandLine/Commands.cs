@@ -278,7 +278,8 @@ namespace CommandLine
                     // A file may contain multiple models
                     StreamReader modelReader = new StreamReader(filePaths[0].Trim());
                     List<string> models = new List<string>();
-                    if (Path.GetExtension(filePaths[0]) == ".log")
+                    if (Path.GetExtension(filePaths[0]) == ".log" || 
+                        Path.GetExtension(filePaths[0]) == ".log_wrong_result")
                     {
                         // If it is a log file, recover the last performance model and use it for learning
                         string lastPerformanceModel = "";
