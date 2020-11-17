@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/se-passau/SPLConqueror.svg?branch=master "Build status")](https://travis-ci.org/se-passau/SPLConqueror)
+[![Build status](https://travis-ci.org/se-sic/SPLConqueror.svg?branch=master "Build status")](https://travis-ci.org/se-sic/SPLConqueror)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/se-passau/SPLConqueror/master/logo.png">
