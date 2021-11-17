@@ -41,7 +41,7 @@ namespace MachineLearning.Sampling.Heuristics
             }
             else if (numConfigsValue.Contains("asTW"))
             {
-                numConfigsValue.Replace("asTW", "");
+                numConfigsValue = numConfigsValue.Replace("asTW", "");
                 numberConfigs = Int32.Parse(numConfigsValue);
                 TWise tw = new TWise();
                 numberConfigs = tw.generateT_WiseVariants_new(vm, numberConfigs).Count;
