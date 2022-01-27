@@ -75,17 +75,17 @@ namespace MachineLearning.Sampling.Heuristics
                 return;
             }
 
-            for (int i = index; i < GlobalState.varModel.WithAbstractBinaryOptions.Count; i++)
+            for (int i = index; i < vm.WithAbstractBinaryOptions.Count; i++)
             {
                 if (candidates.Count < t)
                 {
-                    if (!candidates.Contains(GlobalState.varModel.WithAbstractBinaryOptions[i]))
+                    if (!candidates.Contains(vm.WithAbstractBinaryOptions[i]))
                     {
                         List<BinaryOption> newCand = new List<BinaryOption>();
                         newCand.AddRange(candidates);
-                        newCand.Add(GlobalState.varModel.WithAbstractBinaryOptions[i]);
+                        newCand.Add(vm.WithAbstractBinaryOptions[i]);
 
-                        if (newOptionIsValidForCandidate(candidates, GlobalState.varModel.WithAbstractBinaryOptions[i]))
+                        if (newOptionIsValidForCandidate(candidates, vm.WithAbstractBinaryOptions[i]))
                         {
                             generatePowerSet(vm, newCand, t, result, i + 1);
                         }
