@@ -14,13 +14,13 @@ class MissingPipError(ImportError):
 It is advised to use these versions or higher as older versions will no
 longer be tested.
 """
-sklearn_version = "scikit-learn==0.20.3"
+sklearn_version = "scikit-learn>=0.20.3"
 
 """numpy package needed for sklearn"""
-numpy_version = "numpy==1.16.2"
+numpy_version = "numpy>=1.16.2"
 
 """scipy package needed for sklearn"""
-scipy_version = "scipy==1.2.1"
+scipy_version = "scipy>=1.2.1"
 
 try:
     import pip

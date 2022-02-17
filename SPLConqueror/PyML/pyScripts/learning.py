@@ -1,8 +1,13 @@
+from typing import List, Tuple, Dict, Any
+
 import sklearn.svm as sk
 import sklearn.ensemble as skEn
 import sklearn.neighbors as skNE
 import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
+import sklearn.linear_model as sklm
+import xgboost
+from xgboost import XGBRegressor
 import ast
 
 number_of_configurations = 0
@@ -55,6 +60,20 @@ def setup_learning(strategy, learner_settings):
         try:
             to_return = setup_KernelRidge(learner_settings)
             return to_return
+        except ValueError:
+            return val_err_inf(learner_settings)
+        except TypeError:
+            return typ_err_inf(learner_settings)
+    elif strategy == "elasticnet":
+        try:
+            return setup_elasticnet(learner_settings)
+        except ValueError:
+            return val_err_inf(learner_settings)
+        except TypeError:
+            return typ_err_inf(learner_settings)
+    elif strategy == "xgboost":
+        try:
+            return setup_xgboost(learner_settings)
         except ValueError:
             return val_err_inf(learner_settings)
         except TypeError:
@@ -412,3 +431,69 @@ def setup_KernelRidge(learner_settings):
 
     return skKR.KernelRidge(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree, coef0=coef0,
                             kernel_params=kernel_params)
+
+
+def setup_elasticnet(learner_settings):
+    parameter = {"alpha": [1.0, float],
+                 "l1_ratio": [0.5, float],
+                 "fit_intercept": [True, bool],
+                 "precompute": [False, bool],
+                 "max_iter": [1000, int],
+                 "copy_X": [True, bool],
+                 "tol": [0.0001, float],
+                 "warm_start": [True, bool],
+                 "positive": [False, bool],
+                 "random_state": [None, int],
+                 "selection": ['cyclic', str]}
+
+    parameter = read_in_settings(learner_settings, parameter)
+
+    return sklm.ElasticNet(alpha=parameter["alpha"], l1_ratio=parameter["l1_ratio"],
+                           fit_intercept=parameter["fit_intercept"], precompute=parameter["precompute"],
+                           max_iter=parameter["max_iter"], copy_X=parameter["copy_X"], tol=parameter["tol"],
+                           warm_start=parameter["warm_start"], positive=parameter["positive"],
+                           random_state=parameter["random_state"], selection=parameter["selection"])
+
+
+def read_in_settings(settings, parameter_list: Dict[str, List]) -> Dict[str, Any]:
+    for setting in settings:
+        setting_value_pair = setting.split("=")
+        if setting_value_pair[0] in parameter_list.keys():
+            key = setting_value_pair[0]
+            if len(parameter_list[key]) > 1:
+                # Convert it to the datatype given in the tuple
+                parameter_list[key][0] = parameter_list[key][1](setting_value_pair[1])
+            else:
+                parameter_list[key][0] = setting_value_pair[1]
+    parameter_to_value_dict = {}
+    for dict_key in parameter_list.keys():
+        parameter_to_value_dict[dict_key] = parameter_list[dict_key][0]
+    return parameter_to_value_dict
+
+
+def setup_xgboost(learner_settings):
+    parameter = {"n_extimators": [100, int],
+                 "max_depth": [None, int],
+                 "learning_rate": [None, float],
+                 "booster": [None, str],
+                 "tree_method": [None, str],
+                 "n_jobs": [None, int],
+                 "gamma": [None, float],
+                 "min_child_weight": [None, float],
+                 "max_delta_step": [None, float],
+                 "subsample": [None, float],
+                 "colsample_bytree": [None, float],
+                 "colsample_bylevel": [None, float],
+                 "colsample_bynode": [None, float],
+                 "reg_alpha": [None, float],
+                 "reg_lambda": [None, float],
+                 "scale_pos_weight": [None, float],
+                 "base_score": [None, float],
+                 "random_state": [None, int],
+                 "num_parallel_tree":  [None, int],
+                 "importance_type": [None, str],
+                 "validate_parameters": [True, bool]}
+
+    parameter = read_in_settings(learner_settings, parameter)
+    # Alternatively, other options can be set by using xgboost.set_config()
+    return XGBRegressor(**parameter)

@@ -4,7 +4,7 @@ import parameterTuning
 import configParser
 import learnerExtraction
 from sklearn.tree import DecisionTreeRegressor as DTR
-from sklearn.ensemble.forest import RandomForestRegressor as RF
+from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.svm import SVR
 from sys import argv
 from time import perf_counter
@@ -149,7 +149,7 @@ def main():
             if debug:
                 print("Extracting trees.\n", file=sys.stderr, flush=True)
             print_line_array(predictions)
-        if not tree_path.strip() is "" and check_prereq(model.learning_model):
+        if tree_path.strip() != "" and check_prereq(model.learning_model):
             print_line(str(elapsed))
             tree_file = open(tree_path, 'w')
             tree = learnerExtraction.extract(model.learning_model)
