@@ -4,6 +4,8 @@ import sklearn.neighbors as skNE
 import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
 import sklearn.model_selection as modelSel
+import sklearn.linear_model as sklm
+from xgboost import XGBRegressor
 
 import numpy as np
 
@@ -37,6 +39,40 @@ param_baggingSVR = {'n_estimators': [5, 8, 10, 12, 15], 'max_samples': [0.75, 0.
                     'base_estimator__coef0': [0, 1, 2, 3], 'base_estimator__shrinking': [True, False],
                     'base_estimator__tol': [1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 1e-1]}
 
+param_elastic_net = {"alpha": [0.25, 0.5, 0.75, 1.0],
+                     "l1_ratio": [0, 0.25, 0.5, 0.75, 1.0],
+                     "fit_intercept": [True, False],
+                     "precompute": [False, True],
+                     "max_iter": [100, 500, 750, 1000, 1250],
+                     "copy_X": [True, bool],
+                     "tol": [1e-5, 1e-4, 1e-3, 1e-2],
+                     "warm_start": [True, False],
+                     "positive": [False, False],
+                     "random_state": [None, int],
+                     "selection": ['cyclic', str]}
+
+param_xgboost = {"n_extimators": [100, int],
+                 "max_depth": [None, int],
+                 "learning_rate": [None, float],
+                 "booster": [None, str],
+                 "tree_method": [None, str],
+                 "n_jobs": [None, int],
+                 "gamma": [None, float],
+                 "min_child_weight": [None, float],
+                 "max_delta_step": [None, float],
+                 "subsample": [None, float],
+                 "colsample_bytree": [None, float],
+                 "colsample_bylevel": [None, float],
+                 "colsample_bynode": [None, float],
+                 "reg_alpha": [None, float],
+                 "reg_lambda": [None, float],
+                 "scale_pos_weight": [None, float],
+                 "base_score": [None, float],
+                 "random_state": [None, int],
+                 "num_parallel_tree":  [None, int],
+                 "importance_type": [None, str],
+                 "validate_parameters": [True, bool]}
+
 target_path = ""
 
 strat_filename = "strat.txt"
@@ -67,6 +103,10 @@ def optimizeParameter(strategy, X_train, y_train, parameter_space_def):
         return optimize_KernelRidge(X_train, y_train)
     elif strategy == "baggingsvr":
         return optimize_BaggingSVR(X_train, y_train)
+    elif strategy == "xgboost":
+        return optimize_xgboost(X_train, y_train)
+    elif strategy == "elasticnet":
+        return optimize_elastic_net(X_train, y_train)
 
 
 # Score function used measure how good the configurations/estimator is
@@ -123,6 +163,14 @@ def optimize_BaggingSVR(X_train, y_train):
 
     return formatOptimal(opt.best_params_)
 
+def optimize_elastic_net(x_train, y_train):
+    opt = modelSel.RandomizedSearchCV(estimator=sklm.ElasticNet(), param_distributions=param_elastic_net,
+                                      cv=5, scoring=scoreFunction)
+    opt.fit(x_train, y_train)
+    return formatOptimal(opt.best_params_)
+
+def optimize_xgboost(x_train, y_train):
+    pass
 
 # Format the best configuration found during parameter tuning.
 def formatOptimal(optimalParams):
@@ -163,6 +211,10 @@ def change_parameter_space(strategy, parameter_space_def):
             to_execute = "param_kernelRidge"
         elif strategy == "baggingsvr":
             to_execute = "param_baggingSVR"
+        elif strategy == "xgboost":
+            to_execute = "param_xgboost"
+        elif strategy == "elasticnet":
+            to_execute = "param_elastic_net"
         to_execute += " = [{"
         to_execute += format_parameter_space(parameter_space_def)
         exec(to_execute, globals())

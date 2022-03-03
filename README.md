@@ -161,7 +161,7 @@ git submodule update --init --recursive
     
 5. Build the root project
 
-6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+6.Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(1.0.2), numpy(1.22.2),scipy(1.8.0), and xgboost(1.5.2) packages.
 
 7. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 </details>
@@ -729,14 +729,14 @@ To set which python interpreter is used, use the ```define-python-path``` comman
 
 ```learn-python <learner>```
 
-To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
+To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, Kernelridge, ElasticSearch, and XGBoost learners are supported. The learning results will be written in the into the folder where the log file is located.
 For more information on the algorithms see:[Scikit-Learn](http://scikit-learn.org/stable/documentation.html)
 
 Further, machine-learning parameters for the individual strategies can be passed as additional arguments. The parameters have to be separated by whitespaces and each machine-learning paramter has to be passed in the form of
 
 ```parameter_name=value```
 
-. The full list of the machine-learning parameters for each individual algorithm can be found in the [Scikit-Learn API documentation](https://scikit-learn.org/stable/modules/classes.html)
+The full list of the machine-learning parameters for each individual algorithm can be found in the [Scikit-Learn API documentation](https://scikit-learn.org/stable/modules/classes.html)
 
 #### Performing parameter optimization for scikit-learn
 

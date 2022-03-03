@@ -1,0 +1,4 @@
+numpy==1.22.2
+scikit-learn==1.0.2
+scipy==1.8.0
+xgboost==1.5.2
