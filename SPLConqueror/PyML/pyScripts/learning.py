@@ -8,6 +8,7 @@ import sklearn.tree as skTr
 import sklearn.linear_model as sklm
 from xgboost import XGBRegressor
 import ast
+import sys
 
 number_of_configurations = 0
 
@@ -285,7 +286,7 @@ def setup_elasticnet(learner_settings):
 
 def read_in_settings(settings, parameter_list: Dict[str, List]) -> Dict[str, Any]:
     for setting in settings:
-        setting_value_pair = setting.split("=")
+        setting_value_pair = setting.split(":")
         if setting_value_pair[0] in parameter_list.keys():
             key = setting_value_pair[0]
             if len(parameter_list[key]) > 1:
