@@ -135,7 +135,7 @@ def optimize_DecisionTree(X_train, y_train):
 
 
 def optimize_RandomForestRegressor(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator=skEn.RandomForestRegressor(), param_distributions=param_RandomForest,
+    opt = modelSel.GridSearchCV(estimator=skEn.RandomForestRegressor(), param_grid=param_RandomForest,
                                       cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
     return formatOptimal(opt.best_params_)
@@ -186,10 +186,10 @@ def formatOptimal(optimalParams):
 def format_parameter_space(parameter_space):
     formated_space = ""
     for parameter in parameter_space:
-        if "=" in parameter:
-            name_value_pair = parameter.split("=")
+        if ":" in parameter:
+            name_value_pair = parameter.split(":")
             formated_space += " '" + name_value_pair[0] + "' : "
-            formated_space += str(name_value_pair[1]) + ","
+            formated_space += str(name_value_pair[1]).replace(';', ',') + ","
     formated_space += formated_space[:-1]
     formated_space += "}]"
     return formated_space
