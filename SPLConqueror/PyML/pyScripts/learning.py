@@ -146,49 +146,20 @@ class Learner:
 
 
 def setup_SVR(learner_settings):
-    # default settings
-    kernel = 'rbf'
-    degree = 3
-    gamma = 'auto'
-    coef0 = 0.0
-    tol = 0.001
-    C = 1.0
-    epsilon = 0.1
-    shrinking = True
-    cache_size = 200
-    verbose = False
-    max_iter = -1
-
-    # change default values.
-    for additional_setting in learner_settings:
-        # split identifier=value, so you can identify value and the variable
-        setting_value_pair = additional_setting.split("=")
-        if setting_value_pair[0] == "kernel":
-            kernel = setting_value_pair[1]
-        if setting_value_pair[0] == "degree":
-            degree = int(setting_value_pair[1])
-        if setting_value_pair[0] == "gamma":
-            gamma = setting_value_pair[1]
-        if setting_value_pair[0] == "coef0":
-            coef0 = float(setting_value_pair[1])
-        if setting_value_pair[0] == "tol":
-            tol = float(setting_value_pair[1])
-        if setting_value_pair[0] == "C":
-            C = float(setting_value_pair[1])
-        if setting_value_pair[0] == "epsilon":
-            epsilon = float(setting_value_pair[1])
-        if setting_value_pair[0] == "shrinking":
-            shrinking = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "cache_size":
-            cache_size = int(setting_value_pair[1])
-        if setting_value_pair[0] == "verbose":
-            if not setting_value_pair[1].isnumeric():
-                verbose = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "max_iter":
-            max_iter = int(setting_value_pair[1])
-
-    return sk.SVR(C=C, cache_size=cache_size, epsilon=epsilon, coef0=coef0, degree=degree,
-                  kernel=kernel, gamma=gamma, max_iter=max_iter, shrinking=shrinking, tol=tol, verbose=verbose)
+    parameter = {"kernel": ['rbf', str],  # linear, poly, rbf, sigmoid, precomputd
+                 "degree": [3, int],
+                 "gamma": ["auto"],  # other options: 'scale' or float
+                 "coef0": [0.0, float],
+                 "tol": [0.001, float],
+                 "C": [1.0, float],
+                 "epsilon": [0.1, float],
+                 "shrinking": [True, bool],
+                 "cache_size": [200, float],
+                 "verbose": [False, bool],
+                 "max_iter": [-1, int],
+                 }
+    parameter = read_in_settings(learner_settings, parameter)
+    return sk.SVR(**parameter)
 
 
 def parse_to_int_float_bool_string(n):
@@ -206,230 +177,89 @@ def parse_to_int_float_bool_string(n):
 
 
 def setup_DecisionTree(learner_settings):
-    # default values
-    criterion = 'squared_error'
-    splitter = 'best'
-    max_depth = None
-    min_samples_split = 2
-    min_samples_leaf = 1
-    min_weight_fraction_leaf = 0.0
-    max_features = None
-    random_state = None
-    max_leaf_nodes = None
-    # min impurity split is only supported in versions >=0.18
-    # min_impurity_split = 1e-07
-    presort = False
-
-    # change default values
-    for additional_setting in learner_settings:
-        # split identifier=value, so you can identify value and the variable
-        setting_value_pair = additional_setting.split("=")
-        if setting_value_pair[0] == "criterion":
-            criterion = setting_value_pair[1]
-        if setting_value_pair[0] == "splitter":
-            splitter = setting_value_pair[1]
-        if setting_value_pair[0] == "max_depth":
-            max_depth = int(setting_value_pair[1])
-        if setting_value_pair[0] == "min_samples_split":
-            min_samples_split = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "min_samples_leaf":
-            min_samples_leaf = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "min_weight_fraction_leaf":
-            min_weight_fraction_leaf = float(setting_value_pair[1])
-        if setting_value_pair[0] == "max_features":
-            max_features = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "random_state":
-            random_state = int(setting_value_pair[1])
-        if setting_value_pair[0] == "max_leaf_nodes":
-            max_leaf_nodes = int(setting_value_pair[1])
-        # if setting_value_pair[0] == "min_impurity_split":
-        #    min_impurity_split = float(setting_value_pair[1])
-        if setting_value_pair[0] == "presort":
-            presort = (setting_value_pair[1] == "True")
-
-    return skTr.DecisionTreeRegressor(criterion=criterion, splitter=splitter, max_depth=max_depth,
-                                      min_samples_split=min_samples_split,
-                                      min_samples_leaf=min_samples_leaf,
-                                      min_weight_fraction_leaf=min_weight_fraction_leaf, max_features=max_features,
-                                      random_state=random_state, max_leaf_nodes=max_leaf_nodes,
-                                      presort=presort)  # min_impurity_split=min_impurity_split,)
+    parameter = {"criterion": ['squared_error', str],  # friedman_mse, absolute_error, poisson
+                 "splitter": ['best', str],  # random
+                 "max_depth": [None, int],
+                 "min_samples_split": [2, int],
+                 "min_samples_leaf": [1, int],
+                 "min_weight_fraction_leaf": [0.0, float],
+                 "max_features": [None],  # other options are auto, sqrt, log2 or int
+                 "random_state": [None, int],
+                 "max_leaf_nodes": [None, int],
+                 "min_impurity_decrease": [0.0, float],
+                 "ccp_alpha": [0.0, float],
+                 }
+    parameter = read_in_settings(learner_settings, parameter)
+    return skTr.DecisionTreeRegressor(**parameter)
 
 
 def setup_RandomForestRegressor(learner_settings):
-    # default values
-    n_estimators = 10
-    criterion = 'squared_error'
-    max_depth = None
-    min_samples_split = 2
-    min_samples_leaf = 1
-    min_weight_fraction_leaf = 0.0
-    max_features = 'auto'
-    max_leaf_nodes = None
-    # min impurity split is only supported in versions >=0.18
-    # min_impurity_split = 1e-07
-    bootstrap = True
-    oob_score = False
-    n_jobs = 1
-    random_state = None
-    verbose = 0
-    warm_start = False
+    parameter = {"n_estimators": [10, int],
+                 "criterion": ["squared_error", str],  # Other options: absolute_error, poisson
+                 "max_depth": [None, int],
+                 "min_samples_split": [2, int],
+                 "min_samples_leaf": [1, int],
+                 "min_weight_fraction_leaf": [0.0, float],
+                 "max_features": ["auto", int],  # auto, sqrt, log2 or int
+                 "max_leaf_nodes": [None, int],
+                 "bootstrap": [True, bool],
+                 "oob_score": [False, bool],
+                 "n_jobs": [None, int],
+                 "random_state": [None, int],
+                 "verbose": [0, int],
+                 "warm_start": [False, bool],
+                 "ccp_alpha": [0.0, float],
+                 "max_samples": [None, int]
+                 }
 
-    # change default values
-    for additional_setting in learner_settings:
-        # split identifier=value, so you can identify value and the variable
-        setting_value_pair = additional_setting.split("=")
-        if setting_value_pair[0] == "n_estimators":
-            n_estimators = int(setting_value_pair[1])
-        if setting_value_pair[0] == "criterion":
-            criterion = setting_value_pair[1]
-        if setting_value_pair[0] == "max_depth":
-            max_depth = int(setting_value_pair[1])
-        if setting_value_pair[0] == "min_samples_split":
-            min_samples_split = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "min_samples_leaf":
-            min_samples_leaf = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "min_weight_fraction_leaf":
-            min_weight_fraction_leaf = float(setting_value_pair[1])
-        if setting_value_pair[0] == "max_features":
-            max_features = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "max_leaf_nodes":
-            max_leaf_nodes = int(setting_value_pair[1])
-        # if setting_value_pair[0] == "min_impurity_split":
-        #    min_impurity_split = float(setting_value_pair[1])
-        if setting_value_pair[0] == "bootstrap":
-            bootstrap = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "oob_score":
-            oob_score = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "n_jobs":
-            n_jobs = int(setting_value_pair[1])
-        if setting_value_pair[0] == "random_state":
-            random_state = int(setting_value_pair[1])
-        if setting_value_pair[0] == "verbose":
-            if setting_value_pair[1].isnumeric():
-                verbose = int(setting_value_pair[1])
-        if setting_value_pair[0] == "warm_start":
-            warm_start = (setting_value_pair[1] == "True")
-
-    return skEn.RandomForestRegressor(n_estimators=n_estimators, criterion=criterion,
-                                      min_samples_split=min_samples_split,
-                                      max_features=max_features, bootstrap=bootstrap, n_jobs=n_jobs,
-                                      random_state=random_state,
-                                      warm_start=warm_start, verbose=verbose, oob_score=oob_score,
-                                      max_leaf_nodes=max_leaf_nodes, min_weight_fraction_leaf=min_weight_fraction_leaf,
-                                      min_samples_leaf=min_samples_leaf,
-                                      max_depth=max_depth)
+    parameter = read_in_settings(learner_settings, parameter)
+    return skEn.RandomForestRegressor(**parameter)
 
 
 def setup_BaggingSVR(learner_settings):
-    # default values
+    parameter = {"n_estimators": [10, int],
+                 "max_samples": [1.0, float],
+                 "max_features": [1.0, float],
+                 "bootstrap": [True, bool],
+                 "bootstrap_features": [False, bool],
+                 "oob_score": [False, bool],
+                 "n_jobs": [None, int],
+                 "random_state": [None, int],
+                 "verbose": [0, int],
+                 "warm_start": [False, bool],
+                 }
     base_estimator = setup_SVR(learner_settings)
-    n_estimators = 10
-    max_samples = 1.0
-    max_features = 1.0
-    bootstrap = True
-    bootstrap_features = False
-    oob_score = False
-    warm_start = False
-    n_jobs = 1
-    random_state = None
-    verbose = 0
 
-    # change default values
-    for additional_setting in learner_settings:
-        # split identifier=value, so you can identify value and the variable
-        setting_value_pair = additional_setting.split("=")
-        if setting_value_pair[0] == "verbose":
-            if setting_value_pair[1].isnumeric():
-                verbose = int(setting_value_pair[1])
-        if setting_value_pair[0] == "random_state":
-            random_state = int(setting_value_pair[1])
-        if setting_value_pair[0] == "n_jobs":
-            n_jobs = int(setting_value_pair[1])
-        if setting_value_pair[0] == "warm_start":
-            warm_start = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "oob_score":
-            oob_score = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "bootstrap_features":
-            bootstrap_features = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "bootstrap":
-            bootstrap = (setting_value_pair[1] == "True")
-        if setting_value_pair[0] == "max_features":
-            max_features = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "max_samples":
-            max_samples = parse_to_int_float_bool_string(setting_value_pair[1])
-        if setting_value_pair[0] == "n_estimators":
-            n_estimators = int(setting_value_pair[1])
-
-    return skEn.BaggingRegressor(base_estimator=base_estimator, n_estimators=n_estimators, max_samples=max_samples,
-                                 max_features=max_features, bootstrap=bootstrap,
-                                 bootstrap_features=bootstrap_features, oob_score=oob_score, warm_start=warm_start,
-                                 n_jobs=n_jobs, random_state=random_state, verbose=verbose)
+    parameter = read_in_settings(learner_settings, parameter)
+    return skEn.BaggingRegressor(base_estimator=base_estimator, **parameter)
 
 
 def setup_KNeighborsRegressor(learner_settings):
-    # default values
-    n_neighbors = 5
-    weights = 'uniform'
-    algorithm = 'auto'
-    leaf_size = 30
-    p = 2
-    metric = 'minkowski'
-    metric_params = None
-    n_jobs = 1
+    parameter = {"n_neighbors": [5, int],
+                 "weights": ['uniform', str],  # or distance
+                 "algorithm": ['auto', str],  # auto, ball_tree, kd_tree, brute
+                 "leaf_size": [30, int],
+                 "p": [2, int],
+                 "metric": ['minkowski', str],
+                 "metric_params": [None],
+                 "n_jobs": [None, int],
+                 }
 
-    # change default values
-    for additional_setting in learner_settings:
-        # split identifier=value, so you can identify value and the variable
-        setting_value_pair = additional_setting.split("=")
-        if setting_value_pair[0] == "n_neighbors":
-            if int(setting_value_pair[1]) <= number_of_configurations:
-                n_neighbors = int(setting_value_pair[1])
-            else:
-                n_neighbors = 5
-        if setting_value_pair[0] == "weights":
-            weights = setting_value_pair[1]
-        if setting_value_pair[0] == "algorithm":
-            algorithm = setting_value_pair[1]
-        if setting_value_pair[0] == "leaf_size":
-            leaf_size = int(setting_value_pair[1])
-        if setting_value_pair[0] == "p":
-            p = int(setting_value_pair[1])
-        if setting_value_pair[0] == "metric":
-            metric = setting_value_pair[1]
-        if setting_value_pair[0] == "n_jobs":
-            n_jobs = int(setting_value_pair[1])
-
-    return skNE.KNeighborsRegressor(n_neighbors=n_neighbors, weights=weights, algorithm=algorithm,
-                                    leaf_size=leaf_size, p=p, metric=metric, metric_params=metric_params,
-                                    n_jobs=n_jobs)
+    parameter = read_in_settings(learner_settings, parameter)
+    return skNE.KNeighborsRegressor(**parameter)
 
 
 def setup_KernelRidge(learner_settings):
-    alpha = 1
-    kernel = 'linear'
-    gamma = None
-    degree = 3
-    coef0 = 1
-    kernel_params = None
+    parameter = {"alpha": [1.0, float],
+                 "kernel": ['linear', str],  # or distance
+                 "gamma": [None, float],  # auto, ball_tree, kd_tree, brute
+                 "degree": [3, float],
+                 "coef0": [1.0, float],
+                 "kernel_params": [None],
+                 }
 
-    for additional_setting in learner_settings:
-        # split identifier=value, so you can identify value and the variable
-        setting_value_pair = additional_setting.split("=")
-        if setting_value_pair[0] == "alpha":
-            alpha = float(setting_value_pair[1])
-        if setting_value_pair[0] == "kernel":
-            kernel = setting_value_pair[1]
-        if setting_value_pair[0] == "gamma":
-            gamma = float(setting_value_pair[1])
-        if setting_value_pair[0] == "degree":
-            degree = int(setting_value_pair[1])
-        if setting_value_pair[0] == "coef0":
-            coef0 = int(setting_value_pair[1])
-        if setting_value_pair[0] == "kernel_params":
-            kernel_params = setting_value_pair[1]
-
-    return skKR.KernelRidge(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree, coef0=coef0,
-                            kernel_params=kernel_params)
+    parameter = read_in_settings(learner_settings, parameter)
+    return skKR.KernelRidge(**parameter)
 
 
 def setup_elasticnet(learner_settings):
@@ -446,7 +276,6 @@ def setup_elasticnet(learner_settings):
                  "selection": ['cyclic', str]}
 
     parameter = read_in_settings(learner_settings, parameter)
-
     return sklm.ElasticNet(alpha=parameter["alpha"], l1_ratio=parameter["l1_ratio"],
                            fit_intercept=parameter["fit_intercept"], precompute=parameter["precompute"],
                            max_iter=parameter["max_iter"], copy_X=parameter["copy_X"], tol=parameter["tol"],
@@ -464,6 +293,8 @@ def read_in_settings(settings, parameter_list: Dict[str, List]) -> Dict[str, Any
                 parameter_list[key][0] = parameter_list[key][1](setting_value_pair[1])
             else:
                 parameter_list[key][0] = setting_value_pair[1]
+        else:
+            print(f"Parameter {setting_value_pair[0]} is unknown.\n", file=sys.stderr, flush=True)
     parameter_to_value_dict = {}
     for dict_key in parameter_list.keys():
         parameter_to_value_dict[dict_key] = parameter_list[dict_key][0]
@@ -489,7 +320,7 @@ def setup_xgboost(learner_settings):
                  "scale_pos_weight": [None, float],
                  "base_score": [None, float],
                  "random_state": [None, int],
-                 "num_parallel_tree":  [None, int],
+                 "num_parallel_tree": [None, int],
                  "importance_type": [None, str],
                  "validate_parameters": [True, bool]}
 

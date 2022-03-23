@@ -63,7 +63,7 @@ namespace ProcessWrapper
         public PythonWrapper(string path, string[] mlProperties)
         {
             bool debugTrace = false;
-            if((mlProperties.Length > 1) && mlProperties[1] == "Debug") {
+            if((mlProperties.Length > 1) && mlProperties[1].ToLower() == "debug") {
                 debugTrace = true;
                 mlProperties = mlProperties.Except(new string[] { mlProperties[1] }).ToArray();
             }
