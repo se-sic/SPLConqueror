@@ -13,7 +13,8 @@ namespace MachineLearning.Sampling
     {
         public static int binaryThreshold = 0;
         public static int binaryModulu = 0;
-        public static Dictionary<SamplingStrategies, List<BinaryOption>> optionsToConsider = new Dictionary<SamplingStrategies, List<BinaryOption>>();
+        public static Dictionary<SamplingStrategies, List<List<BinaryOption>>> optionsToConsider = 
+            new Dictionary<SamplingStrategies, List<List<BinaryOption>>>();
         public static BinaryParameters binaryParams = new BinaryParameters();
 
         // The default variant generator is the one using the CSP solver of the Microsoft solver foundation
@@ -30,7 +31,7 @@ namespace MachineLearning.Sampling
         {
             binaryModulu = 0;
             binaryThreshold = 0;
-            optionsToConsider = new Dictionary<SamplingStrategies, List<BinaryOption>>();
+            optionsToConsider = new Dictionary<SamplingStrategies, List<List<BinaryOption>>>();
             binaryParams = new BinaryParameters();
         }
 
@@ -40,6 +41,7 @@ namespace MachineLearning.Sampling
             List<Configuration> result = new List<Configuration>();
 
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
+            List<List<List<BinaryOption>>> binaryConfigsFromConsider = new List<List<List<BinaryOption>>>();
             List<Dictionary<NumericOption, Double>> numericConfigs = new List<Dictionary<NumericOption, double>>();
             foreach (SamplingStrategies strat in binaryStrategies)
             {
@@ -49,9 +51,12 @@ namespace MachineLearning.Sampling
                     case SamplingStrategies.ALLBINARY:
                         if (optionsToConsider.ContainsKey(SamplingStrategies.ALLBINARY))
                         {
-                            List<List<BinaryOption>> variants =
-                                vg.GenerateAllVariantsFast(vm.reduce(optionsToConsider[SamplingStrategies.ALLBINARY]));
-                            binaryConfigs.AddRange(changeModel(vm, variants));
+                            foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.ALLBINARY])
+                            {
+                                List<List<BinaryOption>> variants =
+                                    vg.GenerateAllVariantsFast(vm.reduce(options));
+                                binaryConfigsFromConsider.Add(changeModel(vm, variants));
+                            }
                         }
                         else
                         {
@@ -95,9 +100,12 @@ namespace MachineLearning.Sampling
                             }
                             if (optionsToConsider.ContainsKey(SamplingStrategies.SAT))
                             {
-                                List<List<BinaryOption>> variants =
-                                    vg.GenerateUpToNFast(vm.reduce(optionsToConsider[SamplingStrategies.SAT]), numberSamples);
-                                binaryConfigs.AddRange(changeModel(vm, variants));
+                                foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.SAT])
+                                {
+                                    List<List<BinaryOption>> variants =
+                                        vg.GenerateUpToNFast(vm.reduce(options), numberSamples);
+                                    binaryConfigs.AddRange(changeModel(vm, variants));
+                                }
                             }
                             else
                             {
@@ -107,10 +115,14 @@ namespace MachineLearning.Sampling
                         }
                         break;
                     case SamplingStrategies.BINARY_RANDOM:
-                        RandomBinary rb;
+                        RandomBinary rb = null;
                         if (optionsToConsider.ContainsKey(SamplingStrategies.BINARY_RANDOM))
                         {
-                            rb = new RandomBinary(vm.reduce(optionsToConsider[SamplingStrategies.BINARY_RANDOM]));
+                            foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.BINARY_RANDOM])
+                            {
+                                rb = new RandomBinary(vm.reduce(options));
+                            }
+
                         }
                         else
                         {
@@ -118,7 +130,10 @@ namespace MachineLearning.Sampling
                         }
                         foreach (Dictionary<string, string> expDesignParamSet in binaryParams.randomBinaryParameters)
                         {
-                            binaryConfigs.AddRange(changeModel(vm, rb.getRandomConfigs(expDesignParamSet)));
+                            if (rb != null)
+                            {
+                                binaryConfigsFromConsider.Add(changeModel(vm, rb.getRandomConfigs(expDesignParamSet)));
+                            }
                         }
 
                         break;
@@ -127,9 +142,12 @@ namespace MachineLearning.Sampling
                             FeatureWise fw = new FeatureWise();
                             if (optionsToConsider.ContainsKey(SamplingStrategies.OPTIONWISE))
                             {
-                                List<List<BinaryOption>> variants = fw.generateFeatureWiseConfigurations(GlobalState.varModel
-                                    .reduce(optionsToConsider[SamplingStrategies.OPTIONWISE]));
-                                binaryConfigs.AddRange(changeModel(vm, variants));
+                                foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.OPTIONWISE])
+                                {
+                                    List<List<BinaryOption>> variants = fw.generateFeatureWiseConfigurations(
+                                        GlobalState.varModel.reduce(options));
+                                    binaryConfigsFromConsider.Add(changeModel(vm, variants));
+                                }
                             }
                             else
                             {
@@ -141,7 +159,7 @@ namespace MachineLearning.Sampling
                         foreach (Dictionary<string, string> parameters in binaryParams.distanceMaxParameters)
                         {
                             DistanceBased distSampling = new DistanceBased(vm);
-                            binaryConfigs.AddRange(distSampling.getSample(parameters));
+                            binaryConfigsFromConsider.Add(distSampling.getSample(parameters));
                         }
                         break;
 
@@ -158,9 +176,12 @@ namespace MachineLearning.Sampling
                             PairWise pw = new PairWise();
                             if (optionsToConsider.ContainsKey(SamplingStrategies.PAIRWISE))
                             {
-                                List<List<BinaryOption>> variants = pw.generatePairWiseVariants(GlobalState.varModel
-                                    .reduce(optionsToConsider[SamplingStrategies.PAIRWISE]));
-                                binaryConfigs.AddRange(changeModel(vm, variants));
+                                foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.PAIRWISE])
+                                {
+                                    List<List<BinaryOption>> variants = pw.generatePairWiseVariants(
+                                        GlobalState.varModel.reduce(options));
+                                    binaryConfigsFromConsider.Add(changeModel(vm, variants));
+                                }
                             }
                             else
                             {
@@ -173,9 +194,12 @@ namespace MachineLearning.Sampling
                             NegFeatureWise neg = new NegFeatureWise();//2nd option: neg.generateNegativeFWAllCombinations(GlobalState.varModel));
                             if (optionsToConsider.ContainsKey(SamplingStrategies.NEGATIVE_OPTIONWISE))
                             {
-                                List<List<BinaryOption>> variants = neg.generateNegativeFW(GlobalState.varModel
-                                    .reduce(optionsToConsider[SamplingStrategies.NEGATIVE_OPTIONWISE]));
-                                binaryConfigs.AddRange(changeModel(vm, variants));
+                                foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.NEGATIVE_OPTIONWISE])
+                                {
+                                    List<List<BinaryOption>> variants = neg.generateNegativeFW(
+                                        GlobalState.varModel.reduce(options));
+                                    binaryConfigsFromConsider.Add(changeModel(vm, variants));
+                                }
                             }
                             else
                             {
@@ -199,9 +223,13 @@ namespace MachineLearning.Sampling
 
                                 if (optionsToConsider.ContainsKey(SamplingStrategies.T_WISE))
                                 {
-                                    List<List<BinaryOption>> variants = tw.generateT_WiseVariants_new(
-                                        vm.reduce(optionsToConsider[SamplingStrategies.T_WISE]), t);
-                                    binaryConfigs.AddRange(changeModel(vm, variants));
+                                    foreach (List<BinaryOption> options in optionsToConsider[
+                                                 SamplingStrategies.T_WISE])
+                                    {
+                                        List<List<BinaryOption>> variants = tw.generateT_WiseVariants_new(
+                                            vm.reduce(options), t);
+                                        binaryConfigsFromConsider.Add(changeModel(vm, variants));
+                                    }
                                 }
                                 else
                                 {
@@ -211,6 +239,40 @@ namespace MachineLearning.Sampling
                         }
                         break;
                 }
+            }
+            
+            if (binaryConfigsFromConsider.Count != 0)
+            {
+                // Compute the cartesian product
+                List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
+                foreach (List<List<BinaryOption>> sampleSet in binaryConfigsFromConsider)
+                {
+                    if (configurations.Count == 0)
+                    {
+                        configurations.AddRange(sampleSet);
+                    }
+                    else
+                    {
+                        List<List<BinaryOption>> tmpConfigurations = configurations;
+                        configurations = new List<List<BinaryOption>>();
+                        foreach (List<BinaryOption> configurationToExpand in tmpConfigurations)
+                        {
+                            foreach (List<BinaryOption> expandingConfiguration in sampleSet)
+                            {
+                                List<BinaryOption> newConfig = new List<BinaryOption>(configurationToExpand);
+                                foreach (BinaryOption binOpt in expandingConfiguration)
+                                {
+                                    if (!newConfig.Contains(binOpt))
+                                    {
+                                        newConfig.Add(binOpt);
+                                    }
+                                }
+                                configurations.Add(newConfig);
+                            }
+                        }
+                    }
+                }
+                binaryConfigs = configurations;
             }
 
             //Experimental designs for numeric options

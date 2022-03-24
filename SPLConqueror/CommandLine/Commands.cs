@@ -1370,7 +1370,12 @@ namespace CommandLine
         {
             if (optionsToConsider.Count > 0)
             {
-                ConfigurationBuilder.optionsToConsider.Add(strat, optionsToConsider.Concat(GlobalState.varModel.AbrstactOptions).ToList());
+                if (!ConfigurationBuilder.optionsToConsider.ContainsKey(strat))
+                {
+                    ConfigurationBuilder.optionsToConsider.Add(strat, new List<List<BinaryOption>>());
+                }
+                ConfigurationBuilder.optionsToConsider[strat].Add(
+                    optionsToConsider.Concat(GlobalState.varModel.AbrstactOptions).ToList());
             }
         }
 
@@ -1424,13 +1429,19 @@ namespace CommandLine
         {
             if (isValidation)
             {
-                this.binaryToSampleValidation.Add(strategy);
-                this.exp.info.binarySamplings_Validation = name;
+                if (!binaryToSampleValidation.Contains(strategy))
+                {
+                    this.binaryToSampleValidation.Add(strategy);
+                    this.exp.info.binarySamplings_Validation = name;
+                }
             }
             else
             {
-                this.binaryToSample.Add(strategy);
-                this.exp.info.binarySamplings_Learning = name;
+                if (!binaryToSample.Contains(strategy))
+                {
+                    this.binaryToSample.Add(strategy);
+                    this.exp.info.binarySamplings_Learning = name;
+                }
             }
         }
 
