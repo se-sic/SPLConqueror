@@ -1069,7 +1069,6 @@ namespace CommandLine
                     var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
                         StringSplitOptions.RemoveEmptyEntries).ToList();
                     optimalParameters.Insert(0, taskAsParameter[0]);
-                    handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());
                 }
                 else
                 {

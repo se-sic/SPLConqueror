@@ -8,6 +8,7 @@ import sklearn.linear_model as sklm
 from xgboost import XGBRegressor
 
 import numpy as np
+import pandas as pd
 
 # default parameter spaces used for parameter tuning.
 
@@ -69,15 +70,17 @@ param_xgboost = {"n_extimators": [100, int],
                  "scale_pos_weight": [None, float],
                  "base_score": [None, float],
                  "random_state": [None, int],
-                 "num_parallel_tree":  [None, int],
+                 "num_parallel_tree": [None, int],
                  "importance_type": [None, str],
                  "validate_parameters": [True, bool]}
 
-target_path = ""
+target_path = None
 
 strat_filename = "strat.txt"
 
 output_filename = "Output.txt"
+
+grid_search_file_name = None
 
 
 def setOutputPath(path):
@@ -120,69 +123,87 @@ def scoreFunction(estimator, configurations, measurements):
 
 
 def optimize_SVR(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator=sk.SVR(cache_size=4000), param_distributions=param_SVR, cv=5,
-                                      scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(estimator=sk.SVR(cache_size=4000), param_distributions=param_SVR, cv=5,
+                                scoring=scoreFunction)
     opt.fit(X_train, y_train)
 
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
 
 
 def optimize_DecisionTree(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator=skTr.DecisionTreeRegressor(), param_distributions=param_DecisionTree,
-                                      cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(estimator=skTr.DecisionTreeRegressor(), param_grid=param_DecisionTree,
+                                cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
 
 
 def optimize_RandomForestRegressor(X_train, y_train):
     opt = modelSel.GridSearchCV(estimator=skEn.RandomForestRegressor(), param_grid=param_RandomForest,
-                                      cv=5, scoring=scoreFunction)
+                                cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
 
 
 def optimize_KNNeighborsRegressor(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator=skNE.KNeighborsRegressor(), param_distributions=param_kNNRegressor,
-                                      cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(estimator=skNE.KNeighborsRegressor(), param_grid=param_kNNRegressor,
+                                cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
 
 
 def optimize_KernelRidge(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator=skKR.KernelRidge(), param_distributions=param_kernelRidge,
-                                      cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(estimator=skKR.KernelRidge(), param_grid=param_kernelRidge,
+                                cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
 
 
 def optimize_BaggingSVR(X_train, y_train):
-    opt = modelSel.RandomizedSearchCV(
+    opt = modelSel.GridSearchCV(
         estimator=skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500, gamma='auto'))
-        , param_distributions=param_baggingSVR, cv=5, scoring=scoreFunction)
+        , param_grid=param_baggingSVR, cv=5, scoring=scoreFunction)
     opt.fit(X_train, y_train)
 
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
+
 
 def optimize_elastic_net(x_train, y_train):
-    opt = modelSel.RandomizedSearchCV(estimator=sklm.ElasticNet(), param_distributions=param_elastic_net,
-                                      cv=5, scoring=scoreFunction)
+    opt = modelSel.GridSearchCV(estimator=sklm.ElasticNet(), param_grid=param_elastic_net,
+                                cv=5, scoring=scoreFunction)
     opt.fit(x_train, y_train)
-    return formatOptimal(opt.best_params_)
+    return formatOptimal(opt)
+
 
 def optimize_xgboost(x_train, y_train):
-    pass
+    opt = modelSel.GridSearchCV(estimator=XGBRegressor(), param_grid=param_elastic_net,
+                                cv=5, scoring=scoreFunction)
+    opt.fit(x_train, y_train)
+    return formatOptimal(opt)
+
 
 # Format the best configuration found during parameter tuning.
-def formatOptimal(optimalParams):
-    if len(optimalParams.keys()) == 0:
+def formatOptimal(opt_object):
+    # Create pandas dataframe and extract it
+    if grid_search_file_name:
+        df = pd.DataFrame(columns=list(opt_object.param_grid[0].keys()) + ['error'])
+        for i in range(0, len(opt_object.cv_results_['params'])):
+            df.loc[len(df)] = [*opt_object.cv_results_['params'][i].values()] + [
+                np.abs(opt_object.cv_results_['mean_test_score'][i])]
+        columns = list(df.columns[:-1])  # all columns except for error
+        columns.remove('random_state')
+        df = df.groupby(columns).agg({'error': 'mean'})
+        df.to_csv(grid_search_file_name, sep=';')
+
+    optimal_params = opt_object.best_params_
+    if len(optimal_params.keys()) == 0:
         return "No parameter has an influence on the accuracy of the result!"
     output = ""
-    for key in optimalParams:
-        output += key + "=" + str(optimalParams[key]) + ";"
+    for key in optimal_params:
+        output += key + "=" + str(optimal_params[key]) + ";"
     return output
 
 
-# Format a user defined parameter space to one that can be eecuted by python.
+# Format a user defined parameter space to one that can be eexcuted by python.
 def format_parameter_space(parameter_space):
     formated_space = ""
     for parameter in parameter_space:
@@ -198,6 +219,13 @@ def format_parameter_space(parameter_space):
 # Change the default parameter space to user given one.
 def change_parameter_space(strategy, parameter_space_def):
     if parameter_space_def:
+        if parameter_space_def[0].startswith("file:"):
+            global grid_search_file_name
+            grid_search_file_name = parameter_space_def[0].split(":")[1]
+            parameter_space_def = parameter_space_def[1:]
+            if len(parameter_space_def) == 0:
+                return
+
         to_execute = ""
         if strategy == "svr":
             to_execute = "param_SVR"

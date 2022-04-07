@@ -148,7 +148,9 @@ namespace SamplingUnitTest
             samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt1"));
             samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt2"));
             samplingDomainBinary.Add(GlobalState.varModel.getBinaryOption("binOpt6"));
-            ConfigurationBuilder.optionsToConsider.Add(SamplingStrategies.PAIRWISE, samplingDomainBinary);
+            List<List<BinaryOption>> singleSamplingDomain = new List<List<BinaryOption>>();
+            singleSamplingDomain.Add(samplingDomainBinary);
+            ConfigurationBuilder.optionsToConsider.Add(SamplingStrategies.PAIRWISE, singleSamplingDomain);
             List<NumericOption> samplingDomainNumeric = new List<NumericOption>();
             samplingDomainNumeric.Add(GlobalState.varModel.getNumericOption("numOpt1"));
             ExperimentalDesign exp = new CentralCompositeInscribedDesign();

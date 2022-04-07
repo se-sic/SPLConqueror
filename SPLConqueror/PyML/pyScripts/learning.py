@@ -284,9 +284,9 @@ def setup_elasticnet(learner_settings):
                            random_state=parameter["random_state"], selection=parameter["selection"])
 
 
-def read_in_settings(settings, parameter_list: Dict[str, List]) -> Dict[str, Any]:
+def read_in_settings(settings: str, parameter_list: Dict[str, List]) -> Dict[str, Any]:
     for setting in settings:
-        setting_value_pair = setting.split(":")
+        setting_value_pair = setting.split("=")
         if setting_value_pair[0] in parameter_list.keys():
             key = setting_value_pair[0]
             if len(parameter_list[key]) > 1:
