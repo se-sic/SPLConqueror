@@ -6,6 +6,9 @@ import sklearn.tree as skTr
 import sklearn.model_selection as modelSel
 import sklearn.linear_model as sklm
 from xgboost import XGBRegressor
+from pathlib import Path
+
+
 
 import numpy as np
 import pandas as pd
@@ -192,7 +195,9 @@ def formatOptimal(opt_object):
         columns = list(df.columns[:-1])  # all columns except for error
         columns.remove('random_state')
         df = df.groupby(columns).agg({'error': 'mean'})
-        df.to_csv(grid_search_file_name, sep=';')
+        new_path = Path(Path.cwd(), grid_search_file_name).resolve()
+        new_path.parent.mkdir(parents=True, exist_ok=True)          
+        df.to_csv(new_path, sep=';')
 
     optimal_params = opt_object.best_params_
     if len(optimal_params.keys()) == 0:
