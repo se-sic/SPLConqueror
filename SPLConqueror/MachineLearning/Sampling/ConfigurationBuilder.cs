@@ -115,24 +115,26 @@ namespace MachineLearning.Sampling
                         }
                         break;
                     case SamplingStrategies.BINARY_RANDOM:
-                        RandomBinary rb = null;
+                        List<RandomBinary> rb = new List<RandomBinary>();
                         if (optionsToConsider.ContainsKey(SamplingStrategies.BINARY_RANDOM))
                         {
                             foreach (List<BinaryOption> options in optionsToConsider[SamplingStrategies.BINARY_RANDOM])
                             {
-                                rb = new RandomBinary(vm.reduce(options));
+                                rb.Add(new RandomBinary(vm.reduce(options)));
                             }
 
                         }
                         else
                         {
-                            rb = new RandomBinary(vm);
+                            rb.Add(new RandomBinary(vm));
                         }
-                        foreach (Dictionary<string, string> expDesignParamSet in binaryParams.randomBinaryParameters)
+                        
+                        for (int i = 0; i < binaryParams.randomBinaryParameters.Count; i++)
                         {
-                            if (rb != null)
+                            Dictionary<string, string> expDesignParamSet = binaryParams.randomBinaryParameters[i];
+                            if (rb.Count > 0)
                             {
-                                binaryConfigsFromConsider.Add(changeModel(vm, rb.getRandomConfigs(expDesignParamSet)));
+                                binaryConfigsFromConsider.Add(changeModel(vm, rb[i].getRandomConfigs(expDesignParamSet)));
                             }
                         }
 
