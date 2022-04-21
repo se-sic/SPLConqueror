@@ -696,7 +696,7 @@ namespace SPLConqueror_Core
 
             }
 
-            if (nfpProperties != null && nfpProperties.Count != 0 && !GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+            if (nfpProperties != null && nfpProperties.Count != 0)// && !GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
             {
                 result.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
                 foreach (NFProperty nfp in this.nfpValues.Keys)

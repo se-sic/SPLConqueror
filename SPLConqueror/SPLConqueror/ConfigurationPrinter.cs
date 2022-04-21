@@ -100,6 +100,10 @@ namespace SPLConqueror_Core
                     {
                         nfpPropertiesToPrint.Add(GlobalState.currentNFP);
                     }
+                    else
+                    {
+                        nfpPropertiesToPrint.AddRange(GlobalState.nfProperties.Values);
+                    }
                 }
                 return print_csv(configurations, nfpPropertiesToPrint);
             }
@@ -126,7 +130,7 @@ namespace SPLConqueror_Core
                 csvContent.Append(c.Name);
             }
 
-            if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
+            //if (!GlobalState.currentNFP.Equals(NFProperty.DefaultProperty))
             {
                 foreach (NFProperty nfpProperty in nfpPropertiesToPrint)
                 {
