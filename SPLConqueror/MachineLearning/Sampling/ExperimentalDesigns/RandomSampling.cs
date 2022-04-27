@@ -100,7 +100,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
                     // config already used
                     foreach (NumericOption num in options)
                     {
-                        optionsWithValues[num][i] = (int)(rand.NextDouble() * (num.getNumberOfSteps()));
+                        optionsWithValues[num][i] = num.getValueForStep((int)(rand.NextDouble() * (num.getNumberOfSteps())));
                     }
                     i--;
                 }
