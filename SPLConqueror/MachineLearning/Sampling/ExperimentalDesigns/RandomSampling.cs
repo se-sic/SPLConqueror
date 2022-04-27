@@ -98,9 +98,21 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
         private List<Dictionary<NumericOption, double>> ExtractNumericConfiguration(List<Configuration> configurations)
         {
             List<Dictionary<NumericOption, double>> result = new List<Dictionary<NumericOption, double>>();
+            Dictionary<NumericOption, NumericOption> mapToOriginalVM = new Dictionary<NumericOption, NumericOption>();
             foreach (Configuration config in configurations)
             {
-                result.Add(config.NumericOptions);
+                Dictionary<NumericOption, double> newMap = new Dictionary<NumericOption, double>();
+                foreach (NumericOption numOpt in config.NumericOptions.Keys)
+                {
+                    if (!mapToOriginalVM.ContainsKey(numOpt))
+                    {
+                        mapToOriginalVM[numOpt] = GlobalState.varModel.getNumericOption(numOpt.Name);
+                    }
+
+                    newMap[mapToOriginalVM[numOpt]] = config.NumericOptions[numOpt];
+
+                }
+                result.Add(newMap);
             }
 
             return result;
