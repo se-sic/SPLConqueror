@@ -991,7 +991,7 @@ namespace SPLConqueror_Core
 
         /// <summary>
         /// Produce a reduced version of the variability model, containing only binary options
-        /// and at least the considered options. Is a considered option, all parent option will be inlcuded.
+        /// and at least the considered options. Is a considered option, all parent option will be included.
         /// Constraints between options(alternative groups, implication etc), will be included if enough options
         /// are present to (e.g. both options for implications or at least 2 options in alternative groups).
         /// </summary>
@@ -1065,6 +1065,56 @@ namespace SPLConqueror_Core
             return reduced;
         }
 
+        public VariabilityModel ReduceModelToNumeric()
+        {
+            VariabilityModel reducedModel = new VariabilityModel(name);
+            foreach (NumericOption numericOption in numericOptions)
+            {
+                ConfigurationOption replicatedOption = ReplicateNumericOption(numericOption, reducedModel);
+                reducedModel.addConfigurationOption(replicatedOption);
+                BinaryOption parent = (BinaryOption)numericOption.Parent;
+                bool parentExists = false;
+                while ((parent != null && parent != root) && !parentExists)
+                {
+                    BinaryOption newParent = reducedModel.getBinaryOption(parent.Name);
+                    if (newParent == null)
+                    {
+                        newParent = new BinaryOption(reducedModel, parent.Name);
+                        replicateOption(parent, newParent);
+                        reducedModel.addConfigurationOption(newParent);
+                    }
+                    else
+                        parentExists = true;
+
+                    replicatedOption.Parent = newParent;
+                    replicatedOption = newParent;
+                    parent = (BinaryOption)parent.Parent;
+                }
+
+                if (replicatedOption.Parent == null)
+                    replicatedOption.Parent = reducedModel.root;
+            }
+            
+            // Set the numeric cross-tree-constraints. They need no filtering here since we use all numeric options
+            reducedModel.nonBooleanConstraints = nonBooleanConstraints;
+
+            return reducedModel;
+        }
+
+        private NumericOption ReplicateNumericOption(NumericOption numericOption, VariabilityModel variabilityModel)
+        {
+            NumericOption newNumericOption = new NumericOption(variabilityModel, numericOption.Name);
+            newNumericOption.Min_value = numericOption.Min_value;
+            newNumericOption.Max_value = numericOption.Max_value;
+            newNumericOption.StepFunction = numericOption.StepFunction;
+            newNumericOption.Values = numericOption.Values;
+            newNumericOption.Optional = numericOption.Optional;
+            newNumericOption.OutputString = numericOption.OutputString;
+            newNumericOption.Prefix = numericOption.Prefix;
+            newNumericOption.Postfix = numericOption.Postfix;
+            return newNumericOption;
+        }
+        
         private void replicateOption(BinaryOption original, BinaryOption replication)
         {
             replication.Optional = original.Optional;

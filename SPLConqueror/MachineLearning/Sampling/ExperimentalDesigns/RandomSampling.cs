@@ -16,14 +16,8 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         private int sampleSize;
 
-        public RandomSampling(List<NumericOption> options)
-            : base(options)
+        public RandomSampling()
         {
-        }
-
-        public RandomSampling(int seed = 0, int sampleSize = 10)
-        {
-
         }
 
         public void setSeed(int seed)
@@ -47,6 +41,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             {
                 seed = parseFromParameters(parameterNameToValue, "seed");
             }
+
             if (parameterNameToValue.ContainsKey("sampleSize"))
             {
                 sampleSize = parseFromParameters(parameterNameToValue, "sampleSize");
@@ -64,55 +59,51 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
 
         private bool compute()
         {
-            Random rand = new Random(seed);
-            this.selectedConfigurations = new List<Dictionary<NumericOption, double>>();
-
-            Dictionary<NumericOption, List<double>> optionsWithValues = new Dictionary<NumericOption, List<double>>();
-
-            // select random values of numeric options
-            if (options.Count == 0)
-                return false;
-            foreach (NumericOption no in options)
+            VariabilityModel numericVariabilityModel = GlobalState.varModel.ReduceModelToNumeric();
+            List<ConfigurationOption> numericOptions = new List<ConfigurationOption>();
+            foreach (NumericOption numOpt in numericVariabilityModel.NumericOptions)
             {
-                List<double> values = new List<double>();
-                for (int i = 0; i < sampleSize; i++)
-                {
-                    values.Add(no.getValueForStep((int)(rand.NextDouble() * (no.getNumberOfSteps()))));
-                }
-                optionsWithValues.Add(no, values);
+                numericOptions.Add(numOpt);
             }
 
-            List<String> configsCode = new List<string>(); // test to not insert configs twice
+            List<Configuration> configurations =
+                ConfigurationBuilder.vg.GenerateAllVariants(numericVariabilityModel, numericOptions);
 
-            // generate configs
+            // Return all configurations and an error if we can't sample enough configurations
+            if (sampleSize >= configurations.Count)
+            {
+                if (sampleSize > configurations.Count)
+                    GlobalState.logError.logLine(
+                        "Random Sampling: numConfigs to large for variability model. num set to " +
+                        configurations.Count);
+                selectedConfigurations.AddRange(ExtractNumericConfiguration(configurations));
+                return true;
+            }
+
+            // select random configurations
+            Random r = new Random(seed);
+            List<Configuration> selectedConfigs = new List<Configuration>();
             for (int i = 0; i < sampleSize; i++)
             {
-                String codeCurrConfig = "";
-                Dictionary<NumericOption, double> currConfig = new Dictionary<NumericOption, double>();
-                foreach (NumericOption num in this.options)
-                {
-                    currConfig.Add(num, optionsWithValues[num][i]);
-                    codeCurrConfig += optionsWithValues[num][i];
-                }
-
-                if (configsCode.Contains(codeCurrConfig))
-                {
-                    // config already used
-                    foreach (NumericOption num in options)
-                    {
-                        optionsWithValues[num][i] = num.getValueForStep((int)(rand.NextDouble() * (num.getNumberOfSteps())));
-                    }
-                    i--;
-                }
-                else
-                {
-                    configsCode.Add(codeCurrConfig);
-                    selectedConfigurations.Add(currConfig);
-                }
+                int position = r.Next(configurations.Count);
+                Configuration selectedConfig = configurations[position];
+                configurations.RemoveAt(position);
+                selectedConfigs.Add(selectedConfig);
             }
-
+            selectedConfigurations.AddRange(ExtractNumericConfiguration(selectedConfigs));
 
             return true;
+        }
+
+        private List<Dictionary<NumericOption, double>> ExtractNumericConfiguration(List<Configuration> configurations)
+        {
+            List<Dictionary<NumericOption, double>> result = new List<Dictionary<NumericOption, double>>();
+            foreach (Configuration config in configurations)
+            {
+                result.Add(config.NumericOptions);
+            }
+
+            return result;
         }
 
         public override string parameterIdentifier()

@@ -175,7 +175,7 @@ namespace MachineLearning.Solver
                     allConfigurations.Add(c);
                 }
                 solver.Push();
-                solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, confOpts.Item1, optionToTerm, vm, numericValues: confOpts.Item2)));
+                solver.Assert(Z3Solver.NegateExpr(z3Context, Z3Solver.ConvertConfiguration(z3Context, confOpts.Item1, optionToTerm, vm, partial: true, numericValues: confOpts.Item2)));
             }
 
             solver.Push();

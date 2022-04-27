@@ -42,6 +42,7 @@ namespace SPLConqueror_Core
         public NumericValues Values
         {
             get { return values; }
+            set { values = value; }
         }
 
         private InfluenceFunction stepFunction = null;

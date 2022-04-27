@@ -99,17 +99,10 @@ namespace MachineLearning.Sampling.Heuristics
             Random r = new Random(seed);
             for (int i = 0; i < numConfigs; i++)
             {
-                List<BinaryOption> selectedConfig = allConfigs[r.Next(allConfigs.Count)];
-
-                if (configurations.Contains(selectedConfig))
-                {
-                    i -= 1;
-                }
-                else
-                {
-                    configurations.Add(selectedConfig);
-                }
-
+                int position = r.Next(allConfigs.Count);
+                List<BinaryOption> selectedConfig = allConfigs[position];
+                allConfigs.RemoveAt(position);
+                configurations.Add(selectedConfig);
             }
             return configurations;
         }
