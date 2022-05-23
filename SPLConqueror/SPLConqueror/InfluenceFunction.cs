@@ -585,6 +585,13 @@ namespace SPLConqueror_Core
             if (varModel == null)
             {
                 if (token.Equals(this.numOption.Name))
+                    foreach (var k in config)
+                    {
+                        if (this.numOption.Name.Equals(k.Key.Name))
+                        {
+                            return k.Value;
+                        }
+                    }
                     return config[this.numOption];
             }
             else
