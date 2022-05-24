@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -106,11 +107,25 @@ namespace SPLConqueror_Core
                     {
                         try
                         {
-                            optionValues[option.Key] = numericOptions[option.Value as NumericOption];
+                            bool foundit = false;
+                            foreach (var k in numericOptions)
+                            {
+                                if (option.Value.Name.Equals(k.Key.Name))
+                                {
+                                    optionValues[option.Key]=k.Value;
+                                    foundit = true;
+                                    break;
+                                }
+                            }
+
+                            if (!foundit)
+                            {
+                                throw new KeyNotFoundException();
+                            }
                         }
                         catch (KeyNotFoundException)
                         {
-                            GlobalState.logError.logLine(option.Value.Name + "not found in selected numeric options."
+                            GlobalState.logError.logLine(option.Value.Name + " not found in selected numeric options. "
                                 + "This option is usually mandatory. Unless you removed it from your sampling domain"
                                 + ", make sure your measurements contain all numeric options.");
                         }
