@@ -327,7 +327,10 @@ namespace MachineLearning.Sampling
                             Dictionary<BinaryOption, BinaryOption.BinaryValue> hybridBinOpts = hybridConfiguration.BinaryOptions;
                             foreach (BinaryOption binOpt in hybridConfiguration.BinaryOptions.Keys)
                             {
-                                binOpts.Add(binOpt, hybridBinOpts[binOpt]);
+                                if (!binOpts.ContainsKey(binOpt))
+                                {
+                                    binOpts.Add(binOpt, hybridBinOpts[binOpt]);
+                                }
                             }
 
                             Dictionary<NumericOption, double> hybridNumOpts = hybridConfiguration.NumericOptions;
