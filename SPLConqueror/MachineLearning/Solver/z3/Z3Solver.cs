@@ -369,11 +369,34 @@ namespace MachineLearning.Solver
                     {
                         ConfigurationOption option = GlobalState.varModel.getOption(expression[i]);
                         Expr expr = null;
-                        if (option is BinaryOption && optionMapping.ContainsKey((BinaryOption) option))
+                        bool foundit = false;
+                        if (option is BinaryOption)
                         {
-                            expr = optionMapping[(BinaryOption) option];
+                            foreach (var k in optionMapping)
+                            {
+                                if (option.Name.Equals(k.Key.Name))
+                                {
+                                    expr=k.Value;
+                                    foundit = true;
+                                    break;
+                                }
+                            }
+
                         }
-                        else
+                        if (!foundit)
+                        {
+                            foreach (var k in optionToTerm)
+                            {
+                                if (option.Name.Equals(k.Key.Name))
+                                {
+                                    expr=k.Value;
+                                    foundit = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!foundit)
                         {
                             expr = optionToTerm[option];
                         }
