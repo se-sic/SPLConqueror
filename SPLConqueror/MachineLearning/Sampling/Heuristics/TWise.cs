@@ -17,6 +17,9 @@ namespace MachineLearning.Sampling.Heuristics
 
         public const string PARAMETER_T_NAME = "t";
 
+        private CheckConfigSATZ3 configurationChecker;
+        private VariabilityModel vm;
+
         /// <summary>
         /// Creates the t-wise sampling according to the given t-value.
         /// </summary>
@@ -32,6 +35,9 @@ namespace MachineLearning.Sampling.Heuristics
                 return fw.generateFeatureWiseConfigurations(vm);
             }
 
+            configurationChecker = new CheckConfigSATZ3();
+            this.vm = vm;
+            
             List<BinaryOption> candidate = new List<BinaryOption>();
             List<List<BinaryOption>> result = new List<List<BinaryOption>>();
             generatePowerSet(vm, candidate, t, result, 0);
@@ -132,6 +138,14 @@ namespace MachineLearning.Sampling.Heuristics
                 if (impliedOption)
                     return false;
             }
+
+            List<BinaryOption> allOptions = new List<BinaryOption>(candidates);
+            allOptions.Add(binaryOption);
+            if (!configurationChecker.checkConfigurationSAT(allOptions, this.vm, true))
+            {
+                return false;
+            }
+            
             return true;
         }
     }
