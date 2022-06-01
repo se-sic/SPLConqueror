@@ -356,7 +356,7 @@ namespace MachineLearning.Sampling
             }
             
             // Print the time needed for sampling
-            GlobalState.logInfo.logLine("Total sampling time={0}");
+            GlobalState.logInfo.logLine("Total sampling time=" + sw.Elapsed);
 
             // Filter the invalid configurations
             List<Configuration> invalidConfigurations = new List<Configuration>();
