@@ -346,6 +346,22 @@ namespace MachineLearning.Sampling
                 }
             }
 
+            // Filter the invalid configurations
+            List<Configuration> invalidConfigurations = new List<Configuration>();
+            // We strictly use z3 solver here
+            CheckConfigSATZ3 configurationChecker = new CheckConfigSATZ3();
+            foreach (Configuration config in result.Distinct().ToList())
+            {
+                if (!configurationChecker.checkConfigurationSAT(config, GlobalState.varModel))
+                {
+                    invalidConfigurations.Add(config);
+                }
+            }
+            foreach (Configuration invalidConfig in invalidConfigurations)
+            {
+                result.Remove(invalidConfig);
+            }
+
             if (vm.MixedConstraints.Count == 0)
             {
                 if (binaryStrategies.Count == 1 && binaryStrategies.Last().Equals(SamplingStrategies.ALLBINARY) && experimentalDesigns.Count == 1 && experimentalDesigns.Last() is FullFactorialDesign)
@@ -455,7 +471,7 @@ namespace MachineLearning.Sampling
 
         private static List<Configuration> replaceReference(List<Configuration> sampled)
         {
-            // Replaces the reference of the sampled configuration with the corresponding measured configurstion if it exists
+            // Replaces the reference of the sampled configuration with the corresponding measured configuration if it exists
             if (GlobalState.varModel.AbrstactOptions.Count > 0)
             {
 
