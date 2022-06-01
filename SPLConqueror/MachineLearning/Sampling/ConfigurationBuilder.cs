@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SPLConqueror_Core;
 using MachineLearning.Solver;
@@ -43,6 +44,9 @@ namespace MachineLearning.Sampling
             List<List<BinaryOption>> binaryConfigs = new List<List<BinaryOption>>();
             List<List<List<BinaryOption>>> binaryConfigsFromConsider = new List<List<List<BinaryOption>>>();
             List<Dictionary<NumericOption, Double>> numericConfigs = new List<Dictionary<NumericOption, double>>();
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             foreach (SamplingStrategies strat in binaryStrategies)
             {
                 switch (strat)
@@ -242,6 +246,7 @@ namespace MachineLearning.Sampling
                         break;
                 }
             }
+            sw.Stop();
             
             if (binaryConfigsFromConsider.Count != 0)
             {
@@ -276,11 +281,13 @@ namespace MachineLearning.Sampling
                 }
                 binaryConfigs = configurations;
             }
-
+            
             //Experimental designs for numeric options
             if (experimentalDesigns.Count != 0)
             {
+                sw.Start();
                 handleDesigns(experimentalDesigns, numericConfigs, vm);
+                sw.Stop();
             }
 
             if (vm.NumericOptions.Any(x => x.Optional))
@@ -296,7 +303,9 @@ namespace MachineLearning.Sampling
             // Hybrid designs
             if (hybridStrategies.Count != 0)
             {
+                sw.Start();
                 List<Configuration> configurations = ExecuteHybridStrategy(hybridStrategies, vm);
+                sw.Stop();
 
                 if (experimentalDesigns.Count == 0 && binaryStrategies.Count == 0)
                 {
@@ -345,6 +354,9 @@ namespace MachineLearning.Sampling
                     result = newResult;
                 }
             }
+            
+            // Print the time needed for sampling
+            GlobalState.logInfo.logLine("Total sampling time={0}");
 
             // Filter the invalid configurations
             List<Configuration> invalidConfigurations = new List<Configuration>();
