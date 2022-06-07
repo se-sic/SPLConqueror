@@ -20,6 +20,8 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         // number of features considered for weight optimization
         private Tuple<int, int> featureRange = new Tuple<int, int>(1, 1);
 
+        private VariabilityModel vm = GlobalState.varModel;
+
         /// <summary>
         /// Initializes a new instance of the
         /// <see cref="MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic.SolverSelection"/> class.
@@ -47,6 +49,15 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
         }
 
         /// <summary>
+        /// Set the variability model.
+        /// </summary>
+        /// <param name="vm">the variability model</param>
+        public void setVariabilityModel(VariabilityModel vm)
+        {
+            this.vm = vm;
+        }
+
+        /// <summary>
         /// This method selects a given number of configurations by using the sample mechanism of the CSP solver.
         /// </summary>
         /// <returns>A set of configurations that have been picked to fit the given distribution.</returns>
@@ -71,7 +82,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
             {
                 if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0)
                 {
-                    featureWeight.Add(0, InitializeWeightDict(GlobalState.varModel));
+                    featureWeight.Add(0, InitializeWeightDict(vm));
                 }
                 else
                 {
@@ -84,7 +95,7 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 {
                     if (this.featureRange.Item1 != 0 && this.featureRange.Item2 != 0)
                     {
-                        featureWeight.Add(i, InitializeWeightDict(GlobalState.varModel));
+                        featureWeight.Add(i, InitializeWeightDict(vm));
                     }
                     else
                     {
@@ -128,18 +139,18 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 // Now select the configuration by using the solver
                 if (optimization == Optimization.NONE)
                 {
-                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
+                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(vm,
                         distanceOfBucket, null, selectedConfigurationsFromBucket[currentBucket]);
                 }
                 else if (optimization == Optimization.GLOBAL)
                 {
-                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
+                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(vm,
                         distanceOfBucket, featureWeight[0], selectedConfigurationsFromBucket[currentBucket]);
 
                 }
                 else if (optimization == Optimization.LOCAL)
                 {
-                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(GlobalState.varModel,
+                    solution = ConfigurationBuilder.vg.GenerateConfigurationFromBucket(vm,
                         distanceOfBucket, featureWeight[currentBucket], selectedConfigurationsFromBucket[currentBucket]);
                 }
 
@@ -161,11 +172,11 @@ namespace MachineLearning.Sampling.Hybrid.Distributive.SelectionHeuristic
                 selectedConfigurationsFromBucket[currentBucket] = currentSelectedConfiguration;
                 if (optimization == Optimization.GLOBAL)
                 {
-                    UpdateWeights(GlobalState.varModel, featureWeight[0], currentSelectedConfiguration);
+                    UpdateWeights(vm, featureWeight[0], currentSelectedConfiguration);
                 }
                 else if (optimization == Optimization.LOCAL)
                 {
-                    UpdateWeights(GlobalState.varModel, featureWeight[currentBucket], currentSelectedConfiguration);
+                    UpdateWeights(vm, featureWeight[currentBucket], currentSelectedConfiguration);
                 }
             }
 

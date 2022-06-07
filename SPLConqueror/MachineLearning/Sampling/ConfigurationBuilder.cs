@@ -323,6 +323,12 @@ namespace MachineLearning.Sampling
                         }
                     }
 
+                    // Create a string -> binary option mapping for the cartesian product
+                    Dictionary<String, BinaryOption> binOptMap = new Dictionary<string, BinaryOption>();
+                    foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                    {
+                        binOptMap[binOpt.Name] = binOpt;
+                    }
 
                     // Build the cartesian product
                     List<Configuration> newResult = new List<Configuration>();
@@ -334,11 +340,13 @@ namespace MachineLearning.Sampling
                             Dictionary<NumericOption, double> numOpts = new Dictionary<NumericOption, double>(config.NumericOptions);
 
                             Dictionary<BinaryOption, BinaryOption.BinaryValue> hybridBinOpts = hybridConfiguration.BinaryOptions;
+
                             foreach (BinaryOption binOpt in hybridConfiguration.BinaryOptions.Keys)
                             {
-                                if (!binOpts.ContainsKey(binOpt))
+                                
+                                if (!binOpts.ContainsKey(binOptMap[binOpt.Name]))
                                 {
-                                    binOpts.Add(binOpt, hybridBinOpts[binOpt]);
+                                    binOpts.Add(binOptMap[binOpt.Name], hybridBinOpts[binOpt]);
                                 }
                             }
 

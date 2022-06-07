@@ -151,6 +151,18 @@ namespace MachineLearning.Sampling.Hybrid.Distributive
                     int seed = 0;
                     Int32.TryParse(this.strategyParameter[SEED], out seed);
                     ((SolverSelection)selection).setSeed(seed);
+                    
+                    // Extract the binary options
+                    List<BinaryOption> binOpts = new List<BinaryOption>();
+                    foreach (ConfigurationOption opt in this.optionsToConsider)
+                    {
+                        if (opt is BinaryOption)
+                        {
+                            binOpts.Add((BinaryOption) opt);
+                        }
+                    }
+                    ((SolverSelection)selection).setVariabilityModel(GlobalState.varModel.reduce(binOpts));
+                    
                     Tuple<int, int> numberFeatureRange = new Tuple<int, int>(1, 1);
                     if (this.strategyParameter[OPTIONS_FOR_WEIGHTOPTIMIZATION].Contains("-"))
                     {
