@@ -229,13 +229,11 @@ namespace MachineLearning.Sampling
 
                                 if (optionsToConsider.ContainsKey(SamplingStrategies.T_WISE))
                                 {
-                                    foreach (List<BinaryOption> options in optionsToConsider[
-                                                 SamplingStrategies.T_WISE])
-                                    {
-                                        List<List<BinaryOption>> variants = tw.generateT_WiseVariants_new(
-                                            vm.reduce(options), t);
-                                        binaryConfigsFromConsider.Add(changeModel(vm, variants));
-                                    }
+                                    List<BinaryOption> options = optionsToConsider[SamplingStrategies.T_WISE][0];
+                                    optionsToConsider[SamplingStrategies.T_WISE].RemoveAt(0);
+                                    List<List<BinaryOption>> variants = tw.generateT_WiseVariants_new(
+                                        vm.reduce(options), t);
+                                    binaryConfigsFromConsider.Add(changeModel(vm, variants));
                                 }
                                 else
                                 {
