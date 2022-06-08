@@ -1061,6 +1061,41 @@ namespace SPLConqueror_Core
 
                 reduced.getBinaryOption(opt.Name).Excluded_Options = excludedOptionsRepl;
             }
+            
+            // Add all binary constraints if all binary options are included 
+            if (consideredOptions.Count == GlobalState.varModel.binaryOptions.Count)
+            {
+                reduced.binaryConstraints = binaryConstraints;
+            }
+            else
+            {
+                // Add only the constraints that include the configuration options
+                foreach (String binaryConstraint in binaryConstraints)
+                {
+                    List<String> binOptNames = new List<string>();
+                    foreach (BinaryOption binOpt in consideredOptions)
+                    {
+                        binOptNames.Add(binOpt.Name);
+                    }
+                    
+                    binOptNames.Sort((a, b) => b.Length.CompareTo(a.Length));
+                    
+                    String currentString = binaryConstraint;
+                    foreach (String binOptName in binOptNames)
+                    {
+                        currentString = currentString.Replace(binOptName, "");
+                    }
+
+                    currentString = currentString.Replace("|", "");
+                    currentString = currentString.Replace("&", "");
+                    currentString = currentString.Replace("!", "");
+                    currentString = currentString.Trim();
+                    if (currentString.Equals(""))
+                    {
+                        reduced.binaryConstraints.Add(binaryConstraint);
+                    }
+                }
+            }
 
             return reduced;
         }
