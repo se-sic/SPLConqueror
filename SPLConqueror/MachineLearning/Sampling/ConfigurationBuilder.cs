@@ -365,19 +365,23 @@ namespace MachineLearning.Sampling
             GlobalState.logInfo.logLine("Total sampling time=" + sw.Elapsed);
 
             // Filter the invalid configurations
-            List<Configuration> invalidConfigurations = new List<Configuration>();
+            List<int> invalidConfigurations = new List<int>();
             // We strictly use z3 solver here
             CheckConfigSATZ3 configurationChecker = new CheckConfigSATZ3();
-            foreach (Configuration config in result.Distinct().ToList())
+            result = result.Distinct().ToList();
+            for (int i = 0; i < result.Count(); i++)
             {
+                Configuration config = result[i];
                 if (!configurationChecker.checkConfigurationSAT(config, GlobalState.varModel))
                 {
-                    invalidConfigurations.Add(config);
+                    invalidConfigurations.Add(i);
                 }
             }
-            foreach (Configuration invalidConfig in invalidConfigurations)
+
+            for (int k = invalidConfigurations.Count()-1; k >= 0; k--)
             {
-                result.Remove(invalidConfig);
+                int i = invalidConfigurations[k];
+                result.RemoveAt(i);
             }
 
             GlobalState.logInfo.logLine("Invalid configurations generated during sampling and filtered out: " 
