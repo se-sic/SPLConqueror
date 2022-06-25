@@ -248,35 +248,7 @@ namespace MachineLearning.Sampling
             
             if (binaryConfigsFromConsider.Count != 0)
             {
-                // Compute the cartesian product
-                List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
-                foreach (List<List<BinaryOption>> sampleSet in binaryConfigsFromConsider)
-                {
-                    if (configurations.Count == 0)
-                    {
-                        configurations.AddRange(sampleSet);
-                    }
-                    else
-                    {
-                        List<List<BinaryOption>> tmpConfigurations = configurations;
-                        configurations = new List<List<BinaryOption>>();
-                        foreach (List<BinaryOption> configurationToExpand in tmpConfigurations)
-                        {
-                            foreach (List<BinaryOption> expandingConfiguration in sampleSet)
-                            {
-                                List<BinaryOption> newConfig = new List<BinaryOption>(configurationToExpand);
-                                foreach (BinaryOption binOpt in expandingConfiguration)
-                                {
-                                    if (!newConfig.Contains(binOpt))
-                                    {
-                                        newConfig.Add(binOpt);
-                                    }
-                                }
-                                configurations.Add(newConfig);
-                            }
-                        }
-                    }
-                }
+                var configurations = computeCartesianProduct(binaryConfigsFromConsider);
                 binaryConfigs = configurations;
             }
             
@@ -297,66 +269,57 @@ namespace MachineLearning.Sampling
             }
             
             result = filterNonBoolean(result, vm);
+            
+            // Create a string -> binary option mapping for the cartesian product
+            Dictionary<String, BinaryOption> binOptMap = new Dictionary<string, BinaryOption>();
+            foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+            {
+                binOptMap[binOpt.Name] = binOpt;
+            }
 
             // Hybrid designs
             if (hybridStrategies.Count != 0)
             {
                 sw.Start();
-                List<Configuration> configurations = ExecuteHybridStrategy(hybridStrategies, vm);
+                List<List<Configuration>> configurations = ExecuteHybridStrategy(hybridStrategies, vm);
                 sw.Stop();
-
-                if (experimentalDesigns.Count == 0 && binaryStrategies.Count == 0)
+                
+                // Prepare the previous sample sets
+                if (result.Count == 0 && binaryConfigs.Count == 0)
                 {
-                    result = configurations;
-                }
-                else
-                {
-                    // Prepare the previous sample sets
-                    if (result.Count == 0 && binaryConfigs.Count == 0)
+                    if (numericConfigs.Count != 0)
                     {
                         foreach (Dictionary<NumericOption, double> numConf in numericConfigs)
                         {
-                            Configuration c = new Configuration(new Dictionary<BinaryOption, BinaryOption.BinaryValue>(), numConf);
+                            Configuration c =
+                                new Configuration(new Dictionary<BinaryOption, BinaryOption.BinaryValue>(), numConf);
                             result.Add(c);
                         }
-                    }
-
-                    // Create a string -> binary option mapping for the cartesian product
-                    Dictionary<String, BinaryOption> binOptMap = new Dictionary<string, BinaryOption>();
-                    foreach (BinaryOption binOpt in GlobalState.varModel.BinaryOptions)
+                    } else
                     {
-                        binOptMap[binOpt.Name] = binOpt;
-                    }
-
-                    // Build the cartesian product
-                    List<Configuration> newResult = new List<Configuration>();
-                    foreach (Configuration config in result)
-                    {
-                        foreach (Configuration hybridConfiguration in configurations)
+                        Configuration config = new Configuration(new List<BinaryOption>());
+                        foreach (Configuration configuration in configurations[0])
                         {
-                            Dictionary<BinaryOption, BinaryOption.BinaryValue> binOpts = new Dictionary<BinaryOption, BinaryOption.BinaryValue>(config.BinaryOptions);
-                            Dictionary<NumericOption, double> numOpts = new Dictionary<NumericOption, double>(config.NumericOptions);
+                            mergeConfigurations(config, configuration, binOptMap, out var binOpts, out var numOpts);
+                            result.Add(new Configuration(binOpts, numOpts)); 
+                        }
+                        configurations.RemoveAt(0);
+                    }
+                }
 
-                            Dictionary<BinaryOption, BinaryOption.BinaryValue> hybridBinOpts = hybridConfiguration.BinaryOptions;
-
-                            foreach (BinaryOption binOpt in hybridConfiguration.BinaryOptions.Keys)
-                            {
-                                
-                                if (!binOpts.ContainsKey(binOptMap[binOpt.Name]))
-                                {
-                                    binOpts.Add(binOptMap[binOpt.Name], hybridBinOpts[binOpt]);
-                                }
-                            }
-
-                            Dictionary<NumericOption, double> hybridNumOpts = hybridConfiguration.NumericOptions;
-                            foreach (NumericOption numOpt in hybridConfiguration.NumericOptions.Keys)
-                            {
-                                numOpts.Add(numOpt, hybridNumOpts[numOpt]);
-                            }
-
+                // Build the cartesian product
+                List<Configuration> newResult = new List<Configuration>();
+                foreach (Configuration config in result)
+                {
+                    foreach (List<Configuration> hybridConfigurations in configurations)
+                    {
+                        foreach (Configuration hybridConfiguration in hybridConfigurations)
+                        {
+                            mergeConfigurations(config, hybridConfiguration, binOptMap, out var binOpts, out var numOpts);
                             newResult.Add(new Configuration(binOpts, numOpts));
                         }
                     }
+                    
                     result = newResult;
                 }
             }
@@ -421,6 +384,66 @@ namespace MachineLearning.Sampling
                 }
                 return replaceReference(filteredConfiguration);
             }
+        }
+
+        private static void mergeConfigurations(Configuration config, Configuration hybridConfiguration, Dictionary<string, BinaryOption> binOptMap,
+            out Dictionary<BinaryOption, BinaryOption.BinaryValue> binOpts, out Dictionary<NumericOption, double> numOpts)
+        {
+            binOpts = new Dictionary<BinaryOption, BinaryOption.BinaryValue>(config.BinaryOptions);
+            numOpts = new Dictionary<NumericOption, double>(config.NumericOptions);
+
+            Dictionary<BinaryOption, BinaryOption.BinaryValue> hybridBinOpts =
+                hybridConfiguration.BinaryOptions;
+
+            foreach (BinaryOption binOpt in hybridConfiguration.BinaryOptions.Keys)
+            {
+                if (!binOpts.ContainsKey(binOptMap[binOpt.Name]))
+                {
+                    binOpts.Add(binOptMap[binOpt.Name], hybridBinOpts[binOpt]);
+                }
+            }
+
+            Dictionary<NumericOption, double> hybridNumOpts = hybridConfiguration.NumericOptions;
+            foreach (NumericOption numOpt in hybridConfiguration.NumericOptions.Keys)
+            {
+                numOpts.Add(numOpt, hybridNumOpts[numOpt]);
+            }
+        }
+
+        private static List<List<BinaryOption>> computeCartesianProduct(List<List<List<BinaryOption>>> binaryConfigsFromConsider)
+        {
+            // Compute the cartesian product
+            List<List<BinaryOption>> configurations = new List<List<BinaryOption>>();
+            foreach (List<List<BinaryOption>> sampleSet in binaryConfigsFromConsider)
+            {
+                if (configurations.Count == 0)
+                {
+                    configurations.AddRange(sampleSet);
+                }
+                else
+                {
+                    List<List<BinaryOption>> tmpConfigurations = configurations;
+                    configurations = new List<List<BinaryOption>>();
+                    foreach (List<BinaryOption> configurationToExpand in tmpConfigurations)
+                    {
+                        foreach (List<BinaryOption> expandingConfiguration in sampleSet)
+                        {
+                            List<BinaryOption> newConfig = new List<BinaryOption>(configurationToExpand);
+                            foreach (BinaryOption binOpt in expandingConfiguration)
+                            {
+                                if (!newConfig.Contains(binOpt))
+                                {
+                                    newConfig.Add(binOpt);
+                                }
+                            }
+
+                            configurations.Add(newConfig);
+                        }
+                    }
+                }
+            }
+
+            return configurations;
         }
 
         private static void createConfigurations(List<List<BinaryOption>> binaryParts, List<Dictionary<NumericOption, Double>> numericParts, List<Configuration> results)
@@ -506,13 +529,13 @@ namespace MachineLearning.Sampling
             return measured.Concat(notMeasured).ToList();
         }
 
-        private static List<Configuration> ExecuteHybridStrategy(List<HybridStrategy> hybridStrategies, VariabilityModel vm)
+        private static List<List<Configuration>> ExecuteHybridStrategy(List<HybridStrategy> hybridStrategies, VariabilityModel vm)
         {
-            List<Configuration> allSampledConfigurations = new List<Configuration>();
+            List<List<Configuration>> allSampledConfigurations = new List<List<Configuration>>();
             foreach (HybridStrategy hybrid in hybridStrategies)
             {
                 hybrid.ComputeSamplingStrategy();
-                allSampledConfigurations.AddRange(hybrid.selectedConfigurations);
+                allSampledConfigurations.Add(hybrid.selectedConfigurations);
             }
             return allSampledConfigurations;
         }
