@@ -372,7 +372,7 @@ namespace CommandLine
 
                     try
                     {
-                        GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(task.TrimEnd(), GlobalState.varModel);
+                        GlobalState.allMeasurements.Configurations = ConfigurationReader.readConfigurations(taskAsParameter.Last().TrimEnd(), GlobalState.varModel);
                     }
                     catch (ArgumentNullException)
                     {
@@ -381,15 +381,32 @@ namespace CommandLine
                             " Filename of the file that caused the error:\"" + task.TrimEnd() + "\"");
                     }
 
-                    List<Configuration> invalid = GlobalState.allMeasurements.Configurations
-                        .Where(conf => !GlobalState.varModel.isInModel(conf)).ToList();
-                    CheckConfigSAT constraintSystem = new CheckConfigSAT();
-                    invalid = invalid.Union(GlobalState.allMeasurements.Configurations
-                        .Where(conf => !constraintSystem.checkConfigurationSAT(conf.BinaryOptions.ToList()
-                        .Where(kv => kv.Value == BinaryOption.BinaryValue.Selected).ToList()
-                        .Select(kv => kv.Key).ToList(), GlobalState.varModel, false))).ToList();
-                    invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
+                    bool satCheck = true;
+                    for (int i = 0; i < taskAsParameter.Length - 1; i++)
+                    {
+                        String[] option = taskAsParameter[i].Split(':');
+                        if (option.Length == 2 && option[0].ToLower().Equals("check") && option[1].ToLower().Equals("false"))
+                        {
+                            satCheck = false;
+                        }
+                        else
+                        {
+                            throw new ArgumentException("The option " + taskAsParameter[i] + " is unknown.");
+                        }
+                    }
 
+                    if (satCheck)
+                    {
+                        List<Configuration> invalid = GlobalState.allMeasurements.Configurations
+                            .Where(conf => !GlobalState.varModel.isInModel(conf)).ToList();
+                        CheckConfigSAT constraintSystem = new CheckConfigSAT();
+                        invalid = invalid.Union(GlobalState.allMeasurements.Configurations
+                            .Where(conf => !constraintSystem.checkConfigurationSAT(conf.BinaryOptions.ToList()
+                                .Where(kv => kv.Value == BinaryOption.BinaryValue.Selected).ToList()
+                                .Select(kv => kv.Key).ToList(), GlobalState.varModel, false))).ToList();
+                        invalid.ForEach(conf => GlobalState.logError.logLine("Invalid configuration:" + conf.ToString()));
+                    }
+                    
                     GlobalState.measurementSource = task.TrimEnd();
                     string attachement = "";
                     if (GlobalState.measurementDeviation > 0 && this.mlSettings != null && mlSettings.abortError == 1)
