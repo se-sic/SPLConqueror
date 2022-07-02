@@ -188,7 +188,7 @@ def optimize_xgboost(x_train, y_train):
 def formatOptimal(opt_object):
     # Create pandas dataframe and extract it
     if grid_search_file_name:
-        df = pd.DataFrame(columns=list(opt_object.param_grid[0].keys()) + ['error'])
+        df = pd.DataFrame(columns=sorted(list(opt_object.param_grid[0].keys())) + ['error'])
         for i in range(0, len(opt_object.cv_results_['params'])):
             df.loc[len(df)] = [*opt_object.cv_results_['params'][i].values()] + [
                 np.abs(opt_object.cv_results_['mean_test_score'][i])]
