@@ -199,9 +199,9 @@ def setup_RandomForestRegressor(learner_settings):
                  "criterion": ["squared_error", str],  # Other options: absolute_error, poisson
                  "max_depth": [None, int],
                  "min_samples_split": [2, int],
-                 "min_samples_leaf": [1, int],
+                 "min_samples_leaf": [1, float],
                  "min_weight_fraction_leaf": [0.0, float],
-                 "max_features": ["auto", int],  # auto, sqrt, log2 or int
+                 "max_features": ["auto"],  # auto, sqrt, log2 or int
                  "max_leaf_nodes": [None, int],
                  "bootstrap": [True, bool],
                  "oob_score": [False, bool],
