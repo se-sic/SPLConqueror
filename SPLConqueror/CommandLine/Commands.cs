@@ -720,6 +720,10 @@ namespace CommandLine
                             // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
                             if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
                             {
+                                for (int i = 0; i < taskAsParameter.Length; i++)
+                                {
+                                    taskAsParameter[i] = taskAsParameter[i].Replace(":", "=");
+                                }
                                 handlePythonTask(false, configurationsLearning, taskAsParameter);
                             }
                             else
@@ -1103,6 +1107,7 @@ namespace CommandLine
                         GlobalState.varModel.Name + "_" + samplingIdentifier);
                     List<Configuration> predictedByPython;
                     double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter, out predictedByPython);
+                    GlobalState.logInfo.logLine("Elapsed learning time(seconds): " + pyInterpreter.getTimeToLearning());
 
                     if (File.Exists(treePath))
                     {
@@ -1132,6 +1137,7 @@ namespace CommandLine
                         learnWithAllMeasurements();
                         GlobalState.allMeasurements.Configurations = tmp;
                     }
+                    pyInterpreter.finish();
 
                     GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
                     if (!Double.IsNaN(error))

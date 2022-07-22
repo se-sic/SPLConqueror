@@ -53,6 +53,8 @@ namespace ProcessWrapper
         // Message to indicate that the process has performed the task.
         private const string FINISHED_LEARNING = "learn_finished";
 
+        private const string FINISHED = "finished";
+
         private string[] mlProperties = null;
 
         /// <summary>
@@ -242,6 +244,18 @@ namespace ProcessWrapper
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer, out predictedByPython);
+        }
+
+        public void finish()
+        {
+            if (waitForNextReceivedLine().Equals(FINISHED))
+            {
+                passLineToApplication(FINISHED);
+            }
+            else
+            {
+                throw new InvalidOperationException("The python process didn't finish.");
+            }
         }
 
         public string getTimeToLearning()
