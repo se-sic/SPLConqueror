@@ -1103,10 +1103,8 @@ namespace CommandLine
 
                     pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
                         PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
-                    PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
-                        GlobalState.varModel.Name + "_" + samplingIdentifier);
                     List<Configuration> predictedByPython;
-                    double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter, out predictedByPython);
+                    double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, out predictedByPython);
                     GlobalState.logInfo.logLine("Elapsed learning time(seconds): " + pyInterpreter.getTimeToLearning());
 
                     if (File.Exists(treePath))
@@ -1139,12 +1137,11 @@ namespace CommandLine
                     }
                     pyInterpreter.finish();
 
-                    GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                    GlobalState.logInfo.logLine("Prediction finished");
                     if (!Double.IsNaN(error))
                     {
                         GlobalState.logInfo.logLine("Error rate: " + error);
                     }
-                    csvWriter.close();
                 }
             }
             finally

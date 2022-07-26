@@ -149,7 +149,7 @@ namespace ProcessWrapper
         /// <param name="predictedConfigurations">The configurations that were predicted.</param>
         /// <param name="writer">The writer object for the file.</param>
         /// <returns></returns>
-        private double printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer, out  List<Configuration> predictedByPython)
+        private double printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, out  List<Configuration> predictedByPython)
         {
             predictedByPython = new List<Configuration>();
             string[] separators = new String[] { "," };
@@ -172,15 +172,9 @@ namespace ProcessWrapper
             else
             {
                 double error = 0;
-                writer.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
                 for (int i = 0; i < predictedConfigurations.Count; i++)
                 {
-                    writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" + Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
-
                     error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) / predictedConfigurations[i].GetNFPValue() ;
-                    var copy = predictedConfigurations[i].Copy();
-                    copy.setMeasuredValue(GlobalState.currentNFP, predictedConfigurations[i].GetNFPValue());
-                    predictedByPython.Add(copy);
                 }
 
                 error /= predictedConfigurations.Count;
@@ -234,7 +228,7 @@ namespace ProcessWrapper
         /// <param name="predictedConfigurations">The configurations that were used to predict the nfp values by the learner.</param>
         /// <param name="writer">Writer to write the prediction results into a csv File.</param>
         /// <returns>A double indicating the error rate (NaN if there is none)</returns>
-        public double getLearningResult(List<Configuration> predictedConfigurations, PythonPredictionWriter writer, out List<Configuration> predictedByPython)
+        public double getLearningResult(List<Configuration> predictedConfigurations, out List<Configuration> predictedByPython)
         {
 
             while (!waitForNextReceivedLine().Equals(FINISHED_LEARNING))
@@ -243,7 +237,7 @@ namespace ProcessWrapper
             }
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
-            return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer, out predictedByPython);
+            return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, out predictedByPython);
         }
 
         public void finish()
