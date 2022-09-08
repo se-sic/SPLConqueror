@@ -60,7 +60,7 @@ namespace MachineLearning.Sampling.Heuristics
                     else
                     {
                         tme = ConfigurationBuilder.vg.MinimizeConfig(tme, vm, true, null);
-                        if (tme != null && Configuration.containsBinaryConfiguration(this.configurations, tme) == false)
+                        if (tme != null && tme.Count > 0 && Configuration.containsBinaryConfiguration(this.configurations, tme) == false)
                             this.configurations.Add(tme);
                     }
                 }
