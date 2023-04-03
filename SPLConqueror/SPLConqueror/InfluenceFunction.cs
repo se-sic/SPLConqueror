@@ -789,7 +789,7 @@ namespace SPLConqueror_Core
                 if (curr.Equals(')') && numberOfOpeningBrackets > 0)
                     numberOfOpeningBrackets--;
 
-                if (curr.Equals(')') && numberOfOpeningBrackets == 0)
+                else if (curr.Equals(')') && numberOfOpeningBrackets == 0)
                 {
                     offset = i;
                     break;
