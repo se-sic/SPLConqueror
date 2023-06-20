@@ -431,6 +431,7 @@ or
 ```
 all /home/username/exampleMeasurements.xml
 ```
+Note that you can also enter relative paths (relative to the provided a file).
 
 For this kind of files, two different formats are supported. 
 The first one is a .csv format. 
@@ -476,6 +477,14 @@ Alternatively, the measurements can be provided in a *csv*-format. Thereby, the 
 | false;      | true;       | 10;             | 4321;  | 5432;  |
 
 *Note*: The element separator is ```;```, whereas the line separator is ```\n```.
+
+Typically, SPL Conqueror checks all configurations for its validity (i.e., do they satisfy all constraints?).
+Since this is a time-consuming process, the user can disable this validity check using ```check:False```.
+For example, reading in a csv file and disabling the validity check could look as follows:
+
+```
+all check:False ./measurements.csv
+```
 
 #### Loading machine-learning settings
 
