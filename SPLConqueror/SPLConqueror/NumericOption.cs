@@ -488,5 +488,48 @@ namespace SPLConqueror_Core
                 return values.Values[r.Next(values.Count())];
             return getValueForStep(r.Next((int)this.numberOfSteps));
         }
+
+
+        /// <summary>
+        /// This method clones a numeric option by using the provided variability model.
+        /// </summary>
+        /// <param name="variabilityModel">The variability model to use for cloning the option.</param>
+        /// <returns>A clone of this option.</returns>
+        public NumericOption Clone(VariabilityModel variabilityModel)
+        {
+            NumericOption clone = new NumericOption(variabilityModel, Name);
+            clone.Min_value = Min_value;
+            clone.Max_value = Max_value;
+            if (StepFunction != null)
+            {
+                InfluenceFunction clonedStepFunction = new InfluenceFunction(StepFunction.ToString(), clone);
+                clone.StepFunction = clonedStepFunction;   
+            }
+            clone.values = values;
+            clone.Optional = Optional;
+            clone.OutputString = OutputString;
+            clone.Prefix = Prefix;
+            clone.Postfix = Postfix;
+
+            return clone;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (this == obj)
+            {
+                return true;
+            }
+            if (!(obj is NumericOption))
+            {
+                return false;   
+            }
+            return Name.Equals(((NumericOption)obj).Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
     }
 }
