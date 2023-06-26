@@ -289,7 +289,7 @@ namespace MachineLearning.Sampling
             }
             
             // Print the time needed for sampling
-            GlobalState.logInfo.logLine("Total sampling time=" + sw.Elapsed);
+            GlobalState.logInfo.logLine("Total sampling time: " + sw.Elapsed);
 
             if (vm.MixedConstraints.Count == 0)
             {
