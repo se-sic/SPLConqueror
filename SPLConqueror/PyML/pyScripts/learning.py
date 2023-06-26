@@ -189,7 +189,7 @@ def parse_to_int_float_bool_string(n):
 
 def setup_DecisionTree(learner_settings):
     # default values
-    criterion = 'mse'
+    criterion = 'squared_error'
     splitter = 'best'
     max_depth = None
     min_samples_split = 2
@@ -240,7 +240,7 @@ def setup_DecisionTree(learner_settings):
 def setup_RandomForestRegressor(learner_settings):
     # default values
     n_estimators = 10
-    criterion = 'mse'
+    criterion = 'squared_error'
     max_depth = None
     min_samples_split = 2
     min_samples_leaf = 1
