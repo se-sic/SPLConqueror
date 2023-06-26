@@ -1,5 +1,5 @@
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble.forest import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 
 paths = []
@@ -57,11 +57,11 @@ def extract(learner):
 
 
 def recursion(left, right, threshold, features, value, node, previous):
-    # magic number for deciscion does not exist
+    # magic number for decision does not exist
     curr = ""
     if threshold[node] != -2:
         curr = "I(" + str(features[node]) + "<=" + str(threshold[node]) + ")"
-        if previous is not "":
+        if previous != "":
             curr = previous + "*" + curr
         if left[node] != -1:
             recursion(left, right, threshold, features, value, left[node], curr)

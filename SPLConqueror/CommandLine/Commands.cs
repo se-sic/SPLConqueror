@@ -1071,8 +1071,8 @@ namespace CommandLine
                 printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty>());
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
-                PythonWrapper pyInterpreter = new PythonWrapper(this.getLocationPythonScript() +
-                    Path.DirectorySeparatorChar + PythonWrapper.COMMUNICATION_SCRIPT, taskAsParameter);
+                PythonWrapper pyInterpreter = new PythonWrapper(Path.Combine(getLocationPythonScript(), 
+                    PythonWrapper.COMMUNICATION_SCRIPT), taskAsParameter);
                 GlobalState.logInfo.logLine("Starting Prediction");
 
                 if (isParamTuning)
