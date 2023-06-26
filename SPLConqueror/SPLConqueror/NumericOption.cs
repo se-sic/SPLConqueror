@@ -488,5 +488,26 @@ namespace SPLConqueror_Core
                 return values.Values[r.Next(values.Count())];
             return getValueForStep(r.Next((int)this.numberOfSteps));
         }
+
+
+        /// <summary>
+        /// This method clones a numeric option by using the provided variability model.
+        /// </summary>
+        /// <param name="variabilityModel">The variability model to use for cloning the option.</param>
+        /// <returns>A clone of this option.</returns>
+        public NumericOption Clone(VariabilityModel variabilityModel)
+        {
+            NumericOption clone = new NumericOption(variabilityModel, this.Name);
+            clone.Min_value = Min_value;
+            clone.Max_value = Max_value;
+            clone.StepFunction = StepFunction;
+            clone.values = values;
+            clone.Optional = Optional;
+            clone.OutputString = OutputString;
+            clone.Prefix = Prefix;
+            clone.Postfix = Postfix;
+
+            return clone;
+        }
     }
 }
