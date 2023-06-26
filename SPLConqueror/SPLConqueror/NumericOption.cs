@@ -497,10 +497,11 @@ namespace SPLConqueror_Core
         /// <returns>A clone of this option.</returns>
         public NumericOption Clone(VariabilityModel variabilityModel)
         {
-            NumericOption clone = new NumericOption(variabilityModel, this.Name);
+            NumericOption clone = new NumericOption(variabilityModel, Name);
             clone.Min_value = Min_value;
             clone.Max_value = Max_value;
-            clone.StepFunction = StepFunction;
+            InfluenceFunction clonedStepFunction = new InfluenceFunction(StepFunction.ToString(), clone);
+            clone.StepFunction = clonedStepFunction;
             clone.values = values;
             clone.Optional = Optional;
             clone.OutputString = OutputString;
@@ -508,6 +509,24 @@ namespace SPLConqueror_Core
             clone.Postfix = Postfix;
 
             return clone;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (this == obj)
+            {
+                return true;
+            }
+            if (!(obj is NumericOption))
+            {
+                return false;   
+            }
+            return Name.Equals(((NumericOption)obj).Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }

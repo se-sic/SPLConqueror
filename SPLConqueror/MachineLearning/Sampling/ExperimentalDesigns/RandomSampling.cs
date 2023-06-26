@@ -45,6 +45,10 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             {
                 sampleSize = parseFromParameters(parameterNameToValue, "sampleSize");
             }
+            if (parameterNameToValue.ContainsKey("numConfigs"))
+            {
+                sampleSize = parseFromParameters(parameterNameToValue, "numConfigs");
+            }
         }
 
         /// <summary>
@@ -73,7 +77,7 @@ namespace MachineLearning.Sampling.ExperimentalDesigns
             {
                 if (sampleSize > configurations.Count)
                     GlobalState.logError.logLine(
-                        "Random Sampling: numConfigs to large for variability model. num set to " +
+                        "Numeric Random Sampling: numConfigs too large for variability model. num set to " +
                         configurations.Count);
                 selectedConfigurations.AddRange(ExtractNumericConfiguration(configurations));
                 return true;

@@ -90,7 +90,7 @@ namespace MachineLearning.Sampling.Heuristics
             if (numConfigs >= allConfigs.Count)
             {
                 if (numConfigs > allConfigs.Count)
-                    GlobalState.logError.logLine("Random Sampling: numConfigs to large for variability model. num set to " + allConfigs.Count);
+                    GlobalState.logError.logLine("Binary Random Sampling: numConfigs too large for variability model. num set to " + allConfigs.Count);
                 configurations = allConfigs;
                 return allConfigs;
             }
