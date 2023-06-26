@@ -108,7 +108,7 @@ namespace MachineLearning.Learning.Regression
                 sw.Start();
                 sel.learn();
                 sw.Stop();
-                Console.WriteLine("Elapsed={0}", sw.Elapsed);
+                Console.WriteLine("Elapsed learning time(seconds): {0}", sw.Elapsed);
             }
         }
 
@@ -143,7 +143,7 @@ namespace MachineLearning.Learning.Regression
                 sw.Start();
                 sel.continueLearn(learningRounds);
                 sw.Stop();
-                Console.WriteLine("Elapsed={0}", sw.Elapsed);
+                Console.WriteLine("Elapsed learning time(seconds): {0}", sw.Elapsed);
             }
         }
 
