@@ -500,8 +500,11 @@ namespace SPLConqueror_Core
             NumericOption clone = new NumericOption(variabilityModel, Name);
             clone.Min_value = Min_value;
             clone.Max_value = Max_value;
-            InfluenceFunction clonedStepFunction = new InfluenceFunction(StepFunction.ToString(), clone);
-            clone.StepFunction = clonedStepFunction;
+            if (StepFunction != null)
+            {
+                InfluenceFunction clonedStepFunction = new InfluenceFunction(StepFunction.ToString(), clone);
+                clone.StepFunction = clonedStepFunction;   
+            }
             clone.values = values;
             clone.Optional = Optional;
             clone.OutputString = OutputString;
