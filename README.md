@@ -84,7 +84,7 @@ Be aware that an internet connection is required to perform this step.
 
 6. Build the root project
 
-7. Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+7. Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(1.0.2), numpy(1.22.2) and scipy(1.8.0) packages.
 
 8. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 

@@ -52,6 +52,9 @@ namespace ProcessWrapper
 
         // Message to indicate that the process has performed the task.
         private const string FINISHED_LEARNING = "learn_finished";
+        
+        // Message to indicate that the python process has completely finished.
+        private const string FINISHED = "finished";
 
         private string[] mlProperties = null;
 
@@ -63,7 +66,7 @@ namespace ProcessWrapper
         public PythonWrapper(string path, string[] mlProperties)
         {
             bool debugTrace = false;
-            if((mlProperties.Length > 1) && mlProperties[1] == "Debug") {
+            if((mlProperties.Length > 1) && mlProperties[1].ToLower() == "debug") {
                 debugTrace = true;
                 mlProperties = mlProperties.Except(new string[] { mlProperties[1] }).ToArray();
             }
@@ -90,7 +93,10 @@ namespace ProcessWrapper
             {
                 if (!python.StandardError.EndOfStream)
                 {
+                    //String msg = python.StandardError.ReadToEnd();
+                    //python.StandardError.Close();
                     GlobalState.logError.logLine("Python error/warning:");
+                    //GlobalState.logError.logLine(msg);
                     GlobalState.logError.logLine(python.StandardError.ReadToEnd());
                 }
             }
@@ -216,7 +222,7 @@ namespace ProcessWrapper
                     model.BinaryOptions.ForEach(opt => opts.Add(opt.Name));
                     model.NumericOptions.ForEach(opt => opts.Add(opt.Name));
                     passLineToApplication(string.Join(",", opts));
-                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                    while (!waitForNextReceivedLine().Equals(PASS_OK));
                     passLineToApplication(task);
                 }
             }
@@ -240,6 +246,22 @@ namespace ProcessWrapper
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer, out predictedByPython);
+        }
+        
+        /// <summary>
+        /// This method checks whether the process has finished successfully.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">This exception is thrown if the python process didn't finish successfully.</exception>
+        public void finish()
+        {
+            if (waitForNextReceivedLine().Equals(FINISHED))
+            {
+                passLineToApplication(FINISHED);
+            }
+            else
+            {
+                throw new InvalidOperationException("The python process didn't finish.");
+            }
         }
 
         public string getTimeToLearning()

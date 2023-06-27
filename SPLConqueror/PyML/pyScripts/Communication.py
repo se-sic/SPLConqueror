@@ -23,6 +23,7 @@ REQUESTING_LEARNING_RESULTS = "req_results"
 
 PASS_OK = "pass_ok"
 FINISHED_LEARNING = "learn_finished"
+FINISHED = "finished"
 
 REQUESTING_LEARNING_SETTINGS = "req_settings"
 
@@ -146,9 +147,8 @@ def main():
             print("Finished the learning.\n", file=sys.stderr, flush=True)
 
         if input() == REQUESTING_LEARNING_RESULTS:
-            if debug:
-                print("Extracting trees.\n", file=sys.stderr, flush=True)
             print_line_array(predictions)
+            print_line(str(elapsed))
         if tree_path.strip() != "" and check_prereq(model.learning_model):
             print_line(str(elapsed))
             tree_file = open(tree_path, 'w')
@@ -161,6 +161,8 @@ def main():
                     tree_file.write(str(tree) + "\n")
             tree_file.flush()
             tree_file.close()
+        print_line(FINISHED)
+        input()
 
     # perform parameter tuning
     elif task == START_PARAM_TUNING:
