@@ -152,11 +152,12 @@ namespace ProcessWrapper
         /// <param name="pythonList">The predictions from python.</param>
         /// <param name="predictedConfigurations">The configurations that were predicted.</param>
         /// <param name="writer">The writer object for the file.</param>
+        /// <param name="predictedByPython">The configurations and the corresponding NFP values.</param>
         /// <returns></returns>
         private double printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer, out  List<Configuration> predictedByPython)
         {
             predictedByPython = new List<Configuration>();
-            string[] separators = new String[] { "," };
+            string[] separators = { "," };
             string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
             if (predictedConfigurations.Count != predictions.Length)
@@ -173,23 +174,39 @@ namespace ProcessWrapper
                 GlobalState.logError.log("Error message: " + errMessage.ToString());
                 return Double.NaN;
             }
-            else
+
+            double error = 0;
+            if (writer != null)
             {
-                double error = 0;
                 writer.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
                 for (int i = 0; i < predictedConfigurations.Count; i++)
                 {
-                    writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" + Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
+                    writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" +
+                                            Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" +
+                                            Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
 
-                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) / predictedConfigurations[i].GetNFPValue() ;
+                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) /
+                             predictedConfigurations[i].GetNFPValue();
                     var copy = predictedConfigurations[i].Copy();
                     copy.setMeasuredValue(GlobalState.currentNFP, predictedConfigurations[i].GetNFPValue());
                     predictedByPython.Add(copy);
                 }
-
-                error /= predictedConfigurations.Count;
-                return error;
             }
+            else
+            {
+                for (int i = 0; i < predictedConfigurations.Count; i++)
+                {
+                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) /
+                             predictedConfigurations[i].GetNFPValue();
+                    var copy = predictedConfigurations[i].Copy();
+                    copy.setMeasuredValue(GlobalState.currentNFP, predictedConfigurations[i].GetNFPValue());
+                    predictedByPython.Add(copy);
+                }
+            }
+
+            error /= predictedConfigurations.Count;
+            return error;
+            
         }
 
         /// <summary>

@@ -1075,6 +1075,19 @@ namespace CommandLine
                 printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty>());
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
+                bool performWithOptimal = true;
+                if (taskAsParameter.Contains("performWithOptimal:false"))
+                {
+                    taskAsParameter = taskAsParameter.Except(new []{"performWithOptimal:false"}).ToArray();
+                    performWithOptimal = false;
+                }
+
+                bool writeFinalResults = true;
+                if (taskAsParameter.Contains("writeFinalPredictionResults:false"))
+                {
+                    taskAsParameter = taskAsParameter.Except(new []{"writeFinalPredictionResults:false"}).ToArray();
+                    writeFinalResults = false;
+                }
                 PythonWrapper pyInterpreter = new PythonWrapper(Path.Combine(getLocationPythonScript(), 
                     PythonWrapper.COMMUNICATION_SCRIPT), taskAsParameter);
                 GlobalState.logInfo.logLine("Starting Prediction");
@@ -1086,15 +1099,18 @@ namespace CommandLine
                     string path = targetPath.Substring(0, (targetPath.Length
                         - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
                     pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
-                    GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
-                    File.Delete(configsLearnFile);
-                    File.Delete(configsValFile);
-                    File.Delete(nfpLearnFile);
-                    File.Delete(nfpValFile);
-                    var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
-                        StringSplitOptions.RemoveEmptyEntries).ToList();
-                    optimalParameters.Insert(0, taskAsParameter[0]);
-                    handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());
+                    if (performWithOptimal)
+                    {
+                        GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                        File.Delete(configsLearnFile);
+                        File.Delete(configsValFile);
+                        File.Delete(nfpLearnFile);
+                        File.Delete(nfpValFile);
+                        var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
+                            StringSplitOptions.RemoveEmptyEntries).ToList();
+                        optimalParameters.Insert(0, taskAsParameter[0]);
+                        handlePythonTask(false, configurationsLearning, optimalParameters.ToArray());   
+                    }
                 }
                 else
                 {
@@ -1108,8 +1124,12 @@ namespace CommandLine
 
                     pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
                         PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
-                    PythonPredictionWriter csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
-                        GlobalState.varModel.Name + "_" + samplingIdentifier);
+                    PythonPredictionWriter csvWriter = null;
+                    if (writeFinalResults)
+                    {
+                        csvWriter = new PythonPredictionWriter(targetPath, taskAsParameter,
+                            GlobalState.varModel.Name + "_" + samplingIdentifier);
+                    }
                     List<Configuration> predictedByPython;
                     double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter, out predictedByPython);
                     GlobalState.logInfo.logLine("Elapsed learning time(seconds): " + pyInterpreter.getTimeToLearning());
@@ -1144,12 +1164,20 @@ namespace CommandLine
 
                     pyInterpreter.finish();
 
-                    GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                    if (writeFinalResults)
+                    {
+                        GlobalState.logInfo.logLine("Prediction finished, results written in " + csvWriter.getPath());
+                        csvWriter.close();
+                    }
+                    else
+                    {
+                        GlobalState.logInfo.logLine("Prediction finished.");
+                    }
+                    
                     if (!Double.IsNaN(error))
                     {
                         GlobalState.logInfo.logLine("Error rate: " + error);
                     }
-                    csvWriter.close();
                 }
             }
             finally
