@@ -110,7 +110,7 @@ namespace SPLConqueror_Core
                         }
                         catch (KeyNotFoundException)
                         {
-                            GlobalState.logError.logLine(option.Value.Name + "not found in selected numeric options."
+                            GlobalState.logError.logLine(option.Value.Name + " not found in selected numeric options."
                                 + "This option is usually mandatory. Unless you removed it from your sampling domain"
                                 + ", make sure your measurements contain all numeric options.");
                         }
