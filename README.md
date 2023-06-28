@@ -747,13 +747,16 @@ Further, machine-learning parameters for the individual strategies can be passed
 
 . The full list of the machine-learning parameters for each individual algorithm can be found in the [Scikit-Learn API documentation](https://scikit-learn.org/stable/modules/classes.html)
 
+Typically, the final prediction results are written into a file. The path to the file is reported in the log file.
+Optionally, writing the final results into a file can be turned off by providing the parameter ```writeFinalPredictionResults:false```.
+
 #### Performing parameter optimization for scikit-learn
 
 ```learn-python-opt <learner> <file> <parameters>```
 
-To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. 
+To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported for the ```<learner>``` parameter. 
 Additionally, a parameter ```<file>``` in the form of ```file:<pathToCsvFile>``` can be provided to write the results of the parameter optimization in a file for further analysis.
-You can also provide a list of hyper parameters in the form of ```key:[value1,value2]``` and separated by spaces to consider only a subset of the hyper parameters.
+You can also provide a list of hyper parameters in ```<parameters>``` of the form of ```key:[value1,value2]``` and separated by spaces to consider only a subset of the hyper parameters.
 For instance, if the RandomForestRegressor should only consider ```max_depth``` and ```n_estimators```, you can provide these as:
 ```
 learn-python-opt RandomForestRegressor n_estimators:[10,15,20] max_depth:[5,10,20]
