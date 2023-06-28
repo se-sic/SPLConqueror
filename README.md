@@ -738,7 +738,7 @@ To set which python interpreter is used, use the ```define-python-path``` comman
 
 ```learn-python <learner>```
 
-To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
+To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, LinearDecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
 For more information on the algorithms see:[Scikit-Learn](http://scikit-learn.org/stable/documentation.html)
 
 Further, machine-learning parameters for the individual strategies can be passed as additional arguments. The parameters have to be separated by whitespaces and each machine-learning paramter has to be passed in the form of
@@ -754,7 +754,7 @@ Optionally, writing the final results into a file can be turned off by providing
 
 ```learn-python-opt <learner> <file> <parameters>```
 
-To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported for the ```<learner>``` parameter. 
+To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, LinearDecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported for the ```<learner>``` parameter. 
 Additionally, a parameter ```<file>``` in the form of ```file:<pathToCsvFile>``` can be provided to write the results of the parameter optimization in a file for further analysis.
 You can also provide a list of hyper parameters in ```<parameters>``` of the form of ```key:[value1,value2]``` and separated by spaces to consider only a subset of the hyper parameters.
 For instance, if the RandomForestRegressor should only consider ```max_depth``` and ```n_estimators```, you can provide these as:
@@ -763,7 +763,7 @@ learn-python-opt RandomForestRegressor n_estimators:[10,15,20] max_depth:[5,10,2
 ```
 After performing the parameter optimization, the optimal configuration is executed afterwards.
 In this case, the optimal parameters will be written to the log.
-If this is not intended, you can provide ```performWithOptimal:false```.
+If this is not intended, you can provide ```performWithOptimal:false``` in the list of parameters (the order of the parameters does not matter).
 Then, only the parameter optimization is performed.
 
 #### Printing configurations

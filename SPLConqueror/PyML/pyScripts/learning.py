@@ -6,6 +6,8 @@ import sklearn.ensemble as skEn
 import sklearn.neighbors as skNE
 import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
+from sklearn.linear_model import LinearRegression
+from lineartree import LinearTreeRegressor
 import ast
 
 number_of_configurations = 0
@@ -62,6 +64,14 @@ def setup_learning(strategy, learner_settings):
             return val_err_inf(learner_settings)
         except TypeError:
             return typ_err_inf(learner_settings)
+    elif strategy == "lineardecisiontreeregression":
+        try:
+            to_return = setup_LinearCART(learner_settings)
+            return to_return
+        except ValueError:
+            return val_err_inf(learner_settings)
+        except TypeError:
+            return typ_err_inf(learner_settings)
 
 
 def val_err_inf(settings):
@@ -113,21 +123,6 @@ class Learner:
             to_return.append(
                 "If the settings are right the learner may have not been fitted due to wrong input format.")
             return to_return
-
-    def predict_and_compare(self, features, nfp_values):
-        # predict the value for each configuration and present it in a:
-        # '[configuration] nfpvalue;predictionvalue' format
-        prediction_results = self.predict_values(features)
-        nfp_and_prediction_values = []
-        i = 0
-        if len(nfp_values) == len(prediction_results):
-            for prediction_result in prediction_results:
-                nfp_and_prediction_values.append(str(nfp_values[i]) + ";" + str(prediction_result))
-                i += 1
-            return nfp_and_prediction_values
-        else:
-            # should never be reached
-            return "invalid state"
 
 
 def setup_SVR(learner_settings):
@@ -244,6 +239,20 @@ def setup_KernelRidge(learner_settings):
 
     parameter = read_in_settings(learner_settings, parameter)
     return skKR.KernelRidge(**parameter)
+
+
+def setup_LinearCART(learner_settings):
+    parameter = {"criterion": ["mse", str],
+                 "max_depth": [5, int],
+                 "min_samples_split": [6, float],
+                 "min_samples_leaf": [0.1, float],
+                 "max_bins": [25, int],
+                 "min_impurity_decrease": [0.0, float],
+                 "n_jobs": [None, int],
+                 }
+
+    parameter = read_in_settings(learner_settings, parameter)
+    return LinearTreeRegressor(base_estimator=LinearRegression(), **parameter)
 
 
 def read_in_settings(settings: List[str], parameter_list: Dict[str, List]) -> Dict[str, Any]:

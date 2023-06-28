@@ -1176,7 +1176,7 @@ namespace CommandLine
                     
                     if (!Double.IsNaN(error))
                     {
-                        GlobalState.logInfo.logLine("Error rate: " + error);
+                        GlobalState.logInfo.logLine("Prediction Error: " + error + " %");
                     }
                 }
             }

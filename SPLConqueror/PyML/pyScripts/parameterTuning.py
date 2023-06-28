@@ -6,6 +6,8 @@ import sklearn.neighbors as skNE
 import sklearn.kernel_ridge as skKR
 import sklearn.tree as skTr
 import sklearn.model_selection as modelSel
+from sklearn.linear_model import LinearRegression
+from lineartree import LinearTreeRegressor
 from pathlib import Path
 
 import numpy as np
@@ -41,6 +43,14 @@ param_baggingSVR = {'n_estimators': [5, 8, 10, 12, 15], 'max_samples': [0.75, 0.
                     'base_estimator__coef0': [0, 1, 2, 3], 'base_estimator__shrinking': [True, False],
                     'base_estimator__tol': [1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 1e-1]}
 
+# For further information, check out https://github.com/cerlymarco/linear-tree/blob/main/notebooks/README.md
+param_linearCART = {"max_depth": [5, 10, 20, 30],
+                    "min_samples_split": [6, 10, 20, 30],
+                    "min_samples_leaf": [0.025, 0.5, 0.1, 0.2],
+                    "max_bins": [10, 25, 50, 75],
+                    "min_impurity_decrease": [0.0, 0.1, 0.2],
+                    }
+
 target_path = None
 
 strat_filename = "strat.txt"
@@ -73,6 +83,8 @@ def optimizeParameter(strategy, X_train, y_train, parameter_space_def):
         return optimize_KernelRidge(X_train, y_train)
     elif strategy == "baggingsvr":
         return optimize_BaggingSVR(X_train, y_train)
+    elif strategy == "lineardecisiontreeregression":
+        return optimize_LinearCART(X_train, y_train)
 
 
 def optimize_SVR(X_train, y_train):
@@ -116,9 +128,14 @@ def optimize_BaggingSVR(X_train, y_train):
         estimator=skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500, gamma='auto')),
         param_grid=param_baggingSVR, cv=5, scoring='neg_mean_absolute_percentage_error')
     opt.fit(X_train, y_train)
-
     return formatOptimal(opt)
 
+
+def optimize_LinearCART(X_train, y_train):
+    opt = modelSel.GridSearchCV(estimator=LinearTreeRegressor(base_estimator=LinearRegression()),
+                                param_grid=param_linearCART, cv=5, scoring='neg_mean_absolute_percentage_error')
+    opt.fit(X_train, y_train)
+    return formatOptimal(opt)
 
 # Format the best configuration found during parameter tuning.
 def formatOptimal(opt_object):
@@ -182,6 +199,8 @@ def change_parameter_space(strategy, parameter_space_def):
         to_execute = "param_kernelRidge"
     elif strategy == "baggingsvr":
         to_execute = "param_baggingSVR"
+    elif strategy == "lineardecisiontreeregression":
+        to_execute = "param_linearCART"
     to_execute += " = [{"
     to_execute += format_parameter_space(parameter_space_def)
     exec(to_execute, globals())
