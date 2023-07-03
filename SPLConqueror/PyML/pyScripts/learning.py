@@ -98,14 +98,7 @@ class Learner:
 
     # use the features and nfp_values to train the model
     def learn(self, x, y):
-        try:
-            self.learning_model.fit(x, y)
-        except ValueError:
-            return
-        except TypeError:
-            return
-        except AttributeError:
-            return
+        self.learning_model.fit(x, y)
 
     def predict(self, x):
         try:
