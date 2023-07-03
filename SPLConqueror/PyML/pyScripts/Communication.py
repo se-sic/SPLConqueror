@@ -39,7 +39,7 @@ def print_line(string):
 
 
 def check_prereq(model):
-    return isinstance(model, DTR) or isinstance(model, RF) or (isinstance(model, SVR) and model.kernel=="linear")
+    return isinstance(model, DTR) or isinstance(model, RF) or (isinstance(model, SVR) and model.kernel == "linear")
 
 
 # format and print a list
@@ -90,7 +90,6 @@ def get_configurations(learn_container, predict_container):
 
 # Main method, that will be executed when executing this script.
 def main():
-
     if argv[1].lower() == "true":
         global debug
         debug = True
@@ -190,5 +189,6 @@ class Configurations:
 
     def __str__(self):
         return "Configurations from file " + self.conf_file + " with nfps " + self.nfp_file + "."
+
 
 main()

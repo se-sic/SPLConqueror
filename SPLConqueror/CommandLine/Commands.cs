@@ -194,7 +194,7 @@ namespace CommandLine
             if (components.Length > 1)
                 task = components[1];
 
-            string[] taskAsParameter = task.Split(new Char[] { ' ' });
+            string[] taskAsParameter = task.Trim().Split(new Char[] { ' ' });
 
             GlobalState.logInfo.logLine(COMMAND + line);
 

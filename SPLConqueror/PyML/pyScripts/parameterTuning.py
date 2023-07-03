@@ -46,7 +46,7 @@ param_baggingSVR = {'n_estimators': [5, 8, 10, 12, 15], 'max_samples': [0.75, 0.
 # For further information, check out https://github.com/cerlymarco/linear-tree/blob/main/notebooks/README.md
 param_linearCART = {"max_depth": [5, 10, 20, 30],
                     "min_samples_split": [6, 10, 20, 30],
-                    "min_samples_leaf": [0.025, 0.5, 0.1, 0.2],
+                    "min_samples_leaf": [3, 5, 7, 10],
                     "max_bins": [10, 25, 50, 75],
                     "min_impurity_decrease": [0.0, 0.1, 0.2],
                     }

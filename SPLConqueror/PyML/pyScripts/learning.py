@@ -244,8 +244,8 @@ def setup_KernelRidge(learner_settings):
 def setup_LinearCART(learner_settings):
     parameter = {"criterion": ["mse", str],
                  "max_depth": [5, int],
-                 "min_samples_split": [6, float],
-                 "min_samples_leaf": [0.1, float],
+                 "min_samples_split": [6, int],
+                 "min_samples_leaf": [2, int],
                  "max_bins": [25, int],
                  "min_impurity_decrease": [0.0, float],
                  "n_jobs": [None, int],
@@ -260,11 +260,21 @@ def read_in_settings(settings: List[str], parameter_list: Dict[str, List]) -> Di
         setting_value_pair = setting.split(":")
         if setting_value_pair[0] in parameter_list.keys():
             key = setting_value_pair[0]
-            if len(parameter_list[key]) > 1:
-                # Convert it to the datatype given in the tuple
-                parameter_list[key][0] = parameter_list[key][1](setting_value_pair[1])
-            else:
-                parameter_list[key][0] = setting_value_pair[1]
+            try:
+                if len(parameter_list[key]) > 1:
+                    # Convert it to the datatype given in the tuple
+                    if parameter_list[key][1] is int:
+                        # In the case a float is inserted as a string, the string can not be directly converted to int.
+                        # First, convert it to float and afterwards, to int
+                        parameter_list[key][0] = parameter_list[key][1](float(setting_value_pair[1].strip()))
+                    else:
+                        parameter_list[key][0] = parameter_list[key][1](setting_value_pair[1])
+                else:
+                    parameter_list[key][0] = setting_value_pair[1]
+            except Exception as err:
+                print(
+                    f"Parameter {setting_value_pair[0]} is not of the right type.\n {err}",
+                    file=sys.stderr, flush=True)
         else:
             print(f"Parameter {setting_value_pair[0]} is unknown.\n", file=sys.stderr, flush=True)
     parameter_to_value_dict = {}
