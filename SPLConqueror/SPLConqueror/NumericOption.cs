@@ -414,7 +414,13 @@ namespace SPLConqueror_Core
                 }
                 return nearestValue;
             }
-
+            
+            // Check whether the nearest value to be found exceeds the maximum value.
+            // If so, return the maximum value.
+            if (inputValue > max_value)
+            {
+                return max_value;
+            }
 
             ////HACK can lead to performance problems for numeric options with a large number of valid values
             double lowerValue = 0;
