@@ -795,6 +795,9 @@ namespace CommandLine
 
                         parameterSettings = ML_SettingsGenerator.generateSettings(cleanedParameters);
 
+                        List<double> errorValues = new List<double>();
+                        
+
                         if (containsArgInvariant(taskAsParameter, "randomized"))
                         {
                             int seed = 0;
@@ -821,6 +824,8 @@ namespace CommandLine
                             // We have to reuse the list of models because of a NotifyCollectionChangedEventHandlers that might be attached to the list of models. 
                             KFoldCrossValidation kFold = new KFoldCrossValidation(parameters, configurationsLearning);
                             double error = kFold.learn();
+                            
+                            errorValues.Add(error);
 
                             if (error < minimalError)
                             {
@@ -832,16 +837,24 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
                         GlobalState.logInfo.logLine("Optimal parameters "
                             + formatOptimalParameters(optimalParameters.ToString(), cleanedParameters));
-                        Learning experiment = new MachineLearning.Learning.Regression
-                            .Learning(configurationsLearning, configurationsValidation);
-                        experiment.mlSettings = optimalParameters;
-                        experiment.learn();
-                        StringBuilder taskAsString = new StringBuilder();
-                        taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
 
-                        string samplingIdentifier = "PreVal_SPLCon_" + GlobalState.varModel.Name + "_" + createSmallerSamplingIdentifier() + ".csv";
+                        if (containsArgInvariant(taskAsParameter, "file") && parameterSettings.Count > 0)
+                        {
+                            WriteHyperParameterSettingsIntoFile(taskAsParameter, parameterSettings, cleanedParameters, errorValues);
+                        }
+                        
+                        if (!containsArgInvariant(taskAsParameter, "performWithOptimal") || bool.Parse(getArgValue(taskAsParameter, "performWithOptimal")))
+                        {
+                            Learning experiment = new Learning(configurationsLearning, configurationsValidation);
+                            experiment.mlSettings = optimalParameters;
+                            experiment.learn();
+                            StringBuilder taskAsString = new StringBuilder();
+                            taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
 
-                        printPredictedConfigurations(samplingIdentifier, experiment);
+                            string samplingIdentifier = "PreVal_SPLCon_" + GlobalState.varModel.Name + "_" + createSmallerSamplingIdentifier() + ".csv";
+
+                            printPredictedConfigurations(samplingIdentifier, experiment);
+                        }
 
                         //printPredictedConfigurations("./CrossValidationResultPrediction"
                         //    + taskAsString.ToString()
@@ -893,6 +906,45 @@ namespace CommandLine
             return "";
         }
 
+        /// <summary>
+        ///  This method prepares the hyperparameter settings and writes them into a file.
+        /// </summary>
+        /// <param name="taskAsParameter">The command-line parameters for hyperparameter tuning</param>
+        /// <param name="parameterSettings">The hyperparameter settings that have been executed</param>
+        /// <param name="variedParameters">The array of parameters that have been varied</param>
+        /// <param name="errorValues">The </param>
+        private void WriteHyperParameterSettingsIntoFile(string[] taskAsParameter, List<ML_Settings> parameterSettings, string[] variedParameters, List<double> errorValues)
+        {
+            List<String> relevant_parameter_names = new List<string>();
+            foreach (string relevant_parameter in variedParameters)
+            {
+                relevant_parameter_names.Add(relevant_parameter.Replace(":", "=").Split('=')[0]);
+            }
+            if (parameterSettings.Count != errorValues.Count)
+            {
+                GlobalState.logError.logLine("The parameter settings and the resulting error values are not of the same sizes. " +
+                                            "Skipping writing into a file...");
+                return;
+            }
+            
+            string path = getArgValue(taskAsParameter, "file");
+
+            StringBuilder sb = new StringBuilder();
+            // Add header
+            sb.Append(parameterSettings[0].GetCsvHeader(relevant_parameter_names));
+            sb.Append("Error");
+            sb.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
+
+            foreach (ML_Settings parameters in parameterSettings)
+            {
+                sb.Append(parameters.ToCsv(relevant_parameter_names));
+                sb.Append(errorValues[0]);
+                errorValues.RemoveAt(0);
+                sb.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
+            }
+            File.WriteAllText(path, sb.ToString());
+        }
+
         private string formatOptimalParameters(string optimalParameters, string[] consideredParameters)
         {
             StringBuilder sb = new StringBuilder();
@@ -901,7 +953,7 @@ namespace CommandLine
             {
                 foreach (string opt in parameters)
                 {
-                    if (opt.StartsWith(param.Split(new char[] { '=' })[0]))
+                    if (opt.StartsWith(param.Replace(":", "=").Split(new char[] { '=' })[0]))
                         sb.Append(opt + ";");
                 }
             }
@@ -988,12 +1040,12 @@ namespace CommandLine
 
         private bool isAllMeasurementsToSample()
         {
-            return this.binaryToSample.Contains(SamplingStrategies.ALLBINARY) && this.binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL);
+            return allMeasurementsSelected || (binaryToSample.Contains(SamplingStrategies.ALLBINARY) && binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL));
         }
 
         private bool isAllMeasurementsValidation()
         {
-            return this.binaryToSampleValidation.Contains(SamplingStrategies.ALLBINARY) && this.binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL);
+            return allMeasurementsSelected || (binaryToSampleValidation.Contains(SamplingStrategies.ALLBINARY) && binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL));
         }
 
         private bool allMeasurementsValid()

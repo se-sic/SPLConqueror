@@ -433,6 +433,50 @@ namespace MachineLearning.Learning
             blacklisted = blacklisted.Except(toRemove).ToList();
         }
 
+        /// <summary>
+        /// Returns the csv header representation of a machine-learning setting.
+        /// Note that this method is relevant to assess the order of the parameters.
+        /// </summary>
+        /// <param name="relevantParameters">The parameters that are relevant for the export</param>
+        /// <returns>the csv header representation</returns>
+        public string GetCsvHeader(List<string> relevantParameters)
+        {
+            StringBuilder sb = new StringBuilder();
+            FieldInfo[] fields = GetType().GetFields();
+
+            foreach (FieldInfo field in fields)
+            {
+                if (!field.IsStatic && !field.Name.Equals("blacklisted") && relevantParameters.Contains(field.Name))
+                {
+                    sb.Append(field.Name.Replace("_", "-"));
+                    sb.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns a csv representation of the machine-learning setting
+        /// </summary>
+        /// <param name="relevantParameters">The parameters that are relevant for the export</param>
+        /// <returns>a csv representation of the machine-learning setting</returns>
+        public string ToCsv(List<string> relevantParameters)
+        {
+            StringBuilder sb = new StringBuilder();
+            FieldInfo[] fields = GetType().GetFields();
+            
+            foreach (FieldInfo field in fields)
+            {
+                if (!field.IsStatic && !field.Name.Equals("blacklisted") && relevantParameters.Contains(field.Name))
+                {
+                    sb.Append(field.GetValue(this));
+                    sb.Append(ConfigurationPrinter.CSV_ELEMENT_DELIMITER);
+                }
+            }
+            return sb.ToString();
+        }
+
 
         /// <summary>
         /// A textual representation of the machine learning settings. The representation consist of a key value representation of all field of the settings with the dedicated values. 
@@ -441,7 +485,7 @@ namespace MachineLearning.Learning
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            FieldInfo[] fields = this.GetType().GetFields();
+            FieldInfo[] fields = GetType().GetFields();
 
             foreach (FieldInfo field in fields)
             {

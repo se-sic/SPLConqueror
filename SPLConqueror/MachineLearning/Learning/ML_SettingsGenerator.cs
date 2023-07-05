@@ -19,7 +19,7 @@ namespace MachineLearning.Learning
         private static Tuple<string, string[]> extractSettings(string parameter)
         {
             parameter = parameter.Trim();
-            string[] idAndValues = parameter.Split(new char[] { '=' });
+            string[] idAndValues = parameter.Replace(":", "=").Split(new char[] { '=' });
             string[] values = idAndValues[1].Substring(1, idAndValues[1].Length - 2).Split(new char[] { ',' });
             for (int i = 0; i < values.Length; ++i)
             {
