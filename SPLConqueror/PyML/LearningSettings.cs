@@ -12,7 +12,7 @@ namespace ProcessWrapper
         /// <summary>
         /// Supported learning strategies by the python module.
         /// </summary>
-        public enum LearningStrategies { SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE };
+        public enum LearningStrategies { SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, LinearDecisionTreeRegression };
 
         private static LearningStrategies getStrategy(string strategyAsString)
         {

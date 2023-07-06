@@ -52,6 +52,9 @@ namespace ProcessWrapper
 
         // Message to indicate that the process has performed the task.
         private const string FINISHED_LEARNING = "learn_finished";
+        
+        // Message to indicate that the python process has completely finished.
+        private const string FINISHED = "finished";
 
         private string[] mlProperties = null;
 
@@ -63,7 +66,7 @@ namespace ProcessWrapper
         public PythonWrapper(string path, string[] mlProperties)
         {
             bool debugTrace = false;
-            if((mlProperties.Length > 1) && mlProperties[1] == "Debug") {
+            if((mlProperties.Length > 1) && mlProperties[1].ToLower() == "debug") {
                 debugTrace = true;
                 mlProperties = mlProperties.Except(new string[] { mlProperties[1] }).ToArray();
             }
@@ -90,10 +93,15 @@ namespace ProcessWrapper
             {
                 if (!python.StandardError.EndOfStream)
                 {
-                    GlobalState.logError.logLine("Python error/warning:");
-                    GlobalState.logError.logLine(python.StandardError.ReadToEnd());
+                    String msg = python.StandardError.ReadToEnd();
+                    if (msg.Trim().Length > 0)
+                    {
+                        GlobalState.logError.logLine("Python error/warning:");
+                        GlobalState.logError.logLine(msg);   
+                    }
                 }
             }
+            python.StandardError.Close();
         }
 
         private string waitForNextReceivedLine()
@@ -144,11 +152,12 @@ namespace ProcessWrapper
         /// <param name="pythonList">The predictions from python.</param>
         /// <param name="predictedConfigurations">The configurations that were predicted.</param>
         /// <param name="writer">The writer object for the file.</param>
+        /// <param name="predictedByPython">The configurations and the corresponding NFP values.</param>
         /// <returns></returns>
         private double printNfpPredictionsPython(string pythonList, List<Configuration> predictedConfigurations, PythonPredictionWriter writer, out  List<Configuration> predictedByPython)
         {
             predictedByPython = new List<Configuration>();
-            string[] separators = new String[] { "," };
+            string[] separators = { "," };
             string[] predictions = pythonList.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
             if (predictedConfigurations.Count != predictions.Length)
@@ -165,23 +174,39 @@ namespace ProcessWrapper
                 GlobalState.logError.log("Error message: " + errMessage.ToString());
                 return Double.NaN;
             }
-            else
+
+            double error = 0;
+            if (writer != null)
             {
-                double error = 0;
                 writer.writePredictions("Configuration;MeasuredValue;PredictedValue\n");
                 for (int i = 0; i < predictedConfigurations.Count; i++)
                 {
-                    writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" + Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" + Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
+                    writer.writePredictions(predictedConfigurations[i].ToString().Replace(";", "_") + ";" +
+                                            Math.Round(predictedConfigurations[i].GetNFPValue(), 4) + ";" +
+                                            Math.Round(Convert.ToDouble(predictions[i]), 4) + "\n");
 
-                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) / predictedConfigurations[i].GetNFPValue() ;
+                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) /
+                             predictedConfigurations[i].GetNFPValue();
                     var copy = predictedConfigurations[i].Copy();
                     copy.setMeasuredValue(GlobalState.currentNFP, predictedConfigurations[i].GetNFPValue());
                     predictedByPython.Add(copy);
                 }
-
-                error /= predictedConfigurations.Count;
-                return error;
             }
+            else
+            {
+                for (int i = 0; i < predictedConfigurations.Count; i++)
+                {
+                    error += Math.Abs(predictedConfigurations[i].GetNFPValue() - Convert.ToDouble(predictions[i])) /
+                             predictedConfigurations[i].GetNFPValue();
+                    var copy = predictedConfigurations[i].Copy();
+                    copy.setMeasuredValue(GlobalState.currentNFP, predictedConfigurations[i].GetNFPValue());
+                    predictedByPython.Add(copy);
+                }
+            }
+
+            error /= predictedConfigurations.Count;
+            return error;
+            
         }
 
         /// <summary>
@@ -216,7 +241,7 @@ namespace ProcessWrapper
                     model.BinaryOptions.ForEach(opt => opts.Add(opt.Name));
                     model.NumericOptions.ForEach(opt => opts.Add(opt.Name));
                     passLineToApplication(string.Join(",", opts));
-                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                    while (!waitForNextReceivedLine().Equals(PASS_OK));
                     passLineToApplication(task);
                 }
             }
@@ -240,6 +265,22 @@ namespace ProcessWrapper
 
             passLineToApplication(REQUESTING_LEARNING_RESULTS);
             return printNfpPredictionsPython(waitForNextReceivedLine(), predictedConfigurations, writer, out predictedByPython);
+        }
+        
+        /// <summary>
+        /// This method checks whether the process has finished successfully.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">This exception is thrown if the python process didn't finish successfully.</exception>
+        public void finish()
+        {
+            if (waitForNextReceivedLine().Equals(FINISHED))
+            {
+                passLineToApplication(FINISHED);
+            }
+            else
+            {
+                throw new InvalidOperationException("The python process didn't finish.");
+            }
         }
 
         public string getTimeToLearning()

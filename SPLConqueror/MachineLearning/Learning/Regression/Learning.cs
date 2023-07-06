@@ -108,6 +108,7 @@ namespace MachineLearning.Learning.Regression
                 sw.Start();
                 sel.learn();
                 sw.Stop();
+                Console.WriteLine("Prediction Error: {0} %", sel.finalError);
                 Console.WriteLine("Elapsed learning time(seconds): {0}", sw.Elapsed);
             }
         }

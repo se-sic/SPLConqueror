@@ -23,6 +23,7 @@ REQUESTING_LEARNING_RESULTS = "req_results"
 
 PASS_OK = "pass_ok"
 FINISHED_LEARNING = "learn_finished"
+FINISHED = "finished"
 
 REQUESTING_LEARNING_SETTINGS = "req_settings"
 
@@ -38,7 +39,7 @@ def print_line(string):
 
 
 def check_prereq(model):
-    return isinstance(model, DTR) or isinstance(model, RF) or (isinstance(model, SVR) and model.kernel=="linear")
+    return isinstance(model, DTR) or isinstance(model, RF) or (isinstance(model, SVR) and model.kernel == "linear")
 
 
 # format and print a list
@@ -89,7 +90,6 @@ def get_configurations(learn_container, predict_container):
 
 # Main method, that will be executed when executing this script.
 def main():
-
     if argv[1].lower() == "true":
         global debug
         debug = True
@@ -146,9 +146,8 @@ def main():
             print("Finished the learning.\n", file=sys.stderr, flush=True)
 
         if input() == REQUESTING_LEARNING_RESULTS:
-            if debug:
-                print("Extracting trees.\n", file=sys.stderr, flush=True)
             print_line_array(predictions)
+            print_line(str(elapsed))
         if tree_path.strip() != "" and check_prereq(model.learning_model):
             print_line(str(elapsed))
             tree_file = open(tree_path, 'w')
@@ -161,6 +160,8 @@ def main():
                     tree_file.write(str(tree) + "\n")
             tree_file.flush()
             tree_file.close()
+        print_line(FINISHED)
+        input()
 
     # perform parameter tuning
     elif task == START_PARAM_TUNING:
@@ -188,5 +189,6 @@ class Configurations:
 
     def __str__(self):
         return "Configurations from file " + self.conf_file + " with nfps " + self.nfp_file + "."
+
 
 main()

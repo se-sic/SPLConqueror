@@ -84,7 +84,7 @@ Be aware that an internet connection is required to perform this step.
 
 6. Build the root project
 
-7. Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(0.20.3), numpy(1.16.2) and scipy(1.2.1) packages.
+7. Optionally: To use the interface to scikit learn install Python3 along with the scikit-learn(1.0.2), numpy(1.22.2) and scipy(1.8.0) packages.
 
 8. Optionally: To include the Variant Generator using CPlex place the required libraries in the folders SPLConqueror/packages/cplex before building the project. For SCIP place the libraries in SPLConqueror/packages/scip.
 
@@ -738,20 +738,33 @@ To set which python interpreter is used, use the ```define-python-path``` comman
 
 ```learn-python <learner>```
 
-To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
+To learn with an algorithm provided by scikit-learn use the ```learn-python``` command. Currently the SVR, DecisionTreeRegression, LinearDecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The learning results will be written in the into the folder where the log file is located.
 For more information on the algorithms see:[Scikit-Learn](http://scikit-learn.org/stable/documentation.html)
 
 Further, machine-learning parameters for the individual strategies can be passed as additional arguments. The parameters have to be separated by whitespaces and each machine-learning paramter has to be passed in the form of
 
-```parameter_name=value```
+```parameter_name:value```
 
 . The full list of the machine-learning parameters for each individual algorithm can be found in the [Scikit-Learn API documentation](https://scikit-learn.org/stable/modules/classes.html)
 
+Typically, the final prediction results are written into a file. The path to the file is reported in the log file.
+Optionally, writing the final results into a file can be turned off by providing the parameter ```writeFinalPredictionResults:false```.
+
 #### Performing parameter optimization for scikit-learn
 
-```learn-python-opt <learner>```
+```learn-python-opt <learner> <file> <parameters>```
 
-To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported. The optimal parameters will be written to the log.
+To to find the optimal parameters for the scikit-learn algorithms use the ```learn-python-opt``` command. Currently the SVR, DecisionTreeRegression, LinearDecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor and Kernelridge learners are supported for the ```<learner>``` parameter. 
+Additionally, a parameter ```<file>``` in the form of ```file:<pathToCsvFile>``` can be provided to write the results of the parameter optimization in a file for further analysis.
+You can also provide a list of hyper parameters in ```<parameters>``` of the form of ```key:[value1,value2]``` and separated by spaces to consider only a subset of the hyper parameters.
+For instance, if the RandomForestRegressor should only consider ```max_depth``` and ```n_estimators```, you can provide these as:
+```
+learn-python-opt RandomForestRegressor n_estimators:[10,15,20] max_depth:[5,10,20]
+```
+After performing the parameter optimization, the optimal configuration is executed afterwards.
+In this case, the optimal parameters will be written to the log.
+If this is not intended, you can provide ```performWithOptimal:false``` in the list of parameters (the order of the parameters does not matter).
+Then, only the parameter optimization is performed.
 
 #### Printing configurations
 

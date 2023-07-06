@@ -22,11 +22,19 @@ numpy_version = "numpy==1.22.2"
 """scipy package needed for sklearn"""
 scipy_version = "scipy==1.8.0"
 
+"""pandas package version needed for optimized learning"""
+pandas_version = "pandas==1.4.1"
+
+"""linear-tree package version needed for linear CART"""
+linear_tree_version = "linear-tree==0.3.5"
+
 try:
     import pip
     pip._internal.main(['install', numpy_version])
     pip._internal.main(['install', scipy_version])
     pip._internal.main(['install', sklearn_version])
+    pip._internal.main(['install', pandas_version])
+    pip._internal.main(['install', linear_tree_version])
 except ImportError:
     raise MissingPipError("Pip has to be installed. Please install pip"
                           " Note pip is distributed with python version >= 2.7.9")
