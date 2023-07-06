@@ -1,4 +1,5 @@
 import sys
+from typing import Dict, List
 
 import sklearn.svm as sk
 import sklearn.ensemble as skEn
@@ -12,6 +13,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import mean_absolute_percentage_error
+from sklearn.model_selection import ParameterGrid, cross_validate
 
 # default parameter spaces used for parameter tuning.
 
@@ -66,85 +69,69 @@ def setOutputPath(path):
 
 
 # Perform parameter tuning.
-def optimizeParameter(strategy, X_train, y_train, parameter_space_def):
+def optimizeParameter(strategy, X_train, y_train, parameter_space_def, X_evaluation, y_evaluation):
     strategy = strategy.lower()
 
     change_parameter_space(strategy, parameter_space_def)
 
     if strategy == "svr":
-        return optimize_SVR(X_train, y_train)
+        return optimize_SVR(X_train, y_train, X_evaluation, y_evaluation)
     if strategy == "decisiontreeregression":
-        return optimize_DecisionTree(X_train, y_train)
+        return optimize_DecisionTree(X_train, y_train, X_evaluation, y_evaluation)
     elif strategy == "randomforestregressor":
-        return optimize_RandomForestRegressor(X_train, y_train)
+        return optimize_RandomForestRegressor(X_train, y_train, X_evaluation, y_evaluation)
     elif strategy == "kneighborsregressor":
-        return optimize_KNNeighborsRegressor(X_train, y_train)
+        return optimize_KNNeighborsRegressor(X_train, y_train, X_evaluation, y_evaluation)
     elif strategy == "kernelridge":
-        return optimize_KernelRidge(X_train, y_train)
+        return optimize_KernelRidge(X_train, y_train, X_evaluation, y_evaluation)
     elif strategy == "baggingsvr":
-        return optimize_BaggingSVR(X_train, y_train)
+        return optimize_BaggingSVR(X_train, y_train, X_evaluation, y_evaluation)
     elif strategy == "lineardecisiontreeregression":
-        return optimize_LinearCART(X_train, y_train)
+        return optimize_LinearCART(X_train, y_train, X_evaluation, y_evaluation)
 
 
-def optimize_SVR(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator=sk.SVR(cache_size=4000), param_grid=param_SVR, cv=5,
-                                scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
+def perform_grid_search(X_train, y_train, estimator, param_grid, X_evaluation, y_evaluation) -> str:
+    '''This method performs a grid search on the given parameter space.
+    Note that GridSearchCV from sklearn does the same, but uses (1) another scoring function and (2) does not allow
+    to access the individual models to perform predictions on an optional evaluation set.
+    This method returns the best setting as a string.
+    '''
+    all_parameter_settings = ParameterGrid(param_grid)
+    parameters: Dict[str, List] = dict()
+    parameters["params"] = []
+    parameters["error"] = []
+    best_error = sys.float_info.max
+    best_setting = None
+    for setting in all_parameter_settings:
+        # Apply setting
+        for parameter, value in setting.items():
+            # First, check if the parameter exists
+            getattr(estimator, parameter)
+            setattr(estimator, parameter, value)
 
-    return formatOptimal(opt)
+        # Perform k-fold cross validation
+        results = cross_validate(estimator, X_train, y_train, cv=5, return_estimator=True)
+        error = 0
+        for estimator in results['estimator']:
+            if len(X_evaluation) > 0:
+                error += mean_absolute_percentage_error(y_evaluation, estimator.predict(X_evaluation))
+            else:
+                error += mean_absolute_percentage_error(y_train, estimator.predict(X_train))
+        parameters["params"].append(setting)
+        error = error / 5
 
+        if error < best_error:
+            best_error = error
+            best_setting = setting
 
-def optimize_DecisionTree(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator=skTr.DecisionTreeRegressor(), param_grid=param_DecisionTree,
-                                cv=5, scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
-    return formatOptimal(opt)
+        parameters["error"].append(error * 100)
 
-
-def optimize_RandomForestRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator=skEn.RandomForestRegressor(), param_grid=param_RandomForest,
-                                cv=5, scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
-    return formatOptimal(opt)
-
-
-def optimize_KNNeighborsRegressor(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator=skNE.KNeighborsRegressor(), param_grid=param_kNNRegressor,
-                                cv=5, scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
-    return formatOptimal(opt)
-
-
-def optimize_KernelRidge(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator=skKR.KernelRidge(), param_grid=param_kernelRidge,
-                                cv=5, scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
-    return formatOptimal(opt)
-
-
-def optimize_BaggingSVR(X_train, y_train):
-    opt = modelSel.GridSearchCV(
-        estimator=skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500, gamma='auto')),
-        param_grid=param_baggingSVR, cv=5, scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
-    return formatOptimal(opt)
-
-
-def optimize_LinearCART(X_train, y_train):
-    opt = modelSel.GridSearchCV(estimator=LinearTreeRegressor(base_estimator=LinearRegression()),
-                                param_grid=param_linearCART, cv=5, scoring='neg_mean_absolute_percentage_error')
-    opt.fit(X_train, y_train)
-    return formatOptimal(opt)
-
-# Format the best configuration found during parameter tuning.
-def formatOptimal(opt_object):
     # Create pandas dataframe and extract it
     if grid_search_file_name != "":
-        df = pd.DataFrame(columns=sorted(list(opt_object.param_grid[0].keys())) + ['error'])
-        for i in range(0, len(opt_object.cv_results_['params'])):
-            df.loc[len(df)] = [*opt_object.cv_results_['params'][i].values()] + [
-                np.abs(opt_object.cv_results_['mean_test_score'][i])]
+        df = pd.DataFrame(columns=list(all_parameter_settings[0].keys()) + ['error'])
+        for i in range(0, len(parameters['params'])):
+            df.loc[len(df)] = [*parameters['params'][i].values()] + [
+                np.abs(parameters['error'][i])]
         columns = list(df.columns[:-1])  # all columns except for error
         if 'random_state' in columns:
             columns.remove('random_state')
@@ -153,13 +140,47 @@ def formatOptimal(opt_object):
         new_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(new_path, sep=';')
 
-    optimal_params = opt_object.best_params_
-    if len(optimal_params.keys()) == 0:
+    if best_setting is None:
         return "No parameter has an influence on the accuracy of the result!"
     output = ""
-    for key in optimal_params:
-        output += key + ":" + str(optimal_params[key]) + ";"
+    for key in best_setting:
+        output += key + ":" + str(best_setting[key]) + ";"
     return output
+
+
+def optimize_SVR(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train, sk.SVR(cache_size=4000), param_SVR, X_evaluation, y_evaluation)
+
+
+def optimize_DecisionTree(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train, skTr.DecisionTreeRegressor(), param_DecisionTree, X_evaluation,
+                               y_evaluation)
+
+
+def optimize_RandomForestRegressor(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train, skEn.RandomForestRegressor(), param_RandomForest, X_evaluation,
+                               y_evaluation)
+
+
+def optimize_KNNeighborsRegressor(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train, skNE.KNeighborsRegressor(), param_kNNRegressor, X_evaluation,
+                               y_evaluation)
+
+
+def optimize_KernelRidge(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train, skKR.KernelRidge(), param_kernelRidge, X_evaluation,
+                               y_evaluation)
+
+
+def optimize_BaggingSVR(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train,
+                               skEn.BaggingRegressor(base_estimator=sk.SVR(cache_size=500, gamma='auto')),
+                               param_baggingSVR, X_evaluation, y_evaluation)
+
+
+def optimize_LinearCART(X_train, y_train, X_evaluation, y_evaluation):
+    return perform_grid_search(X_train, y_train, LinearTreeRegressor(base_estimator=LinearRegression()),
+                               param_linearCART, X_evaluation, y_evaluation)
 
 
 # Format a user defined parameter space to one that can be executed by python.

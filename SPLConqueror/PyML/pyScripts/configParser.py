@@ -6,7 +6,7 @@ def parse_configs_from_plaintext(configuration_file, configuration_options):
     config_selection = []
 
     for configuration in f:
-        if not len(configuration.strp()) == 0:
+        if not len(configuration.strip()) == 0:
             selection = []
             for option in configuration_options:
                 if option + ";" in configuration:

@@ -119,7 +119,7 @@ class Learner:
 
 
 def setup_SVR(learner_settings):
-    parameter = {"kernel": ['rbf', str],  # linear, poly, rbf, sigmoid, precomputd
+    parameter = {"kernel": ['rbf', str],  # linear, poly, rbf, sigmoid, precomputed
                  "degree": [3, int],
                  "gamma": ["auto"],  # other options: 'scale' or float
                  "coef0": [0.0, float],

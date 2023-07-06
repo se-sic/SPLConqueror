@@ -56,7 +56,7 @@ tree_path = ""
 
 
 # Function to request and then parse configurations.
-def get_configurations(learn_container, predict_container):
+def get_configurations(learn_container, predict_container, evaluation_container):
     print_line(REQUESTING_CONFIGURATION)
     line = input()
     config_and_nfp_file_learn = line.split(" ")
@@ -64,6 +64,19 @@ def get_configurations(learn_container, predict_container):
     print_line(PASS_OK)
     line = input()
     config_and_nfp_file_predict = line.split(" ")
+    print_line(PASS_OK)
+    line = input()
+    config_and_nfp_file_evaluation = line.split(" ")
+    if debug:
+        print("Reading in the evaluation file...", file=sys.stderr, flush=True)
+    # The path to the evaluation set can be empty. In this case, ignore it.
+    if config_and_nfp_file_evaluation[0].strip() != "":
+        if not config_and_nfp_file_evaluation[0].strip().endswith(".csv"):
+            raise ValueError("The path to the evaluation file has to be a csv file!")
+        evaluation_container.features = configParser.parse_configs_from_csv(config_and_nfp_file_evaluation[0])
+        evaluation_container.results = configParser.parse_nfp_values(config_and_nfp_file_evaluation[1])
+    if debug:
+        print("Finished!\n", file=sys.stderr, flush=True)
     print_line(PASS_OK)
     global tree_path
     tree_path = input()
@@ -97,6 +110,7 @@ def main():
 
     configurations_learn = Configurations()
     configurations_predict = Configurations()
+    configurations_evaluation = Configurations()
 
     learning_strategy = ""
     learner_settings = []
@@ -120,7 +134,7 @@ def main():
             if debug:
                 print("Received learner setting:" + learner_setting + "\n", file=sys.stderr, flush=True)
 
-    get_configurations(configurations_learn, configurations_predict)
+    get_configurations(configurations_learn, configurations_predict, configurations_evaluation)
 
     if debug:
         print("Found learning set. " + str(configurations_learn) + "\n", file=sys.stderr, flush=True)
@@ -138,7 +152,10 @@ def main():
         start = perf_counter()
         model.learn(configurations_learn.features, configurations_learn.results)
         elapsed = perf_counter() - start
-        predictions = model.predict(configurations_predict.features)
+        if len(configurations_evaluation.features) > 0:
+            predictions = model.predict(configurations_evaluation.features)
+        else:
+            predictions = model.predict(configurations_predict.features)
 
         print_line(FINISHED_LEARNING)
 
@@ -169,7 +186,9 @@ def main():
             print("Starting the learning.\n", file=sys.stderr, flush=True)
         parameterTuning.setOutputPath(input())
         optimal_parameters = parameterTuning.optimizeParameter(learning_strategy, configurations_learn.features,
-                                                               configurations_learn.results, learner_settings)
+                                                               configurations_learn.results, learner_settings,
+                                                               configurations_evaluation.features,
+                                                               configurations_evaluation.results)
         print_line(FINISHED_LEARNING)
         if input() == REQUESTING_LEARNING_RESULTS:
             print_line(optimal_parameters)

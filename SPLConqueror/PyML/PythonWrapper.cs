@@ -216,15 +216,18 @@ namespace ProcessWrapper
         /// At last sends the task that should be performed(learning or parameter tuning).
         /// This has to be performed before requesting results and can only be done once per lifetime of the process.
         /// </summary>
-        /// <param name="configsLearn">Path to the file that constains the configurations used for learning.</param>
-        /// <param name="configsPredict">Path to the file that constains the configurations used for prediction.</param>
+        /// <param name="configsLearn">Path to the file that contains the configurations used for learning.</param>
+        /// <param name="configsPredict">Path to the file that contains the configurations used for prediction.</param>
         /// <param name="nfpLearn">Path to the file that contains the nfp values that belong to the learning set.</param>
-        /// <param name="nfpPredict">Path to the file that contains the nfp vlaues that belong to the prediction set.</param>
+        /// <param name="nfpPredict">Path to the file that contains the nfp values that belong to the prediction set.</param>
         /// <param name="task">Task that should be performed by the learner. Can either be parameter tuning
         /// or learning.</param>
         /// <param name="model">Model that contains all the configuration options.</param>
+        /// <param name="treePath">The path where the tree should be written to.</param>
+        /// <param name="configsEvaluation">Path to the file containing the configurations used for the evaluation.</param>
+        /// <param name="nfpEvaluation">Path to the file containing the nfp values used for the evalution</param>
         public void setupApplication(string configsLearn, string nfpLearn, string configsPredict, string nfpPredict,
-            string task, VariabilityModel model, string treePath = " ")
+            string task, VariabilityModel model, string treePath = " ", string configsEvaluation = " ", string nfpEvaluation = " ")
         {
             if (AWAITING_SETTINGS.Equals(waitForNextReceivedLine()))
             {
@@ -234,6 +237,8 @@ namespace ProcessWrapper
                     passLineToApplication(configsLearn + " " + nfpLearn);
                     while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
                     passLineToApplication(configsPredict + " " + nfpPredict);
+                    while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
+                    passLineToApplication(configsEvaluation + " " + nfpEvaluation);
                     while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
                     passLineToApplication(treePath);
                     while (!waitForNextReceivedLine().Equals(PASS_OK)) ;
@@ -294,10 +299,9 @@ namespace ProcessWrapper
         /// The process has to be set up before performing this method.
         /// The process will automatically terminate after this method was performed.
         /// </summary>
-        /// <param name="predictedConfigurations">The configurations that were used to predict the nfp values by the learner.</param>
         /// <param name="targetPath">Target path to write intermediate results into a file.</param>
         /// <returns>Optimal configuration</returns>
-        public string getOptimizationResult(List<Configuration> predictedConfigurations, string targetPath)
+        public string getOptimizationResult(string targetPath)
         {
             passLineToApplication(targetPath);
 
