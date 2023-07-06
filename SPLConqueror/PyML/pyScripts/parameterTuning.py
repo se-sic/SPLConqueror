@@ -128,9 +128,9 @@ def perform_grid_search(X_train, y_train, estimator, param_grid, X_evaluation, y
 
     # Create pandas dataframe and extract it
     if grid_search_file_name != "":
-        df = pd.DataFrame(columns=list(all_parameter_settings[0].keys()) + ['error'])
+        df = pd.DataFrame(columns=list(parameters['params'][0].keys()) + ['error'])
         for i in range(0, len(parameters['params'])):
-            df.loc[len(df)] = [*parameters['params'][i].values()] + [
+            df.loc[len(df)] = list(parameters['params'][i].values()) + [
                 np.abs(parameters['error'][i])]
         columns = list(df.columns[:-1])  # all columns except for error
         if 'random_state' in columns:
