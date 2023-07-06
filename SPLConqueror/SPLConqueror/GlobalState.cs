@@ -58,6 +58,11 @@ namespace SPLConqueror_Core
         public static string measurementSource;
 
         /// <summary>
+        /// Variable that indicates whether SPL Conqueror should warn from using log(0) or not.
+        /// </summary>
+        public static bool warnLog = true;
+
+        /// <summary>
         /// The object that encapsulates the configurations that can be used to evalue the learned predictor.
         /// </summary>
         public static ResultDB evalutionSet = new ResultDB();
