@@ -413,7 +413,13 @@ namespace SPLConqueror_Core
                         double leftHandSide = stack.Pop();
                         if (leftHandSide == 0.0)
                         {
-                            GlobalState.logError.log("part of the performance-influence model leads to a NegativeInfinity (compute log(0)) ");
+                            if (GlobalState.warnLog)
+                            {
+                                GlobalState.logError.log("part of the performance-influence model leads to a " + 
+                                                         "NegativeInfinity (compute log(0)) ");
+                                GlobalState.warnLog = false;
+                            }
+                            
                             stack.Push(0.0);
                         }
                         else

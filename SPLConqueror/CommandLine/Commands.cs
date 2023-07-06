@@ -918,7 +918,7 @@ namespace CommandLine
             List<String> relevant_parameter_names = new List<string>();
             foreach (string relevant_parameter in variedParameters)
             {
-                relevant_parameter_names.Add(relevant_parameter.Replace(":", "=").Split('=')[0]);
+                relevant_parameter_names.Add(relevant_parameter.Replace("-", "_").Replace(":", "=").Split('=')[0]);
             }
             if (parameterSettings.Count != errorValues.Count)
             {
