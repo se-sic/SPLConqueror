@@ -238,7 +238,7 @@ def setup_LinearCART(learner_settings):
     parameter = {"criterion": ["mse", str],
                  "max_depth": [5, int],
                  "min_samples_split": [6, int],
-                 "min_samples_leaf": [2, int],
+                 "min_samples_leaf": [3, int],
                  "max_bins": [25, int],
                  "min_impurity_decrease": [0.0, float],
                  "n_jobs": [None, int],
