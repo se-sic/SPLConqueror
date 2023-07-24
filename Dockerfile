@@ -6,6 +6,11 @@ FROM debian:stretch
 # Set the working directory to /app
 WORKDIR /application
 
+RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' \
+           -e 's|security.debian.org|archive.debian.org/|g' \
+           -e '/stretch-updates/d' /etc/apt/sources.list
+
+
 RUN apt update
 
 # Add mono package repository and update repositories
