@@ -1,22 +1,17 @@
 # Note: Since git repositories are cloned, an active internet connection is required
 
 # The predictions were performed on Debian 9 (stretch)
-FROM debian:stretch
+FROM debian:bullseye
 
 # Set the working directory to /app
 WORKDIR /application
-
-RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' \
-           -e 's|security.debian.org|archive.debian.org/|g' \
-           -e '/stretch-updates/d' /etc/apt/sources.list
-
 
 RUN apt update
 
 # Add mono package repository and update repositories
 RUN apt install -y -qq apt-transport-https dirmngr gnupg ca-certificates \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-    && echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
+    && echo "deb https://download.mono-project.com/repo/debian stable-buster main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
     && apt update
 
 # Install git and wget
@@ -44,5 +39,5 @@ RUN git clone --depth=1 https://github.com/se-passau/SPLConqueror.git \
 RUN apt install -y -qq python3 virtualenv \
     && virtualenv --python=python3 python3-env \
     && . ./python3-env/bin/activate \
-    && pip3 install scikit-learn==0.19
+    && pip3 install -r ./SPLConqueror/SPLConqueror/requirements.txt
 
