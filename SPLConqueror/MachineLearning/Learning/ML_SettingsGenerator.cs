@@ -19,7 +19,8 @@ namespace MachineLearning.Learning
         private static Tuple<string, string[]> extractSettings(string parameter)
         {
             parameter = parameter.Trim();
-            string[] idAndValues = parameter.Split(new char[] { '=' });
+            string[] idAndValues = parameter.Replace(":", "=").Split(new char[] { '=' });
+            idAndValues[0] = idAndValues[0].Replace("-", "_");
             string[] values = idAndValues[1].Substring(1, idAndValues[1].Length - 2).Split(new char[] { ',' });
             for (int i = 0; i < values.Length; ++i)
             {
@@ -100,7 +101,7 @@ namespace MachineLearning.Learning
                 if (fi == null)
                 {
                     GlobalState.logInfo.logLine("Invalid variable name: " + nameAndValues.Item1 +
-                        ". This setting will be ignored.");
+                        ". This setting will be ignored while learning.");
                 }
                 else if (isBool(nameAndValues.Item2[0]) && fi.FieldType.FullName.Equals("System.Boolean"))
                 {

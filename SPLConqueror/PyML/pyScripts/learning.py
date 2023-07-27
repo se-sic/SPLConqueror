@@ -119,7 +119,7 @@ class Learner:
 
 
 def setup_SVR(learner_settings):
-    parameter = {"kernel": ['rbf', str],  # linear, poly, rbf, sigmoid, precomputd
+    parameter = {"kernel": ['rbf', str],  # linear, poly, rbf, sigmoid, precomputed
                  "degree": [3, int],
                  "gamma": ["auto"],  # other options: 'scale' or float
                  "coef0": [0.0, float],
@@ -238,7 +238,7 @@ def setup_LinearCART(learner_settings):
     parameter = {"criterion": ["mse", str],
                  "max_depth": [5, int],
                  "min_samples_split": [6, int],
-                 "min_samples_leaf": [2, int],
+                 "min_samples_leaf": [3, int],
                  "max_bins": [25, int],
                  "min_impurity_decrease": [0.0, float],
                  "n_jobs": [None, int],

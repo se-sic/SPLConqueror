@@ -210,11 +210,11 @@ namespace CommandLine
                     }
                     else if (task.Trim().ToLower().Equals("true"))
                     {
-                        this.allMeasurementsSelected = true;
+                        allMeasurementsSelected = true;
                     }
                     else if (task.Trim().ToLower().Equals("false"))
                     {
-                        this.allMeasurementsSelected = false;
+                        allMeasurementsSelected = false;
                     }
                     else
                     {
@@ -415,7 +415,7 @@ namespace CommandLine
                     string attachement = "";
                     if (GlobalState.measurementDeviation > 0 && this.mlSettings != null && mlSettings.abortError == 1)
                     {
-                        this.mlSettings.abortError = GlobalState.measurementDeviation;
+                        mlSettings.abortError = GlobalState.measurementDeviation;
                         attachement = " abortError set to highest deviation value: " + GlobalState.measurementDeviation + ".";
                     }
                     GlobalState.logInfo.logLine(GlobalState.allMeasurements.Configurations.Count + " configurations loaded." + attachement);
@@ -711,7 +711,6 @@ namespace CommandLine
                         if (allMeasurementsSelected)
                         {
                             configurationsLearning = GlobalState.allMeasurements.Configurations;
-                            configurationsValidation = configurationsLearning;
                         }
                         else if (!configurationsPreparedForLearning(learnAndValidation,
                             out configurationsLearning, out configurationsValidation))
@@ -722,7 +721,7 @@ namespace CommandLine
                         else
                         {
                             // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                            if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
+                            if (LearningSettings.isLearningStrategy(taskAsParameter[0]))
                             {
                                 handlePythonTask(false, configurationsLearning, taskAsParameter);
                             }
@@ -744,14 +743,13 @@ namespace CommandLine
                         if (allMeasurementsSelected)
                         {
                             configurationsLearning = GlobalState.allMeasurements.Configurations;
-                            configurationsValidation = configurationsLearning;
                         }
                         else if (!configurationsPreparedForLearning(learnAndValidation,
                           out configurationsLearning, out configurationsValidation))
                             break;
 
                         // SVR, DecisionTreeRegression, RandomForestRegressor, BaggingSVR, KNeighborsRegressor, KERNELRIDGE, DecisionTreeRegressor
-                        if (ProcessWrapper.LearningSettings.isLearningStrategy(taskAsParameter[0]))
+                        if (LearningSettings.isLearningStrategy(taskAsParameter[0]))
                         {
                             for (int i = 0; i < taskAsParameter.Length; i++)
                             {
@@ -791,9 +789,14 @@ namespace CommandLine
 
                         string[] cleanedParameters = taskAsParameter.Where(x => !x.ToLowerInvariant().Contains("seed")
                             && !x.ToLowerInvariant().Contains("samples")
-                            && !x.ToLowerInvariant().Contains("randomized")).ToArray();
+                            && !x.ToLowerInvariant().Contains("randomized")
+                            && !x.ToLowerInvariant().Contains("file")
+                            && !x.ToLowerInvariant().Contains("performwithoptimal")).ToArray();
 
                         parameterSettings = ML_SettingsGenerator.generateSettings(cleanedParameters);
+
+                        List<double> errorValues = new List<double>();
+                        
 
                         if (containsArgInvariant(taskAsParameter, "randomized"))
                         {
@@ -822,6 +825,8 @@ namespace CommandLine
                             KFoldCrossValidation kFold = new KFoldCrossValidation(parameters, configurationsLearning);
                             double error = kFold.learn();
 
+                            errorValues.Add(error);
+
                             if (error < minimalError)
                             {
                                 optimalParameters = parameters;
@@ -832,16 +837,24 @@ namespace CommandLine
                         GlobalState.logInfo.logLine("Error of optimal parameters: " + minimalError);
                         GlobalState.logInfo.logLine("Optimal parameters "
                             + formatOptimalParameters(optimalParameters.ToString(), cleanedParameters));
-                        Learning experiment = new MachineLearning.Learning.Regression
-                            .Learning(configurationsLearning, configurationsValidation);
-                        experiment.mlSettings = optimalParameters;
-                        experiment.learn();
-                        StringBuilder taskAsString = new StringBuilder();
-                        taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
 
-                        string samplingIdentifier = "PreVal_SPLCon_" + GlobalState.varModel.Name + "_" + createSmallerSamplingIdentifier() + ".csv";
+                        if (containsArgInvariant(taskAsParameter, "file") && parameterSettings.Count > 0)
+                        {
+                            WriteHyperParameterSettingsIntoFile(taskAsParameter, parameterSettings, cleanedParameters, errorValues);
+                        }
+                        
+                        if (!containsArgInvariant(taskAsParameter, "performWithOptimal") || bool.Parse(getArgValue(taskAsParameter, "performWithOptimal")))
+                        {
+                            Learning experiment = new Learning(configurationsLearning, configurationsValidation);
+                            experiment.mlSettings = optimalParameters;
+                            experiment.learn();
+                            StringBuilder taskAsString = new StringBuilder();
+                            taskAsParameter.ToList().ForEach(x => taskAsString.Append(x));
 
-                        printPredictedConfigurations(samplingIdentifier, experiment);
+                            string samplingIdentifier = "PreVal_SPLCon_" + GlobalState.varModel.Name + "_" + createSmallerSamplingIdentifier() + ".csv";
+
+                            printPredictedConfigurations(samplingIdentifier, experiment);
+                        }
 
                         //printPredictedConfigurations("./CrossValidationResultPrediction"
                         //    + taskAsString.ToString()
@@ -893,6 +906,45 @@ namespace CommandLine
             return "";
         }
 
+        /// <summary>
+        ///  This method prepares the hyperparameter settings and writes them into a file.
+        /// </summary>
+        /// <param name="taskAsParameter">The command-line parameters for hyperparameter tuning</param>
+        /// <param name="parameterSettings">The hyperparameter settings that have been executed</param>
+        /// <param name="variedParameters">The array of parameters that have been varied</param>
+        /// <param name="errorValues">The </param>
+        private void WriteHyperParameterSettingsIntoFile(string[] taskAsParameter, List<ML_Settings> parameterSettings, string[] variedParameters, List<double> errorValues)
+        {
+            List<String> relevant_parameter_names = new List<string>();
+            foreach (string relevant_parameter in variedParameters)
+            {
+                relevant_parameter_names.Add(relevant_parameter.Replace("-", "_").Replace(":", "=").Split('=')[0]);
+            }
+            if (parameterSettings.Count != errorValues.Count)
+            {
+                GlobalState.logError.logLine("The parameter settings and the resulting error values are not of the same sizes. " +
+                                            "Skipping writing into a file...");
+                return;
+            }
+            
+            string path = getArgValue(taskAsParameter, "file");
+
+            StringBuilder sb = new StringBuilder();
+            // Add header
+            sb.Append(parameterSettings[0].GetCsvHeader(relevant_parameter_names));
+            sb.Append("error");
+            sb.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
+
+            foreach (ML_Settings parameters in parameterSettings)
+            {
+                sb.Append(parameters.ToCsv(relevant_parameter_names));
+                sb.Append(errorValues[0]);
+                errorValues.RemoveAt(0);
+                sb.Append(ConfigurationPrinter.CSV_ROW_DELIMITER);
+            }
+            File.WriteAllText(path, sb.ToString());
+        }
+
         private string formatOptimalParameters(string optimalParameters, string[] consideredParameters)
         {
             StringBuilder sb = new StringBuilder();
@@ -901,7 +953,7 @@ namespace CommandLine
             {
                 foreach (string opt in parameters)
                 {
-                    if (opt.StartsWith(param.Split(new char[] { '=' })[0]))
+                    if (opt.StartsWith(param.Replace(":", "=").Split(new char[] { '=' })[0]))
                         sb.Append(opt + ";");
                 }
             }
@@ -988,12 +1040,12 @@ namespace CommandLine
 
         private bool isAllMeasurementsToSample()
         {
-            return this.binaryToSample.Contains(SamplingStrategies.ALLBINARY) && this.binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL);
+            return allMeasurementsSelected || (binaryToSample.Contains(SamplingStrategies.ALLBINARY) && binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL));
         }
 
         private bool isAllMeasurementsValidation()
         {
-            return this.binaryToSampleValidation.Contains(SamplingStrategies.ALLBINARY) && this.binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL);
+            return allMeasurementsSelected || (binaryToSampleValidation.Contains(SamplingStrategies.ALLBINARY) && binaryToSample.Contains(SamplingStrategies.FULLFACTORIAL));
         }
 
         private bool allMeasurementsValid()
@@ -1059,8 +1111,10 @@ namespace CommandLine
             string tempPath = Path.GetTempPath();
             string configsLearnFile = tempPath + "learn_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".csv";
             string configsValFile = tempPath + "validation_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".csv";
+            string configsEvalFile = tempPath + "evaluation_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".csv";
             string nfpLearnFile = tempPath + "nfp_learn_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".nfp";
             string nfpValFile = tempPath + "nfp_validation_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".nfp";
+            string nfpEvalFile = tempPath + "nfp_evaluation_" + samplingIdentifier + Process.GetCurrentProcess().Id + ".nfp";
 
             try
             {
@@ -1075,6 +1129,12 @@ namespace CommandLine
                 printer.print(GlobalState.allMeasurements.Configurations, new List<NFProperty>());
                 printNFPsToFile(configurationsLearning, nfpLearnFile);
                 printNFPsToFile(GlobalState.allMeasurements.Configurations, nfpValFile);
+                if (GlobalState.evaluationSet.Configurations.Count > 0)
+                {
+                    printer = new ConfigurationPrinter(configsEvalFile, GlobalState.optionOrder);
+                    printer.print(GlobalState.evaluationSet.Configurations, new List<NFProperty>());
+                    printNFPsToFile(GlobalState.evaluationSet.Configurations, nfpEvalFile);
+                }
                 bool performWithOptimal = true;
                 if (taskAsParameter.Contains("performWithOptimal:false"))
                 {
@@ -1094,18 +1154,36 @@ namespace CommandLine
 
                 if (isParamTuning)
                 {
-                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
-                        PythonWrapper.START_PARAM_TUNING, GlobalState.varModel);
+                    if (GlobalState.evaluationSet.Configurations.Count > 0)
+                    {
+                        pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
+                            PythonWrapper.START_PARAM_TUNING, GlobalState.varModel, configsEvaluation: configsEvalFile, nfpEvaluation: nfpEvalFile);
+                    }
+                    else
+                    {
+                        pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
+                            PythonWrapper.START_PARAM_TUNING, GlobalState.varModel);
+                    }
+                    
                     string path = targetPath.Substring(0, (targetPath.Length
                         - (((targetPath.Split(Path.DirectorySeparatorChar)).Last()).Length)));
-                    pyResult = pyInterpreter.getOptimizationResult(GlobalState.allMeasurements.Configurations, path);
+
+                    pyResult = pyInterpreter.getOptimizationResult(path);
+
+                    GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
+                    File.Delete(configsLearnFile);
+                    File.Delete(configsValFile);
+                    File.Delete(nfpLearnFile);
+                    File.Delete(nfpValFile);
+
+                    if (GlobalState.evaluationSet.Configurations.Count > 0)
+                    {
+                        File.Delete(configsEvalFile);
+                        File.Delete(nfpEvalFile);
+                    }
+                    
                     if (performWithOptimal)
                     {
-                        GlobalState.logInfo.logLine("Optimal parameters " + pyResult.Replace(",", ""));
-                        File.Delete(configsLearnFile);
-                        File.Delete(configsValFile);
-                        File.Delete(nfpLearnFile);
-                        File.Delete(nfpValFile);
                         var optimalParameters = pyResult.Replace(",", "").Split(new char[] { ';' },
                             StringSplitOptions.RemoveEmptyEntries).ToList();
                         optimalParameters.Insert(0, taskAsParameter[0]);
@@ -1122,8 +1200,17 @@ namespace CommandLine
                         treePath += samplingIdentifier + "_tree_" + taskAsParameter[0] + ".tree";
                     }
 
-                    pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
-                        PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
+                    if (GlobalState.evaluationSet.Configurations.Count > 0)
+                    {
+                        pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
+                            PythonWrapper.START_LEARN, GlobalState.varModel, treePath, configsEvalFile, nfpEvalFile);
+                    }
+                    else
+                    {
+                        pyInterpreter.setupApplication(configsLearnFile, nfpLearnFile, configsValFile, nfpValFile,
+                            PythonWrapper.START_LEARN, GlobalState.varModel, treePath);
+                    }
+                    
                     PythonPredictionWriter csvWriter = null;
                     if (writeFinalResults)
                     {
@@ -1131,7 +1218,15 @@ namespace CommandLine
                             GlobalState.varModel.Name + "_" + samplingIdentifier);
                     }
                     List<Configuration> predictedByPython;
-                    double error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter, out predictedByPython);
+                    double error;
+                    if (GlobalState.evaluationSet.Configurations.Count > 0)
+                    {
+                        error = pyInterpreter.getLearningResult(GlobalState.evaluationSet.Configurations, csvWriter, out predictedByPython);
+                    }
+                    else
+                    {
+                        error = pyInterpreter.getLearningResult(GlobalState.allMeasurements.Configurations, csvWriter, out predictedByPython);
+                    }
                     GlobalState.logInfo.logLine("Elapsed learning time(seconds): " + pyInterpreter.getTimeToLearning());
 
                     if (File.Exists(treePath))
@@ -1176,7 +1271,7 @@ namespace CommandLine
                     
                     if (!Double.IsNaN(error))
                     {
-                        GlobalState.logInfo.logLine("Prediction Error: " + error + " %");
+                        GlobalState.logInfo.logLine("Prediction Error: " + error * 100 + " %");
                     }
                 }
             }

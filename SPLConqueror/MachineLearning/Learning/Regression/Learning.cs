@@ -23,6 +23,8 @@ namespace MachineLearning.Learning.Regression
         public InfluenceModel metaModel = null;
         public LearningInfo info = new LearningInfo();
 
+        public double LastLearningError = 0;
+
         // The event to know that all threads are done
         ManualResetEvent eventX = new ManualResetEvent(false);
         public static int iCount = 0;
@@ -35,21 +37,22 @@ namespace MachineLearning.Learning.Regression
 
 
             public WorkItem(
-              TaskCompletionSource<object> taskSource,
-              Action action,
-              CancellationToken? cancelToken)
+                TaskCompletionSource<object> taskSource,
+                Action action,
+                CancellationToken? cancelToken)
             {
                 TaskSource = taskSource;
                 Action = action;
                 CancelToken = cancelToken;
             }
         }
+
         BlockingCollection<WorkItem> _taskQ = new BlockingCollection<WorkItem>();
 
         public Learning()
         {
-
         }
+
         public Learning(List<Configuration> testSet, List<Configuration> validationSet)
         {
             this.testSet = testSet;
@@ -80,6 +83,7 @@ namespace MachineLearning.Learning.Regression
                     {
                         selection.Add(rand.Next(nbOfConfigs));
                     }
+
                     List<Configuration> newTestSet = new List<Configuration>();
                     List<Configuration> newValidationSet = new List<Configuration>();
                     for (int r = 0; r <= selection.Count; r++)
@@ -89,10 +93,12 @@ namespace MachineLearning.Learning.Regression
                         else
                             newValidationSet.Add(testSet[r]);
                     }
+
                     sel.setLearningSet(newTestSet);
                     sel.setValidationSet(newValidationSet);
                     Task task = EnqueueTask(() => sel.learn());
                 }
+
                 eventX.WaitOne(Timeout.Infinite, true);
                 averageModels();
             }
@@ -100,16 +106,25 @@ namespace MachineLearning.Learning.Regression
             {
                 GlobalState.logInfo.logLine("Learning progress:");
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
-                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
-                this.models.Add(sel);
+                FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, mlSettings);
+                models.Add(sel);
                 sel.setLearningSet(testSet);
                 sel.setValidationSet(this.validationSet);
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 sel.learn();
                 sw.Stop();
-                Console.WriteLine("Prediction Error: {0} %", sel.finalError);
                 Console.WriteLine("Elapsed learning time(seconds): {0}", sw.Elapsed);
+
+                if (GlobalState.evaluationSet.Configurations.Count > 0)
+                {
+                    LastLearningError = sel.evaluateError(GlobalState.evaluationSet.Configurations, false);
+                }
+                else
+                {
+                    LastLearningError = sel.finalError;
+                }
+                Console.WriteLine("Prediction Error: {0} %", LastLearningError);
             }
         }
 
@@ -135,6 +150,7 @@ namespace MachineLearning.Learning.Regression
                     GlobalState.logInfo.logLine(lr.ToString());
                     learningRounds.Add(lr);
                 }
+
                 InfluenceModel infMod = new InfluenceModel(GlobalState.varModel, GlobalState.currentNFP);
                 FeatureSubsetSelection sel = new FeatureSubsetSelection(infMod, this.mlSettings);
                 this.models.Add(sel);
@@ -158,6 +174,7 @@ namespace MachineLearning.Learning.Regression
             {
                 updateInfluenceModel(sorted[i].infModel);
             }
+
             averageWeights(avg);
         }
 
@@ -167,15 +184,16 @@ namespace MachineLearning.Learning.Regression
             {
                 ((Feature)this.metaModel.BinaryOptionsInfluence[bin]).Constant /= avg;
             }
+
             foreach (NumericOption num in this.metaModel.NumericOptionsInfluence.Keys)
             {
                 ((Feature)this.metaModel.NumericOptionsInfluence[num]).Constant /= avg;
             }
+
             foreach (Interaction inter in this.metaModel.InteractionInfluence.Keys)
             {
                 ((Feature)this.metaModel.InteractionInfluence[inter]).Constant /= avg;
             }
-
         }
 
         private void updateInfluenceModel(InfluenceModel influenceModel)
@@ -184,33 +202,41 @@ namespace MachineLearning.Learning.Regression
             {
                 if (this.metaModel.BinaryOptionsInfluence.Keys.Contains(bin))
                 {
-                    ((Feature)this.metaModel.BinaryOptionsInfluence[bin]).Constant += ((Feature)influenceModel.BinaryOptionsInfluence[bin]).Constant;
+                    ((Feature)this.metaModel.BinaryOptionsInfluence[bin]).Constant +=
+                        ((Feature)influenceModel.BinaryOptionsInfluence[bin]).Constant;
                 }
                 else
                 {
-                    this.metaModel.BinaryOptionsInfluence.Add(bin, ((Feature)influenceModel.BinaryOptionsInfluence[bin]));
+                    this.metaModel.BinaryOptionsInfluence.Add(bin,
+                        ((Feature)influenceModel.BinaryOptionsInfluence[bin]));
                 }
             }
+
             foreach (NumericOption num in influenceModel.NumericOptionsInfluence.Keys)
             {
                 if (this.metaModel.NumericOptionsInfluence.Keys.Contains(num))
                 {
-                    ((Feature)this.metaModel.NumericOptionsInfluence[num]).Constant += ((Feature)influenceModel.NumericOptionsInfluence[num]).Constant;
+                    ((Feature)this.metaModel.NumericOptionsInfluence[num]).Constant +=
+                        ((Feature)influenceModel.NumericOptionsInfluence[num]).Constant;
                 }
                 else
                 {
-                    this.metaModel.NumericOptionsInfluence.Add(num, ((Feature)influenceModel.NumericOptionsInfluence[num]));
+                    this.metaModel.NumericOptionsInfluence.Add(num,
+                        ((Feature)influenceModel.NumericOptionsInfluence[num]));
                 }
             }
+
             foreach (Interaction interact in influenceModel.InteractionInfluence.Keys)
             {
                 if (this.metaModel.InteractionInfluence.Keys.Contains(interact))
                 {
-                    ((Feature)this.metaModel.InteractionInfluence[interact]).Constant += ((Feature)influenceModel.InteractionInfluence[interact]).Constant;
+                    ((Feature)this.metaModel.InteractionInfluence[interact]).Constant +=
+                        ((Feature)influenceModel.InteractionInfluence[interact]).Constant;
                 }
                 else
                 {
-                    this.metaModel.InteractionInfluence.Add(interact, ((Feature)influenceModel.InteractionInfluence[interact]));
+                    this.metaModel.InteractionInfluence.Add(interact,
+                        ((Feature)influenceModel.InteractionInfluence[interact]));
                 }
             }
         }
@@ -221,15 +247,18 @@ namespace MachineLearning.Learning.Regression
             for (int i = 0; i < coreCount; i++)
             {
                 Task t = Task.Factory.StartNew(() =>
-                {
-                    Thread.CurrentThread.CurrentCulture = customCulture;
-                    this.Consume();
-                }
+                    {
+                        Thread.CurrentThread.CurrentCulture = customCulture;
+                        this.Consume();
+                    }
                 );
             }
         }
 
-        public void Dispose() { _taskQ.CompleteAdding(); }
+        public void Dispose()
+        {
+            _taskQ.CompleteAdding();
+        }
 
         public Task EnqueueTask(Action action)
         {
@@ -255,7 +284,7 @@ namespace MachineLearning.Learning.Regression
                     try
                     {
                         workItem.Action();
-                        workItem.TaskSource.SetResult(null);   // Indicate completion
+                        workItem.TaskSource.SetResult(null); // Indicate completion
                         Interlocked.Decrement(ref iCount);
                         if (iCount == 0)
                         {
@@ -278,7 +307,6 @@ namespace MachineLearning.Learning.Regression
 
         void LearnModel()
         {
-
         }
 
         private bool hasNecessaryData()
@@ -315,5 +343,4 @@ namespace MachineLearning.Learning.Regression
             clearSampling();
         }
     }
-
 }

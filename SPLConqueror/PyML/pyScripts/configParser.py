@@ -1,12 +1,14 @@
 import csv
 
+import numpy as np
+
 
 def parse_configs_from_plaintext(configuration_file, configuration_options):
     f = open(configuration_file, 'r')
     config_selection = []
 
     for configuration in f:
-        if not len(configuration.strp()) == 0:
+        if not len(configuration.strip()) == 0:
             selection = []
             for option in configuration_options:
                 if option + ";" in configuration:
@@ -23,15 +25,7 @@ def parse_configs_from_plaintext(configuration_file, configuration_options):
 
 
 def parse_nfp_values(nfp_file):
-    nfp_values = []
-
-    f = open(nfp_file, 'r')
-    for val in f:
-        if not len(val.strip()) == 0:
-            nfp_values.append(float(val))
-
-    f.close()
-    return nfp_values
+    return np.genfromtxt(nfp_file, delimiter=';', encoding=None)
 
 
 def parse_from_plain_text(configuration_options, configuration_learn_file, configuration_predict_file, nfp_learn_file, 
@@ -49,22 +43,7 @@ def parse_from_plain_text(configuration_options, configuration_learn_file, confi
 
 
 def parse_configs_from_csv(configuration_file):
-    config_selection = []
-    f = open(configuration_file, 'r')
-    j = 0
-    for row in csv.reader(f, delimiter=';'):
-        if j == 0:
-            j += 1
-        else:
-            config = []
-            i = 0
-            while i < len(row) - 1:
-                config.append(int(row[i]))
-                i += 1
-            config_selection.append(config)
-
-    f.close()
-    return config_selection
+    return np.delete(np.genfromtxt(configuration_file, delimiter=';', encoding=None), 0, 0)
 
 
 def parse_from_csv(configuration_learn_file, configuration_predict_file, nfp_learn_file, nfp_predict_file):
