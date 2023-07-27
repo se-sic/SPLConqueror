@@ -578,44 +578,7 @@ namespace MachineLearning.Solver
             // the constraints should be in conjunctive normal form 
             foreach (string constraint in vm.BinaryConstraints)
             {
-                bool and = false;
-                string[] terms;
-                if (constraint.Contains("&"))
-                {
-                    and = true;
-                    terms = constraint.Split('&');
-                }
-                else
-                    terms = constraint.Split('|');
-
-                BoolExpr[] smtTerms = new BoolExpr[terms.Count()];
-                int i = 0;
-                foreach (string t in terms)
-                {
-                    string optName = t.Trim();
-
-                    if (optName.StartsWith("-") || optName.StartsWith("!"))
-                    {
-                        optName = optName.Substring(1);
-                        BinaryOption binOpt = vm.getBinaryOption(optName);
-                        BoolExpr boolVar = (BoolExpr)optionToTerm[binOpt];
-                        boolVar = context.MkNot(boolVar);
-                        smtTerms[i] = boolVar;
-                    }
-                    else
-                    {
-                        BinaryOption binOpt = vm.getBinaryOption(optName);
-                        BoolExpr boolVar = (BoolExpr)optionToTerm[binOpt];
-                        smtTerms[i] = boolVar;
-                    }
-
-
-                    i++;
-                }
-                if (and)
-                    andGroup.Add(context.MkAnd(smtTerms));
-                else
-                    andGroup.Add(context.MkOr(smtTerms));
+                andGroup.Add(ParseBooleanConstraint(optionToTerm, vm, constraint, context));
             }
 
             if (henard)
@@ -626,6 +589,63 @@ namespace MachineLearning.Solver
             BoolExpr generalConstraint = context.MkAnd(andGroup.ToArray());
 
             return new Tuple<Context, BoolExpr>(context, generalConstraint);
+        }
+
+        
+        /// <summary>
+        /// This method parses a boolean constraint recursively.
+        /// </summary>
+        /// <param name="optionToTerm">The option to term mapping</param>
+        /// <param name="vm">The variability model</param>
+        /// <param name="constraint">The constraint to parse</param>
+        /// <param name="context">The context of the solver</param>
+        /// <returns></returns>
+        private static BoolExpr ParseBooleanConstraint(Dictionary<BinaryOption, BoolExpr> optionToTerm, VariabilityModel vm, string constraint,
+            Context context)
+        {
+            string[] terms;
+            if (constraint.Contains("|"))
+            {
+                terms = constraint.Split('|');
+                List<BoolExpr> orGroup = new List<BoolExpr>();
+                foreach (String term in terms)
+                {
+                    orGroup.Add(ParseBooleanConstraint(optionToTerm, vm, term, context));
+                }
+
+                return context.MkOr(orGroup);
+            }
+            else if (constraint.Contains("&"))
+            {
+                terms = constraint.Split('&');
+                List<BoolExpr> andGroup = new List<BoolExpr>();
+                foreach (String term in terms)
+                {
+                    andGroup.Add(ParseBooleanConstraint(optionToTerm, vm, term, context));
+                }
+
+                return context.MkAnd(andGroup);
+            }
+            else
+            {
+                string optName = constraint.Trim();
+
+                if (optName.StartsWith("-") || optName.StartsWith("!"))
+                {
+                    optName = optName.Substring(1);
+                    BinaryOption binOpt = vm.getBinaryOption(optName);
+                    BoolExpr boolVar = (BoolExpr)optionToTerm[binOpt];
+                    boolVar = context.MkNot(boolVar);
+                    return boolVar;
+                }
+                else
+                {
+                    BinaryOption binOpt = vm.getBinaryOption(optName);
+                    BoolExpr boolVar = (BoolExpr)optionToTerm[binOpt];
+                    return boolVar;
+                }
+            }
+            
         }
 
         /// <summary>
