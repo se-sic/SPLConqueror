@@ -403,14 +403,26 @@ namespace MachineLearning.Sampling
 
         private static List<Configuration> replaceReference(List<Configuration> sampled)
         {
-            // Replaces the reference of the sampled configuration with the corresponding measured configurstion if it exists
-            if (GlobalState.varModel.AbrstactOptions.Count > 0)
+            // Replaces the reference of the sampled configuration with the corresponding measured configuration if it exists
+            List<Configuration> finalConfigurationSet = new List<Configuration>();
+            foreach (Configuration conf in sampled)
             {
+                Configuration foundConfiguration = GlobalState.allMeasurements.Configurations.Find(
+                    delegate(Configuration c)
+                    {
+                        return c.Equals(conf);
+                    });
+                if (foundConfiguration != null)
+                {
+                    finalConfigurationSet.Add(foundConfiguration);
+                }
+                else
+                {
+                    finalConfigurationSet.Add(conf);
+                }
+            }
 
-            } else { }
-            var measured = GlobalState.allMeasurements.Configurations.Intersect(sampled);
-            var notMeasured = sampled.Except(measured);
-            return measured.Concat(notMeasured).ToList();
+            return finalConfigurationSet;
         }
 
         private static List<Configuration> ExecuteHybridStrategy(List<HybridStrategy> hybridStrategies, VariabilityModel vm)
